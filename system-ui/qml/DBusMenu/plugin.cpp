@@ -5,7 +5,7 @@
 
 void SystemUIQmlPlugin::registerTypes(const char *uri)
 {
-    qmlRegisterType<DBusModel>(uri, 0, 1, "DBusClient");
+    qmlRegisterType<DBusModel>(uri, 1, 0, "DBusMenuClient");
 }
 
 Q_EXPORT_PLUGIN2(systemuiqml, SystemUIQmlPlugin)

@@ -8,12 +8,16 @@ namespace Unity.SettingsMenu {
   }
 	  
 	class Key : Object {
-		public string type;
+		public string type = null;
 //		public string val;
-		public string name;
+		public string name = null;
 		public string display_name;
+		public Group? parent = null;
 		
-		
+		public Key (Group parent) {
+			this.parent = parent;
+		}
+
 		public void populate_key (string[] attrs_names, string[] attrs_values) {
 			if (attrs_names.length != attrs_values.length) {
 				error("The amount of attribute names does not match with the amount of values.");
@@ -127,10 +131,11 @@ namespace Unity.SettingsMenu {
 				debug("Added group object");
 			
 			} else if (element_name == "key") {
-				_global_parser.current_key = new Key();
+				_global_parser.current_key = new Key(_global_parser.current_group);
 				_global_parser.current_group.keys.append(_global_parser.current_key);
 				
 				_global_parser.current_key.populate_key (attrs_names, attrs_values);
+
 				debug("Added key object");
 			}
 		}

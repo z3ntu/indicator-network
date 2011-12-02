@@ -12,13 +12,16 @@ namespace Unity.SettingsMenu {
 		}
 				
 		private void property_changed_cb (Dbusmenu.Menuitem item, string property, GLib.Variant variant) {
-						debug ("property-changed: %s", property);
+						if (property == "toggle-state") {
+							var gset = new GLib.Settings (item.property_get("x-settings-schema"));
+							bool val = variant.get_boolean ();
+							gset.set_boolean(item.property_get("x-settings-name"), val);
+						}
 		}
 
 		private void export_menus (Menuitem parent, Group g) {
 			foreach (Key k in g.keys) {
 				var item = new Menuitem.with_id (id);
-				item.property_changed .connect (property_changed_cb);
 				
 				item.property_set ("label", k.display_name);
 				parent.child_append (item);
@@ -34,10 +37,7 @@ namespace Unity.SettingsMenu {
 
 				var gset = new GLib.Settings (k.parent.id);
 				
-				if (gset.get_boolean (k.name))
-					debug ("true");
-				else
-					debug ("false");
+				item.property_changed .connect (property_changed_cb);
 			}
 			
 			//subgroups

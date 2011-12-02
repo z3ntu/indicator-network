@@ -7,12 +7,14 @@ set(CLIENTMODEL_XML_OUTPUT_FILES
 )
 
 set(CLIENTMODEL_SRC
+    dbuscontrol.cpp
     dbusmodel.cpp
     dbusmenutypes_p.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/dbusmenu.cpp
 )
 
 set(CLIENTMODEL_HEADERS
+    dbuscontrol.h
     dbusmodel.h
     ${CMAKE_CURRENT_BINARY_DIR}/dbusmenu.h
 )

@@ -27,6 +27,7 @@ DBusModel::DBusModel(QObject *parent)
         rolesNames[Title] = "title";
         rolesNames[Action] = "action";
         rolesNames[HasSubmenu] = "hasSubmenu";
+        rolesNames[Checkable] = "checkable";
         rolesNames[Submenu] = "submenu";
     }
     setRoleNames(rolesNames);
@@ -128,6 +129,8 @@ void DBusModel::updateActionProperty(QAction *action, const QString &key, const 
         updateActionIcon(action, value.toString());
     else if (key == "visible")
         action->setVisible(value.isValid() ? value.toBool() : true);
+    else if (key == "toggle-type")
+        action->setCheckable(value.toString() != "");
     else if (key == "children-display")
         action->setProperty(DBUSMENU_PROPERTY_HAS_SUBMENU, value.toString() == "submenu");
     else
@@ -258,6 +261,8 @@ QVariant DBusModel::data(const QModelIndex &index, int role) const
         return act->property(DBUSMENU_PROPERTY_ID);
     case Title:
         return act->text();
+    case Checkable:
+        return act->isCheckable();
     case Action:
         return QVariant::fromValue<QObject*>(act);
     case HasSubmenu:

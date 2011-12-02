@@ -24,6 +24,7 @@ public:
         Id,
         Title,
         Action,
+        Checkable,
         HasSubmenu,
         Submenu
     };

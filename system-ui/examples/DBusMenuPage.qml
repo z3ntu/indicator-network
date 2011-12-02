@@ -17,10 +17,10 @@ Page {
             comp = Qt.createQmlObject('import components 1.0; ToggleButton {}', parent, '')
         } else {
             comp = Qt.createQmlObject('import components 1.0; NavigationButton {}', parent, '')
+            comp.stack = stack
             if (model.hasSubmenu)
                 comp.next = Qt.createComponent("DBusMenuPage.qml")
         }
-        comp.stack = stack
         comp.caption = model.title
         return comp
     }

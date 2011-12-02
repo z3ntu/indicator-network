@@ -23,6 +23,12 @@ int PageStack::count() const
     return m_menus.count();
 }
 
+QDeclarativeItem* PageStack::currentPage() const
+{
+    return m_menus.last();
+}
+
+
 void PageStack::onSizeChanged()
 {
     foreach(QDeclarativeItem *menu, m_menus) {

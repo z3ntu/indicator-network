@@ -10,6 +10,7 @@ class PageStack : public QDeclarativeItem
 {
     Q_OBJECT
     Q_PROPERTY(int count READ count NOTIFY countChanged)
+    Q_PROPERTY(QDeclarativeItem* currentPage READ currentPage NOTIFY countChanged)
 public:
     PageStack(QDeclarativeItem *parent = 0);
     ~PageStack();
@@ -18,6 +19,7 @@ public:
     Q_INVOKABLE void pop();
 
     int count() const;
+    QDeclarativeItem* currentPage() const;
 
 signals:
     void countChanged();

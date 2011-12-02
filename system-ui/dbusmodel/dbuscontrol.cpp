@@ -6,6 +6,7 @@ DBusControl::DBusControl(QObject *parent)
     :QObject(parent),
       m_interface(0)
 {
+    DBusMenuTypes_register();
 }
 
 DBusControl::~DBusControl()
@@ -78,13 +79,13 @@ void DBusControl::setObjectPath(const QString &objectPath)
 
 void DBusControl::sendEvent(int id, EventType eventType)
 {
+    static QHash<int, QString> eventNames;
+    static QDBusVariant empty;
+
     if (!m_actions.contains(id)) {
         qWarning() << "Invalid target menu id:" << id  << "on menu control event function";
         return;
     }
-
-    static QHash<int, QString> eventNames;
-    static QDBusVariant empty;
 
     if (!empty.variant().isValid())
         empty.setVariant(QVariant(QString()));

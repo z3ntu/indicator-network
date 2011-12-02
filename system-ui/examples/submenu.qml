@@ -6,28 +6,19 @@ Menu {
     title: "Sub Menu"
     stack: menuStack
 
-    Column {
-        id: menuList
-
-        Column {
-            Repeater {
-                model: 10
-                ToggleButton {
-                    height: 48
-                    width: mainMenu.width
-                    caption: "Test: " + index
-                }
-            }
+    Repeater {
+        model: 10
+        ToggleButton {
+            height: 48
+            width: mainMenu.width
+            caption: "Test: " + index
         }
-
-        Column {
-            Repeater {
-                model: 10
-                Slider {
-                    height: 48
-                    width: mainMenu.width
-                }
-            }
+    }
+    Repeater {
+        model: 10
+        Slider {
+            height: 48
+            width: mainMenu.width
         }
     }
 }

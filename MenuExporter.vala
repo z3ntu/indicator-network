@@ -18,6 +18,22 @@ namespace Unity.SettingsMenu {
 							gset.set_boolean(item.property_get("x-settings-name"), val);
 						}
 		}
+		
+		private void checkbox_item_activated_cb (Dbusmenu.Menuitem item, uint timestamp) {
+					int state;
+
+					var gset = new GLib.Settings (item.property_get("x-gsettings-schema"));
+					bool val = gset.get_boolean(item.property_get("x-gsettings-name"));
+
+					if (val)
+						state = Dbusmenu.MENUITEM_TOGGLE_STATE_UNCHECKED;
+					else
+						state = Dbusmenu.MENUITEM_TOGGLE_STATE_CHECKED;
+						
+					item.property_set_int ("toggle-state", state);
+					
+					gset.set_boolean(item.property_get("x-gsettings-name"), !val);
+		}
 
 		private void export_menus (Menuitem parent, Group g) {
 			foreach (Key k in g.keys) {
@@ -26,18 +42,22 @@ namespace Unity.SettingsMenu {
 				item.property_set ("label", k.display_name);
 				parent.child_append (item);
 				id++;
-				
-				if (k.type == "b") {
-					item.property_set ("toggle-type", Dbusmenu.MENUITEM_TOGGLE_CHECK);
-					item.property_set_int ("toggle-state", Dbusmenu.MENUITEM_TOGGLE_STATE_CHECKED);
-				}
-				
+
 				item.property_set ("x-gsettings-schema", k.parent.id);
 				item.property_set ("x-gsettings-name",   k.name);
-
-				var gset = new GLib.Settings (k.parent.id);
 				
-				item.property_changed .connect (property_changed_cb);
+				if (k.type == "b") {
+					var gset = new GLib.Settings (k.parent.id);
+					
+					item.property_set ("toggle-type", Dbusmenu.MENUITEM_TOGGLE_CHECK);
+
+					if (gset.get_boolean (k.name))
+						item.property_set_int ("toggle-state", Dbusmenu.MENUITEM_TOGGLE_STATE_CHECKED);
+					else
+						item.property_set_int ("toggle-state", Dbusmenu.MENUITEM_TOGGLE_STATE_UNCHECKED);
+
+					item.item_activated.connect(checkbox_item_activated_cb);
+				}
 			}
 			
 			//subgroups

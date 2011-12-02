@@ -21,9 +21,15 @@ namespace Unity.SettingsMenu {
 		
 		private void checkbox_item_activated_cb (Dbusmenu.Menuitem item, uint timestamp) {
 					int state;
+					
+					string schema = item.property_get("x-gsettings-schema");
+					string key_name = item.property_get("x-gsettings-name");
+					
+					if (schema == null || key_name == null)
+						return;
 
-					var gset = new GLib.Settings (item.property_get("x-gsettings-schema"));
-					bool val = gset.get_boolean(item.property_get("x-gsettings-name"));
+					var gset = new GLib.Settings (schema);
+					bool val = gset.get_boolean(key_name);
 
 					if (val)
 						state = Dbusmenu.MENUITEM_TOGGLE_STATE_UNCHECKED;
@@ -32,7 +38,7 @@ namespace Unity.SettingsMenu {
 						
 					item.property_set_int ("toggle-state", state);
 					
-					gset.set_boolean(item.property_get("x-gsettings-name"), !val);
+					gset.set_boolean(key_name, !val);
 		}
 
 		private void export_menus (Menuitem parent, Group g) {

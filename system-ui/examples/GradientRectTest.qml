@@ -1,5 +1,5 @@
 import QtQuick 1.1
-import SystemUI 0.1
+import SystemUI 1.0
 
 Item {
     width: 300

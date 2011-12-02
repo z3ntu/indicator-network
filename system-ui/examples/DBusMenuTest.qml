@@ -8,11 +8,17 @@ Item {
     width: 300
     height: 500
 
-    DBusMenuClient {
-        id: menuClient
-        onConnected: {
-            pages.push(Qt.createComponent("DBusMenuPage.qml"))
-            pages.currentPage.model = menuClient
+    DBusMenuClientControl {
+        id: menuControl
+
+        service: "org.dbusmenu.test"
+        objectPath: "/org/test"
+
+        onConnectionChanged: {
+            if (connected) {
+                pages.push(Qt.createComponent("DBusMenuPage.qml"))
+                pages.currentPage.menuId = 0
+            }
         }
     }
 
@@ -22,5 +28,5 @@ Item {
         anchors.fill: parent
     }
 
-    Component.onCompleted: menuClient.connectToServer("org.dbusmenu.test", "/org/test")
+    Component.onCompleted: menuControl.connectToServer()
 }

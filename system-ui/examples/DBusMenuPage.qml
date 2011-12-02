@@ -50,7 +50,7 @@ Item {
 
                     anchors.fill: parent
                     control: menuModel.control
-                    menuId: menuModel.menuId
+                    menuId: id
                 }
 
 

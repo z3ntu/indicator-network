@@ -47,7 +47,6 @@ void DBusModel::setMenuId(int id)
 
 void DBusModel::setControl(QObject *control)
 {
-    qDebug() << "SetControl " << control;
     if (m_control != control) {
         m_control = qobject_cast<DBusControl*>(control);
         emit controlChanged();
@@ -56,7 +55,6 @@ void DBusModel::setControl(QObject *control)
 
 void DBusModel::load()
 {
-    qDebug() << "MENU LOAD:" << m_id << m_control;
     if ((m_id > -1) && m_control) {
         QObject::connect(m_control, SIGNAL(entryLoaded(int,QList<QAction*>)), this, SLOT(onEntryLoaded(int, QList<QAction*>)));
         m_control->load(m_id);

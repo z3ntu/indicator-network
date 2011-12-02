@@ -9,7 +9,6 @@ MouseArea {
 
     onClicked: {
         if (control && menuId != -1) {
-            console.debug("CONTROL: " + control +  " ID:" + menuId)
             control.sendEvent(menuId, DBusMenuClientControl.Clicked)
         }
     }

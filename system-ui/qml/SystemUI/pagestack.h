@@ -1,21 +1,21 @@
-#ifndef MENUSTACK_H
-#define MENUSTACK_H
+#ifndef PAGESTACK_H
+#define PAGESTACK_H
 
 #include <QDeclarativeItem>
 #include <QDeclarativeComponent>
 #include <QStack>
 #include <QPropertyAnimation>
 
-class MenuStack : public QDeclarativeItem
+class PageStack : public QDeclarativeItem
 {
     Q_OBJECT
     Q_PROPERTY(int count READ count NOTIFY countChanged)
 public:
-    MenuStack(QDeclarativeItem *parent = 0);
-    ~MenuStack();
+    PageStack(QDeclarativeItem *parent = 0);
+    ~PageStack();
 
-    Q_INVOKABLE void pushMenu(QDeclarativeComponent *item);
-    Q_INVOKABLE void popMenu();
+    Q_INVOKABLE void push(QDeclarativeComponent *item);
+    Q_INVOKABLE void pop();
 
     int count() const;
 

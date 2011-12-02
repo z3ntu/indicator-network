@@ -18,9 +18,9 @@ BasicButton {
             return
 
         if (supportBack) {
-            stack.popMenu()
+            stack.pop()
         } else if (next) {
-            stack.pushMenu(next)
+            stack.push(next)
         }
     }
 

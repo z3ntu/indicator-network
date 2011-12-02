@@ -2,11 +2,11 @@ import QtQuick 1.1
 import components 1.0
 
 
-Menu {
+Page {
     id: mainMenu
 
     title: "MainMenu"
-    stack: menuStack
+    stack: pageStack
 
     Repeater {
         model: 10
@@ -30,7 +30,7 @@ Menu {
 
     NavigationButton {
         width: mainMenu.width
-        stack: menuStack
+        stack: pageStack
         caption: "Next Menu"
         next: Qt.createComponent("submenu.qml")
     }

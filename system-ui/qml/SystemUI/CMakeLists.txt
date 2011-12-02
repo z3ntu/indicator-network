@@ -2,13 +2,13 @@ project(SystemUI)
 
 set(SYSTEMUI_SRC
     gradientrectangle.cpp
-    menustack.cpp
+    pagestack.cpp
     plugin.cpp
 )
 
 set(SYSTEMUI_HEADERS
     gradientrectangle.h
-    menustack.h
+    pagestack.h
     plugin.h
 )
 

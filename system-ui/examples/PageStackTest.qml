@@ -6,10 +6,10 @@ import components 1.0
 Item {
     width: 300
     height: 800
-    MenuStack {
-        id: menuStack
+    PageStack {
+        id: pageStack
 
         anchors.fill: parent
-        Component.onCompleted: menuStack.pushMenu(Qt.createComponent("mainmenu.qml"))
+        Component.onCompleted: pageStack.push(Qt.createComponent("mainmenu.qml"))
     }
 }

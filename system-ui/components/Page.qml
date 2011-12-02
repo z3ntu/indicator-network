@@ -1,20 +1,20 @@
 import QtQuick 1.1
 
 BasicItem {
-    id: menu
+    id: page
 
     default property alias itens: contents.children
     property alias title: header.caption
     property alias stack: header.stack
 
-    style: MenuStyle { }
+    style: PageStyle { }
 
     NavigationButton {
         id: header
 
         supportBack: (stack != null && stack.count > 1)
-        style: menu.style.headerStyle
-        height: menu.style.headerHeight
+        style: page.style.headerStyle
+        height: page.style.headerHeight
         anchors { top: parent.top; left: parent.left; right: parent.right }
     }
 
@@ -26,7 +26,7 @@ BasicItem {
 
         Column {
             id: contents
-            spacing: menu.style.stroke
+            spacing: page.style.stroke
         }
     }
 }

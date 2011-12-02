@@ -1,12 +1,12 @@
 #include "plugin.h"
-#include "menustack.h"
+#include "pagestack.h"
 #include "gradientrectangle.h"
 
 #include <QtDeclarative>
 
 void SystemUIQmlPlugin::registerTypes(const char *uri)
 {
-    qmlRegisterType<MenuStack>(uri, 0, 1, "MenuStack");
+    qmlRegisterType<PageStack>(uri, 0, 1, "PageStack");
     qmlRegisterType<GradientRectangle>(uri, 0, 1, "GradientRectangle");
 }
 

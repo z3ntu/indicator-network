@@ -5,10 +5,10 @@ BasicListItemStyle 1.0 BasicListItemStyle.qml
 Button 1.0 Button.qml
 ButtonStyle 1.0 ButtonStyle.qml
 ListItem 1.0 ListItem.qml
-Menu 1.0 Menu.qml
-MenuStyle 1.0 MenuStyle.qml
 NavigationButton 1.0 NavigationButton.qml
 NavigationButtonStyle 1.0 NavigationButtonStyle.qml
+Page 1.0 Page.qml
+PageStyle 1.0 PageStyle.qml
 Slider 1.0 Slider.qml
 SliderStyle 1.0 SliderStyle.qml
 ToggleButton 1.0 ToggleButton.qml

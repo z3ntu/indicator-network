@@ -1,10 +1,10 @@
-#include "menustack.h"
+#include "pagestack.h"
 
 #include <QDeclarativeContext>
 #include <QDeclarativeEngine>
 #include <QDeclarativeProperty>
 
-MenuStack::MenuStack(QDeclarativeItem *parent)
+PageStack::PageStack(QDeclarativeItem *parent)
     : QDeclarativeItem(parent),
       m_animation(0)
 {
@@ -12,18 +12,18 @@ MenuStack::MenuStack(QDeclarativeItem *parent)
     QObject::connect(this, SIGNAL(heightChanged()), this, SLOT(onSizeChanged()));
 }
 
-MenuStack::~MenuStack()
+PageStack::~PageStack()
 {
     delete m_animation;
     m_menus.clear();
 }
 
-int MenuStack::count() const
+int PageStack::count() const
 {
     return m_menus.count();
 }
 
-void MenuStack::onSizeChanged()
+void PageStack::onSizeChanged()
 {
     foreach(QDeclarativeItem *menu, m_menus) {
         menu->setWidth(width());
@@ -31,25 +31,25 @@ void MenuStack::onSizeChanged()
     }
 }
 
-void MenuStack::onAnimationValueChanged(const QVariant &value)
+void PageStack::onAnimationValueChanged(const QVariant &value)
 {
     if (m_oldItem)
         m_oldItem->setX(value.toReal() - width());
 }
 
-void MenuStack::onAnimationFowardFinished()
+void PageStack::onAnimationFowardFinished()
 {
     if(m_oldItem)
         m_oldItem->setVisible(false);
 }
 
-void MenuStack::onAnimationBackFinished()
+void PageStack::onAnimationBackFinished()
 {
     m_animation->targetObject()->deleteLater();
     m_oldItem = m_menus.last();
 }
 
-void MenuStack::pushMenu(QDeclarativeComponent *component)
+void PageStack::push(QDeclarativeComponent *component)
 {
     if (!component)
         return;
@@ -88,7 +88,7 @@ void MenuStack::pushMenu(QDeclarativeComponent *component)
     m_animation->start();
 }
 
-void MenuStack::popMenu()
+void PageStack::pop()
 {
     if ((m_menus.size() <= 0) || !m_oldItem)
         return;

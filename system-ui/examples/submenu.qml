@@ -1,10 +1,10 @@
 import QtQuick 1.1
 import components 1.0
 
-Menu {
+Page {
     id: mainMenu
     title: "Sub Menu"
-    stack: menuStack
+    stack: pageStack
 
     Repeater {
         model: 10

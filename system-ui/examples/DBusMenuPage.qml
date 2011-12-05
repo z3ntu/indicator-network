@@ -45,7 +45,7 @@ Item {
                 id: item
 
                 width: mainMenu.width
-                height: 48
+                height: type == 's' ? 72 : 48
 
                 Item {
                     id: delegate

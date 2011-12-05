@@ -16,6 +16,7 @@ DBusModel::DBusModel(QObject *parent)
         rolesNames[Id] = "id";
         rolesNames[Type] = "type";
         rolesNames[Title] = "title";
+        rolesNames[Data] = "data";
         rolesNames[Action] = "action";
         rolesNames[HasSubmenu] = "hasSubmenu";
         rolesNames[IsCheckable] = "checkable";
@@ -107,6 +108,8 @@ QVariant DBusModel::data(const QModelIndex &index, int role) const
         return act->property(DBUSMENU_PROPERTY_GSETTINGS_TYPE);
     case Title:
         return act->text();
+    case Data:
+        return act->property(DBUSMENU_PROPERTY_GSETTINGS_DATA);
     case IsCheckable:
         return act->isCheckable();
     case IsChecked:

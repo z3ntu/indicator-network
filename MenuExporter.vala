@@ -49,6 +49,7 @@ namespace Unity.SettingsMenu {
 				parent.child_append (item);
 				id++;
 
+				item.property_set ("x-gsettings-type", k.type);
 				item.property_set ("x-gsettings-schema", k.parent.id);
 				item.property_set ("x-gsettings-name",   k.name);
 				
@@ -63,6 +64,10 @@ namespace Unity.SettingsMenu {
 						item.property_set_int ("toggle-state", Dbusmenu.MENUITEM_TOGGLE_STATE_UNCHECKED);
 
 					item.item_activated.connect(checkbox_item_activated_cb);
+				}
+				else if (k.type == "s") {
+					/* TODO: What if this is not about GSettings? More properties I guess */
+					item.property_set("x-system-settings-tablet-widget", "x-textentry");
 				}
 			}
 			

@@ -25,7 +25,7 @@ BasicItem {
 
     Rectangle {
         anchors { left: parent.left; top: title.bottom; right: parent.right; bottom: parent.bottom; margins: textEntry.style.margin }
-        border.color: textInput.activeFocus ? textEntry.style.boderColor : textEntry.style.unselectedBoderColor
+        border.color: textInput.activeFocus ? textEntry.style.selectedBoderColor : textEntry.style.unselectedBoderColor
 
         TextInput {
             id: textInput

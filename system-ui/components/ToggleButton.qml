@@ -3,14 +3,19 @@ import QtQuick 1.1
 BasicButton {
     id: button
 
-    property bool toggled: false
+    property bool checked: dbusModel ? dbusModel.checked : false
     property alias caption: label.text
 
     style: ToggleButtonStyle { }
-    state: toggled ? "ON" : "OFF"
-    onClicked: toggled = !toggled
+    state: checked ? "ON" : "OFF"
     implicitWidth: label.implicitWidth + toggle.width
     implicitHeight: toggle.height
+
+    onClicked: {
+        if (!dbusModel) {
+            checked = !checked
+        }
+    }
 
     Rectangle {
         id: bg
@@ -19,6 +24,7 @@ BasicButton {
         Text {
             id: label
 
+            text: dbusModel ? dbusModel.title : ""
             font { family: button.style.fontFamily; pointSize: button.style.fontPointSize; bold: button.style.fontBold }
             anchors { margins: button.style.margin; left: parent.left; right: parent.right; verticalCenter: parent.verticalCenter }
         }

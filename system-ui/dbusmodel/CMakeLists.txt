@@ -37,10 +37,14 @@ include_directories(
     ${QT_QTCORE_INCLUDE_DIR}
     ${QT_QTDBUS_INCLUDE_DIR}
     ${QT_QTGUI_INCLUDE_DIR}
+    ${GLIB_INCLUDE_DIRS}
+    ${GIO_INCLUDE_DIRS}
 )
 
 target_link_libraries(dbusmodel
     ${QT_QTCORE_LIBRARY}
     ${QT_QTDBUS_LIBRARY}
     ${QT_QTGUI_LIBRARY}
+    ${GLIB_LDFLAGS}
+    ${GIO_LDFLAGS}
 )

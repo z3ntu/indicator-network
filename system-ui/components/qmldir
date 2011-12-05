@@ -12,5 +12,7 @@ Page 1.0 Page.qml
 PageStyle 1.0 PageStyle.qml
 Slider 1.0 Slider.qml
 SliderStyle 1.0 SliderStyle.qml
+TextEntry 1.0 TextEntry.qml
+TextEntryStyle 1.0 TextEntryStyle.qml
 ToggleButton 1.0 ToggleButton.qml
 ToggleButtonStyle 1.0 ToggleButtonStyle.qml

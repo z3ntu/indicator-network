@@ -20,7 +20,7 @@ GradientRectangle::~GradientRectangle()
 QVariantList GradientRectangle::colors()
 {
     QVariantList colors;
-    foreach(QColor color, m_colors) {
+    Q_FOREACH(QColor color, m_colors) {
         colors << color;
     }
     return colors;
@@ -29,7 +29,7 @@ QVariantList GradientRectangle::colors()
 void GradientRectangle::setColors(QVariantList colors)
 {
     m_colors.clear();
-    foreach(QVariant var, colors) {
+    Q_FOREACH(QVariant var, colors) {
         QColor color = var.value<QColor>();
         if (color.isValid())
             m_colors << color;
@@ -39,7 +39,7 @@ void GradientRectangle::setColors(QVariantList colors)
     delete m_brush;
     m_brush = 0;
     update(boundingRect());
-    emit colorsChanged();
+    Q_EMIT colorsChanged();
 }
 
 qreal GradientRectangle::percentage() const
@@ -56,7 +56,7 @@ void GradientRectangle::setPercentage(qreal value)
         delete m_brush;
         m_brush = 0;
         update(boundingRect());
-        emit percentageChanged();
+        Q_EMIT percentageChanged();
     }
 }
 
@@ -72,7 +72,7 @@ void GradientRectangle::updatePen()
 
         qreal offset = 1.0 / m_colors.size();
         qreal point = 0;
-        foreach(QColor color, m_colors) {
+        Q_FOREACH(QColor color, m_colors) {
             linearGrad.setColorAt(point, color);
             point += offset;
         }

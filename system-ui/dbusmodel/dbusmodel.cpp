@@ -14,10 +14,13 @@ DBusModel::DBusModel(QObject *parent)
     if (rolesNames.empty()) {
         DBusMenuTypes_register();
         rolesNames[Id] = "id";
+        rolesNames[Type] = "type";
         rolesNames[Title] = "title";
         rolesNames[Action] = "action";
         rolesNames[HasSubmenu] = "hasSubmenu";
-        rolesNames[Checkable] = "checkable";
+        rolesNames[IsCheckable] = "checkable";
+        rolesNames[IsChecked] = "checked";
+        rolesNames[Control] = "control";
     }
     setRoleNames(rolesNames);
 }
@@ -41,7 +44,7 @@ void DBusModel::setMenuId(int id)
 {
     if (m_id != id) {
         m_id = id;
-        emit menuIdChanged();
+        Q_EMIT menuIdChanged();
     }
 }
 
@@ -49,7 +52,7 @@ void DBusModel::setControl(QObject *control)
 {
     if (m_control != control) {
         m_control = qobject_cast<DBusControl*>(control);
-        emit controlChanged();
+        Q_EMIT controlChanged();
     }
 }
 
@@ -65,12 +68,22 @@ void DBusModel::onEntryLoaded(int id, QList<QAction*> items)
 {
     if (id == m_id) {
         beginInsertRows(QModelIndex(), m_actions.size(), m_actions.size() + items.size() - 1);
-        foreach(QAction* act, items) {
-            if (!m_actions.contains(act))
+        Q_FOREACH(QAction* act, items) {
+            if (!m_actions.contains(act)) {
                 m_actions << act;
+                QObject::connect(act, SIGNAL(changed()), this, SLOT(onActionChanged()));
+            }
         }
         endInsertRows();
     }
+}
+
+void DBusModel::onActionChanged()
+{
+    QAction *act = qobject_cast<QAction*>(QObject::sender());
+    int row = m_actions.indexOf(act);
+    if (row >=0)
+        dataChanged(index(row), index(row));
 }
 
 /* QAbstractItemModel */
@@ -90,12 +103,18 @@ QVariant DBusModel::data(const QModelIndex &index, int role) const
     switch (role) {
     case Id:
         return act->property(DBUSMENU_PROPERTY_ID);
+    case Type:
+        return act->property(DBUSMENU_PROPERTY_GSETTINGS_TYPE);
     case Title:
         return act->text();
-    case Checkable:
+    case IsCheckable:
         return act->isCheckable();
+    case IsChecked:
+        return act->isChecked();
     case Action:
         return QVariant::fromValue<QObject*>(act);
+    case Control:
+        return QVariant::fromValue<QObject*>(m_control);
     case HasSubmenu:
         return act->property(DBUSMENU_PROPERTY_HAS_SUBMENU).isValid() &&
                act->property(DBUSMENU_PROPERTY_HAS_SUBMENU).toBool();

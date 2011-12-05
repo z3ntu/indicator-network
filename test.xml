@@ -4,7 +4,7 @@
 	       tablet:icon="time.png">
 		<display_name>General</display_name>
 		
-		<key type="b" name="show-calendar" tablet:widget="com.ubuntu.widgets.tablet.textentry">
+		<key type="b" name="show-calendar">
 			<description>This setting allows you to show or hide the calendar from the unity bar.</description>
 			<display_name>Show Calendar</display_name>
 		</key>

@@ -31,6 +31,7 @@ public:
         Id,
         Type,
         Title,
+        Data,
         IsCheckable,
         HasSubmenu,
         IsChecked,

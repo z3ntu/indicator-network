@@ -102,7 +102,7 @@ void DBusControl::sendEvent(int id, EventType eventType, QVariant data)
     }
 
     if (eventType == TextChanged) {
-        // Handle this event on client side for now
+        // //WORKAROUND: Handle this event on client side for now
         QAction *act = m_actions[id];
         if (act) {
             GSettings *settings = g_settings_new(act->property(DBUSMENU_PROPERTY_GSETTINGS_SCHEMA).toByteArray());
@@ -161,6 +161,15 @@ QAction* DBusControl::parseAction(int id, const QVariantMap &_map, QWidget *pare
     }
 
     updateAction(action, map, map.keys());
+
+    //WORKAROUND: read gsettings value for text entry in the client side for now
+    if (action->property(DBUSMENU_PROPERTY_GSETTINGS_TYPE).toByteArray() == "s") {
+        GSettings *settings = g_settings_new(action->property(DBUSMENU_PROPERTY_GSETTINGS_SCHEMA).toByteArray());
+        QByteArray value =  g_settings_get_string(settings, action->property(DBUSMENU_PROPERTY_GSETTINGS_NAME).toByteArray());
+        action->setProperty(DBUSMENU_PROPERTY_GSETTINGS_DATA, value);
+        g_object_unref(settings);
+    }
+
     return action;
 }
 

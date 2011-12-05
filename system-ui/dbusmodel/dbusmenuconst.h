@@ -9,5 +9,6 @@
 #define DBUSMENU_PROPERTY_GSETTINGS_SCHEMA "x-gsettings-schema"
 #define DBUSMENU_PROPERTY_GSETTINGS_NAME "x-gsettings-name"
 #define DBUSMENU_PROPERTY_GSETTINGS_TYPE "x-gsettings-type"
+#define DBUSMENU_PROPERTY_GSETTINGS_DATA "x-gsettings-data"
 
 #endif

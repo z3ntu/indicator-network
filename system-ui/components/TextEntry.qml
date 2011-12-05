@@ -8,24 +8,32 @@ BasicItem {
 
     style: TextEntryStyle { }
 
-    TextInput {
-        id: textInput
-
+    Rectangle {
         anchors.fill: parent
         anchors.margins: textEntry.style.margin
-        font { family: textEntry.style.fontFamily; pointSize: textEntry.style.fontPointSize; bold: textEntry.style.fontBold }
+        border.color: textEntry.style.boderColor
+        border.width: textInput.activeFocus ? 1 : 0
 
-        onAccepted: {
-            if (dbusModel) {
-                dbusModel.control.sendEvent(dbusModel.id, DBusMenuClientControl.TextChanged, text)
-            }
-        }
+        TextInput {
+            id: textInput
 
-        Text {
-            text: dbusModel ? dbusModel.title : ""
-            visible: textInput.text == "" && !textInput.activeFocus
+            text: dbusModel ? dbusModel.data : ""
             anchors.fill: parent
+            anchors.margins: textEntry.style.margin
             font { family: textEntry.style.fontFamily; pointSize: textEntry.style.fontPointSize; bold: textEntry.style.fontBold }
+
+            onAccepted: {
+                if (dbusModel) {
+                    dbusModel.control.sendEvent(dbusModel.id, DBusMenuClientControl.TextChanged, text)
+                }
+            }
+
+            Text {
+                text: dbusModel ? dbusModel.title : ""
+                visible: textInput.text == "" && !textInput.activeFocus
+                anchors.fill: parent
+                font { family: textEntry.style.fontFamily; pointSize: textEntry.style.fontPointSize; bold: textEntry.style.fontBold }
+            }
         }
     }
 }

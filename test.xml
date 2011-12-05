@@ -12,5 +12,9 @@
 			<description>This setting allows you to show or hide the calendar from the unity bar.</description>
 			<display_name>Show Week Numbers</display_name>
 		</key>
+		<key type="s" name="custom-time-format">
+			<description>This sets the time format for the date time indicator.</description>
+			<display_name>Custom Time Format</display_name>
+		</key>		
 	</group>
 </settings>

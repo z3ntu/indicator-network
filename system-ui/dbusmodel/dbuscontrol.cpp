@@ -2,6 +2,9 @@
 #include "dbusmenu.h"
 #include "dbusmenuconst.h"
 
+#include <QByteArray>
+#include <gio/gio.h>
+
 DBusControl::DBusControl(QObject *parent)
     :QObject(parent),
       m_interface(0)
@@ -33,7 +36,7 @@ bool DBusControl::connectToServer()
                      this, SLOT(onItemActivationRequested(int, uint)));
     QObject::connect(m_interface, SIGNAL(ItemsPropertiesUpdated(DBusMenuItemList, DBusMenuItemKeysList)),
                      this, SLOT(onItemsPropertiesUpdated(DBusMenuItemList, DBusMenuItemKeysList)));
-    emit connectionChanged();
+    Q_EMIT connectionChanged();
     return true;
 }
 
@@ -65,7 +68,7 @@ void DBusControl::setService(const QString &service)
 {
     if (m_service != service) {
         m_service = service;
-        emit serviceChanged();
+        Q_EMIT serviceChanged();
     }
 }
 
@@ -73,11 +76,11 @@ void DBusControl::setObjectPath(const QString &objectPath)
 {
     if (m_objectPath != objectPath) {
         m_objectPath = objectPath;
-        emit objectPathChanged();
+        Q_EMIT objectPathChanged();
     }
 }
 
-void DBusControl::sendEvent(int id, EventType eventType)
+void DBusControl::sendEvent(int id, EventType eventType, QVariant data)
 {
     static QHash<int, QString> eventNames;
     static QDBusVariant empty;
@@ -95,10 +98,21 @@ void DBusControl::sendEvent(int id, EventType eventType)
         eventNames[Hovered] = "hovered";
         eventNames[Openend] = "openend";
         eventNames[Closed] = "closed";
+        eventNames[TextChanged] = "x-textChanged";
     }
 
-    uint timestamp = QDateTime::currentDateTime().toTime_t();
-    m_interface->Event(id, eventNames[eventType], empty, timestamp);
+    if (eventType == TextChanged) {
+        // Handle this event on client side for now
+        QAction *act = m_actions[id];
+        if (act) {
+            GSettings *settings = g_settings_new(act->property(DBUSMENU_PROPERTY_GSETTINGS_SCHEMA).toByteArray());
+            g_settings_set_string(settings, act->property(DBUSMENU_PROPERTY_GSETTINGS_NAME).toByteArray(), data.toByteArray());
+            g_object_unref(settings);
+        }
+    } else {
+        uint timestamp = QDateTime::currentDateTime().toTime_t();
+        m_interface->Event(id, eventNames[eventType], empty, timestamp);
+    }
 }
 
 void DBusControl::load(int id)
@@ -132,7 +146,7 @@ void DBusControl::onGetLayoutReply(QDBusPendingCallWatcher *ptrReply)
     }
 
     if (actions.size() > 0)
-        emit entryLoaded(ptrReply->property(DBUSMENU_PROPERTY_ID).toInt(), actions);
+        Q_EMIT entryLoaded(ptrReply->property(DBUSMENU_PROPERTY_ID).toInt(), actions);
 }
 
 QAction* DBusControl::parseAction(int id, const QVariantMap &_map, QWidget *parent)
@@ -169,8 +183,16 @@ void DBusControl::updateActionProperty(QAction *action, const QString &key, cons
         action->setVisible(value.isValid() ? value.toBool() : true);
     else if (key == "toggle-type")
         action->setCheckable(value.toString() != "");
+    else if (key == "toggle-state")
+        action->setChecked(value.toBool());
     else if (key == "children-display")
         action->setProperty(DBUSMENU_PROPERTY_HAS_SUBMENU, value.toString() == "submenu");
+    else if (key == "x-gsettings-schema")
+        action->setProperty(DBUSMENU_PROPERTY_GSETTINGS_SCHEMA, value.toString());
+    else if (key == "x-gsettings-name")
+        action->setProperty(DBUSMENU_PROPERTY_GSETTINGS_NAME, value.toString());
+    else if (key == "x-gsettings-type")
+        action->setProperty(DBUSMENU_PROPERTY_GSETTINGS_TYPE, value.toString());
     else
         qWarning() << "Unhandled property update" << key;
 }

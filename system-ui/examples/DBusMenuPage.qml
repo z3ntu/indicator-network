@@ -23,15 +23,16 @@ Item {
         function createComponent(model, parent)
         {
             var comp
-            if (model.checkable) {
+            if (model.type == 's') {
+                comp = Qt.createQmlObject('import components 1.0; TextEntry {}', parent, '')
+            } else if (model.type == 'b') {
                 comp = Qt.createQmlObject('import components 1.0; ToggleButton {}', parent, '')
             } else {
                 comp = Qt.createQmlObject('import components 1.0; NavigationButton {}', parent, '')
                 comp.stack = stack
-                if (model.hasSubmenu)
-                    comp.next = Qt.createComponent("DBusMenuPage.qml")
+                comp.next = Qt.createComponent("DBusMenuPage.qml")
             }
-            comp.caption = model.title
+            comp.dbusModel = model
             return comp
         }
 
@@ -45,15 +46,6 @@ Item {
                 width: mainMenu.width
                 height: 48
 
-                DBusMenuItemView {
-                    id: view
-
-                    anchors.fill: parent
-                    control: menuModel.control
-                    menuId: id
-                }
-
-
                 Item {
                     id: delegate
 
@@ -62,12 +54,12 @@ Item {
                     Component.onCompleted: {
                         var comp = mainMenu.createComponent(model, delegate)
                         comp.anchors.fill = delegate
-                        comp.clicked.connect(onClicked)
+                        if (hasSubmenu)
+                            comp.clicked.connect(onClicked)
                     }
 
                     function onClicked(mouse)
                     {
-                        view.clicked(mouse)
                         if (!checkable && hasSubmenu)
                             pages.currentPage.menuId = id
                     }

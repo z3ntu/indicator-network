@@ -8,6 +8,12 @@ if(NOT QDBUSXML2CPP_BIN)
     message(FATAL_ERROR "qdbusxml2cpp not found.")
 endif()
 
+include(FindPkgConfig)
+pkg_check_modules(GLIB REQUIRED glib-2.0)
+pkg_check_modules(GIO REQUIRED gio-2.0)
+add_definitions(-DQT_NO_KEYWORDS)
+
+
 enable_testing()
 
 add_subdirectory(dbusmodel)

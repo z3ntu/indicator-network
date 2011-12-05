@@ -20,7 +20,7 @@ public:
     void setPercentage(qreal value);
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
 
-signals:
+Q_SIGNALS:
     void percentageChanged();
     void colorsChanged();
 

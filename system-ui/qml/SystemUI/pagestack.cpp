@@ -31,7 +31,7 @@ QDeclarativeItem* PageStack::currentPage() const
 
 void PageStack::onSizeChanged()
 {
-    foreach(QDeclarativeItem *menu, m_menus) {
+    Q_FOREACH(QDeclarativeItem *menu, m_menus) {
         menu->setWidth(width());
         menu->setHeight(height());
     }
@@ -90,7 +90,7 @@ void PageStack::push(QDeclarativeComponent *component)
     connect(m_animation, SIGNAL(valueChanged(QVariant)), SLOT(onAnimationValueChanged(QVariant)));
     connect(m_animation, SIGNAL(finished()), SLOT(onAnimationFowardFinished()));
 
-    emit countChanged();
+    Q_EMIT countChanged();
     m_animation->start();
 }
 
@@ -117,6 +117,6 @@ void PageStack::pop()
     connect(m_animation, SIGNAL(finished()), SLOT(onAnimationBackFinished()));
     m_oldItem->setVisible(true);
 
-    emit countChanged();
+    Q_EMIT countChanged();
     m_animation->start();
 }

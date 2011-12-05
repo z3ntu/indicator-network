@@ -5,7 +5,8 @@ BasicButton {
 
     property QtObject stack: null
     property Component next: null
-    property bool supportBack: false
+    property bool enableBackward: false
+    property bool enableFoward: dbusModel ? dbusModel.hasSubmenu : false
     property alias caption: basicItem.caption
     property alias description: basicItem.description
 
@@ -17,9 +18,9 @@ BasicButton {
         if (!stack)
             return
 
-        if (supportBack) {
+        if (enableBackward) {
             stack.pop()
-        } else if (next) {
+        } else if (enableFoward && next) {
             stack.push(next)
         }
     }
@@ -36,13 +37,14 @@ BasicButton {
 
         height: sourceSize.height
         width: sourceSize.width
-        source: supportBack ? button.style.backImage : ""
+        source: enableBackward ? button.style.backImage : ""
         anchors { left: parent.left; top: parent.top }
     }
 
     BasicListItem {
         id: basicItem
         style: button.style
+        dbusModel: button.dbusModel
 
         anchors { left: backIcon.right; top: parent.top;  right: fowardIcon.left; bottom: parent.bottom }
     }
@@ -52,7 +54,7 @@ BasicButton {
 
        height: sourceSize.height
        width: sourceSize.width
-       source: next ? button.style.fowardImage : ""
+       source: next && enableFoward ? button.style.fowardImage : ""
        anchors { top: parent.top; right: parent.right }
     }
 }

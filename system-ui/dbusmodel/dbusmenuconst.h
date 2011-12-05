@@ -6,5 +6,8 @@
 #define DBUSMENU_PROPERTY_ICON "dbusmenu_icon"
 #define DBUSMENU_PROPERTY_HAS_SUBMENU "dbusmenu_has_submenu"
 #define DBUSMENU_PROPERTY_SUBMENU "dbusmenu_submenu"
+#define DBUSMENU_PROPERTY_GSETTINGS_SCHEMA "x-gsettings-schema"
+#define DBUSMENU_PROPERTY_GSETTINGS_NAME "x-gsettings-name"
+#define DBUSMENU_PROPERTY_GSETTINGS_TYPE "x-gsettings-type"
 
 #endif

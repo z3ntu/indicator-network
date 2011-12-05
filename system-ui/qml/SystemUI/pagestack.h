@@ -21,10 +21,10 @@ public:
     int count() const;
     QDeclarativeItem* currentPage() const;
 
-signals:
+Q_SIGNALS:
     void countChanged();
 
-private slots:
+private Q_SLOTS:
     void onAnimationValueChanged(const QVariant &value);
     void onAnimationBackFinished();
     void onAnimationFowardFinished();

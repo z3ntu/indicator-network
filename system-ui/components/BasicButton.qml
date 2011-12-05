@@ -1,4 +1,5 @@
 import QtQuick 1.1
+import DBusMenu 1.0
 
 BasicItem {
     id: button
@@ -7,6 +8,18 @@ BasicItem {
 
     MouseArea {
         anchors.fill: parent
-        onClicked: button.clicked()
+
+        onClicked: {
+            if (dbusModel) {
+                dbusModel.control.sendEvent(dbusModel.id, DBusMenuClientControl.Clicked)
+            }
+            button.clicked()
+        }
+
+        onPositionChanged: {
+            if (dbusModel) {
+                dbusModel.control.sendEvent(dbusModel.id, DBusMenuClientControl.Hovered)
+            }
+        }
     }
 }

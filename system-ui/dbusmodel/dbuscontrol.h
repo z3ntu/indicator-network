@@ -24,7 +24,8 @@ public:
         Clicked,
         Hovered,
         Openend,
-        Closed
+        Closed,
+        TextChanged
     };
 
     DBusControl(QObject *parent = 0);
@@ -38,7 +39,7 @@ public:
 
 
     Q_INVOKABLE void load(int id);
-    Q_INVOKABLE void sendEvent(int id, EventType eventType);
+    Q_INVOKABLE void sendEvent(int id, EventType eventType, QVariant data = QVariant());
 
     /* Properties */
     QString service() const;
@@ -48,7 +49,7 @@ public:
     void setService(const QString &service);
     void setObjectPath(const QString &objectPath);
 
-signals:
+Q_SIGNALS:
     void connectionChanged();
     void serviceChanged();
     void objectPathChanged();
@@ -56,7 +57,7 @@ signals:
     // Load reply
     void entryLoaded(int id, QList<QAction*> entries);
 
-private slots:
+private Q_SLOTS:
     void onItemsPropertiesUpdated(const DBusMenuItemList &updatedList, const DBusMenuItemKeysList &removedList);
     void onItemActivationRequested(int id, uint timestamp);
     void onLayoutUpdated(uint, int);

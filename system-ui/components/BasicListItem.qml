@@ -7,8 +7,8 @@ BasicItem {
     property bool selected:  false
     property alias caption: label.text
     property alias description: labelDescription.text
-    state: selected ? "SELECTED" : "UNSELECTED"
 
+    state: selected ? "SELECTED" : "UNSELECTED"
     style: BasicListItemStyle { }
 
     Rectangle {
@@ -20,6 +20,7 @@ BasicItem {
         Text {
             id: label
 
+            text: hasModel ? dbusModel.title : ""
             horizontalAlignment: Text.AlignLeft
             verticalAlignment: Text.AlignVCenter
             anchors { left: parent.left; top: parent.top; right: labelDescription.left; bottom: parent.bottom; margins: item.style.margin }

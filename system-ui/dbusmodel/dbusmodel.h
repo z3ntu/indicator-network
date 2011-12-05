@@ -29,10 +29,13 @@ public:
     /* Avaliable fields */
     enum MenuRoles {
         Id,
+        Type,
         Title,
+        IsCheckable,
+        HasSubmenu,
+        IsChecked,
         Action,
-        Checkable,
-        HasSubmenu
+        Control
     };
 
     /* QAbstractItemModel */
@@ -41,12 +44,13 @@ public:
     QModelIndex parent (const QModelIndex &index) const;
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
 
-signals:
+Q_SIGNALS:
     void menuIdChanged();
     void controlChanged();
 
-private slots:
+private Q_SLOTS:
     void onEntryLoaded(int id, QList<QAction*> items);
+    void onActionChanged();
 
 private:
     Q_DISABLE_COPY(DBusModel)

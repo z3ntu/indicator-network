@@ -12,7 +12,7 @@ BasicItem {
     NavigationButton {
         id: header
 
-        supportBack: (stack != null && stack.count > 1)
+        enableBackward: (stack != null && stack.count > 1)
         style: page.style.headerStyle
         height: page.style.headerHeight
         anchors { top: parent.top; left: parent.left; right: parent.right }

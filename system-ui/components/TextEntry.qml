@@ -8,11 +8,24 @@ BasicItem {
 
     style: TextEntryStyle { }
 
+    // WORKAROUND
     Rectangle {
-        anchors.fill: parent
-        anchors.margins: textEntry.style.margin
-        border.color: textEntry.style.boderColor
-        border.width: textInput.activeFocus ? 1 : 0
+        id: title
+        height: 24
+        anchors { left: parent.left; top: parent.top; right: parent.right;  }
+
+        color: "#ded9d3"
+        Text {
+            text: dbusModel ? dbusModel.title : ""
+            color: "#ffffff"
+            font { bold: true; pointSize: 10 }
+            anchors { fill: parent; verticalCenter: parent.verticalCenter; margins: textEntry.style.margin }
+        }
+    }
+
+    Rectangle {
+        anchors { left: parent.left; top: title.bottom; right: parent.right; bottom: parent.bottom; margins: textEntry.style.margin }
+        border.color: textInput.activeFocus ? textEntry.style.boderColor : textEntry.style.unselectedBoderColor
 
         TextInput {
             id: textInput

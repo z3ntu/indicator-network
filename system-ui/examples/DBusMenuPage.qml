@@ -4,6 +4,7 @@ import components 1.0
 
 Item {
     property alias menuId: menuModel.menuId
+    property alias title: mainMenu.title
 
     DBusMenuClientModel {
         id: menuModel
@@ -16,7 +17,7 @@ Item {
     Page {
         id: mainMenu
 
-        title: "DBusMenuPage"
+        title: "System Settings"
         stack: pages
         anchors.fill: parent
 
@@ -60,8 +61,10 @@ Item {
 
                     function onClicked(mouse)
                     {
-                        if (!checkable && hasSubmenu)
+                        if (!checkable && hasSubmenu) {
                             pages.currentPage.menuId = id
+                            pages.currentPage.title = title
+                        }
                     }
 
                 }

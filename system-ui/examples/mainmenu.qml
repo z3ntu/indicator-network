@@ -32,6 +32,7 @@ Page {
         width: mainMenu.width
         stack: pageStack
         caption: "Next Menu"
+        enableFoward: true
         next: Qt.createComponent("submenu.qml")
     }
 }

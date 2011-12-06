@@ -18,6 +18,7 @@ Page {
         model: 10
         Slider {
             height: 48
+            value: Math.random()
             width: mainMenu.width
         }
     }

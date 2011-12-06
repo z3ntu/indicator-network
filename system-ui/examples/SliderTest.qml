@@ -6,6 +6,7 @@ Item {
     width: 300
     Slider {
         height: 48
+        value: 0.5
         width: parent.width
         anchors.centerIn: parent
     }

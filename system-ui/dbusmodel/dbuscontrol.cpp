@@ -1,15 +1,18 @@
 #include "dbuscontrol.h"
-#include "dbusmenu.h"
+#include "qdbusmenuitem.h"
 #include "dbusmenuconst.h"
 
 #include <QByteArray>
+#include <QDateTime>
+#include <QDebug>
+
 #include <gio/gio.h>
+#include <libdbusmenu-glib/client.h>
 
 DBusControl::DBusControl(QObject *parent)
-    :QObject(parent),
-      m_interface(0)
+    : QObject(parent),
+      m_client(0)
 {
-    DBusMenuTypes_register();
 }
 
 DBusControl::~DBusControl()
@@ -17,36 +20,42 @@ DBusControl::~DBusControl()
     disconnectFromServer();
 }
 
+void DBusControl::onRootChanged(DbusmenuClient * client, DbusmenuMenuitem * newroot, gpointer data)
+{
+    DBusControl *self = reinterpret_cast<DBusControl*>(data);
+
+    if (self->m_root)
+        delete self->m_root;
+
+    if (newroot)
+        self->m_root = new QDBusMenuItem(newroot, self);
+    else
+        self->m_root = 0;
+
+    Q_EMIT self->connectionChanged();
+}
+
 bool DBusControl::connectToServer()
 {
-    if (m_interface)
-        return m_interface->isValid();
+    if (m_client)
+        return true;
 
-    m_interface = new DBusMenuInterface(m_service, m_objectPath, QDBusConnection::sessionBus(), this);
-    if (!m_interface || !m_interface->isValid()) {
-        qWarning() << "Fail to connect to:" << m_service << m_objectPath;
-        disconnectFromServer();
-        return false;
-    }
+    m_client = dbusmenu_client_new(qPrintable(m_service), qPrintable(m_objectPath));
+    g_signal_connect(G_OBJECT(m_client), DBUSMENU_CLIENT_SIGNAL_ROOT_CHANGED, G_CALLBACK(onRootChanged), this);
 
-    /* Only the main menu keep track of these signals */
-    QObject::connect(m_interface, SIGNAL(LayoutUpdated(uint, int)),
-                     this, SLOT(onLayoutUpdated(uint, int)));
-    QObject::connect(m_interface, SIGNAL(ItemActivationRequested(int, uint)),
-                     this, SLOT(onItemActivationRequested(int, uint)));
-    QObject::connect(m_interface, SIGNAL(ItemsPropertiesUpdated(DBusMenuItemList, DBusMenuItemKeysList)),
-                     this, SLOT(onItemsPropertiesUpdated(DBusMenuItemList, DBusMenuItemKeysList)));
-    Q_EMIT connectionChanged();
+    Q_ASSERT(m_client);
     return true;
 }
 
 void DBusControl::disconnectFromServer()
 {
-    if (!m_interface)
+    if (!m_client)
         return;
 
-    delete m_interface;
-    m_interface = 0;
+    delete m_root;
+    Q_ASSERT(QDBusMenuItem::m_globalItemList.size() == 0);
+    g_object_unref(m_client);
+    m_client = 0;
 }
 
 QString DBusControl::service() const
@@ -61,7 +70,7 @@ QString DBusControl::objectPath() const
 
 bool DBusControl::isConnected()
 {
-    return m_interface != 0;
+    return m_client != 0;
 }
 
 void DBusControl::setService(const QString &service)
@@ -82,16 +91,12 @@ void DBusControl::setObjectPath(const QString &objectPath)
 
 void DBusControl::sendEvent(int id, EventType eventType, QVariant data)
 {
-    static QHash<int, QString> eventNames;
-    static QDBusVariant empty;
+    Q_ASSERT(m_client);
+    static QHash<int, QByteArray> eventNames;
+    static GVariant *empty = 0;
 
-    if (!m_actions.contains(id)) {
-        qWarning() << "Invalid target menu id:" << id  << "on menu control event function";
-        return;
-    }
-
-    if (!empty.variant().isValid())
-        empty.setVariant(QVariant(QString()));
+    if (!empty)
+        empty = g_variant_new_byte(0);
 
     if (eventNames.empty()) {
         eventNames[Clicked] = "clicked";
@@ -101,7 +106,15 @@ void DBusControl::sendEvent(int id, EventType eventType, QVariant data)
         eventNames[TextChanged] = "x-textChanged";
     }
 
+    QDBusMenuItem *item = qobject_cast<QDBusMenuItem* >(QDBusMenuItem::m_globalItemList[id]);
+    if (!item) {
+        qWarning() << "Invalid item id on sendEvent function";
+        return;
+    }
+    uint timestamp = QDateTime::currentDateTime().toTime_t();
+
     if (eventType == TextChanged) {
+        /*
         // //WORKAROUND: Handle this event on client side for now
         QAction *act = m_actions[id];
         if (act) {
@@ -109,152 +122,19 @@ void DBusControl::sendEvent(int id, EventType eventType, QVariant data)
             g_settings_set_string(settings, act->property(DBUSMENU_PROPERTY_GSETTINGS_NAME).toByteArray(), data.toByteArray());
             g_object_unref(settings);
         }
+        */
     } else {
-        uint timestamp = QDateTime::currentDateTime().toTime_t();
-        m_interface->Event(id, eventNames[eventType], empty, timestamp);
+        g_variant_ref(empty);
+        dbusmenu_menuitem_handle_event(item->item(), eventNames[eventType], empty, timestamp);
     }
 }
 
-void DBusControl::load(int id)
+QDBusMenuItem *DBusControl::load(int id)
 {
-    Q_ASSERT(m_interface);
+    Q_ASSERT(m_client);
 
-    QDBusPendingCall call = m_interface->GetLayout(id, 1, QStringList());
-    QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(call, this);
-    watcher->setProperty(DBUSMENU_PROPERTY_ID, id);
+    if (!m_root)
+        return 0;
 
-    /* Wait for reply */
-    QObject::connect(watcher, SIGNAL(finished(QDBusPendingCallWatcher*)), this, SLOT(onGetLayoutReply(QDBusPendingCallWatcher*)));
-}
-
-void DBusControl::onGetLayoutReply(QDBusPendingCallWatcher *ptrReply)
-{
-    QDBusPendingReply<uint, DBusMenuLayoutItem> reply = *ptrReply;
-    if (!reply.isValid()) {
-        qWarning() << "Invalid reply for GetLayou:" << reply.error().message();
-        return;
-    }
-
-    QList<QAction* > actions;
-    DBusMenuLayoutItem rootItem = reply.argumentAt<1>();
-    Q_FOREACH(const DBusMenuLayoutItem &dbusMenuItem, rootItem.children) {
-        QAction *act = parseAction(dbusMenuItem.id, dbusMenuItem.properties, 0);
-        if (act) {
-            actions << act;
-            m_actions.insert(dbusMenuItem.id, act);
-        }
-    }
-
-    if (actions.size() > 0)
-        Q_EMIT entryLoaded(ptrReply->property(DBUSMENU_PROPERTY_ID).toInt(), actions);
-}
-
-QAction* DBusControl::parseAction(int id, const QVariantMap &_map, QWidget *parent)
-{
-    QVariantMap map = _map;
-    QAction *action = new QAction(parent);
-    action->setProperty(DBUSMENU_PROPERTY_ID, id);
-
-    QString type = map.take("type").toString();
-    if (type == "separator") {
-        action->setSeparator(true);
-    }
-
-    updateAction(action, map, map.keys());
-
-    //WORKAROUND: read gsettings value for text entry in the client side for now
-    if (action->property(DBUSMENU_PROPERTY_GSETTINGS_TYPE).toByteArray() == "s") {
-        GSettings *settings = g_settings_new(action->property(DBUSMENU_PROPERTY_GSETTINGS_SCHEMA).toByteArray());
-        QByteArray value =  g_settings_get_string(settings, action->property(DBUSMENU_PROPERTY_GSETTINGS_NAME).toByteArray());
-        action->setProperty(DBUSMENU_PROPERTY_GSETTINGS_DATA, value);
-        g_object_unref(settings);
-    }
-
-    return action;
-}
-
-void DBusControl::updateAction(QAction *action, const QVariantMap &map, const QStringList &requestedProperties)
-{
-    Q_FOREACH(const QString &key, requestedProperties) {
-        updateActionProperty(action, key, map.value(key));
-    }
-}
-
-void DBusControl::updateActionProperty(QAction *action, const QString &key, const QVariant &value)
-{
-    if (key == "label")
-        action->setText(value.toString());
-    else if (key == "enabled")
-        action->setEnabled(value.isValid() ? value.toBool(): true);
-    else if (key == "icon-name")
-        updateActionIcon(action, value.toString());
-    else if (key == "visible")
-        action->setVisible(value.isValid() ? value.toBool() : true);
-    else if (key == "toggle-type")
-        action->setCheckable(value.toString() != "");
-    else if (key == "toggle-state")
-        action->setChecked(value.toBool());
-    else if (key == "children-display")
-        action->setProperty(DBUSMENU_PROPERTY_HAS_SUBMENU, value.toString() == "submenu");
-    else if (key == "x-gsettings-schema")
-        action->setProperty(DBUSMENU_PROPERTY_GSETTINGS_SCHEMA, value.toString());
-    else if (key == "x-gsettings-name")
-        action->setProperty(DBUSMENU_PROPERTY_GSETTINGS_NAME, value.toString());
-    else if (key == "x-gsettings-type")
-        action->setProperty(DBUSMENU_PROPERTY_GSETTINGS_TYPE, value.toString());
-    else
-        qWarning() << "Unhandled property update" << key;
-}
-
-void DBusControl::updateActionIcon(QAction *action, const QString &iconName)
-{
-    QString previous = action->property(DBUSMENU_PROPERTY_ICON).toString();
-    if (previous == iconName)
-        return;
-
-    action->setProperty(DBUSMENU_PROPERTY_ICON, iconName);
-    if (iconName.isEmpty())
-        action->setIcon(QIcon());
-    else
-        action->setIcon(QIcon()); //TODO
-}
-
-void DBusControl::onItemsPropertiesUpdated(const DBusMenuItemList &updatedList, const DBusMenuItemKeysList &removedList)
-{
-    Q_FOREACH(const DBusMenuItem &item, updatedList) {
-        QAction *action = m_actions.value(item.id);
-        if (!action) {
-            qWarning() << "No action for id" << item.id;
-            continue;
-        }
-
-        QVariantMap::ConstIterator it = item.properties.constBegin();
-        QVariantMap::ConstIterator end = item.properties.constEnd();
-        for(; it != end; ++it) {
-            updateActionProperty(action, it.key(), it.value());
-        }
-    }
-
-    Q_FOREACH(const DBusMenuItemKeys &item, removedList) {
-        QAction *action = m_actions.value(item.id);
-        if (!action) {
-            qWarning() << "No action for id" << item.id;
-            continue;
-        }
-
-        /* This should be removed? */
-        Q_FOREACH(const QString &key, item.properties) {
-            updateActionProperty(action, key, QVariant());
-        }
-    }
-}
-
-void DBusControl::onItemActivationRequested(int id, uint timestamp)
-{
-    qDebug() << "TODO: Item activated";
-}
-
-void DBusControl::onLayoutUpdated(uint, int)
-{
-    qDebug() << "TODO: Layout Update";
+    return qobject_cast<QDBusMenuItem* >(QDBusMenuItem::m_globalItemList[id]);
 }

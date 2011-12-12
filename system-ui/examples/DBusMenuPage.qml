@@ -24,9 +24,9 @@ Item {
         function createComponent(model, parent)
         {
             var comp
-            if (model.type == 's') {
+            if (model.type == "TextEntry") {
                 comp = Qt.createQmlObject('import components 1.0; TextEntry {}', parent, '')
-            } else if (model.type == 'b') {
+            } else if (model.type == "ToggleButton") {
                 comp = Qt.createQmlObject('import components 1.0; ToggleButton {}', parent, '')
             } else {
                 comp = Qt.createQmlObject('import components 1.0; NavigationButton {}', parent, '')
@@ -61,9 +61,9 @@ Item {
 
                     function onClicked(mouse)
                     {
-                        if (!checkable && hasSubmenu) {
-                            pages.currentPage.menuId = id
-                            pages.currentPage.title = title
+                        if (hasSubmenu) {
+                            pages.currentPage.menuId = model.menuId
+                            pages.currentPage.title = label
                         }
                     }
 

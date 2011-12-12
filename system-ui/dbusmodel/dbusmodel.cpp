@@ -1,3 +1,4 @@
+#include "qdbusmenuitem.h"
 #include "dbusmodel.h"
 #include "dbuscontrol.h"
 #include "dbusmenuconst.h"
@@ -10,17 +11,15 @@ DBusModel::DBusModel(QObject *parent)
       m_id(-1),
       m_control(0)
 {
+
     static QHash<int, QByteArray> rolesNames;
     if (rolesNames.empty()) {
-        DBusMenuTypes_register();
-        rolesNames[Id] = "id";
+        rolesNames[Id] = "menuId";
         rolesNames[Type] = "type";
-        rolesNames[Title] = "title";
-        rolesNames[Data] = "data";
-        rolesNames[Action] = "action";
+        rolesNames[Label] = "label";
+        rolesNames[Icon] = "icon";
+        rolesNames[State] = "state";
         rolesNames[HasSubmenu] = "hasSubmenu";
-        rolesNames[IsCheckable] = "checkable";
-        rolesNames[IsChecked] = "checked";
         rolesNames[Control] = "control";
     }
     setRoleNames(rolesNames);
@@ -28,7 +27,8 @@ DBusModel::DBusModel(QObject *parent)
 
 DBusModel::~DBusModel()
 {
-    m_actions.clear();
+    // Do not destroy item this will be destroyed by DBusControl
+    m_root = 0;
 }
 
 int DBusModel::menuId() const
@@ -60,31 +60,56 @@ void DBusModel::setControl(QObject *control)
 void DBusModel::load()
 {
     if ((m_id > -1) && m_control) {
-        QObject::connect(m_control, SIGNAL(entryLoaded(int,QList<QAction*>)), this, SLOT(onEntryLoaded(int, QList<QAction*>)));
-        m_control->load(m_id);
-    }
-}
-
-void DBusModel::onEntryLoaded(int id, QList<QAction*> items)
-{
-    if (id == m_id) {
-        beginInsertRows(QModelIndex(), m_actions.size(), m_actions.size() + items.size() - 1);
-        Q_FOREACH(QAction* act, items) {
-            if (!m_actions.contains(act)) {
-                m_actions << act;
-                QObject::connect(act, SIGNAL(changed()), this, SLOT(onActionChanged()));
-            }
+        if (m_root)
+            delete m_root;
+        m_root = m_control->load(m_id);
+        if (m_root) {
+            m_root->installEventFilter(this);
+            appendItems(m_root->children());
         }
-        endInsertRows();
     }
 }
 
-void DBusModel::onActionChanged()
+void DBusModel::appendItems(QObjectList items)
 {
-    QAction *act = qobject_cast<QAction*>(QObject::sender());
-    int row = m_actions.indexOf(act);
+
+    beginInsertRows(QModelIndex(), m_count, m_count + items.size() - 1);
+    Q_FOREACH(QObject *item, items) {
+        m_count++;
+        QObject::connect(item, SIGNAL(changed()), this, SLOT(onItemChanged()));
+        QObject::connect(item, SIGNAL(destroyed(QObject*)), this, SLOT(onItemDestroyed(QObject*)));
+        QObject::connect(item, SIGNAL(moved(int, int)), this, SLOT(onItemMoved(int, int)));
+    }
+    endInsertRows();
+}
+
+void DBusModel::onItemDestroyed(QObject *obj)
+{
+    QDBusMenuItem *item = qobject_cast<QDBusMenuItem*>(obj);
+    int row = item->position();
+    if (row >= 0) {
+        beginRemoveRows(QModelIndex(), row, row);
+        endRemoveRows();
+    }
+}
+
+void DBusModel::onItemMoved(int newPos, int oldPos)
+{
+    beginMoveRows(QModelIndex(), oldPos, oldPos, QModelIndex(), newPos);
+    endMoveRows();
+}
+
+void DBusModel::onItemChanged()
+{
+    QDBusMenuItem *item = qobject_cast<QDBusMenuItem*>(QObject::sender());
+    int row = item->position();
     if (row >=0)
         dataChanged(index(row), index(row));
+}
+
+bool DBusModel::eventFilter(QObject *obj, QEvent *event)
+{
+    return QObject::eventFilter(obj, event);
 }
 
 /* QAbstractItemModel */
@@ -96,31 +121,37 @@ int DBusModel::columnCount(const QModelIndex &parent) const
 QVariant DBusModel::data(const QModelIndex &index, int role) const
 {
     int row = index.row();
-    if(!index.isValid() || (row < 0) || (row > m_actions.count()))
+    if(!index.isValid() || (row < 0) || (row > m_count))
         return QVariant();
 
-    QAction *act = m_actions[row];
-    Q_ASSERT(act);
+    QObject *item = m_root->children()[row];
+    Q_ASSERT(item);
     switch (role) {
     case Id:
-        return act->property(DBUSMENU_PROPERTY_ID);
+        return item->property(DBUSMENU_PROPERTY_ID);
     case Type:
-        return act->property(DBUSMENU_PROPERTY_GSETTINGS_TYPE);
-    case Title:
-        return act->text();
-    case Data:
-        return act->property(DBUSMENU_PROPERTY_GSETTINGS_DATA);
-    case IsCheckable:
-        return act->isCheckable();
-    case IsChecked:
-        return act->isChecked();
-    case Action:
-        return QVariant::fromValue<QObject*>(act);
+        switch(item->property(DBUSMENU_PROPERTY_TYPE).toInt()) {
+        case QDBusMenuItem::TextEntry:
+            return QVariant("TextEntry");
+        case QDBusMenuItem::ToggleButton:
+            return QVariant("ToggleButton");
+        case QDBusMenuItem::RadioButton:
+            return QVariant("RadioButton");
+        case QDBusMenuItem::Label:
+        default:
+            return QVariant("Label");
+        }
+    case Label:
+        return item->property(DBUSMENU_PROPERTY_LABEL);
+    case Icon:
+        return item->property(DBUSMENU_PROPERTY_ICON_NAME);
+    case State:
+        return item->property(DBUSMENU_PROPERTY_STATE);
     case Control:
         return QVariant::fromValue<QObject*>(m_control);
     case HasSubmenu:
-        return act->property(DBUSMENU_PROPERTY_HAS_SUBMENU).isValid() &&
-               act->property(DBUSMENU_PROPERTY_HAS_SUBMENU).toBool();
+        return item->property(DBUSMENU_PROPERTY_HAS_SUBMENU).isValid() &&
+               item->property(DBUSMENU_PROPERTY_HAS_SUBMENU).toBool();
     default:
         qWarning() << "Invalid role name" << role;
         break;
@@ -134,5 +165,5 @@ QModelIndex DBusModel::parent(const QModelIndex &) const
 
 int DBusModel::rowCount(const QModelIndex &) const
 {
-    return m_actions.count();
+    return m_count;
 }

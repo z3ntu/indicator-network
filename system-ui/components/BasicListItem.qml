@@ -20,7 +20,7 @@ BasicItem {
         Text {
             id: label
 
-            text: hasModel ? dbusModel.title : ""
+            text: hasModel ? dbusModel.label : ""
             horizontalAlignment: Text.AlignLeft
             verticalAlignment: Text.AlignVCenter
             anchors { left: parent.left; top: parent.top; right: labelDescription.left; bottom: parent.bottom; margins: item.style.margin }

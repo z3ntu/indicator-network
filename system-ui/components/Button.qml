@@ -3,7 +3,7 @@ import QtQuick 1.1
 BasicButton {
     property alias caption: label.text
 
-    caption: dbusModel ? dbusModel.title : ""
+    caption: dbusModel ? dbusModel.label : ""
     style: ButtonStyle { }
 
     Rectangle {

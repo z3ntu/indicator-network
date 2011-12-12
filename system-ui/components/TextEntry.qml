@@ -16,7 +16,7 @@ BasicItem {
 
         color: "#ded9d3"
         Text {
-            text: dbusModel ? dbusModel.title : ""
+            text: dbusModel ? dbusModel.label : ""
             color: "#ffffff"
             font { bold: true; pointSize: 10 }
             anchors { fill: parent; verticalCenter: parent.verticalCenter; margins: textEntry.style.margin }
@@ -42,7 +42,7 @@ BasicItem {
             }
 
             Text {
-                text: dbusModel ? dbusModel.title : ""
+                text: dbusModel ? dbusModel.label : ""
                 visible: textInput.text == "" && !textInput.activeFocus
                 anchors.fill: parent
                 font { family: textEntry.style.fontFamily; pointSize: textEntry.style.fontPointSize; bold: textEntry.style.fontBold }

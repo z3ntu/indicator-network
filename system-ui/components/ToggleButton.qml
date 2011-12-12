@@ -3,7 +3,7 @@ import QtQuick 1.1
 BasicButton {
     id: button
 
-    property bool checked: dbusModel ? dbusModel.checked : false
+    property bool checked: dbusModel ? dbusModel.state : false
     property alias caption: label.text
 
     style: ToggleButtonStyle { }
@@ -24,7 +24,7 @@ BasicButton {
         Text {
             id: label
 
-            text: dbusModel ? dbusModel.title : ""
+            text: dbusModel ? dbusModel.label : ""
             font { family: button.style.fontFamily; pointSize: button.style.fontPointSize; bold: button.style.fontBold }
             anchors { margins: button.style.margin; left: parent.left; right: parent.right; verticalCenter: parent.verticalCenter }
         }

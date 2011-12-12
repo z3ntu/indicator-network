@@ -3,16 +3,12 @@ project(systeui)
 cmake_minimum_required(VERSION 2.6.0)
 
 find_package(Qt4 REQUIRED)
-find_program(QDBUSXML2CPP_BIN qdbusxml2cpp)
-if(NOT QDBUSXML2CPP_BIN)
-    message(FATAL_ERROR "qdbusxml2cpp not found.")
-endif()
 
 include(FindPkgConfig)
 pkg_check_modules(GLIB REQUIRED glib-2.0)
 pkg_check_modules(GIO REQUIRED gio-2.0)
+pkg_check_modules(DBUSMENUGLIB dbusmenu-glib-0.4)
 add_definitions(-DQT_NO_KEYWORDS)
-
 
 enable_testing()
 

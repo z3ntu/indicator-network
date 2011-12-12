@@ -4,7 +4,7 @@
 #include <QAction>
 #include <QAbstractListModel>
 
-typedef QList<QAction* > ItemList;
+class QDBusMenuItem;
 class DBusControl;
 
 class DBusModel : public QAbstractListModel
@@ -30,14 +30,16 @@ public:
     enum MenuRoles {
         Id,
         Type,
-        Title,
-        Data,
-        IsCheckable,
+        Label,
+        Icon,
+        State,
         HasSubmenu,
-        IsChecked,
-        Action,
+        Data,
         Control
     };
+
+    /* QObject */
+    bool eventFilter(QObject *obj, QEvent *event);
 
     /* QAbstractItemModel */
     int columnCount(const QModelIndex &parent = QModelIndex()) const;
@@ -50,15 +52,18 @@ Q_SIGNALS:
     void controlChanged();
 
 private Q_SLOTS:
-    void onEntryLoaded(int id, QList<QAction*> items);
-    void onActionChanged();
+    void onItemChanged();
+    void onItemDestroyed(QObject *obj);
+    void onItemMoved(int newPos, int oldPos);
 
 private:
     Q_DISABLE_COPY(DBusModel)
 
-    int m_id;
-    ItemList m_actions;
+    QDBusMenuItem *m_root;
     DBusControl *m_control;
-};
+    int m_id;
+    int m_count;
 
+    void appendItems(QObjectList items);
+};
 #endif

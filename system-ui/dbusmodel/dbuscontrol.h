@@ -1,16 +1,12 @@
 #ifndef DBUSCONTROL_H
 #define DBUSCONTROL_H
 
-#include <QAction>
 #include <QAbstractListModel>
-#include <QDBusPendingCallWatcher>
+#include <libdbusmenu-glib/client.h>
 
 #include "dbusmodel.h"
-#include "dbusmenutypes_p.h"
 
-typedef QList<QAction* > ItemList;
-
-class DBusMenuInterface;
+class QDbusMenuItem;
 
 class DBusControl : public QObject
 {
@@ -31,14 +27,11 @@ public:
     DBusControl(QObject *parent = 0);
     ~DBusControl();
 
-
-
     /* Connectc to dbusmenu server */
     Q_INVOKABLE bool connectToServer();
     Q_INVOKABLE void disconnectFromServer();
 
-
-    Q_INVOKABLE void load(int id);
+    Q_INVOKABLE QDBusMenuItem *load(int id);
     Q_INVOKABLE void sendEvent(int id, EventType eventType, QVariant data = QVariant());
 
     /* Properties */
@@ -54,29 +47,17 @@ Q_SIGNALS:
     void serviceChanged();
     void objectPathChanged();
 
-    // Load reply
-    void entryLoaded(int id, QList<QAction*> entries);
-
-private Q_SLOTS:
-    void onItemsPropertiesUpdated(const DBusMenuItemList &updatedList, const DBusMenuItemKeysList &removedList);
-    void onItemActivationRequested(int id, uint timestamp);
-    void onLayoutUpdated(uint, int);
-
-    //Async reply
-    void onGetLayoutReply(QDBusPendingCallWatcher*);
-
 private:
     Q_DISABLE_COPY(DBusControl)
 
-    DBusMenuInterface *m_interface;
-    QHash<int, QAction* > m_actions;
+    DbusmenuClient *m_client;
+    QDBusMenuItem *m_root;
     QString m_service;
     QString m_objectPath;
 
-    QAction* parseAction(int id, const QVariantMap &_map, QWidget *parent);
-    void updateActionProperty(QAction *action, const QString &key, const QVariant &value);
-    void updateAction(QAction *action, const QVariantMap &map, const QStringList &requestedProperties);
-    void updateActionIcon(QAction *action, const QString &iconName);
+    void registeItem(int id, QObject *item);
+
+    static void onRootChanged(DbusmenuClient *client, DbusmenuMenuitem *newroot, gpointer data);
 };
 
 #endif

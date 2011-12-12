@@ -11,14 +11,14 @@ BasicItem {
 
         onClicked: {
             if (dbusModel) {
-                dbusModel.control.sendEvent(dbusModel.id, DBusMenuClientControl.Clicked)
+                dbusModel.control.sendEvent(dbusModel.menuId, DBusMenuClientControl.Clicked, "")
             }
             button.clicked()
         }
 
         onPositionChanged: {
             if (dbusModel) {
-                dbusModel.control.sendEvent(dbusModel.id, DBusMenuClientControl.Hovered)
+                dbusModel.control.sendEvent(dbusModel.menuId, DBusMenuClientControl.Hovered, "")
             }
         }
     }

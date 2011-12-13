@@ -7,6 +7,7 @@ class DBusModelTest : public QObject
 {
     Q_OBJECT
 private Q_SLOTS:
+    void testInvalidConnection();
     void testDumpMenu();
 };
 

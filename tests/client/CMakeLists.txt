@@ -10,7 +10,11 @@ macro(declare_test testname)
                           ${GLIB_LDFLAGS}
                           ${DBUSMENUGLIB_LDFLAGS})
 
-    add_test(${testname} ${testname})
+    add_test(${testname}
+             ${DBUS_RUNNER} 
+             --task ${CMAKE_CURRENT_BINARY_DIR}/${testname} --task-name Client
+             --task ${server-src_BINARY_DIR}/ExportMenu -p ${server_SOURCE_DIR}/xml/test.xml -p 5 --task-name Server
+             --ignore-return)
 endmacro(declare_test testname)
 
 include_directories(${dbusmodel_SOURCE_DIR}

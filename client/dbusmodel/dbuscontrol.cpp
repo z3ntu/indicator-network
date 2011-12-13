@@ -11,7 +11,8 @@
 
 DBusControl::DBusControl(QObject *parent)
     : QObject(parent),
-      m_client(0)
+      m_client(0),
+      m_root(0)
 {
 }
 
@@ -32,7 +33,7 @@ void DBusControl::onRootChanged(DbusmenuClient * client, DbusmenuMenuitem * newr
     else
         self->m_root = 0;
 
-    Q_EMIT self->connectionChanged();
+    Q_EMIT self->rootChanged();
 }
 
 bool DBusControl::connectToServer()
@@ -70,7 +71,7 @@ QString DBusControl::objectPath() const
 
 bool DBusControl::isConnected()
 {
-    return m_client != 0;
+    return m_root != 0;
 }
 
 void DBusControl::setService(const QString &service)

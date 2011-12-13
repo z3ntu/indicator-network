@@ -13,7 +13,7 @@ class DBusControl : public QObject
     Q_OBJECT
     Q_PROPERTY(QString service READ service WRITE setService NOTIFY serviceChanged)
     Q_PROPERTY(QString objectPath READ objectPath WRITE setObjectPath NOTIFY objectPathChanged)
-    Q_PROPERTY(bool connected READ isConnected NOTIFY connectionChanged)
+    Q_PROPERTY(bool connected READ isConnected NOTIFY rootChanged)
 public:
     Q_ENUMS(EventType)
     enum EventType {
@@ -43,7 +43,7 @@ public:
     void setObjectPath(const QString &objectPath);
 
 Q_SIGNALS:
-    void connectionChanged();
+    void rootChanged();
     void serviceChanged();
     void objectPathChanged();
 

@@ -163,9 +163,9 @@ namespace Unity.SettingsMenu {
 			if (element_name == "key")
 				_global_parser.current_key = null;
 		}
-	
+
 		public static int main (string[] args)	{
-			if (args.length < 1)
+			if (args.length < 2)
 			  return 1;
 
 			var f = File.new_for_path (args[1]);
@@ -186,6 +186,9 @@ namespace Unity.SettingsMenu {
 				});
 			
 
+            if (args.length > 2) {
+                Timeout.add_seconds(args[2].to_int(), (GLib.SourceFunc)main_loop.quit);
+            }
 			main_loop.run ();
 			return 0;
 		}

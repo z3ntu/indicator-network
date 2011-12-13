@@ -9,7 +9,9 @@
 DBusModel::DBusModel(QObject *parent)
     : QAbstractListModel(parent),
       m_id(-1),
-      m_control(0)
+      m_control(0),
+      m_root(0),
+      m_count(0)
 {
 
     static QHash<int, QByteArray> rolesNames;
@@ -60,8 +62,11 @@ void DBusModel::setControl(QObject *control)
 void DBusModel::load()
 {
     if ((m_id > -1) && m_control) {
-        if (m_root)
-            delete m_root;
+        if (m_root) {
+            m_root->removeEventFilter(this);
+            reset();
+        }
+
         m_root = m_control->load(m_id);
         if (m_root) {
             m_root->installEventFilter(this);
@@ -123,6 +128,7 @@ QVariant DBusModel::data(const QModelIndex &index, int role) const
     int row = index.row();
     if(!index.isValid() || (row < 0) || (row > m_count))
         return QVariant();
+
 
     QObject *item = m_root->children()[row];
     Q_ASSERT(item);

@@ -1,1 +1,0 @@
-qmlviewer -I @CMAKE_SOURCE_DIR@/system-ui -I @CMAKE_BINARY_DIR@/sustem-ui/qml $1

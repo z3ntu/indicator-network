@@ -11,7 +11,7 @@ pkg_check_modules(DBUSMENUGLIB dbusmenu-glib-0.4)
 add_definitions(-DQT_NO_KEYWORDS)
 
 add_subdirectory(server)
-add_subdirectory(system-ui)
+add_subdirectory(client)
 
 find_program(DBUS_RUNNER
              dbus-test-runner)

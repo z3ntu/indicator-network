@@ -43,8 +43,6 @@ application simultaneous. To do that follow the steps below:
 
 In the server build directory(<project-dir>/server/build):
     ./src/ExportMenu ../xml/test.xml &
-
-In the system-ui build directory(<project-dir>/system-ui/build):
-    ./examples/run-example.sh ../examples/DBusMenuTest.qml
+    ./system-ui/examples/run-example.sh ../system-ui/examples/DBusMenuTest.qml
 
 

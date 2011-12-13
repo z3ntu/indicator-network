@@ -13,7 +13,6 @@ macro(declare_test testname)
     add_test(${testname} ${testname})
 endmacro(declare_test testname)
 
-
 include_directories(${dbusmodel_SOURCE_DIR}
                     ${CMAKE_CURRENT_BINARY_DIR}
                     ${QT_INCLUDE_DIR}

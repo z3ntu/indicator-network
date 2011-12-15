@@ -10,13 +10,26 @@ namespace Unity.SettingsMenu {
 		public MenuExporter (Settings settings) {
 			this.settings = settings;
 		}
-				
+		
+		/*		
 		private void property_changed_cb (Dbusmenu.Menuitem item, string property, GLib.Variant variant) {
 						if (property == "toggle-state") {
 							var gset = new GLib.Settings (item.property_get("x-settings-schema"));
 							bool val = variant.get_boolean ();
 							gset.set_boolean(item.property_get("x-settings-name"), val);
 						}
+		}
+		*/
+		
+		private bool menu_item_event_cb (Dbusmenu.Menuitem item, string name, GLib.Variant variant, uint timestamp) {
+			if (name == "x-text-changed") {				
+				var gset = new GLib.Settings (item.property_get("x-gsettings-schema"));
+				string val = variant.get_string ();
+				gset.set_string(item.property_get("x-gsettings-name"), val);
+				
+				item.property_set_variant("x-text", variant);
+			}
+			return true;
 		}
 		
 		private void checkbox_item_activated_cb (Dbusmenu.Menuitem item, uint timestamp) {
@@ -64,10 +77,17 @@ namespace Unity.SettingsMenu {
 						item.property_set_int ("toggle-state", Dbusmenu.MENUITEM_TOGGLE_STATE_UNCHECKED);
 
 					item.item_activated.connect(checkbox_item_activated_cb);
+
+					/* TODO: What if this is not about GSettings? More properties I guess */
+					item.property_set("x-tablet-widget", "x-toggle");
 				}
 				else if (k.type == "s") {
+					var gset = new GLib.Settings (k.parent.id);
+					item.property_set("x-text", gset.get_string(k.name));
+					
 					/* TODO: What if this is not about GSettings? More properties I guess */
-					item.property_set("x-system-settings-tablet-widget", "x-textentry");
+					item.property_set("x-tablet-widget", "x-textentry");
+					item.event.connect(menu_item_event_cb);
 				}
 			}
 			

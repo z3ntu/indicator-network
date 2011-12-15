@@ -45,7 +45,7 @@ Item {
                 id: item
 
                 width: mainMenu.width
-                height: type == 's' ? 72 : 48
+                height: delegate.implicitHeight
 
                 Item {
                     id: delegate
@@ -54,6 +54,7 @@ Item {
 
                     Component.onCompleted: {
                         var comp = mainMenu.createComponent(model, delegate)
+                        implicitHeight = comp.implicitHeight
                         comp.anchors.fill = delegate
                         if (hasSubmenu)
                             comp.clicked.connect(onClicked)

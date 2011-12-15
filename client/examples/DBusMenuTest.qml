@@ -14,7 +14,7 @@ Item {
         service: "org.dbusmenu.test"
         objectPath: "/org/test"
 
-        onConnectionChanged: {
+        onConnectedChanged: {
             if (connected) {
                 pages.push(Qt.createComponent("DBusMenuPage.qml"))
                 pages.currentPage.menuId = 0

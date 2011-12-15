@@ -4,4 +4,6 @@ Item {
     property QtObject style: null
     property QtObject dbusModel: null
     property bool hasModel: (dbusModel != null)
+
+    implicitHeight: 48
 }

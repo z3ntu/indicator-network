@@ -5,6 +5,7 @@ BasicItem {
     id: textEntry
 
     property alias text: textInput.text
+    implicitHeight: title.height + input.implicitHeight
 
     style: TextEntryStyle { }
 
@@ -24,8 +25,12 @@ BasicItem {
     }
 
     Rectangle {
+        id: input
+
+        implicitHeight: 48
         anchors { left: parent.left; top: title.bottom; right: parent.right; bottom: parent.bottom; margins: textEntry.style.margin }
         border.color: textInput.activeFocus ? textEntry.style.selectedBoderColor : textEntry.style.unselectedBoderColor
+
 
         TextInput {
             id: textInput
@@ -37,7 +42,7 @@ BasicItem {
 
             onAccepted: {
                 if (dbusModel) {
-                    dbusModel.control.sendEvent(dbusModel.id, DBusMenuClientControl.TextChanged, text)
+                    dbusModel.control.sendEvent(dbusModel.menuId, DBusMenuClientControl.TextChanged, text)
                 }
             }
 

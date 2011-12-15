@@ -23,6 +23,7 @@ DBusModel::DBusModel(QObject *parent)
         rolesNames[State] = "state";
         rolesNames[HasSubmenu] = "hasSubmenu";
         rolesNames[Control] = "control";
+        rolesNames[Data] = "data";
     }
     setRoleNames(rolesNames);
 }
@@ -130,23 +131,13 @@ QVariant DBusModel::data(const QModelIndex &index, int role) const
         return QVariant();
 
 
-    QObject *item = m_root->children()[row];
+    QDBusMenuItem *item = qobject_cast<QDBusMenuItem*>(m_root->children()[row]);
     Q_ASSERT(item);
     switch (role) {
     case Id:
         return item->property(DBUSMENU_PROPERTY_ID);
     case Type:
-        switch(item->property(DBUSMENU_PROPERTY_TYPE).toInt()) {
-        case QDBusMenuItem::TextEntry:
-            return QVariant("TextEntry");
-        case QDBusMenuItem::ToggleButton:
-            return QVariant("ToggleButton");
-        case QDBusMenuItem::RadioButton:
-            return QVariant("RadioButton");
-        case QDBusMenuItem::Label:
-        default:
-            return QVariant("Label");
-        }
+        return item->typeName();
     case Label:
         return item->property(DBUSMENU_PROPERTY_LABEL);
     case Icon:
@@ -158,6 +149,8 @@ QVariant DBusModel::data(const QModelIndex &index, int role) const
     case HasSubmenu:
         return item->property(DBUSMENU_PROPERTY_HAS_SUBMENU).isValid() &&
                item->property(DBUSMENU_PROPERTY_HAS_SUBMENU).toBool();
+    case Data:
+        return item->data();
     default:
         qWarning() << "Invalid role name" << role;
         break;

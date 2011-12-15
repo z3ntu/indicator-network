@@ -104,7 +104,7 @@ void DBusControl::sendEvent(int id, EventType eventType, QVariant data)
         eventNames[Hovered] = "hovered";
         eventNames[Openend] = "openend";
         eventNames[Closed] = "closed";
-        eventNames[TextChanged] = "x-textChanged";
+        eventNames[TextChanged] = "x-text-changed";
     }
 
     QDBusMenuItem *item = qobject_cast<QDBusMenuItem* >(QDBusMenuItem::m_globalItemList[id]);
@@ -115,15 +115,9 @@ void DBusControl::sendEvent(int id, EventType eventType, QVariant data)
     uint timestamp = QDateTime::currentDateTime().toTime_t();
 
     if (eventType == TextChanged) {
-        /*
-        // //WORKAROUND: Handle this event on client side for now
-        QAction *act = m_actions[id];
-        if (act) {
-            GSettings *settings = g_settings_new(act->property(DBUSMENU_PROPERTY_GSETTINGS_SCHEMA).toByteArray());
-            g_settings_set_string(settings, act->property(DBUSMENU_PROPERTY_GSETTINGS_NAME).toByteArray(), data.toByteArray());
-            g_object_unref(settings);
-        }
-        */
+        GVariant *text = g_variant_new_string(data.toByteArray());
+        dbusmenu_menuitem_handle_event(item->item(), eventNames[eventType], text, timestamp);
+        qDebug() << "SEND EVENT" << id << eventNames[eventType] << data;
     } else {
         g_variant_ref(empty);
         dbusmenu_menuitem_handle_event(item->item(), eventNames[eventType], empty, timestamp);

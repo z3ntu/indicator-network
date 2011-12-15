@@ -24,7 +24,9 @@ public:
 
     ~QDBusMenuItem();
     int position() const;
-    ItemType type();
+    ItemType type() const;
+    QByteArray typeName() const;
+    QVariant data() const;
 
 Q_SIGNALS:
     void changed();

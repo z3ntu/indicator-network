@@ -54,6 +54,7 @@ void DBusControl::disconnectFromServer()
         return;
 
     delete m_root;
+    m_root = 0;
     Q_ASSERT(QDBusMenuItem::m_globalItemList.size() == 0);
     g_object_unref(m_client);
     m_client = 0;

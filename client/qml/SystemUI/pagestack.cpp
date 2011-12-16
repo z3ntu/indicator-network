@@ -62,7 +62,10 @@ void PageStack::push(QDeclarativeComponent *component)
 
     QDeclarativeContext *ctx = QDeclarativeEngine::contextForObject(this);
     QObject *menuObject = component->create(ctx);
-    Q_ASSERT(menuObject);
+    if (!menuObject) {
+        qDebug() << "Fail to load component:" << component->errors();
+        Q_ASSERT(menuObject);
+    }
 
     if (m_menus.size())
         m_oldItem = m_menus.last();

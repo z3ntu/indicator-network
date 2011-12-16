@@ -78,7 +78,8 @@ void QDBusMenuItem::onChildMoved(DbusmenuMenuitem *mi, DbusmenuMenuitem *child, 
 
 QDBusMenuItem::QDBusMenuItem(DbusmenuMenuitem *gitem, QObject *parent)
     : QObject(parent),
-      m_gitem(gitem)
+      m_gitem(gitem),
+      m_type(Unknow)
 {
     /*
       Only those properties are the current supported
@@ -138,7 +139,9 @@ DbusmenuMenuitem *QDBusMenuItem::item() const
 
 int QDBusMenuItem::position() const
 {
-    return dbusmenu_menuitem_get_position(m_gitem, dbusmenu_menuitem_get_parent(m_gitem));
+    if (m_gitem)
+        return dbusmenu_menuitem_get_position(m_gitem, dbusmenu_menuitem_get_parent(m_gitem));
+    return -1;
 }
 
 QDBusMenuItem::ItemType QDBusMenuItem::type() const
@@ -180,14 +183,16 @@ void QDBusMenuItem::updateType()
         QByteArray typeName = GVariantToQVariant(var).toByteArray();
         if (widgetTypeMap.contains(typeName))
             m_type = widgetTypeMap[typeName];
-    }
 
-    // Check for radio buttom
-    if ((m_type == ToggleButton) && dbusmenu_menuitem_property_exist(m_gitem, DBUSMENU_MENUITEM_PROP_TOGGLE_TYPE)) {
-        GVariant *var = dbusmenu_menuitem_property_get_variant(m_gitem, DBUSMENU_MENUITEM_PROP_TOGGLE_TYPE);
-        gsize size;
-        if (qstrcmp(g_variant_get_string(var, &size), DBUSMENU_MENUITEM_TOGGLE_RADIO) == 0)
-            m_type = RadioButton;
+        // Check for radio buttom
+        if ((m_type == ToggleButton) && dbusmenu_menuitem_property_exist(m_gitem, DBUSMENU_MENUITEM_PROP_TOGGLE_TYPE)) {
+            GVariant *var = dbusmenu_menuitem_property_get_variant(m_gitem, DBUSMENU_MENUITEM_PROP_TOGGLE_TYPE);
+            gsize size;
+            if (qstrcmp(g_variant_get_string(var, &size), DBUSMENU_MENUITEM_TOGGLE_RADIO) == 0)
+                m_type = RadioButton;
+        }
+
+        Q_EMIT typeDiscovered();
     }
 }
 

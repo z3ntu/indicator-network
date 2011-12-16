@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/qml">
+        <file>main.qml</file>
+        <file>ServiceListPage.qml</file>
+        <file>ServiceSubPage.qml</file>
+    </qresource>
+</RCC>

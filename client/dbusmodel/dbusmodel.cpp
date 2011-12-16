@@ -10,8 +10,7 @@ DBusModel::DBusModel(QObject *parent)
     : QAbstractListModel(parent),
       m_id(-1),
       m_control(0),
-      m_root(0),
-      m_count(0)
+      m_root(0)
 {
 
     static QHash<int, QByteArray> rolesNames;
@@ -78,23 +77,46 @@ void DBusModel::load()
 
 void DBusModel::appendItems(QObjectList items)
 {
-
-    beginInsertRows(QModelIndex(), m_count, m_count + items.size() - 1);
+    beginInsertRows(QModelIndex(), m_items.size(), m_items.size() + items.size() - 1);
     Q_FOREACH(QObject *item, items) {
-        m_count++;
-        QObject::connect(item, SIGNAL(changed()), this, SLOT(onItemChanged()));
-        QObject::connect(item, SIGNAL(destroyed(QObject*)), this, SLOT(onItemDestroyed(QObject*)));
-        QObject::connect(item, SIGNAL(moved(int, int)), this, SLOT(onItemMoved(int, int)));
+        QDBusMenuItem *menuItem = qobject_cast<QDBusMenuItem *>(item);
+
+        if (menuItem->type() != QDBusMenuItem::Unknow) {
+            appendItem(item);
+        } else {
+            QObject::connect(item, SIGNAL(typeDiscovered()), this, SLOT(onItemTypeDiscovered()));
+        }
     }
     endInsertRows();
+}
+
+void DBusModel::onItemTypeDiscovered()
+{
+    QObject *sender = QObject::sender();
+    QObject::disconnect(sender, SIGNAL(typeDiscovered()), this, SLOT(onItemTypeDiscovered()));
+
+    beginInsertRows(QModelIndex(), m_items.size(), m_items.size());
+    appendItem(sender);
+    endInsertRows();
+}
+
+void DBusModel::appendItem(QObject * obj)
+{
+    QDBusMenuItem *item = qobject_cast<QDBusMenuItem*>(obj);
+    int row = item->position();
+    m_items.insert(row, obj);
+    QObject::connect(obj, SIGNAL(changed()), this, SLOT(onItemChanged()));
+    QObject::connect(obj, SIGNAL(moved(int, int)), this, SLOT(onItemMoved(int, int)));
+    QObject::connect(obj, SIGNAL(destroyed(QObject*)), this, SLOT(onItemDestroyed(QObject*)));
 }
 
 void DBusModel::onItemDestroyed(QObject *obj)
 {
     QDBusMenuItem *item = qobject_cast<QDBusMenuItem*>(obj);
-    int row = item->position();
+    int row = m_items.indexOf(obj);
     if (row >= 0) {
         beginRemoveRows(QModelIndex(), row, row);
+        m_items.removeAt(row);
         endRemoveRows();
     }
 }
@@ -102,6 +124,7 @@ void DBusModel::onItemDestroyed(QObject *obj)
 void DBusModel::onItemMoved(int newPos, int oldPos)
 {
     beginMoveRows(QModelIndex(), oldPos, oldPos, QModelIndex(), newPos);
+    m_items.move(oldPos, newPos);
     endMoveRows();
 }
 
@@ -127,9 +150,8 @@ int DBusModel::columnCount(const QModelIndex &parent) const
 QVariant DBusModel::data(const QModelIndex &index, int role) const
 {
     int row = index.row();
-    if(!index.isValid() || (row < 0) || (row > m_count))
+    if(!index.isValid() || (row < 0) || (row > m_items.size()))
         return QVariant();
-
 
     QDBusMenuItem *item = qobject_cast<QDBusMenuItem*>(m_root->children()[row]);
     Q_ASSERT(item);
@@ -164,5 +186,5 @@ QModelIndex DBusModel::parent(const QModelIndex &) const
 
 int DBusModel::rowCount(const QModelIndex &) const
 {
-    return m_count;
+    return m_items.size();
 }

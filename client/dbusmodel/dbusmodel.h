@@ -55,15 +55,18 @@ private Q_SLOTS:
     void onItemChanged();
     void onItemDestroyed(QObject *obj);
     void onItemMoved(int newPos, int oldPos);
+    void onItemTypeDiscovered();
 
 private:
     Q_DISABLE_COPY(DBusModel)
 
+    QObjectList m_items;
     QDBusMenuItem *m_root;
     DBusControl *m_control;
     int m_id;
-    int m_count;
+
 
     void appendItems(QObjectList items);
+    void appendItem(QObject * obj);
 };
 #endif

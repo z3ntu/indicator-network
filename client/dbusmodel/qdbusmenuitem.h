@@ -16,6 +16,7 @@ class QDBusMenuItem: public QObject
 public:
     Q_ENUMS(ItemType)
     enum ItemType {
+        Unknow,
         Label,
         TextEntry,
         ToggleButton,
@@ -29,6 +30,7 @@ public:
     QVariant data() const;
 
 Q_SIGNALS:
+    void typeDiscovered();
     void changed();
     void moved(int newPos, int oldPos);
 

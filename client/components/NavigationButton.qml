@@ -10,6 +10,8 @@ BasicButton {
     property alias caption: basicItem.caption
     property alias description: basicItem.description
 
+    signal pageLoaded(variant newPage)
+
     style: NavigationButtonStyle { }
     implicitWidth: backIcon.width + basicItem.implicitWidth + fowardIcon.width
     implicitHeight: Math.max(backIcon.height, fowardIcon.height)
@@ -23,6 +25,7 @@ BasicButton {
         } else if (enableFoward && next) {
             stack.push(next)
         }
+        pageLoaded(stack.currentPage)
     }
 
     Rectangle {

@@ -58,6 +58,7 @@ namespace Unity.SettingsMenu {
 			foreach (Key k in g.keys) {
 				var item = new Menuitem.with_id (id);
 				
+				item.property_set ("type", "x-system-settings");
 				item.property_set ("label", k.display_name);
 				parent.child_append (item);
 				id++;
@@ -94,6 +95,7 @@ namespace Unity.SettingsMenu {
 			//subgroups
 			foreach (Group sg in g.groups) {
 				var item = new Menuitem.with_id (id);
+				item.property_set ("type", "standard");
 				item.property_set ("label", sg.display_name);
 				parent.child_append (item);
 

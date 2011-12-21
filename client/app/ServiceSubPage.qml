@@ -71,11 +71,11 @@ Item {
                         }
                     }
 
-                    function onAboutToLoad(accept)
+                    function onAboutToLoad(event)
                     {
                         if (mainMenu.activeItem == index) {
-                            accept = false; // This is not working
-                            //return;
+                            event.skip = true
+                            return;
                         }
 
                         while(pages.count > subPage.pageIndex) {

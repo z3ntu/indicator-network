@@ -17,6 +17,13 @@ BasicButton {
     implicitWidth: backIcon.width + basicItem.implicitWidth + fowardIcon.width
     implicitHeight: Math.max(backIcon.height, fowardIcon.height)
 
+    QtObject {
+        id: pageEvent
+
+        property bool skip: false
+        property variant page : null
+    }
+
     onClicked: {
         if (!stack)
             return
@@ -24,9 +31,11 @@ BasicButton {
         if (enableBackward) {
             stack.pop()
         } else if (enableFoward && next) {
-            var accept = true;
-            aboutToLoad(accept);
-            if (!accept) {
+            var event = pageEvent
+            event.skip = false
+            event.page = next
+            aboutToLoad(event)
+            if (event.skip) {
                 return
             }
 

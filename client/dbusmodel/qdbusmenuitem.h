@@ -20,7 +20,8 @@ public:
         Label,
         TextEntry,
         ToggleButton,
-        RadioButton
+        RadioButton,
+        Separator
     };
 
     ~QDBusMenuItem();

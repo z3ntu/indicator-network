@@ -4,4 +4,6 @@ ButtonStyle {
     property QtObject headerStyle: NavigationButtonStyle { }
     property int headerHeight: 48
     property int stroke: 1
+
+    backgroundColor: "#646464"
 }

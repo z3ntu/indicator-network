@@ -5,6 +5,7 @@ import DBusMenu 1.0
 
 Item {
     id: root
+
     property alias servicesModel: serviceList.model
 
     DBusMenuClientControl {
@@ -18,8 +19,8 @@ Item {
         Repeater {
             id: serviceList
 
-
             model: serviceModel
+
             NavigationButton {
                 id: serviceButtom
 
@@ -30,8 +31,13 @@ Item {
                 enableFoward: true
                 stack: pages
 
+                onAboutToLoad: {
+                    while(pages.count > 1) {
+                        pages.pop()
+                    }
+                }
+
                 onPageLoaded: {
-                    console.log("Service activated")
                     menuControl.disconnectFromServer()
                     menuControl.service = model.serviceName
                     menuControl.objectPath = model.objectPath

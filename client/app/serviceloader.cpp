@@ -61,7 +61,6 @@ void ServiceLoader::load(const QString & prefix)
     QDir dir(prefix, "*.service");
     Q_FOREACH(QString fileName, dir.entryList()) {
         QSettings settings(dir.filePath(fileName), QSettings::IniFormat);
-        qDebug() << "GROUPS" << settings.childGroups() << "FILE" << dir.filePath(fileName);
         if (settings.childGroups().contains(SYSTEM_SETTINGS_GROUP_NAME)) {
             settings.beginGroup(SYSTEM_SETTINGS_GROUP_NAME);
             m_services << new ServiceData(settings.value(SYSTEM_SETTINGS_TITLE_KEY).toString(),

@@ -8,6 +8,7 @@ Item {
     property alias menuId: menuModel.menuId
     property alias title: mainMenu.title
     property alias control: menuModel.control
+    property int pageIndex: 2
 
     function loadMenu() {
         menuModel.load()
@@ -15,12 +16,15 @@ Item {
 
     DBusMenuClientModel {
         id: menuModel
+
         menuId: -1
         onControlChanged: control.rootChanged.connect(loadMenu)
     }
 
     Page {
         id: mainMenu
+
+        property int activeItem: -1
 
         title: "System Settings"
         stack: pages
@@ -62,15 +66,31 @@ Item {
                         implicitHeight = comp.implicitHeight
                         comp.anchors.fill = delegate
                         if (hasSubmenu) {
-                            comp.pageLoaded.connect(pageLoaded)
+                            comp.pageLoaded.connect(onPageLoaded)
+                            comp.aboutToLoad.connect(onAboutToLoad)
                         }
                     }
 
-                    function pageLoaded(newPage)
+                    function onAboutToLoad(accept)
                     {
+                        if (mainMenu.activeItem == index) {
+                            accept = false; // This is not working
+                            //return;
+                        }
+
+                        while(pages.count > subPage.pageIndex) {
+                            pages.pop()
+                        }
+                        return false;
+                    }
+
+                    function onPageLoaded(newPage)
+                    {
+                        mainMenu.activeItem = index
                         newPage.control = subPage.control
                         newPage.menuId = model.menuId
                         newPage.title = label
+                        newPage.pageIndex = pages.count
                         newPage.loadMenu()
                     }
                 }

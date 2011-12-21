@@ -77,7 +77,6 @@ void DBusModel::load()
 
 void DBusModel::appendItems(QObjectList items)
 {
-    beginInsertRows(QModelIndex(), m_items.size(), m_items.size() + items.size() - 1);
     Q_FOREACH(QObject *item, items) {
         QDBusMenuItem *menuItem = qobject_cast<QDBusMenuItem *>(item);
 
@@ -87,7 +86,6 @@ void DBusModel::appendItems(QObjectList items)
             QObject::connect(item, SIGNAL(typeDiscovered()), this, SLOT(onItemTypeDiscovered()));
         }
     }
-    endInsertRows();
 }
 
 void DBusModel::onItemTypeDiscovered()
@@ -95,22 +93,27 @@ void DBusModel::onItemTypeDiscovered()
     QObject *sender = QObject::sender();
     QObject::disconnect(sender, SIGNAL(typeDiscovered()), this, SLOT(onItemTypeDiscovered()));
 
-    beginInsertRows(QModelIndex(), m_items.size(), m_items.size());
     appendItem(sender);
-    endInsertRows();
 }
 
 void DBusModel::appendItem(QObject * obj)
 {
     QDBusMenuItem *item = qobject_cast<QDBusMenuItem*>(obj);
-    int row = item->position();
-    m_items.insert(row, obj);
+    //QObjectList cpyItems = m_items;
+    int position = item->position();
+    //cpyItems.insert(position, obj);
+    //int row = cpyItems.indexOf(obj);
+    //qDebug() << "InsertItem" << item->property(DBUSMENU_PROPERTY_LABEL) << "pos:" << position << "Row:" << row;
+    //beginInsertRows(QModelIndex(), row, row);
+    m_items.insert(position, obj);
+    //endInsertRows();
+    reset();
     QObject::connect(obj, SIGNAL(changed()), this, SLOT(onItemChanged()));
     QObject::connect(obj, SIGNAL(moved(int, int)), this, SLOT(onItemMoved(int, int)));
     QObject::connect(obj, SIGNAL(destroyed(QObject*)), this, SLOT(onItemDestroyed(QObject*)));
 }
 
-void DBusModel::onItemDestroyed(QObject *obj)
+void DBusModel::onItemDestroyed(QObject * obj)
 {
     QDBusMenuItem *item = qobject_cast<QDBusMenuItem*>(obj);
     int row = m_items.indexOf(obj);

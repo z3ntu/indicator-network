@@ -11,6 +11,7 @@ BasicButton {
     property alias description: basicItem.description
 
     signal pageLoaded(variant newPage)
+    signal aboutToLoad(variant accept)
 
     style: NavigationButtonStyle { }
     implicitWidth: backIcon.width + basicItem.implicitWidth + fowardIcon.width
@@ -23,6 +24,12 @@ BasicButton {
         if (enableBackward) {
             stack.pop()
         } else if (enableFoward && next) {
+            var accept = true;
+            aboutToLoad(accept);
+            if (!accept) {
+                return
+            }
+
             stack.push(next)
         }
         pageLoaded(stack.currentPage)

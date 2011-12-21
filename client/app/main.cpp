@@ -48,8 +48,6 @@ int main(int argc, char ** argv)
         Q_ASSERT(rootObject);
         for(int i=0; i < serviceLoader->count(); i++) {
             QHash<QString, QVariant> service = serviceLoader->service(i);
-            qDebug() << "Add Service:" << service["description"];
-
             QMetaObject::invokeMethod(rootObject, "addService",
                                       Q_ARG(QVariant, service["description"]),
                                       Q_ARG(QVariant, service["name"]),

@@ -8,6 +8,8 @@ DBusMenuItemView 1.0 DBusMenuItemView.qml
 ListItem 1.0 ListItem.qml
 NavigationButton 1.0 NavigationButton.qml
 NavigationButtonStyle 1.0 NavigationButtonStyle.qml
+PageStack 1.0 PageStack.qml
+PageStackStyle 1.0 PageStackStyle.qml
 Page 1.0 Page.qml
 PageStyle 1.0 PageStyle.qml
 Slider 1.0 Slider.qml

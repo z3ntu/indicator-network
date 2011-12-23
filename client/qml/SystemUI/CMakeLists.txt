@@ -2,13 +2,11 @@ project(SystemUI)
 
 set(SYSTEMUI_SRC
     gradientrectangle.cpp
-    pagestack.cpp
     plugin.cpp
 )
 
 set(SYSTEMUI_HEADERS
     gradientrectangle.h
-    pagestack.h
     plugin.h
 )
 
@@ -30,3 +28,5 @@ target_link_libraries(systemuiqml
 
 execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_SOURCE_DIR}/qmldir"
                                                               "${CMAKE_CURRENT_BINARY_DIR}/qmldir")
+
+add_subdirectory(components)

@@ -104,8 +104,9 @@ void DBusModel::appendItem(QObject * obj)
     //cpyItems.insert(position, obj);
     //int row = cpyItems.indexOf(obj);
     //qDebug() << "InsertItem" << item->property(DBUSMENU_PROPERTY_LABEL) << "pos:" << position << "Row:" << row;
-    //beginInsertRows(QModelIndex(), row, row);
     m_items.insert(position, obj);
+    //int row = m_items.indexOf(obj);
+    //beginInsertRows(QModelIndex(), row, row);
     //endInsertRows();
     reset();
     QObject::connect(obj, SIGNAL(changed()), this, SLOT(onItemChanged()));

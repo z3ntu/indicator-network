@@ -1,56 +1,39 @@
 import QtQuick 1.1
 import SystemUI 1.0
 import components 1.0
-import DBusMenu 1.0
 
-Item {
-    id: root
+
+Page {
+    id: page
 
     property alias servicesModel: serviceList.model
 
-    DBusMenuClientControl {
-        id: menuControl
-    }
+    Repeater {
+        id: serviceList
 
-    Page {
-        anchors.fill: parent
-        title: "Avaliable Services"
+        NavigationButton {
+            id: serviceButtom
 
-        Repeater {
-            id: serviceList
+            height: 48
+            width: page.width
+            caption: model.description
+            next: "ServiceSubPage.qml"
+            enableFoward: true
+            stack: pages
 
-            model: serviceModel
+//                onAboutToLoad: {
+//                    while(pages.count > 1) {
+//                        pages.pop()
+//                    }
+//                }
 
-            NavigationButton {
-                id: serviceButtom
+            onPageLoaded: {
+                menuControl.disconnectFromServer()
+                menuControl.service = model.serviceName
+                menuControl.objectPath = model.objectPath
 
-                height: 48
-                width: root.width
-                caption: model.description
-                next: Qt.createComponent("ServiceSubPage.qml")
-                enableFoward: true
-                stack: pages
-
-                onAboutToLoad: {
-                    while(pages.count > 1) {
-                        pages.pop()
-                    }
-                }
-
-                onPageLoaded: {
-                    menuControl.disconnectFromServer()
-                    menuControl.service = model.serviceName
-                    menuControl.objectPath = model.objectPath
-
-                    newPage.title = model.description
-                    newPage.control = menuControl
-                    newPage.menuId = 1 // Skip root menu
-                    menuControl.connectToServer()
-                }
-
-                Component.onCompleted: {
-                    console.log("LOADED:", model.description)
-                }
+                newPage.menuId = 1 // Skip root menu
+                menuControl.connectToServer()
             }
         }
     }

@@ -1,9 +1,9 @@
 import QtQuick 1.1
 
-ButtonStyle {
+PageStyle {
     property QtObject headerStyle: NavigationButtonStyle { }
     property int headerHeight: 48
-    property int stroke: 1
 
     backgroundColor: "#646464"
+
 }

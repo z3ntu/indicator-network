@@ -1,14 +1,14 @@
 import QtQuick 1.1
+import DBusMenu 1.0
 import SystemUI 1.0
+import components 1.0
 
-Flickable {
+Item {
     id: stage
 
-    property int maxWidth: 900
-
     height: 700
-    width: Math.min(content.width, maxWidth)
-    contentWidth: content.width
+    width: 300 //pages.implicitWidth
+    onWidthChanged: console.log("WIDTH CHANGED: " + width)
 
     function addService(description, serviceName, objectPath) {
         servicesModel.append({"description" : description,
@@ -16,46 +16,34 @@ Flickable {
                               "objectPath" : objectPath } )
     }
 
-    Behavior on contentX {
-        SmoothedAnimation { velocity: 200 }
+    DBusMenuClientControl {
+        id: menuControl
     }
 
-    onMovementEnded: {
-        var newX = contentX % (pages.pageWidth + pages.spacing)
-        contentX -= newX
+    ListModel {
+        id: servicesModel
     }
 
-    Rectangle {
-        id: content
+    PageStack {
+        id: pages
 
-        height: parent.height
-        width: pages.width
-        color: "gray"
+        anchors.fill: parent
+        pageWidth: 300
+        spacing: 3
+        layout: 1//PageStackModel.Stage
 
-        ListModel {
-            id: servicesModel
+        onPageLoaded: {
+            if (pageIndex == 0) {
+                // First page is the service list
+                page.servicesModel = servicesModel
+            } else {
+                // Second page need dbus control
+                page.control = menuControl
+            }
         }
 
-        PageStack {
-            id: pages
-
-            height: parent.height
-            pageWidth: 300
-            spacing: 3
-            layout: PageStack.Stage
-
-            onAboutToRemovePage: {
-                stage.contentX -= pageWidth
-            }
-
-            onCountChanged: {
-                stage.contentX = pages.width - stage.width
-            }
-
-            Component.onCompleted: {
-                pages.push(Qt.createComponent("ServiceListPage.qml"))
-                pages.currentPage.servicesModel = servicesModel
-            }
+        Component.onCompleted: {
+            pages.push("ServiceListPage.qml", "Service List")
         }
     }
 }

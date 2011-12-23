@@ -1,14 +1,13 @@
 import QtQuick 1.1
 import DBusMenu 1.0
 import components 1.0
+import SystemUI 1.0
 
 Item {
-    id: subPage
+    id: page
 
     property alias menuId: menuModel.menuId
-    property alias title: mainMenu.title
     property alias control: menuModel.control
-    property int pageIndex: 2
 
     function loadMenu() {
         menuModel.load()
@@ -18,16 +17,17 @@ Item {
         id: menuModel
 
         menuId: -1
-        onControlChanged: control.rootChanged.connect(loadMenu)
+        onControlChanged: {
+            control.rootChanged.connect(loadMenu)
+        }
     }
 
     Page {
         id: mainMenu
 
+        property int pageIndex: 2
         property int activeItem: -1
 
-        title: "System Settings"
-        stack: pages
         anchors.fill: parent
 
         function createComponent(model, parent)
@@ -39,8 +39,8 @@ Item {
                 comp = Qt.createQmlObject('import components 1.0; ToggleButton {}', parent, '')
             } else {
                 comp = Qt.createQmlObject('import components 1.0; NavigationButton {}', parent, '')
-                comp.stack = stack
-                comp.next = Qt.createComponent("ServiceSubPage.qml")
+                comp.stack = pages
+                comp.next = "ServiceSubPage.qml"
             }
             comp.dbusModel = model
             return comp
@@ -61,16 +61,6 @@ Item {
 
                     anchors.fill: parent
 
-                    Component.onCompleted: {
-                        var comp = mainMenu.createComponent(model, delegate)
-                        implicitHeight = comp.implicitHeight
-                        comp.anchors.fill = delegate
-                        if (hasSubmenu) {
-                            comp.pageLoaded.connect(onPageLoaded)
-                            comp.aboutToLoad.connect(onAboutToLoad)
-                        }
-                    }
-
                     function onAboutToLoad(event)
                     {
                         if (mainMenu.activeItem == index) {
@@ -78,20 +68,32 @@ Item {
                             return;
                         }
 
-                        while(pages.count > subPage.pageIndex) {
-                            pages.pop()
-                        }
+                        //while(pages.count > subPage.pageIndex) {
+                        //    pages.pop()
+                        //}
                         return false;
                     }
 
-                    function onPageLoaded(newPage)
+                    function onPageLoaded(page)
                     {
-                        mainMenu.activeItem = index
-                        newPage.control = subPage.control
-                        newPage.menuId = model.menuId
-                        newPage.title = label
-                        newPage.pageIndex = pages.count
-                        newPage.loadMenu()
+                        //if (page.parent.layout == PageStackModel.Stage) {
+                        //    mainMenu.activeItem = index
+                        //}
+                        page.menuId = model.menuId
+                        page.pageIndex = pages.count
+                        page.loadMenu()
+                    }
+
+                    Component.onCompleted: {
+                        var comp = mainMenu.createComponent(model, delegate)
+                        implicitHeight = comp.implicitHeight
+                        comp.anchors.fill = delegate
+
+                        if (hasSubmenu) {
+                            comp.pageLoaded.connect(onPageLoaded)
+                            //stack.pageLoaded.connect(onPageLoaded)
+                            //stack.aboutToLoad.connect(onAboutToLoad)
+                        }
                     }
                 }
             }

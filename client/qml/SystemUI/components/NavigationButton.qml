@@ -4,7 +4,7 @@ BasicButton {
     id: button
 
     property QtObject stack: null
-    property Component next: null
+    property string next: ""
     property bool enableBackward: false
     property bool enableFoward: dbusModel ? dbusModel.hasSubmenu : false
     property alias caption: basicItem.caption
@@ -28,8 +28,9 @@ BasicButton {
         if (!stack)
             return
 
+        var index = 0
         if (enableBackward) {
-            stack.pop()
+            index = stack.pop()
         } else if (enableFoward && next) {
             var event = pageEvent
             event.skip = false
@@ -38,10 +39,10 @@ BasicButton {
             if (event.skip) {
                 return
             }
-
-            stack.push(next)
+            stack.push(next, caption)
+            pageLoaded(stack.currentPage)
         }
-        pageLoaded(stack.currentPage)
+
     }
 
     Rectangle {

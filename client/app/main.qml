@@ -7,7 +7,7 @@ Item {
     id: stage
 
     height: 700
-    width: 300 //pages.implicitWidth
+    width: pages.implicitWidth
     onWidthChanged: console.log("WIDTH CHANGED: " + width)
 
     function addService(description, serviceName, objectPath) {
@@ -30,7 +30,7 @@ Item {
         anchors.fill: parent
         pageWidth: 300
         spacing: 3
-        layout: 1//PageStackModel.Stage
+        visiblePages: 3
 
         onPageLoaded: {
             if (pageIndex == 0) {

@@ -10,8 +10,8 @@ BasicButton {
     property alias caption: basicItem.caption
     property alias description: basicItem.description
 
-    signal pageLoaded(variant newPage)
-    signal aboutToLoad(variant accept)
+    signal pageLoaded(string pageUrl, variant newPage)
+    signal aboutToLoad(variant event)
 
     style: NavigationButtonStyle { }
     implicitWidth: backIcon.width + basicItem.implicitWidth + fowardIcon.width
@@ -21,28 +21,26 @@ BasicButton {
         id: pageEvent
 
         property bool skip: false
-        property variant page : null
+        property string pageUrl : ""
     }
 
     onClicked: {
         if (!stack)
             return
 
-        var index = 0
         if (enableBackward) {
-            index = stack.pop()
+            stack.pop()
         } else if (enableFoward && next) {
             var event = pageEvent
             event.skip = false
-            event.page = next
+            event.pageUrl = next
             aboutToLoad(event)
             if (event.skip) {
                 return
             }
             stack.push(next, caption)
-            pageLoaded(stack.currentPage)
+            pageLoaded(next, stack.currentPage)
         }
-
     }
 
     Rectangle {

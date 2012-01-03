@@ -8,6 +8,8 @@ Page {
 
     property alias servicesModel: serviceList.model
 
+    property string activeUrl: ""
+
     Repeater {
         id: serviceList
 
@@ -21,13 +23,16 @@ Page {
             enableFoward: true
             stack: pages
 
-//                onAboutToLoad: {
-//                    while(pages.count > 1) {
-//                        pages.pop()
-//                    }
-//                }
+            onAboutToLoad: {
+                var count = pages.count
+                while(count > 1) {
+                    pages.pop()
+                    count--
+                }
+            }
 
             onPageLoaded: {
+                page.activeUrl = pageUrl
                 menuControl.disconnectFromServer()
                 menuControl.service = model.serviceName
                 menuControl.objectPath = model.objectPath

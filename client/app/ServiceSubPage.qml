@@ -8,6 +8,9 @@ Item {
 
     property alias menuId: menuModel.menuId
     property alias control: menuModel.control
+    property alias items: mainMenu.items
+    property alias pageIndex: mainMenu.pageIndex
+    property alias active: mainMenu.active
 
     function loadMenu() {
         menuModel.load()
@@ -26,7 +29,7 @@ Item {
         id: mainMenu
 
         property int pageIndex: 2
-        property int activeItem: -1
+        property string activeUrl: ""
 
         anchors.fill: parent
 
@@ -63,36 +66,28 @@ Item {
 
                     function onAboutToLoad(event)
                     {
-                        if (mainMenu.activeItem == index) {
-                            event.skip = true
-                            return;
+                        var count = pages.count
+                        while(count > page.pageIndex) {
+                            pages.pop()
+                            count--
                         }
-
-                        //while(pages.count > subPage.pageIndex) {
-                        //    pages.pop()
-                        //}
-                        return false;
                     }
 
-                    function onPageLoaded(page)
+                    function onPageLoaded(url, page)
                     {
-                        //if (page.parent.layout == PageStackModel.Stage) {
-                        //    mainMenu.activeItem = index
-                        //}
                         page.menuId = model.menuId
                         page.pageIndex = pages.count
                         page.loadMenu()
                     }
 
                     Component.onCompleted: {
-                        var comp = mainMenu.createComponent(model, delegate)
+                        var comp = mainMenu.createComponent(model, parent)
                         implicitHeight = comp.implicitHeight
                         comp.anchors.fill = delegate
 
                         if (hasSubmenu) {
+                            comp.aboutToLoad.connect(onAboutToLoad)
                             comp.pageLoaded.connect(onPageLoaded)
-                            //stack.pageLoaded.connect(onPageLoaded)
-                            //stack.aboutToLoad.connect(onAboutToLoad)
                         }
                     }
                 }

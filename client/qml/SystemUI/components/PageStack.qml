@@ -9,30 +9,32 @@ BasicItem {
 
     property alias currentIndex: pagesView.currentIndex
     property alias currentPage: pagesView.currentItem
+    property alias visiblePages: pagesView.visiblePages
     property alias spacing:  pagesView.spacing
     property alias pageWidth: pagesView.pageWidth
     property int maxWidth: 1240
     property int count: pagesModel.count
-    property int layout: 0
 
     style: PageStackStyle { }
-    implicitWidth: ((pageWidth + spacing) * 4)
+    implicitWidth: ((pageWidth + spacing) * visiblePages)
 
+    // Push a new page on the stack
     function push(pageUrl, title) {
         pagesModel.append({"pageUrl": "qrc:/qml/" + pageUrl, "title": title, "object": null })
         pagesView.incrementCurrentIndex()
-        return pagesView.currentIndex
     }
 
+    // Pop a page from the stack
     function pop() {
         pagesView.decrementCurrentIndex()
-        return pagesView.currentIndex
     }
 
+    // Auxiliar model used to store stack pages information
     ListModel {
         id: pagesModel
     }
 
+    // Header backgroud
     Rectangle {
         id: headerBackground
 
@@ -41,8 +43,9 @@ BasicItem {
         anchors { left: parent.left; top:  parent.top; right: parent.right }
     }
 
+    // Body background
     Rectangle {
-        id: contentBackground
+        id: bodyBackground
 
         color: pageStack.style.backgroundColor
         anchors { left: parent.left; top: headerBackground.bottom; right: parent.right; bottom: parent.bottom }
@@ -56,6 +59,7 @@ BasicItem {
         property int spacing: 3
         property int currentIndex: -1
         property variant currentItem: null
+        property int visiblePages: 1
         property int visibleIndex: 0
 
         function incrementCurrentIndex() {
@@ -66,16 +70,42 @@ BasicItem {
         }
 
         function decrementCurrentIndex() {
-            if (currentIndex > 0)
+            if (currentIndex > 0) {
+                var remove = false
+                if (currentIndex < visiblePages) {
+                    remove = true
+                }
+
                 currentIndex -= 1
+                if (remove) {
+                    updateVisibleIndex(currentIndex)
+                }
+            }
         }
 
-        function updateVisibleIndex(index) {
-            if (pagesView.visibleIndex != index) {
-                pagesView.visibleIndex = index
-                while(pagesModel.count -1 > index) {
-                    pagesModel.remove(pagesModel.count - 1)
+        WorkerScript {
+            id: engine
+            source: "modelworker.js"
+            onMessage: {
+                if (messageObject.action == "popDone") {
+                    pagesModel.remove(messageObject.position)
                 }
+            }
+        }
+
+
+        function updateVisibleIndex(index) {
+            if (index == -1)
+                return
+
+            if (pagesView.visibleIndex > index) {
+                var count = pagesModel.count
+                while(count > (index  + 1)) {
+                    var msg = { "action" :  "pop", "position": count - 1 }
+                    engine.sendMessage(msg)
+                    count--
+                }
+                pagesView.visibleIndex = index
             }
         }
 
@@ -84,34 +114,43 @@ BasicItem {
 
             model: pagesModel
             delegate: NavigationButton {
+                id: headerButton
+
+                property int indexOffset: pagesView.currentIndex >= pagesView.visiblePages ? (index - (pagesView.currentIndex - (pagesView.visiblePages-1))) : index
+                property int xOffset: indexOffset * (pagesView.pageWidth + pagesView.spacing)
+
                 stack: pageStack
                 height: pagesView.headerHeight
                 width: pagesView.pageWidth
                 style: pageStack.style.headerStyle
-                x: (index - pagesView.currentIndex) * (pagesView.pageWidth + pagesView.spacing)
+                x: xOffset
                 caption: model.title
                 enableBackward: index > 0
+                opacity: pagesView.visiblePages > 1 ? pagesView.currentIndex == index ? 1.0 : 0.3 : 1.0
 
                 Behavior on x {
-                    SequentialAnimation {
-                        SmoothedAnimation { velocity: 900 }
-                    }
+                    SmoothedAnimation { velocity: 900 }
                 }
             }
         }
 
         Repeater {
-            id: pageContent
+            id: pageBody
 
             model: pagesModel
             delegate: Loader {
-                id: loader
+                id: bodyLoader
+
+                property bool active
+                property int indexOffset: pagesView.currentIndex >= pagesView.visiblePages ? (index - (pagesView.currentIndex - (pagesView.visiblePages-1))) : index
+                property int xOffset: indexOffset * (pagesView.pageWidth + pagesView.spacing)
 
                 y: pagesView.headerHeight + pagesView.spacing
-                x: (index - pagesView.currentIndex) * (pagesView.pageWidth + pagesView.spacing)
+                x: xOffset
                 width: pagesView.pageWidth
                 height: pageStack.height
-                source: index <= pagesView.visibleIndex ? model.pageUrl : ""
+                source: model.pageUrl
+                opacity: pagesView.visiblePages > 1 ? pagesView.currentIndex == index ? 1.0 : 0.3 : 1.0
 
                 onLoaded: {
                     pagesView.currentItem = item
@@ -119,17 +158,20 @@ BasicItem {
                 }
 
                 Binding {
-                    target: loader
+                    target: bodyLoader
                     property: "stack"
                     value: pageStack
-                    when: loader.status == Loader.Ready
+                    when: bodyLoader.status == Loader.Ready
                 }
 
                 Behavior on x {
                     SequentialAnimation {
                         SmoothedAnimation { velocity: 600; }
                         ScriptAction {
-                            script: pagesView.updateVisibleIndex(pagesView.currentIndex)
+                            script: {
+                                if (index == pagesView.currentIndex)
+                                    pagesView.updateVisibleIndex(index)
+                            }
                         }
                     }
                 }

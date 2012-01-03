@@ -4,15 +4,10 @@ import SystemUI 1.0
 BasicItem {
     id: page
 
-    default property alias itens: contents.children
+    default property alias items: contents.children
 
     style: PageStyle { }
     implicitHeight: scroll.height
-
-//    Rectangle {
-//        color: style.backgroundColor
-//        anchors.fill: parent
-//    }
 
     Flickable {
         id: scroll

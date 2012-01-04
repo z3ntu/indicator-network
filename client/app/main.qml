@@ -8,7 +8,6 @@ Item {
 
     height: 700
     width: pages.implicitWidth
-    onWidthChanged: console.log("WIDTH CHANGED: " + width)
 
     function addService(description, serviceName, objectPath) {
         servicesModel.append({"description" : description,
@@ -30,7 +29,7 @@ Item {
         anchors.fill: parent
         pageWidth: 300
         spacing: 3
-        visiblePages: 3
+        visiblePages: 1
 
         onPageLoaded: {
             if (pageIndex == 0) {

@@ -29,7 +29,7 @@ BasicItem {
         pagesView.decrementCurrentIndex()
     }
 
-    // Auxiliar model used to store stack pages information
+    // Auxiliar model used to store pages information
     ListModel {
         id: pagesModel
     }

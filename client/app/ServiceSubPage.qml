@@ -10,7 +10,6 @@ Item {
     property alias control: menuModel.control
     property alias items: mainMenu.items
     property alias pageIndex: mainMenu.pageIndex
-    property alias active: mainMenu.active
 
     function loadMenu() {
         menuModel.load()

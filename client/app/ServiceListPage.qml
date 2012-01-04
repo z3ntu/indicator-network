@@ -42,5 +42,15 @@ Page {
             }
         }
     }
+    Button {
+        height: 48
+        width: page.width
+        caption: pages.visiblePages == 1 ? "Expand" : "Collapse"
+        onClicked: {
+            if (pages.visiblePages == 1)
+                pages.visiblePages = 3
+            else
+                pages.visiblePages = 1
+        }
+    }
 }
-

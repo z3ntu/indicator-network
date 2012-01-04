@@ -1,9 +1,9 @@
 import QtQuick 1.1
 
 BasicButton {
+    id: button
     property alias caption: label.text
 
-    caption: dbusModel ? dbusModel.label : ""
     style: ButtonStyle { }
 
     Rectangle {
@@ -16,10 +16,11 @@ BasicButton {
         id: label
         anchors.fill: parent
         anchors.centerIn: parent
+        text:  button.dbusModel ? button.dbusModel.label : ""
 
         // Style
-        color: sytle.foregroundColor
-        font { family: style.fontFamily; pointSize: style.fontPointSize; bold: style.fontBold }
-        anchors.margins: style.margin
+        color: button.style.foregroundColor
+        font { family: button.style.fontFamily; pointSize: button.style.fontPointSize; bold: button.style.fontBold }
+        anchors.margins: button.style.margin
     }
 }

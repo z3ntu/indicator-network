@@ -22,3 +22,9 @@ else()
     enable_testing()
     add_subdirectory(tests)
 endif()
+
+include(FindDoxygen)
+if(NOT DOXYGEN_FOUND)
+    message(STATUS "doxygen not fount documention disabled.")
+endif()
+

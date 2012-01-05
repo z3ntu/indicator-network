@@ -38,17 +38,17 @@ int DBusModel::menuId() const
     return m_id;
 }
 
-QObject *DBusModel::control() const
-{
-    return m_control;
-}
-
 void DBusModel::setMenuId(int id)
 {
     if (m_id != id) {
         m_id = id;
         Q_EMIT menuIdChanged();
     }
+}
+
+QObject *DBusModel::control() const
+{
+    return m_control;
 }
 
 void DBusModel::setControl(QObject *control)

@@ -31,3 +31,12 @@ target_link_libraries(dbusmodel
     ${GLIB_LDFLAGS}
     ${GIO_LDFLAGS}
     ${DBUSMENUGLIB_LDFLAGS})
+
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/qmldbus.conf.in"
+               "${CMAKE_CURRENT_BINARY_DIR}/qmldbus.conf")
+
+
+add_custom_target(dbusmodeldoc ALL
+                  COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/qmldbus.conf
+                  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+                  SOURCES ${CLIENTMODEL_HEADERS})

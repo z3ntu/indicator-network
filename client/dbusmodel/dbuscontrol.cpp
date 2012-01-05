@@ -9,6 +9,8 @@
 #include <gio/gio.h>
 #include <libdbusmenu-glib/client.h>
 
+
+
 DBusControl::DBusControl(QObject *parent)
     : QObject(parent),
       m_client(0),
@@ -65,16 +67,6 @@ QString DBusControl::service() const
     return m_service;
 }
 
-QString DBusControl::objectPath() const
-{
-    return m_objectPath;
-}
-
-bool DBusControl::isConnected()
-{
-    return m_root != 0;
-}
-
 void DBusControl::setService(const QString &service)
 {
     if (m_service != service) {
@@ -83,12 +75,22 @@ void DBusControl::setService(const QString &service)
     }
 }
 
+QString DBusControl::objectPath() const
+{
+    return m_objectPath;
+}
+
 void DBusControl::setObjectPath(const QString &objectPath)
 {
     if (m_objectPath != objectPath) {
         m_objectPath = objectPath;
         Q_EMIT objectPathChanged();
     }
+}
+
+bool DBusControl::isConnected() const
+{
+    return m_root != 0;
 }
 
 void DBusControl::sendEvent(int id, EventType eventType, QVariant data)
@@ -103,7 +105,7 @@ void DBusControl::sendEvent(int id, EventType eventType, QVariant data)
     if (eventNames.empty()) {
         eventNames[Clicked] = "clicked";
         eventNames[Hovered] = "hovered";
-        eventNames[Openend] = "openend";
+        eventNames[Opened] = "openend";
         eventNames[Closed] = "closed";
         eventNames[TextChanged] = "x-text-changed";
     }
@@ -118,7 +120,6 @@ void DBusControl::sendEvent(int id, EventType eventType, QVariant data)
     if (eventType == TextChanged) {
         GVariant *text = g_variant_new_string(data.toByteArray());
         dbusmenu_menuitem_handle_event(item->item(), eventNames[eventType], text, timestamp);
-        qDebug() << "SEND EVENT" << id << eventNames[eventType] << data;
     } else {
         g_variant_ref(empty);
         dbusmenu_menuitem_handle_event(item->item(), eventNames[eventType], empty, timestamp);

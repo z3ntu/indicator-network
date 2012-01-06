@@ -4,12 +4,23 @@ import components 1.0
 
 
 Item {
-    width: 300
+    width: pageStack.implicitWidth
     height: 800
+
     PageStack {
         id: pageStack
+        height: parent.height
+        width: parent.width
 
-        anchors.fill: parent
+        pageWidth: 300
+        spacing: 3
+        visiblePages: 1
+
+        Rectangle {
+            anchors.fill: parent
+            color: "gray"
+        }
+
         Component.onCompleted: pageStack.push(Qt.createComponent("mainmenu.qml"))
     }
 }

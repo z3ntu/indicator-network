@@ -3,8 +3,15 @@ import components 1.0
 
 Page {
     id: mainMenu
-    title: "Sub Menu"
-    stack: pageStack
+    property string title
+
+    header: NavigationButton {
+        width: 300
+        height: 48
+        stack: pageStack
+        enableBackward: true
+        Component.onCompleted: caption = "SubMenu" + pageStack.count
+    }
 
     Repeater {
         model: 10
@@ -21,5 +28,13 @@ Page {
             value: Math.random()
             width: mainMenu.width
         }
+    }
+    NavigationButton {
+        width: 300
+        height: 48
+        stack: pageStack
+        caption: "Next Menu"
+        enableFoward: true
+        next: Qt.createComponent("submenu.qml")
     }
 }

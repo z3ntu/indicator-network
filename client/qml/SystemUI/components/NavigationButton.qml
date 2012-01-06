@@ -4,13 +4,13 @@ BasicButton {
     id: button
 
     property QtObject stack: null
-    property string next: ""
+    property QtObject next: null
     property bool enableBackward: false
     property bool enableFoward: dbusModel ? dbusModel.hasSubmenu : false
     property alias caption: basicItem.caption
     property alias description: basicItem.description
 
-    signal pageLoaded(string pageUrl, variant newPage)
+    signal pageLoaded(variant page)
     signal aboutToLoad(variant event)
 
     style: NavigationButtonStyle { }
@@ -21,7 +21,7 @@ BasicButton {
         id: pageEvent
 
         property bool skip: false
-        property string pageUrl : ""
+        property QtObject page : null
     }
 
     onClicked: {
@@ -33,13 +33,13 @@ BasicButton {
         } else if (enableFoward && next) {
             var event = pageEvent
             event.skip = false
-            event.pageUrl = next
+            event.page = next
             aboutToLoad(event)
             if (event.skip) {
                 return
             }
-            stack.push(next, caption)
-            pageLoaded(next, stack.currentPage)
+            var page = stack.push(next)
+            pageLoaded(page)
         }
     }
 

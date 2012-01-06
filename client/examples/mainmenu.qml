@@ -5,8 +5,16 @@ import components 1.0
 Page {
     id: mainMenu
 
-    title: "MainMenu"
-    stack: pageStack
+    //title: "MainMenu"
+    //stack: pageStack
+
+    header: NavigationButton {
+        width: 300
+        height: 48
+        stack: pageStack
+        caption: "Main Menu"
+        enableBackward: false
+    }
 
     Repeater {
         model: 10
@@ -34,5 +42,17 @@ Page {
         caption: "Next Menu"
         enableFoward: true
         next: Qt.createComponent("submenu.qml")
+    }
+
+    Button {
+        caption: pageStack.visiblePages == 1 ? "Expand" : "Collapse"
+        width: mainMenu.width
+        height: 48
+        onClicked: {
+            if (pageStack.visiblePages == 1)
+                pageStack.visiblePages = 3
+            else
+                pageStack.visiblePages = 1
+        }
     }
 }

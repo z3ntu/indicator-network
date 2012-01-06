@@ -8,7 +8,12 @@ Page {
 
     property alias servicesModel: serviceList.model
 
-    property string activeUrl: ""
+    header: NavigationButton {
+        caption: "Service List"
+        height: 48
+        width: page.width
+        stack: pages
+    }
 
     Repeater {
         id: serviceList
@@ -19,7 +24,7 @@ Page {
             height: 48
             width: page.width
             caption: model.description
-            next: "ServiceSubPage.qml"
+            next: Qt.createComponent("ServiceSubPage.qml")
             enableFoward: true
             stack: pages
 
@@ -32,16 +37,17 @@ Page {
             }
 
             onPageLoaded: {
-                page.activeUrl = pageUrl
                 menuControl.disconnectFromServer()
                 menuControl.service = model.serviceName
                 menuControl.objectPath = model.objectPath
 
-                newPage.menuId = 1 // Skip root menu
+                page.title = model.description
+                page.menuId = 1 // Skip root menu
                 menuControl.connectToServer()
             }
         }
     }
+
     Button {
         height: 48
         width: page.width

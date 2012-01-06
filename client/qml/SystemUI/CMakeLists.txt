@@ -2,11 +2,15 @@ project(SystemUI)
 
 set(SYSTEMUI_SRC
     gradientrectangle.cpp
+    pageanimation.cpp
+    pagestack.cpp
     plugin.cpp
 )
 
 set(SYSTEMUI_HEADERS
     gradientrectangle.h
+    pageanimation.h
+    pagestack.h
     plugin.h
 )
 

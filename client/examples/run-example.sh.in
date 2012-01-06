@@ -1,1 +1,1 @@
-qmlviewer -I @CMAKE_SOURCE_DIR@/client -I @CMAKE_BINARY_DIR@/client/qml $1
+qmlviewer -I @SystemUI_SOURCE_DIR@ -I @client_BINARY_DIR@/qml $1

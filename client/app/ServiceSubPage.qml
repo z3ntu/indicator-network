@@ -9,7 +9,11 @@ Item {
     property alias menuId: menuModel.menuId
     property alias control: menuModel.control
     property alias items: mainMenu.items
-    property alias pageIndex: mainMenu.pageIndex
+    property alias header: mainMenu.header
+    property alias index: mainMenu.index
+
+    property string title:  "Service"
+
 
     function loadMenu() {
         menuModel.load()
@@ -27,7 +31,6 @@ Item {
     Page {
         id: mainMenu
 
-        property int pageIndex: 2
         property string activeUrl: ""
 
         anchors.fill: parent
@@ -42,10 +45,18 @@ Item {
             } else {
                 comp = Qt.createQmlObject('import components 1.0; NavigationButton {}', parent, '')
                 comp.stack = pages
-                comp.next = "ServiceSubPage.qml"
+                comp.next = Qt.createComponent("ServiceSubPage.qml")
             }
             comp.dbusModel = model
             return comp
+        }
+
+        header: NavigationButton {
+            caption: page.title
+            height: 48
+            width: page.width
+            stack: pages
+            enableBackward: true
         }
 
         Repeater {
@@ -66,14 +77,15 @@ Item {
                     function onAboutToLoad(event)
                     {
                         var count = pages.count
-                        while(count > page.pageIndex) {
+                        while(count > page.index + 1) {
                             pages.pop()
                             count--
                         }
                     }
 
-                    function onPageLoaded(url, page)
+                    function onPageLoaded(page)
                     {
+                        page.title = model.label
                         page.menuId = model.menuId
                         page.pageIndex = pages.count
                         page.loadMenu()

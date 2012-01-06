@@ -31,18 +31,20 @@ Item {
         spacing: 3
         visiblePages: 1
 
+        Rectangle {
+            anchors.fill: parent
+            color: "#646464"
+        }
+
         onPageLoaded: {
-            if (pageIndex == 0) {
-                // First page is the service list
-                page.servicesModel = servicesModel
-            } else {
-                // Second page need dbus control
+            if (page.index > 0) {
                 page.control = menuControl
             }
         }
 
         Component.onCompleted: {
-            pages.push("ServiceListPage.qml", "Service List")
+            var page = pages.push(Qt.createComponent("ServiceListPage.qml"))
+            page.servicesModel = servicesModel
         }
     }
 }

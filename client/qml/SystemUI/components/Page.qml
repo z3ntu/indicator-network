@@ -5,6 +5,8 @@ BasicItem {
     id: page
 
     default property alias items: contents.children
+    property Component header
+    property int index: -1
 
     style: PageStyle { }
     implicitHeight: scroll.height

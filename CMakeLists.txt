@@ -8,6 +8,7 @@ include(FindPkgConfig)
 pkg_check_modules(GLIB REQUIRED glib-2.0)
 pkg_check_modules(GIO REQUIRED gio-2.0)
 pkg_check_modules(DBUSMENUGLIB dbusmenu-glib-0.4)
+pkg_check_modules(NM REQUIRED libnm-glib)
 add_definitions(-DQT_NO_KEYWORDS)
 
 add_subdirectory(server)

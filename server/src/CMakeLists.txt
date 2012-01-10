@@ -9,7 +9,7 @@ set(exportmenu_SRC
     ${CMAKE_CURRENT_BINARY_DIR}/MenuExporter.c)
 
 add_custom_command(OUTPUT ${exportmenu_SRC}
-                   COMMAND ${VALA_BIN} -C --pkg Dbusmenu-0.4 --pkg gio-2.0 ${exportmenu_VALA}
+                   COMMAND ${VALA_BIN} --ccode -H settingsmenu.h --pkg Dbusmenu-0.4 --pkg gio-2.0 ${exportmenu_VALA}
                    DEPENDS ${exportmenu_VALA}
                    WORKING_DIRECTORY ${CMAKE_CURRENT_BIN_DIR})
 

@@ -26,6 +26,7 @@ add_executable(ExportMenu
 add_executable(NetworkMenu
                ${networkservice_SRC})
 
+
 include_directories(
     ${CMAKE_CURRENT_BINARY_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}
@@ -34,10 +35,15 @@ include_directories(
     ${NM_INCLUDE_DIRS}
     ${DBUSMENUGLIB_INCLUDE_DIRS})
 
-target_link_libraries(ExportMenu
+target_link_libraries(NetworkMenu
     ${GLIB_LDFLAGS}
     ${GIO_LDFLAGS}
     ${NM_LDFLAGS}
+    ${DBUSMENUGLIB_LDFLAGS})
+
+target_link_libraries(ExportMenu
+    ${GLIB_LDFLAGS}
+    ${GIO_LDFLAGS}
     ${DBUSMENUGLIB_LDFLAGS})
 
 

@@ -8,13 +8,13 @@ main (int argc, char** argv)
   const GPtrArray  *devarray;
   NMClient         *client;
   NMDevice        **devices;
-	UnitySettingsMenuSettings *settings;
+	UnitySettingsSettings *settings;
 	
   g_type_init ();  
   client = nm_client_new ();
   devarray = nm_client_get_devices (client);
 
-	settings = unity_settings_menu_settings_new (void);
+	settings = unity_settings_settings_new ();
 
   devices = (NMDevice**) devarray->pdata;
   for (i=0; i < devarray->len; i++)

@@ -101,15 +101,15 @@ namespace Unity.Settings {
 		}
 
 		public static int main (string[] args)	{
-			if (args.length < 2)
+			if (args.length != 2)
 			  return 1;
 
 			var f = File.new_for_path (args[1]);
 
 			if (!f.query_exists ()) {
 				stderr.printf ("File '%s' doesn't exist.\n", f.get_path ());
-	      return 2;
-		  }
+				return 2;
+			}
 
 			var main_loop = new MainLoop();
 		
@@ -121,10 +121,6 @@ namespace Unity.Settings {
 					menu.export ();					
 				});
 			
-
-            if (args.length > 2) {
-                Timeout.add_seconds(args[2].to_int(), (GLib.SourceFunc)main_loop.quit);
-            }
 			main_loop.run ();
 			return 0;
 		}

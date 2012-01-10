@@ -1,13 +1,13 @@
 using GLib;
 
-Unity.SettingsMenu.Parser _global_parser;
+Unity.Settings.Parser _global_parser;
 
-namespace Unity.SettingsMenu {
-  class Enum : Object {
+namespace Unity.Settings {
+  public class Enum : Object {
 		//HashTable
   }
 	  
-	class Key : Object {
+	public class Key : Object {
 		public string type = null;
 //		public string val;
 		public string name = null;
@@ -32,7 +32,7 @@ namespace Unity.SettingsMenu {
 		}
 	}
 	
-	class Group : Object {
+	public class Group : Object {
 		public List<Group> groups = null;
 		public List<Key>   keys = null;
 		public string id;
@@ -59,7 +59,7 @@ namespace Unity.SettingsMenu {
 		}
 	}
 
-	class Settings : Object {
+	public class Settings : Object {
 		public List<Group> groups = null;
 //		public List<Enum>  enums = null;
 
@@ -67,7 +67,7 @@ namespace Unity.SettingsMenu {
 		}
 	}
 
-	class Parser : Object {
+	public class Parser : Object {
 		private MarkupParser parser;
 	
 		private Settings? settings = null;

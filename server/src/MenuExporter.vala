@@ -1,7 +1,7 @@
 using Dbusmenu;
 
-namespace Unity.SettingsMenu {
-	class MenuExporter {
+namespace Unity.Settings {
+	public class MenuExporter {
 		private Unity.SettingsMenu.Settings settings;
 		private Dbusmenu.Server server = null;
 		

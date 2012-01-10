@@ -31,7 +31,7 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${GLIB_INCLUDE_DIRS}
     ${GIO_INCLUDE_DIRS}
-    ${NM_LDFLAGS}
+    ${NM_INCLUDE_DIRS}
     ${DBUSMENUGLIB_INCLUDE_DIRS})
 
 target_link_libraries(ExportMenu

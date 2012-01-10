@@ -7,12 +7,18 @@ GMainLoop *loop;
 static void
 on_bus (GDBusConnection * connection, const gchar * name, gpointer user_data)
 {
-  int                     i;
-  const GPtrArray        *devarray;
-  NMClient               *client;
-  NMDevice              **devices;
-	DbusmenuServer * server = dbusmenu_server_new("/com/canonical/networksettings");
-
+  int                i, id;
+  const GPtrArray   *devarray;
+  NMClient          *client;
+  NMDevice         **devices;
+	DbusmenuServer    *server = dbusmenu_server_new("/com/canonical/networksettings");
+	DbusmenuMenuitem  *root   = dbusmenu_menuitem_new_with_id (0);
+	id++;
+	
+	dbusmenu_server_set_root (server, root);
+	
+	/* TODO: Enable/disable Wifi */
+	
   client = nm_client_new ();
   devarray = nm_client_get_devices (client);
 

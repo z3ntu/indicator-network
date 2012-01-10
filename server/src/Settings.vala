@@ -28,12 +28,18 @@ namespace Unity.Settings {
 		}
 	}
 	
+	public enum GroupType {
+		SUBMENU,
+		INLINE
+	}
+	
 	public class Group : Object {
 		public List<Group> groups = null;
 		public List<Key>   keys = null;
-		public string id;
-		public string path;
-		public string display_name;
+		public string    id;
+		public string    path;
+		public string    display_name;
+		public GroupType type = GroupType.SUBMENU;
 
 		public Group? parent = null;
 		//TODO: HashTable for the attributes

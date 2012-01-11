@@ -16,7 +16,22 @@ wifi_populate_accesspoints (DbusmenuMenuitem *parent,
                             NMDeviceWifi     *device,
                             gint             *id)
 {
-  
+  gint              i;
+  const GPtrArray  *apsarray = nm_device_wifi_get_access_points (device);
+  NMAccessPoint   **aps;
+
+  aps = (NMAccessPoint**) apsarray->pdata;
+  for (i=0; i < apsarray->len; i++)
+    {
+      NMAccessPoint *ap = aps[i];
+      DbusmenuMenuitem *ap_item = dbusmenu_menuitem_new_with_id ((*id)++);
+      const GByteArray *ssid;
+
+      ssid = nm_access_point_get_ssid (ap);
+
+      dbusmenu_menuitem_property_set  (ap_item, DBUSMENU_MENUITEM_PROP_LABEL, (gchar*)ssid->data);
+      dbusmenu_menuitem_child_append  (parent, ap_item);
+    }
 }
 
 static void
@@ -24,20 +39,19 @@ wifi_device_handler (DbusmenuMenuitem *parent, NMClient *client, NMDevice *devic
 {
   /* Wifi enable/disable toggle */
   gboolean          wifienabled   = nm_client_wireless_get_enabled (client);
-  DbusmenuMenuitem *togglegroup   = dbusmenu_menuitem_new_with_id (*id);
-  DbusmenuMenuitem *toggle        = dbusmenu_menuitem_new_with_id (*id+1);
+  DbusmenuMenuitem *togglegroup   = dbusmenu_menuitem_new_with_id ((*id)++);
+  DbusmenuMenuitem *toggle        = dbusmenu_menuitem_new_with_id ((*id)++);
 
   /* Access points */
-  DbusmenuMenuitem *networksgroup = dbusmenu_menuitem_new_with_id (*id+2);
+  DbusmenuMenuitem *networksgroup = dbusmenu_menuitem_new_with_id ((*id)++);
 
-  *id = *id + 3;
-
-  dbusmenu_menuitem_property_set (togglegroup, DBUSMENU_MENUITEM_PROP_LABEL, "Turn WiFi On/Off");
+  dbusmenu_menuitem_property_set (togglegroup, DBUSMENU_MENUITEM_PROP_LABEL, "Turn Wifi On/Off");
   dbusmenu_menuitem_property_set (togglegroup, "x-group-type", "inline");
+  dbusmenu_menuitem_property_set (togglegroup, "type", "x-system-settings");
   
   dbusmenu_menuitem_property_set (toggle, DBUSMENU_MENUITEM_PROP_TOGGLE_TYPE, DBUSMENU_MENUITEM_TOGGLE_CHECK);
-  
-  dbusmenu_menuitem_property_set_bool (toggle, DBUSMENU_MENUITEM_PROP_TOGGLE_STATE, wifienabled);
+  dbusmenu_menuitem_property_set (networksgroup, DBUSMENU_MENUITEM_PROP_LABEL, "Wifi");  
+  dbusmenu_menuitem_property_set_int (toggle, DBUSMENU_MENUITEM_PROP_TOGGLE_STATE, wifienabled);
   
   dbusmenu_menuitem_child_append (parent, togglegroup);
   dbusmenu_menuitem_child_append (togglegroup, toggle);
@@ -45,6 +59,8 @@ wifi_device_handler (DbusmenuMenuitem *parent, NMClient *client, NMDevice *devic
   dbusmenu_menuitem_property_set (networksgroup, DBUSMENU_MENUITEM_PROP_LABEL, "Select wireless network");
   dbusmenu_menuitem_property_set (networksgroup, "x-group-type", "inline");
   dbusmenu_menuitem_property_set_bool (networksgroup, "x-busy", TRUE);
+  dbusmenu_menuitem_property_set (togglegroup, "x-group-class", "accesspoints");
+  dbusmenu_menuitem_property_set (togglegroup, "type", "x-system-settings");
 
   if (wifienabled)
   {
@@ -68,9 +84,8 @@ on_bus (GDBusConnection * connection, const gchar * name, gpointer user_data)
   const GPtrArray   *devarray;
   NMClient          *client;
   NMDevice         **devices;
-	DbusmenuServer    *server = dbusmenu_server_new("/com/canonical/networksettings");
-	DbusmenuMenuitem  *root   = dbusmenu_menuitem_new_with_id (0);
-	id++;
+	DbusmenuServer    *server = dbusmenu_server_new("/com/ubuntu/networksettings");
+	DbusmenuMenuitem  *root   = dbusmenu_menuitem_new_with_id (id++);
 	
 	dbusmenu_server_set_root (server, root);
 	
@@ -110,7 +125,7 @@ main (int argc, char** argv)
   g_type_init ();  
 
 	g_bus_own_name(G_BUS_TYPE_SESSION,
-	               "com.canonical.networksettings",
+	               "com.ubuntu.networksettings",
 	               G_BUS_NAME_OWNER_FLAGS_NONE,
 	               on_bus,
 	               NULL,

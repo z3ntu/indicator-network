@@ -23,6 +23,7 @@ Item {
 
         function createComponent(model, parent)
         {
+            console.log("COMP: " + model.type)
             var comp
             if (model.type == "TextEntry") {
                 comp = Qt.createQmlObject('import components 1.0; TextEntry {}', parent, '')

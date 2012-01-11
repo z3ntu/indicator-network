@@ -10,16 +10,28 @@ Column {
         next: Item { }
         caption: "Test"
         description: "Foward"
+        enableFoward: true
     }
 
     NavigationButton {
         height: 48
         width: parent.width
-        supportBack: true
+        enableBackward: true
         caption: "Test"
         description: "Back"
     }
 
+    BasicNavigationButton {
+        height: 48
+        width: parent.width
+        enableFoward: true
+        ListItem {
+            caption: "Test"
+            description: "Back"
+            selectable: true
+            anchors.fill: parent
+        }
+    }
 }
 
 

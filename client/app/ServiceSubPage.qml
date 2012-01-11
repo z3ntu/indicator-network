@@ -11,9 +11,7 @@ Item {
     property alias items: mainMenu.items
     property alias header: mainMenu.header
     property alias index: mainMenu.index
-
     property string title:  "Service"
-
 
     function loadMenu() {
         menuModel.load()
@@ -42,6 +40,15 @@ Item {
                 comp = Qt.createQmlObject('import components 1.0; TextEntry {}', parent, '')
             } else if (model.type == "ToggleButton") {
                 comp = Qt.createQmlObject('import components 1.0; ToggleButton {}', parent, '')
+            } else if (model.type == "Custom") {
+                var component = Qt.createComponent("file://home/renato/work/system/chewie/client/qml/SystemUI/extras/" + model.properties.widgetName + '.qml');
+                if (component.status == Component.Ready) {
+                    comp = component.createObject(parent);
+                    comp.dbusModel = model
+                } else {
+                    console.log("Fail to create component: " + component.errorString())
+                    return null
+                }
             } else {
                 comp = Qt.createQmlObject('import components 1.0; NavigationButton {}', parent, '')
                 comp.stack = pages

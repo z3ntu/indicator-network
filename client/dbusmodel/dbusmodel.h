@@ -93,10 +93,10 @@ private:
         Id,
         Type,
         Label,
-        Icon,
         State,
         HasSubmenu,
         Data,
+        Properties,
         Control
     };
 
@@ -105,5 +105,6 @@ private:
 
     //! Append one object in the model
     void appendItem(QObject * obj);
+
 };
 #endif

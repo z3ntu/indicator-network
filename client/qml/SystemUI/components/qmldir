@@ -1,13 +1,15 @@
 BasicButton 1.0 BasicButton.qml
 BasicItem 1.0 BasicItem.qml
+BasicNavigationButton 1.0 BasicNavigationButton.qml
+BasicNavigationButtonStyle 1.0 BasicNavigationButtonStyle.qml
 BasicListItem 1.0 BasicListItem.qml
 BasicListItemStyle 1.0 BasicListItemStyle.qml
 Button 1.0 Button.qml
 ButtonStyle 1.0 ButtonStyle.qml
 DBusMenuItemView 1.0 DBusMenuItemView.qml
+ListButtonGroup 1.0 ListButtonGroup.qml
 ListItem 1.0 ListItem.qml
 NavigationButton 1.0 NavigationButton.qml
-NavigationButtonStyle 1.0 NavigationButtonStyle.qml
 PageStackStyle 1.0 PageStackStyle.qml
 Page 1.0 Page.qml
 PageStyle 1.0 PageStyle.qml

@@ -1,73 +1,9 @@
 using GLib;
 
-Unity.SettingsMenu.Parser _global_parser;
+Unity.Settings.Parser _global_parser;
 
-namespace Unity.SettingsMenu {
-  class Enum : Object {
-		//HashTable
-  }
-	  
-	class Key : Object {
-		public string type = null;
-//		public string val;
-		public string name = null;
-		public string display_name;
-		public Group? parent = null;
-		
-		public Key (Group parent) {
-			this.parent = parent;
-		}
-
-		public void populate_key (string[] attrs_names, string[] attrs_values) {
-			if (attrs_names.length != attrs_values.length) {
-				error("The amount of attribute names does not match with the amount of values.");
-			}
-		
-			for (int i = 0; i < attrs_names.length; i++) {
-				if (attrs_names[i] == "type")
-					type = attrs_values[i];
-				else if (attrs_names[i] == "name")
-					name = attrs_values[i];
-			}
-		}
-	}
-	
-	class Group : Object {
-		public List<Group> groups = null;
-		public List<Key>   keys = null;
-		public string id;
-		public string path;
-		public string display_name;
-
-		public Group? parent = null;
-		//TODO: HashTable for the attributes
-
-		public Group () {
-		}
-	
-		public void populate_group (string[] attrs_names, string[] attrs_values) {
-			if (attrs_names.length != attrs_values.length) {
-				error("The amount of attribute names does not match with the amount of values.");
-			}
-		
-			for (int i = 0; i < attrs_names.length; i++) {
-				if (attrs_names[i] == "id")
-					id = attrs_values[i];
-				else if (attrs_names[i] == "path")
-					path = attrs_values[i];
-			}
-		}
-	}
-
-	class Settings : Object {
-		public List<Group> groups = null;
-//		public List<Enum>  enums = null;
-
-		public Settings () {
-		}
-	}
-
-	class Parser : Object {
+namespace Unity.Settings {
+	public class Parser : Object {
 		private MarkupParser parser;
 	
 		private Settings? settings = null;
@@ -165,15 +101,15 @@ namespace Unity.SettingsMenu {
 		}
 
 		public static int main (string[] args)	{
-			if (args.length < 2)
+			if (args.length != 2)
 			  return 1;
 
 			var f = File.new_for_path (args[1]);
 
 			if (!f.query_exists ()) {
 				stderr.printf ("File '%s' doesn't exist.\n", f.get_path ());
-	      return 2;
-		  }
+				return 2;
+			}
 
 			var main_loop = new MainLoop();
 		
@@ -185,10 +121,6 @@ namespace Unity.SettingsMenu {
 					menu.export ();					
 				});
 			
-
-            if (args.length > 2) {
-                Timeout.add_seconds(args[2].to_int(), (GLib.SourceFunc)main_loop.quit);
-            }
 			main_loop.run ();
 			return 0;
 		}

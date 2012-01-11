@@ -1,4 +1,4 @@
 [System Settings Servirce]
-Title=Date & Time
-Name=org.dbusmenu.test
-Path=/org/test
+Title=Wireless & Networking
+Name=com.ubuntu.networksettings
+Path=/com/ubuntu/networksettings

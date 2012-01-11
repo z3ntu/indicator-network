@@ -32,6 +32,7 @@ wifi_populate_accesspoints (DbusmenuMenuitem *parent,
       dbusmenu_menuitem_property_set  (ap_item, DBUSMENU_MENUITEM_PROP_LABEL, (gchar*)ssid->data);
       dbusmenu_menuitem_property_set  (ap_item, "type", "x-system-settings");
       dbusmenu_menuitem_property_set  (ap_item, "x-tablet-widget", "unity.systemsettings.tablet.accesspoint");
+      dbusmenu_menuitem_property_set_int  (ap_item, "x-wifi-strength", nm_access_point_get_strength (ap));
       dbusmenu_menuitem_child_append  (parent, ap_item);
     }
 }

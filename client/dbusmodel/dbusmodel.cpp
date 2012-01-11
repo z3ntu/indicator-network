@@ -6,6 +6,7 @@
 #include <QDebug>
 #include <QAction>
 
+
 DBusModel::DBusModel(QObject *parent)
     : QAbstractListModel(parent),
       m_id(-1),
@@ -18,11 +19,11 @@ DBusModel::DBusModel(QObject *parent)
         rolesNames[Id] = "menuId";
         rolesNames[Type] = "type";
         rolesNames[Label] = "label";
-        rolesNames[Icon] = "icon";
         rolesNames[State] = "state";
         rolesNames[HasSubmenu] = "hasSubmenu";
         rolesNames[Control] = "control";
         rolesNames[Data] = "data";
+        rolesNames[Properties] = "properties";
     }
     setRoleNames(rolesNames);
 }
@@ -81,7 +82,7 @@ void DBusModel::appendItems(QObjectList items)
         QDBusMenuItem *menuItem = qobject_cast<QDBusMenuItem *>(item);
 
         if (menuItem->type() != QDBusMenuItem::Unknow) {
-            appendItem(item);
+            appendItem(menuItem);
         } else {
             QObject::connect(item, SIGNAL(typeDiscovered()), this, SLOT(onItemTypeDiscovered()));
         }
@@ -98,9 +99,10 @@ void DBusModel::onItemTypeDiscovered()
 
 void DBusModel::appendItem(QObject * obj)
 {
-    QDBusMenuItem *item = qobject_cast<QDBusMenuItem*>(obj);
+    QDBusMenuItem *menuItem = qobject_cast<QDBusMenuItem*>(obj);
+    int position = menuItem->position();
+
     //QObjectList cpyItems = m_items;
-    int position = item->position();
     //cpyItems.insert(position, obj);
     //int row = cpyItems.indexOf(obj);
     //qDebug() << "InsertItem" << item->property(DBUSMENU_PROPERTY_LABEL) << "pos:" << position << "Row:" << row;
@@ -166,8 +168,6 @@ QVariant DBusModel::data(const QModelIndex &index, int role) const
         return item->typeName();
     case Label:
         return item->property(DBUSMENU_PROPERTY_LABEL);
-    case Icon:
-        return item->property(DBUSMENU_PROPERTY_ICON_NAME);
     case State:
         return item->property(DBUSMENU_PROPERTY_STATE);
     case Control:
@@ -177,6 +177,8 @@ QVariant DBusModel::data(const QModelIndex &index, int role) const
                item->property(DBUSMENU_PROPERTY_HAS_SUBMENU).toBool();
     case Data:
         return item->data();
+    case Properties:
+        return item->extraProperties();
     default:
         qWarning() << "Invalid role name" << role;
         break;

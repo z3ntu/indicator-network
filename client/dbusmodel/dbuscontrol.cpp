@@ -9,8 +9,6 @@
 #include <gio/gio.h>
 #include <libdbusmenu-glib/client.h>
 
-
-
 DBusControl::DBusControl(QObject *parent)
     : QObject(parent),
       m_client(0),

@@ -4,6 +4,7 @@
 #include <QString>
 #include <QObject>
 #include <QHash>
+#include <QVariantMap>
 
 #include <glib.h>
 #include <libdbusmenu-glib/client.h>
@@ -29,7 +30,8 @@ public:
         TextEntry,          /*!< TextEntry Type */
         ToggleButton,       /*!< ToggleButton Type */
         RadioButton,        /*!< RadioButton Type */
-        Separator           /*!< Separator menu Type */
+        Separator,          /*!< Separator menu Type */
+        Custom              /*!< Custom Type load from file */
     };
 
     //! Destructor
@@ -43,6 +45,9 @@ public:
 
     //! A string representation of current menu type
     QByteArray typeName() const;
+
+    //! Retun any property which starts with "x-" in the name
+    QVariantMap extraProperties() const;
 
     //! Any extra data attached to menu item
     QVariant data() const;
@@ -62,6 +67,7 @@ private:
     DbusmenuMenuitem *m_gitem;
     static ItemList m_globalItemList;
     ItemType m_type;
+    QVariantMap m_extraProperties;
 
     //! Constructor
     QDBusMenuItem() {}
@@ -83,7 +89,7 @@ private:
       \param name The name of the property to be updated
       \param value The new value of the property
     */
-    void updateProperty(const QByteArray & name, QVariant value);
+    bool updateProperty(const QByteArray & name, QVariant value);
 
     //! The original DbusmenuMenuitem attached to this object
     DbusmenuMenuitem * item() const;

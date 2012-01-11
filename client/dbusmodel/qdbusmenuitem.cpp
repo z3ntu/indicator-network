@@ -48,11 +48,12 @@ static QVariant GVariantToQVariant(GVariant *value)
 void QDBusMenuItem::onItemPropertyChanged(DbusmenuMenuitem *mi, gchar *property, GVariant *value, gpointer *data)
 {
     QDBusMenuItem *self = reinterpret_cast<QDBusMenuItem*>(data);
-    self->updateProperty(property, GVariantToQVariant(value));
-
-    if (typeRelatedProperties.contains(property))
-        self->updateType();
-    Q_EMIT self->changed();
+    if (self->updateProperty(property, GVariantToQVariant(value))) {
+        if (typeRelatedProperties.contains(property)) {
+            self->updateType();
+        }
+        Q_EMIT self->changed();
+    }
 }
 
 void QDBusMenuItem::onChildAdded(DbusmenuMenuitem *mi, DbusmenuMenuitem *child, guint position, gpointer *data)
@@ -108,6 +109,7 @@ QDBusMenuItem::QDBusMenuItem(DbusmenuMenuitem *gitem, QObject *parent)
     if (widgetTypeMap.size() == 0) {
         widgetTypeMap["x-textentry"] = TextEntry;
         widgetTypeMap["x-toggle"] = ToggleButton;
+        widgetTypeMap["x-custom"] = Custom;
     }
 
     if (widgetDataMap.size() == 0) {
@@ -141,9 +143,10 @@ DbusmenuMenuitem *QDBusMenuItem::item() const
 
 int QDBusMenuItem::position() const
 {
-    if (m_gitem)
-        return dbusmenu_menuitem_get_position(m_gitem, dbusmenu_menuitem_get_parent(m_gitem));
-    return -1;
+    if (m_gitem) {
+        DbusmenuMenuitem *parent = dbusmenu_menuitem_get_parent(m_gitem);
+        return dbusmenu_menuitem_get_position(m_gitem, parent);
+    }
 }
 
 QDBusMenuItem::ItemType QDBusMenuItem::type() const
@@ -162,6 +165,8 @@ QByteArray QDBusMenuItem::typeName() const
         return "RadioButton";
     case QDBusMenuItem::Separator:
         return "Separator";
+    case QDBusMenuItem::Custom:
+        return "Custom";
     case QDBusMenuItem::Label:
     default:
         return "Label";
@@ -229,20 +234,26 @@ void QDBusMenuItem::loadProperties()
 {
     /* parse the relevant properties */
     setProperty(DBUSMENU_PROPERTY_ID, dbusmenu_menuitem_get_id(m_gitem));
-    Q_FOREACH(QByteArray propName, mapedProperties) {
-        if (dbusmenu_menuitem_property_exist(m_gitem, propName)) {
+
+    GList *props = dbusmenu_menuitem_properties_list(m_gitem);
+    GList *pointer = props;
+    while(props) {
+        QByteArray propName((const char*)props->data);
+        if (mapedProperties.contains(propName) || propName.startsWith("x-")) {
             GVariant *var = dbusmenu_menuitem_property_get_variant(m_gitem, propName);
             updateProperty(propName, GVariantToQVariant(var));
 
-            if (typeRelatedProperties.contains(propName))
+            if (typeRelatedProperties.contains(propName)) {
                 updateType();
+            }
         }
+        props = props->next;
     }
+    g_list_free(pointer);
 }
 
-void QDBusMenuItem::updateProperty(const QByteArray &name, QVariant value)
+bool QDBusMenuItem::updateProperty(const QByteArray &name, QVariant value)
 {
-    //qDebug() << "update Property" << name << value;
     if (name == DBUSMENU_MENUITEM_PROP_LABEL) {
         setProperty(DBUSMENU_PROPERTY_LABEL, value);
     } else if (name == DBUSMENU_MENUITEM_PROP_ICON_NAME) {
@@ -256,7 +267,12 @@ void QDBusMenuItem::updateProperty(const QByteArray &name, QVariant value)
         else if(value.toInt() == DBUSMENU_MENUITEM_TOGGLE_STATE_UNCHECKED)
             newValue = 0;
         setProperty(DBUSMENU_PROPERTY_STATE, newValue);
+    } else if (name.startsWith("x-")) {
+        m_extraProperties.insert(name.mid(2), value);
+    } else {
+        return false;
     }
+    return true;
 }
 
 QDBusMenuItem *QDBusMenuItem::getChild(DbusmenuMenuitem *gitem) const
@@ -267,4 +283,9 @@ QDBusMenuItem *QDBusMenuItem::getChild(DbusmenuMenuitem *gitem) const
             return i;
     }
     return 0;
+}
+
+QVariantMap QDBusMenuItem::extraProperties() const
+{
+    return m_extraProperties;
 }

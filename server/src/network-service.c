@@ -1,3 +1,4 @@
+#include <string.h>
 #include <gio/gio.h>
 #include <nm-client.h>
 #include <nm-device-wifi.h>
@@ -10,6 +11,24 @@ wireless_state_changed (GObject *client, GParamSpec *pspec, gpointer user_data)
 {
 }*/
 
+static gint
+wifi_aps_sort (gconstpointer a,
+               gconstpointer b)
+{
+  NMAccessPoint *ap1 = NM_ACCESS_POINT(a);
+  NMAccessPoint *ap2 = NM_ACCESS_POINT(b);
+
+  guint8 strength1 = nm_access_point_get_strength (ap1);
+  guint8 strength2 = nm_access_point_get_strength (ap2);
+
+  if (strength1 == strength2)
+    return 0;
+  if (strength1 > strength1)
+    return 1;
+
+  return -1;
+}
+
 static void
 wifi_populate_accesspoints (DbusmenuMenuitem *parent,
                             NMClient         *client,
@@ -17,10 +36,15 @@ wifi_populate_accesspoints (DbusmenuMenuitem *parent,
                             gint             *id)
 {
   gint              i;
+  GPtrArray        *sortedarray;
   const GPtrArray  *apsarray = nm_device_wifi_get_access_points (device);
   NMAccessPoint   **aps;
 
-  aps = (NMAccessPoint**) apsarray->pdata;
+  sortedarray = g_ptr_array_new_full (apsarray->len, NULL);
+
+  memcpy (sortedarray->pdata, apsarray->pdata, sizeof(NMAccessPoint*) * apsarray->len);
+  aps = (NMAccessPoint**)(sortedarray->pdata);
+  g_ptr_array_sort (sortedarray, (GCompareFunc)wifi_aps_sort);
   for (i=0; i < apsarray->len; i++)
     {
       gboolean          is_private = FALSE;
@@ -46,6 +70,7 @@ wifi_populate_accesspoints (DbusmenuMenuitem *parent,
 
       dbusmenu_menuitem_child_append  (parent, ap_item);
     }
+  g_free (aps);
 }
 
 static void
@@ -132,8 +157,6 @@ on_bus (GDBusConnection * connection, const gchar * name, gpointer user_data)
     }
   /* TODO: Advance tab (per device?) */
   /* TODO: Airplane mode */
-
-  g_object_unref (client);
   return;
 }
 

@@ -83,7 +83,11 @@ wireless_toggle_activated (DbusmenuMenuitem *toggle,
                            guint             timestamp,
                            gpointer          data)
 {
-  g_debug ("State toggled");
+  NMClient *client = (NMClient*)data;
+  gboolean enabled = nm_client_wireless_get_enabled (client);
+
+  nm_client_wireless_set_enabled (client, !enabled);
+  dbusmenu_menuitem_property_set_int (toggle, DBUSMENU_MENUITEM_PROP_TOGGLE_STATE, !enabled);
 }
 
 static void
@@ -106,7 +110,7 @@ wifi_device_handler (DbusmenuMenuitem *parent, NMClient *client, NMDevice *devic
 
   g_signal_connect (toggle, "item-activated",
                     G_CALLBACK (wireless_toggle_activated),
-                    NULL);
+                    client);
 
   dbusmenu_menuitem_child_append (parent, togglesep);
   dbusmenu_menuitem_child_append (parent, toggle);

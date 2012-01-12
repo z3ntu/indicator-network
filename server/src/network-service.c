@@ -7,10 +7,25 @@
 
 GMainLoop *loop;
 
-/*static void
-wireless_state_changed (GObject *client, GParamSpec *pspec, gpointer user_data)
-{
-}*/
+/*
+ * unity.widgets.systemsettings.*.sectiontitle
+ * Build properties:
+ *    "type"             - string = "x-system-settings"
+ *    "children-display" - string = "inline"
+ *    "x-tablet-widget"  - string = "unity.widgets.systemsettings.tablet.sectiontitle"
+ * Other properties:
+ *    "label"  - string  - Optional, may have label or not
+ *    "x-busy" - boolean - Shows a progress indicator
+ *
+ * unity.widgets.systemsettings.*.accesspoint
+ * Build properties:
+ *    "type"            - string = "x-system-settings"
+ *    "toggle-type"     - string = "radio"
+ *    "x-tablet-widget" - string = "unity.widgets.systemsettings.tablet.accesspoint"
+ * Other properties:
+ *    "x-wifi-strength"   - int    - Signal strength
+ *    "x-wifi-is-adhoc"   - bool   - Whether it is an adhoc network or not
+ */
 
 static gint
 wifi_aps_sort (NMAccessPoint **a,
@@ -27,7 +42,6 @@ wifi_aps_sort (NMAccessPoint **a,
   if (strength1 > strength1)
     return 1;
   return -1;
-
 }
 
 static void
@@ -50,7 +64,6 @@ wifi_populate_accesspoints (DbusmenuMenuitem *parent,
   aps = (NMAccessPoint**)(sortedarray->pdata);
   for (i=0; i < sortedarray->len; i++)
     {
-      gboolean          is_private = FALSE;
       gboolean          is_adhoc   = FALSE;
       NMAccessPoint    *ap = aps[i];
       DbusmenuMenuitem *ap_item = dbusmenu_menuitem_new_with_id ((*id)++);
@@ -58,17 +71,16 @@ wifi_populate_accesspoints (DbusmenuMenuitem *parent,
 
       utf_ssid = nm_utils_ssid_to_utf8 (nm_access_point_get_ssid (ap));
 
-      if (nm_access_point_get_flags (ap) == NM_802_11_AP_FLAGS_PRIVACY)
-        is_private = TRUE;
       if (nm_access_point_get_mode (ap) == NM_802_11_MODE_ADHOC)
         is_adhoc   = TRUE;
 
-      dbusmenu_menuitem_property_set  (ap_item, DBUSMENU_MENUITEM_PROP_LABEL, utf_ssid);
-      dbusmenu_menuitem_property_set  (ap_item, "type", "x-system-settings");
-      dbusmenu_menuitem_property_set  (ap_item, "x-tablet-widget", "unity.widgets.systemsettings.tablet.accesspoint");
+      dbusmenu_menuitem_property_set (ap_item, DBUSMENU_MENUITEM_PROP_LABEL, utf_ssid);
+      dbusmenu_menuitem_property_set (ap_item, DBUSMENU_MENUITEM_PROP_TOGGLE_TYPE, DBUSMENU_MENUITEM_TOGGLE_RADIO);
+
+      dbusmenu_menuitem_property_set (ap_item, "type", "x-system-settings");
+      dbusmenu_menuitem_property_set (ap_item, "x-tablet-widget", "unity.widgets.systemsettings.tablet.accesspoint");
 
       dbusmenu_menuitem_property_set_int  (ap_item, "x-wifi-strength",   nm_access_point_get_strength (ap));
-      dbusmenu_menuitem_property_set_bool (ap_item, "x-wifi-is-private", is_private);
       dbusmenu_menuitem_property_set_bool (ap_item, "x-wifi-is-adhoc",   is_adhoc);
 
       dbusmenu_menuitem_child_append  (parent, ap_item);
@@ -98,7 +110,7 @@ wifi_device_handler (DbusmenuMenuitem *parent, NMClient *client, NMDevice *devic
   DbusmenuMenuitem *togglesep     = dbusmenu_menuitem_new_with_id ((*id)++);
   DbusmenuMenuitem *toggle        = dbusmenu_menuitem_new_with_id ((*id)++);
 
-  //DbusmenuMenuitem *networksgroup = dbusmenu_menuitem_new_with_id ((*id)++);
+  DbusmenuMenuitem *networksgroup = dbusmenu_menuitem_new_with_id ((*id)++);
 
   dbusmenu_menuitem_property_set (togglesep, DBUSMENU_MENUITEM_PROP_LABEL, "Turn Wifi On/Off");
   dbusmenu_menuitem_property_set (togglesep, DBUSMENU_MENUITEM_PROP_TYPE,  "x-system-settings");
@@ -115,21 +127,19 @@ wifi_device_handler (DbusmenuMenuitem *parent, NMClient *client, NMDevice *devic
   dbusmenu_menuitem_child_append (parent, togglesep);
   dbusmenu_menuitem_child_append (parent, toggle);
 
-  
+
   /* Access points */
-  /*
   if (wifienabled)
     {
       dbusmenu_menuitem_property_set (networksgroup, DBUSMENU_MENUITEM_PROP_LABEL, "Select wireless network");
+      dbusmenu_menuitem_property_set (networksgroup, "type",             "x-system-settings");
       dbusmenu_menuitem_property_set_bool (networksgroup, "x-busy", TRUE);
-      dbusmenu_menuitem_property_set (networksgroup, "x-group-type",    "inline");
-      dbusmenu_menuitem_property_set (networksgroup, "x-group-class",   "accesspoints");
-      dbusmenu_menuitem_property_set (networksgroup, "type",            "x-system-settings");
-      dbusmenu_menuitem_property_set (networksgroup, "x-tablet-widget", "unity.widgets.systemsettings.tablet.sectiontitle");
+      dbusmenu_menuitem_property_set (networksgroup, "x-group-class",    "accesspoints");
+      dbusmenu_menuitem_property_set (networksgroup, "children-display", "inline");
+      dbusmenu_menuitem_property_set (networksgroup, "x-tablet-widget",  "unity.widgets.systemsettings.tablet.sectiontitle");
       dbusmenu_menuitem_child_append (parent, networksgroup);
       wifi_populate_accesspoints (networksgroup, client, NM_DEVICE_WIFI (device), id);
     }
-  */
 
   /* TODO: Remove this when toggle is removed */
   /*g_signal_connect (client, "notify::WirelessEnabled",

@@ -1,1 +1,5 @@
-@system_settings_BINARY_DIR@/system-settings --service-dir=@client_services_SOURCE_DIR@ --include-dir=@SystemUI_SOURCE_DIR@ --include-dir=@client_BINARY_DIR@/qml
+@system_settings_BINARY_DIR@/system-settings \
+    --service-dir=@client_services_SOURCE_DIR@ \
+    --include-dir=@SystemUI_SOURCE_DIR@ \
+    --include-dir=@client_BINARY_DIR@/qml \
+    --extra-components-dir=@SystemUI_SOURCE_DIR@/extras

@@ -49,6 +49,7 @@ Q_SIGNALS:
 
 private Q_SLOTS:
     void onAnimationFinished();
+    void onHeaderHeightChanged();
     void updateWidth();
 
 protected:

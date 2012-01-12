@@ -95,6 +95,7 @@ private:
         Label,
         State,
         HasSubmenu,
+        IsInline,
         Data,
         Properties,
         Control

@@ -33,6 +33,7 @@ BasicButton {
     BasicListItem {
         id: listItem
 
+        dbusModel: listButton.dbusModel
         anchors.fill: parent
     }
 

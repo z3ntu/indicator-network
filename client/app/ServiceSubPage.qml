@@ -50,40 +50,35 @@ Item {
             Item {
                 id: item
 
+                property QtObject delegate: null
+
                 width: mainMenu.width
-                height: delegate.implicitHeight
+                height: delegate ? delegate.implicitHeight : 0
 
-                Item {
-                    id: delegate
-
-                    anchors.fill: parent
-
-                    function onAboutToLoad(event)
-                    {
-                        var count = pages.count
-                        while(count > page.index + 1) {
-                            pages.pop()
-                            count--
-                        }
+                function onAboutToLoad(event)
+                {
+                    var count = pages.count
+                    while(count > page.index + 1) {
+                        pages.pop()
+                        count--
                     }
+                }
 
-                    function onPageLoaded(page)
-                    {
-                        page.title = model.label
-                        page.menuId = model.menuId
-                        page.pageIndex = pages.count
-                        page.loadMenu()
-                    }
+                function onPageLoaded(page)
+                {
+                    page.title = model.label
+                    page.menuId = model.menuId
+                    page.pageIndex = pages.count
+                    page.loadMenu()
+                }
 
-                    Component.onCompleted: {
-                        var comp = TypeDiscovery.createComponent(model, parent)
-                        implicitHeight = comp.implicitHeight
-                        comp.anchors.fill = delegate
+                Component.onCompleted: {
+                    delegate = TypeDiscovery.createComponent(model, item)
+                    delegate.anchors.fill = item
 
-                        if (hasSubmenu) {
-                            comp.aboutToLoad.connect(onAboutToLoad)
-                            comp.pageLoaded.connect(onPageLoaded)
-                        }
+                    if (hasSubmenu && properties.group-type == "inline") {
+                        delegate.aboutToLoad.connect(onAboutToLoad)
+                        delegate.pageLoaded.connect(onPageLoaded)
                     }
                 }
             }

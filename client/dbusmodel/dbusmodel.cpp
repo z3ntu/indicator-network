@@ -21,6 +21,7 @@ DBusModel::DBusModel(QObject *parent)
         rolesNames[Label] = "label";
         rolesNames[State] = "state";
         rolesNames[HasSubmenu] = "hasSubmenu";
+        rolesNames[IsInline] = "isInline";
         rolesNames[Control] = "control";
         rolesNames[Data] = "data";
         rolesNames[Properties] = "properties";
@@ -173,8 +174,9 @@ QVariant DBusModel::data(const QModelIndex &index, int role) const
     case Control:
         return QVariant::fromValue<QObject*>(m_control);
     case HasSubmenu:
-        return item->property(DBUSMENU_PROPERTY_HAS_SUBMENU).isValid() &&
-               item->property(DBUSMENU_PROPERTY_HAS_SUBMENU).toBool();
+        return item->hasSubMenu();
+    case IsInline:
+        return item->isInline();
     case Properties:
         return item->extraProperties();
     default:

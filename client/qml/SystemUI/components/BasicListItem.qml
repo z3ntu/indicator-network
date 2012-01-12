@@ -4,7 +4,7 @@ BasicItem {
     id: item
 
     property bool selectable: false
-    property bool selected:  false
+    property bool selected:  hasModel ? dbusModel.state == 1 : false
     property alias caption: label.text
     property alias description: labelDescription.text
 

@@ -33,6 +33,12 @@ public:
     //! Retun any property which starts with "x-" in the name
     QVariantMap extraProperties() const;
 
+    //! Return if the menu has children
+    bool hasSubMenu() const;
+
+    //! Return if children item should be dysplayed inline
+    bool isInline() const;
+
 Q_SIGNALS:
     //! This signal is called when all properties related with menu item type is avaliable, and a type was setted in the menu item
     void typeDiscovered();
@@ -49,6 +55,8 @@ private:
     static ItemList m_globalItemList;
     QByteArray m_type;
     QVariantMap m_extraProperties;
+    bool m_isInline;
+    bool m_hasChildren;
 
     //! Constructor
     QDBusMenuItem() {}

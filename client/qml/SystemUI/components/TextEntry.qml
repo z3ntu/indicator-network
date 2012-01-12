@@ -35,7 +35,7 @@ BasicItem {
         TextInput {
             id: textInput
 
-            text: dbusModel ? dbusModel.data : ""
+            text: "" //TODO: check the correct property dbusModel ? dbusModel.data : ""
             anchors.fill: parent
             anchors.margins: textEntry.style.margin
             font { family: textEntry.style.fontFamily; pointSize: textEntry.style.fontPointSize; bold: textEntry.style.fontBold }

@@ -97,7 +97,8 @@ wifi_device_handler (DbusmenuMenuitem *parent, NMClient *client, NMDevice *devic
   DbusmenuMenuitem *networksgroup = dbusmenu_menuitem_new_with_id ((*id)++);
 
   dbusmenu_menuitem_property_set (togglesep, DBUSMENU_MENUITEM_PROP_LABEL, "Turn Wifi On/Off");
-  dbusmenu_menuitem_property_set (togglesep, DBUSMENU_MENUITEM_PROP_TYPE,  "separator");
+  dbusmenu_menuitem_property_set (togglesep, DBUSMENU_MENUITEM_PROP_TYPE,  "x-system-settings");
+  dbusmenu_menuitem_property_set (togglesep, "x-tablet-widget",            "unity.widgets.systemsettings.tablet.sectiontitle");
 
   dbusmenu_menuitem_property_set (toggle, DBUSMENU_MENUITEM_PROP_TOGGLE_TYPE, DBUSMENU_MENUITEM_TOGGLE_CHECK);
   dbusmenu_menuitem_property_set (toggle, DBUSMENU_MENUITEM_PROP_LABEL, "Wifi");
@@ -114,11 +115,11 @@ wifi_device_handler (DbusmenuMenuitem *parent, NMClient *client, NMDevice *devic
   if (wifienabled)
     {
       dbusmenu_menuitem_property_set (networksgroup, DBUSMENU_MENUITEM_PROP_LABEL, "Select wireless network");
-      dbusmenu_menuitem_property_set (networksgroup, "x-group-type", "inline");
       dbusmenu_menuitem_property_set_bool (networksgroup, "x-busy", TRUE);
-      dbusmenu_menuitem_property_set (networksgroup, "x-group-class", "accesspoints");
-      dbusmenu_menuitem_property_set (networksgroup, "type", "x-system-settings");
-
+      dbusmenu_menuitem_property_set (networksgroup, "x-group-type",    "inline");
+      dbusmenu_menuitem_property_set (networksgroup, "x-group-class",   "accesspoints");
+      dbusmenu_menuitem_property_set (networksgroup, "type",            "x-system-settings");
+      dbusmenu_menuitem_property_set (networksgroup, "x-tablet-widget", "unity.widgets.systemsettings.tablet.sectiontitle");
       dbusmenu_menuitem_child_append (parent, networksgroup);
       wifi_populate_accesspoints (networksgroup, client, NM_DEVICE_WIFI (device), id);
     }

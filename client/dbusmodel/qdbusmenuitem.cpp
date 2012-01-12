@@ -77,7 +77,8 @@ void QDBusMenuItem::onChildMoved(DbusmenuMenuitem *mi, DbusmenuMenuitem *child, 
 
 QDBusMenuItem::QDBusMenuItem(DbusmenuMenuitem *gitem, QObject *parent)
     : QObject(parent),
-      m_gitem(gitem)
+      m_gitem(gitem),
+      m_type("")
 {
     /*
       Only those properties are current supported
@@ -145,7 +146,18 @@ void QDBusMenuItem::updateType()
 {
     m_type = "";
 
-    if (dbusmenu_menuitem_property_exist(m_gitem, DBUSMENU_MENUITEM_PROP_TYPE)) {
+    if (dbusmenu_menuitem_property_exist(m_gitem, DBUSMENU_MENUITEM_PROP_TOGGLE_TYPE)) {
+        GVariant *var = dbusmenu_menuitem_property_get_variant(m_gitem, DBUSMENU_MENUITEM_PROP_TOGGLE_TYPE);
+        QByteArray toggleType = GVariantToQVariant(var).toByteArray();
+
+        if (toggleType == DBUSMENU_MENUITEM_TOGGLE_CHECK) {
+            m_type = "unity.widgets.systemsettings.tablet.togglebutton";
+        } else if (toggleType == DBUSMENU_MENUITEM_TOGGLE_RADIO) {
+            m_type = "unity.widgets.systemsettings.tablet.radiobutton";
+        } else {
+            return;
+        }
+    } else if (dbusmenu_menuitem_property_exist(m_gitem, DBUSMENU_MENUITEM_PROP_TYPE)) {
         GVariant *var = dbusmenu_menuitem_property_get_variant(m_gitem, DBUSMENU_MENUITEM_PROP_TYPE);
         QByteArray typeName = GVariantToQVariant(var).toByteArray();
         if (typeName == "x-system-settings") {
@@ -201,7 +213,7 @@ void QDBusMenuItem::loadProperties()
 
 bool QDBusMenuItem::updateProperty(const QByteArray &name, QVariant value)
 {
-    qDebug() << "PROPERTY:" << name << "VALUE" << value;
+    //qDebug() << "PROPERTY:" << name << "VALUE" << value;
     if (name == DBUSMENU_MENUITEM_PROP_LABEL) {
         setProperty(DBUSMENU_PROPERTY_LABEL, value);
     } else if (name == DBUSMENU_MENUITEM_PROP_ICON_NAME) {

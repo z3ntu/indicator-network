@@ -80,14 +80,14 @@ namespace Unity.Settings {
 					item.item_activated.connect(checkbox_item_activated_cb);
 
 					/* TODO: What if this is not about GSettings? More properties I guess */
-					item.property_set("x-tablet-widget", "x-toggle");
+					item.property_set("x-tablet-widget", "unity.widgets.systemsettings.tablet.togglebutton");
 				}
 				else if (k.type == "s") {
 					var gset = new GLib.Settings (k.parent.id);
 					item.property_set("x-text", gset.get_string(k.name));
 					
 					/* TODO: What if this is not about GSettings? More properties I guess */
-					item.property_set("x-tablet-widget", "x-textentry");
+					item.property_set("x-tablet-widget", "unity.widgets.systemsettings.tablet.textentry");
 					item.event.connect(menu_item_event_cb);
 				}
 			}

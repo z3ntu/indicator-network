@@ -82,10 +82,8 @@ void DBusModel::appendItems(QObjectList items)
         QDBusMenuItem *menuItem = qobject_cast<QDBusMenuItem *>(item);
 
         if (!menuItem->type().isEmpty())  {
-            qDebug() << "MODEL ITEM TYPE:" << menuItem->type();
             appendItem(menuItem);
         } else {
-            qDebug() << "WAIT FOR TYPE;";
             QObject::connect(item, SIGNAL(typeDiscovered()), this, SLOT(onItemTypeDiscovered()));
         }
     }
@@ -96,7 +94,6 @@ void DBusModel::onItemTypeDiscovered()
     QObject *sender = QObject::sender();
     QObject::disconnect(sender, SIGNAL(typeDiscovered()), this, SLOT(onItemTypeDiscovered()));
 
-    qDebug() << "MODEL TYPE DISCOVERED";
     appendItem(sender);
 }
 

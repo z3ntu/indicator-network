@@ -47,10 +47,10 @@ void QDBusMenuItem::onItemPropertyChanged(DbusmenuMenuitem *mi, gchar *property,
 {
     QDBusMenuItem *self = reinterpret_cast<QDBusMenuItem*>(data);
     if (self->updateProperty(property, GVariantToQVariant(value))) {
-        if (typeRelatedProperties.contains(property)) {
-            self->updateType();
-        }
         Q_EMIT self->changed();
+    }
+    if (typeRelatedProperties.contains(property)) {
+        self->updateType();
     }
 }
 
@@ -80,6 +80,9 @@ QDBusMenuItem::QDBusMenuItem(DbusmenuMenuitem *gitem, QObject *parent)
       m_gitem(gitem),
       m_type("")
 {
+    //Initialize property
+    setProperty(DBUSMENU_PROPERTY_STATE, false);
+
     /*
       Only those properties are current supported
     */
@@ -144,7 +147,8 @@ QByteArray QDBusMenuItem::type() const
 
 void QDBusMenuItem::updateType()
 {
-    m_type = "";
+    if (!m_type.isEmpty())
+        return;
 
     if (dbusmenu_menuitem_property_exist(m_gitem, DBUSMENU_MENUITEM_PROP_TOGGLE_TYPE)) {
         GVariant *var = dbusmenu_menuitem_property_get_variant(m_gitem, DBUSMENU_MENUITEM_PROP_TOGGLE_TYPE);
@@ -172,8 +176,9 @@ void QDBusMenuItem::updateType()
         } else if (typeName == "separator") {
             m_type = "unity.widgets.systemsettings.tablet.separator";
         }
+    }
 
-        qDebug() << "Type discovered" << m_type;
+    if (!m_type.isEmpty()) {
         Q_EMIT typeDiscovered();
     }
 }
@@ -213,7 +218,7 @@ void QDBusMenuItem::loadProperties()
 
 bool QDBusMenuItem::updateProperty(const QByteArray &name, QVariant value)
 {
-    //qDebug() << "PROPERTY:" << name << "VALUE" << value;
+    //qDebug() << (void*) this << "PROPERTY:" << name << "VALUE" << value;
     if (name == DBUSMENU_MENUITEM_PROP_LABEL) {
         setProperty(DBUSMENU_PROPERTY_LABEL, value);
     } else if (name == DBUSMENU_MENUITEM_PROP_ICON_NAME) {

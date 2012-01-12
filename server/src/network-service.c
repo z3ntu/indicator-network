@@ -1,7 +1,9 @@
 #include <string.h>
+#include <glib.h>
 #include <gio/gio.h>
 #include <nm-utils.h>
 #include <nm-client.h>
+#include <nm-remote-settings.h>
 #include <nm-device-wifi.h>
 #include <libdbusmenu-glib/dbusmenu-glib.h>
 
@@ -25,7 +27,58 @@ GMainLoop *loop;
  * Other properties:
  *    "x-wifi-strength"   - int    - Signal strength
  *    "x-wifi-is-adhoc"   - bool   - Whether it is an adhoc network or not
+ *    "x-wifi-bssid"      - string - The internal unique id for the AP
  */
+
+static void
+access_point_selected (DbusmenuMenuitem *item,
+                       guint             timestamp,
+                       gpointer          data)
+{
+  gint              i;
+  NMDeviceWifi     *device          = (NMDeviceWifi*)data;
+  const GPtrArray  *apsarray        = nm_device_wifi_get_access_points (device);
+  const gchar      *bssid           = dbusmenu_menuitem_property_get (item, "x-wifi-bssid");
+  NMAccessPoint    *ap              = NULL;
+
+  for (i=0; i<apsarray->len; i++)
+    {
+      NMAccessPoint **aps = (NMAccessPoint**)(apsarray->pdata);
+      if (g_strcmp0 (nm_access_point_get_bssid (aps[i]), bssid) == 0)
+        {
+          ap = aps[i];
+          break;
+        }
+    }
+
+  if (ap != NULL)
+    {
+      NMRemoteSettings *rs              = nm_remote_settings_new (NULL);
+      GSList           *rs_connections  = nm_remote_settings_list_connections (rs);
+      GSList           *dev_connections = nm_device_filter_connections (NM_DEVICE (device), rs_connections);
+      GSList           *connections     = nm_access_point_filter_connections (ap, dev_connections);
+
+      if (g_slist_length (connections) < 1)
+        {
+          /*TODO: Fill all the arguments
+          nm_client_add_and_activate_connection (client, //Where do I get the client from :/
+                                                 NMConnection *partial,
+                                                 device,
+                                                 (const char*)specific_object, //dbus path
+                                                 NULL,
+                                                 NULL);*/
+        }
+      else
+        {
+          /* TODO: Check if it contains the active connection */
+        }
+
+      g_slist_free (connections);
+      g_slist_free (rs_connections);
+      g_slist_free (dev_connections);
+      g_object_unref (rs);
+    }
+}
 
 static gint
 wifi_aps_sort (NMAccessPoint **a,
@@ -77,6 +130,7 @@ wifi_populate_accesspoints (DbusmenuMenuitem *parent,
       dbusmenu_menuitem_property_set (ap_item, DBUSMENU_MENUITEM_PROP_LABEL, utf_ssid);
       dbusmenu_menuitem_property_set (ap_item, DBUSMENU_MENUITEM_PROP_TOGGLE_TYPE, DBUSMENU_MENUITEM_TOGGLE_RADIO);
 
+      dbusmenu_menuitem_property_set (ap_item, "x-wifi-bssid", nm_access_point_get_bssid (ap));
       dbusmenu_menuitem_property_set (ap_item, "type", "x-system-settings");
       dbusmenu_menuitem_property_set (ap_item, "x-tablet-widget", "unity.widgets.systemsettings.tablet.accesspoint");
 
@@ -84,6 +138,10 @@ wifi_populate_accesspoints (DbusmenuMenuitem *parent,
       dbusmenu_menuitem_property_set_bool (ap_item, "x-wifi-is-adhoc",   is_adhoc);
 
       dbusmenu_menuitem_child_append  (parent, ap_item);
+
+      g_signal_connect (ap_item, "item-activated",
+                        G_CALLBACK (access_point_selected),
+                        device);
 
       g_free (utf_ssid);
     }

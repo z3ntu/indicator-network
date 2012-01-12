@@ -42,7 +42,7 @@ Page {
                 menuControl.objectPath = model.objectPath
 
                 page.title = model.description
-                page.menuId = 1 // Skip root menu
+                page.menuId = 0
                 menuControl.connectToServer()
             }
         }

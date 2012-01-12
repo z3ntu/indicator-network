@@ -100,7 +100,7 @@ QDeclarativeItem* PageStack::push(QDeclarativeComponent * pageComponent)
 
     QObject *pageObject = pageComponent->create(ctx);
     if (!pageObject) {
-        qDebug() << "Fail to load Page:" << pageComponent->errors();
+        qWarning(); << "Fail to load Page:" << pageComponent->errors();
         Q_ASSERT(pageObject);
     }
 
@@ -112,7 +112,7 @@ QDeclarativeItem* PageStack::push(QDeclarativeComponent * pageComponent)
             ctx = QDeclarativeEngine::contextForObject(pageObject);
             QObject *headerObject = headerComponent->create(ctx);
             if (!headerObject) {
-                qDebug() << "Fail to load Header:" <<  headerComponent->errors();
+                qWarning(); << "Fail to load Header:" <<  headerComponent->errors();
                 Q_ASSERT(headerObject);
             }
             header = qobject_cast<QDeclarativeItem*>(headerObject);

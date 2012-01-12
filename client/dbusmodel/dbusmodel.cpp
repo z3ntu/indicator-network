@@ -81,7 +81,7 @@ void DBusModel::appendItems(QObjectList items)
     Q_FOREACH(QObject *item, items) {
         QDBusMenuItem *menuItem = qobject_cast<QDBusMenuItem *>(item);
 
-        if (menuItem->type() != QDBusMenuItem::Unknow) {
+        if (!menuItem->type().isEmpty()) {
             appendItem(menuItem);
         } else {
             QObject::connect(item, SIGNAL(typeDiscovered()), this, SLOT(onItemTypeDiscovered()));
@@ -165,7 +165,7 @@ QVariant DBusModel::data(const QModelIndex &index, int role) const
     case Id:
         return item->property(DBUSMENU_PROPERTY_ID);
     case Type:
-        return item->typeName();
+        return item->type();
     case Label:
         return item->property(DBUSMENU_PROPERTY_LABEL);
     case State:
@@ -175,8 +175,6 @@ QVariant DBusModel::data(const QModelIndex &index, int role) const
     case HasSubmenu:
         return item->property(DBUSMENU_PROPERTY_HAS_SUBMENU).isValid() &&
                item->property(DBUSMENU_PROPERTY_HAS_SUBMENU).toBool();
-    case Data:
-        return item->data();
     case Properties:
         return item->extraProperties();
     default:

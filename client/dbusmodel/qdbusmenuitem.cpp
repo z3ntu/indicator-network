@@ -11,8 +11,6 @@
 ItemList QDBusMenuItem::m_globalItemList;
 static QList<QByteArray> mapedProperties;
 static QList<QByteArray> typeRelatedProperties;
-static QHash<QByteArray, QDBusMenuItem::ItemType> widgetTypeMap;
-static QHash<QDBusMenuItem::ItemType, QByteArray> widgetDataMap;
 
 
 static QVariant GVariantToQVariant(GVariant *value)
@@ -79,8 +77,7 @@ void QDBusMenuItem::onChildMoved(DbusmenuMenuitem *mi, DbusmenuMenuitem *child, 
 
 QDBusMenuItem::QDBusMenuItem(DbusmenuMenuitem *gitem, QObject *parent)
     : QObject(parent),
-      m_gitem(gitem),
-      m_type(Unknow)
+      m_gitem(gitem)
 {
     /*
       Only those properties are current supported
@@ -104,16 +101,6 @@ QDBusMenuItem::QDBusMenuItem(DbusmenuMenuitem *gitem, QObject *parent)
                               << DBUSMENU_MENUITEM_PROP_TOGGLE_TYPE
                               << DBUSMENU_MENUITEM_TOGGLE_CHECK
                               << DBUSMENU_MENUITEM_TOGGLE_RADIO;
-    }
-
-    if (widgetTypeMap.size() == 0) {
-        widgetTypeMap["x-textentry"] = TextEntry;
-        widgetTypeMap["x-toggle"] = ToggleButton;
-        widgetTypeMap["x-custom"] = Custom;
-    }
-
-    if (widgetDataMap.size() == 0) {
-        widgetDataMap[TextEntry] = "x-text";
     }
 
     loadChildren();
@@ -149,72 +136,32 @@ int QDBusMenuItem::position() const
     }
 }
 
-QDBusMenuItem::ItemType QDBusMenuItem::type() const
+QByteArray QDBusMenuItem::type() const
 {
     return m_type;
 }
 
-QByteArray QDBusMenuItem::typeName() const
-{
-    switch(m_type) {
-    case TextEntry:
-        return "TextEntry";
-    case ToggleButton:
-        return "ToggleButton";
-    case RadioButton:
-        return "RadioButton";
-    case QDBusMenuItem::Separator:
-        return "Separator";
-    case QDBusMenuItem::Custom:
-        return "Custom";
-    case QDBusMenuItem::Label:
-    default:
-        return "Label";
-    }
-}
-
-QVariant QDBusMenuItem::data() const
-{
-    if (widgetDataMap.contains(m_type)) {
-        if (dbusmenu_menuitem_property_exist(m_gitem, widgetDataMap[m_type])) {
-            GVariant *var = dbusmenu_menuitem_property_get_variant(m_gitem, widgetDataMap[m_type]);
-            return GVariantToQVariant(var);
-        }
-    }
-    return QVariant();
-}
 void QDBusMenuItem::updateType()
 {
-    m_type = Unknow;
+    m_type = "";
+
     if (dbusmenu_menuitem_property_exist(m_gitem, DBUSMENU_MENUITEM_PROP_TYPE)) {
         GVariant *var = dbusmenu_menuitem_property_get_variant(m_gitem, DBUSMENU_MENUITEM_PROP_TYPE);
         QByteArray typeName = GVariantToQVariant(var).toByteArray();
         if (typeName == "x-system-settings") {
             if (dbusmenu_menuitem_property_exist(m_gitem, DBUSMENU_MENUITEM_WIDGET_TYPE)) {
                 var = dbusmenu_menuitem_property_get_variant(m_gitem, DBUSMENU_MENUITEM_WIDGET_TYPE);
-                QByteArray systemTypeName = GVariantToQVariant(var).toByteArray();
-                if (widgetTypeMap.contains(systemTypeName))
-                    m_type = widgetTypeMap[systemTypeName];
-
-                // Check for radio buttom
-                if ((m_type == ToggleButton) && dbusmenu_menuitem_property_exist(m_gitem, DBUSMENU_MENUITEM_PROP_TOGGLE_TYPE)) {
-                    GVariant *var = dbusmenu_menuitem_property_get_variant(m_gitem, DBUSMENU_MENUITEM_PROP_TOGGLE_TYPE);
-                    gsize size;
-                    if (qstrcmp(g_variant_get_string(var, &size), DBUSMENU_MENUITEM_TOGGLE_RADIO) == 0)
-                        m_type = RadioButton;
-                }
+                m_type = GVariantToQVariant(var).toByteArray();
             } else {
                 return;
             }
         } else if (typeName == "standard") {
-            m_type = Label;
+            m_type = "unity.widgets.systemsettings.tablet.label";
         } else if (typeName == "separator") {
-            m_type = Separator;
-        } else {
-            qWarning() << "Unknow menu type: " << typeName;
-            return;
+            m_type = "unity.widgets.systemsettings.tablet.separator";
         }
 
+        qDebug() << "Type discovered" << m_type;
         Q_EMIT typeDiscovered();
     }
 }
@@ -254,6 +201,7 @@ void QDBusMenuItem::loadProperties()
 
 bool QDBusMenuItem::updateProperty(const QByteArray &name, QVariant value)
 {
+    qDebug() << "PROPERTY:" << name << "VALUE" << value;
     if (name == DBUSMENU_MENUITEM_PROP_LABEL) {
         setProperty(DBUSMENU_PROPERTY_LABEL, value);
     } else if (name == DBUSMENU_MENUITEM_PROP_ICON_NAME) {

@@ -3,6 +3,8 @@ import DBusMenu 1.0
 import components 1.0
 import SystemUI 1.0
 
+import "TypeDiscovery.js" as TypeDiscovery
+
 Item {
     id: page
 
@@ -30,33 +32,8 @@ Item {
         id: mainMenu
 
         property string activeUrl: ""
-
+        
         anchors.fill: parent
-
-        function createComponent(model, parent)
-        {
-            var comp
-            if (model.type == "TextEntry") {
-                comp = Qt.createQmlObject('import components 1.0; TextEntry {}', parent, '')
-            } else if (model.type == "ToggleButton") {
-                comp = Qt.createQmlObject('import components 1.0; ToggleButton {}', parent, '')
-            } else if (model.type == "Custom") {
-                var component = Qt.createComponent("file://home/renato/work/system/chewie/client/qml/SystemUI/extras/" + model.properties.widgetName + '.qml');
-                if (component.status == Component.Ready) {
-                    comp = component.createObject(parent);
-                    comp.dbusModel = model
-                } else {
-                    console.log("Fail to create component: " + component.errorString())
-                    return null
-                }
-            } else {
-                comp = Qt.createQmlObject('import components 1.0; NavigationButton {}', parent, '')
-                comp.stack = pages
-                comp.next = Qt.createComponent("ServiceSubPage.qml")
-            }
-            comp.dbusModel = model
-            return comp
-        }
 
         header: NavigationButton {
             caption: page.title
@@ -99,7 +76,7 @@ Item {
                     }
 
                     Component.onCompleted: {
-                        var comp = mainMenu.createComponent(model, parent)
+                        var comp = TypeDiscovery.createComponent(model, parent)
                         implicitHeight = comp.implicitHeight
                         comp.anchors.fill = delegate
 

@@ -3,5 +3,6 @@
         <file>main.qml</file>
         <file>ServiceListPage.qml</file>
         <file>ServiceSubPage.qml</file>
+        <file>TypeDiscovery.js</file>
     </qresource>
 </RCC>

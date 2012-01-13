@@ -16,9 +16,6 @@ Item {
     property QtObject dbusModel:  null
 
     implicitHeight: header.height + sectionContents.childrenRect.height
-    onImplicitHeightChanged: {
-        console.log("HEIGHT CHANGED: " + implicitHeight)
-    }
 
     function load() {
         sectionModel.load()
@@ -43,7 +40,6 @@ Item {
         height: delegate ? delegate.implicitHeight : 0
         onSourceChanged: {
             if (source.length > 0) {
-                console.debug("LOAD OBJ: " + source)
                 delegate = Qt.createQmlObject(source, header, '')
                 if (!delegate) {
                     console.log("FAIL TO LOADER SECTION HEADER: " + delegate.errorString())

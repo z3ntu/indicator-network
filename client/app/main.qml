@@ -9,10 +9,6 @@ Item {
     height: 600
     width: pages.implicitWidth
 
-    onHeightChanged: {
-        console.debug("HEIGHT CHANGED: " + height)
-    }
-
     function addService(description, serviceName, objectPath) {
         servicesModel.append({"description" : description,
                               "serviceName" : serviceName,

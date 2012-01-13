@@ -31,7 +31,6 @@ function createObjectFromFile(file, model, parent)
 function createComponent(model, parent)
 {
     if (knowTypes.length == 0) {
-        console.debug("INITIALIZE TYPES")
         knowTypes["unity.widgets.systemsettings.tablet.textentry"] = "import components 1.0; TextEntry {}";
         knowTypes["unity.widgets.systemsettings.tablet.togglebutton"] = "import components 1.0; ToggleButton {}";
         knowTypes["unity.widgets.systemsettings.tablet.sectiontitle"] = "import components 1.0; SectionTitle {}";
@@ -40,8 +39,6 @@ function createComponent(model, parent)
 
     var modelType = new String(model.type)
     var comp
-
-    console.debug("CREATE ITEM : " + modelType + model.isInline)
 
     if (knowTypes[modelType]) {
         if (model.isInline) {

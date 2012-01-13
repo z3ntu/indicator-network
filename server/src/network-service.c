@@ -27,6 +27,7 @@ GMainLoop *loop;
  * Other properties:
  *    "x-wifi-strength"   - int    - Signal strength
  *    "x-wifi-is-adhoc"   - bool   - Whether it is an adhoc network or not
+ *    "x-wifi-is-secure"  - bool   - Whether the network is open or requires password
  *    "x-wifi-bssid"      - string - The internal unique id for the AP
  */
 
@@ -118,6 +119,7 @@ wifi_populate_accesspoints (DbusmenuMenuitem *parent,
   for (i=0; i < sortedarray->len; i++)
     {
       gboolean          is_adhoc   = FALSE;
+      gboolean          is_secure  = FALSE;
       NMAccessPoint    *ap = aps[i];
       DbusmenuMenuitem *ap_item = dbusmenu_menuitem_new_with_id ((*id)++);
       char             *utf_ssid;
@@ -125,9 +127,10 @@ wifi_populate_accesspoints (DbusmenuMenuitem *parent,
       utf_ssid = nm_utils_ssid_to_utf8 (nm_access_point_get_ssid (ap));
 
       if (nm_access_point_get_mode (ap) == NM_802_11_MODE_ADHOC)
-        is_adhoc   = TRUE;
+        is_adhoc  = TRUE;
+      if (nm_access_point_get_flags (ap) == NM_802_11_AP_FLAGS_PRIVACY)
+        is_secure = TRUE;
 
-      printf("NETWORK FOUND: %s\n", utf_ssid, nm_access_point_get_strength (ap));
       dbusmenu_menuitem_property_set (ap_item, DBUSMENU_MENUITEM_PROP_LABEL, utf_ssid);
       dbusmenu_menuitem_property_set (ap_item, DBUSMENU_MENUITEM_PROP_TOGGLE_TYPE, DBUSMENU_MENUITEM_TOGGLE_RADIO);
 
@@ -137,6 +140,7 @@ wifi_populate_accesspoints (DbusmenuMenuitem *parent,
 
       dbusmenu_menuitem_property_set_int  (ap_item, "x-wifi-strength",   nm_access_point_get_strength (ap));
       dbusmenu_menuitem_property_set_bool (ap_item, "x-wifi-is-adhoc",   is_adhoc);
+      dbusmenu_menuitem_property_set_bool (ap_item, "x-wifi-is-secure",  is_secure);
 
       dbusmenu_menuitem_child_append  (parent, ap_item);
 

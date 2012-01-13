@@ -31,19 +31,25 @@ BasicNavigationButton {
         return "images/" + imageName + ".svg";
     }
 
-    Image {
-        id: wifiIcon
+    Item {
+        id: wifiIconFrame
 
-        height: sourceSize.height
-        width: sourceSize.width
-        source: button.hasModel  ?  getImageFile(button.dbusModel) : getImageFile(0)
-        anchors { left: parent.left; verticalCenter: parent.verticalCenter }
+        width: 48
+        anchors { left: parent.left; top: parent.top; bottom: parent.bottom }
+        Image {
+            id: wifiIcon
+
+            height: sourceSize.height
+            width: sourceSize.width
+            source: button.hasModel  ?  getImageFile(button.dbusModel) : getImageFile(0)
+            anchors { verticalCenter: parent.verticalCenter; horizontalCenter: parent.horizontalCenter; }
+        }
     }
 
     ListItem {
         id: basicItem
         selectable: true
         dbusModel: button.dbusModel
-        anchors { left: wifiIcon.right; top: parent.top; right: parent.right; bottom: parent.bottom }
+        anchors { left: wifiIconFrame.right; top: parent.top; right: parent.right; bottom: parent.bottom }
     }
 }

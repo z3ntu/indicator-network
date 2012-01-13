@@ -21,6 +21,7 @@ BasicItem {
             id: label
 
             text: hasModel ? dbusModel.label : ""
+            elide: Text.ElideRight
             horizontalAlignment: Text.AlignLeft
             verticalAlignment: Text.AlignVCenter
             anchors { left: parent.left; top: parent.top; right: labelDescription.left; bottom: parent.bottom; margins: item.style.margin }
@@ -33,6 +34,7 @@ BasicItem {
         Text {
             id: labelDescription
 
+            elide: Text.ElideRight
             width: implicitWidth
             horizontalAlignment: Text.AlignRight
             verticalAlignment: Text.AlignVCenter
@@ -48,7 +50,7 @@ BasicItem {
 
             visible: selectable
             height: sourceSize.height
-            width: selectable ? sourceSize.width : 48
+            width: selectable ? sourceSize.width : 0
             anchors { top:  parent.top; right: parent.right; bottom: parent.bottom }
         }
     }

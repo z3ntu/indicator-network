@@ -3,9 +3,6 @@ import QtQuick 1.1
 BasicButton {
     id: listButton
 
-    property QtObject group: null
-    property QtObject _actualGroup: null
-
     property alias caption: listItem.caption
     property alias description: listItem.description
     property alias selectable: listItem.selectable
@@ -14,20 +11,9 @@ BasicButton {
     style: listItem.style
 
     onClicked: {
-        if (selectable) {
+        if (!hasModel && selectable) {
             selected = !selected
-            if (group) {
-                group.selectButton(listButton)
-            }
         }
-    }
-
-    onGroupChanged: {
-        if (_actualGroup) {
-            _actualGroup.removeButton(listButton)
-        }
-        group.addButton(listButton)
-        _actualGroup = group
     }
 
     BasicListItem {
@@ -35,10 +21,5 @@ BasicButton {
 
         dbusModel: listButton.dbusModel
         anchors.fill: parent
-    }
-
-    Component.onDestruction: {
-        if (group)
-            group.removeButton(listButton)
     }
 }

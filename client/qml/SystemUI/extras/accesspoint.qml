@@ -10,35 +10,46 @@ BasicNavigationButton {
     implicitHeight: 48
 
     function getImageFile() {
-        var imageName = "nm-signal-100.svg"
+        var imageName = "nm-signal-100"
         var strength = button.dbusModel.properties.wifi_strength
         if (button.dbusModel.properties.wifi_is_adhoc) {
-            imgageName = "nm-adhoc.svg"
+            imageName = "nm-adhoc"
         } else if (strength == 0) {
-            imageName = "nm-signal-00.svg"
+            imageName = "nm-signal-00"
         } else if (strength <= 25) {
-            imageName = "nm-signal-25.svg"
+            imageName = "nm-signal-25"
         } else if (strength <= 50) {
-            imageName = "nm-signal-50.svg"
+            imageName = "nm-signal-50"
         } else if (strength <= 75) {
-            imageName = "nm-signal-75.svg"
+            imageName = "nm-signal-75"
         }
-        return "images/" + imageName;
+
+        if (button.dbusModel.properties.wifi_is_secure) {
+            imageName += "-secure"
+        }
+
+        return "images/" + imageName + ".svg";
     }
 
-    Image {
-        id: wifiIcon
+    Item {
+        id: wifiIconFrame
 
-        height: sourceSize.height
-        width: sourceSize.width
-        source: button.hasModel  ?  getImageFile(button.dbusModel) : getImageFile(0)
-        anchors { left: parent.left; verticalCenter: parent.verticalCenter }
+        width: 48
+        anchors { left: parent.left; top: parent.top; bottom: parent.bottom }
+        Image {
+            id: wifiIcon
+
+            height: sourceSize.height
+            width: sourceSize.width
+            source: button.hasModel  ?  getImageFile(button.dbusModel) : getImageFile(0)
+            anchors { verticalCenter: parent.verticalCenter; horizontalCenter: parent.horizontalCenter; }
+        }
     }
 
-    BasicListItem {
+    ListItem {
         id: basicItem
         selectable: true
         dbusModel: button.dbusModel
-        anchors { left: wifiIcon.right; top: parent.top; right: parent.right; bottom: parent.bottom }
+        anchors { left: wifiIconFrame.right; top: parent.top; right: parent.right; bottom: parent.bottom }
     }
 }

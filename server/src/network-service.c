@@ -127,6 +127,7 @@ wifi_populate_accesspoints (DbusmenuMenuitem *parent,
       if (nm_access_point_get_mode (ap) == NM_802_11_MODE_ADHOC)
         is_adhoc   = TRUE;
 
+      printf("NETWORK FOUND: %s\n", utf_ssid, nm_access_point_get_strength (ap));
       dbusmenu_menuitem_property_set (ap_item, DBUSMENU_MENUITEM_PROP_LABEL, utf_ssid);
       dbusmenu_menuitem_property_set (ap_item, DBUSMENU_MENUITEM_PROP_TOGGLE_TYPE, DBUSMENU_MENUITEM_TOGGLE_RADIO);
 

@@ -5,15 +5,19 @@
 #include <QDeclarativeView>
 #include <QGraphicsObject>
 #include <QDeclarativeEngine>
+#include <QDeclarativeContext>
 #include <QDebug>
 
-#define SERVICE_DIR_ARGUMENT    "--service-dir"
-#define INCLUDE_DIR_ARGUMENT    "--include-dir"
-#define DEFAULT_SERVICE_DIR     "/usr/share/system-settings/services"
+#define SERVICE_DIR_ARGUMENT            "--service-dir"
+#define INCLUDE_DIR_ARGUMENT            "--include-dir"
+#define EXTRA_COMPONENTS_DIR_ARGUMENT   "--extra-components-dir"
+#define DEFAULT_SERVICE_DIR             "/usr/share/system-settings/services"
+#define EXTRA_COMPONENTS_DIR            "/usr/share/system-settings/compoents"
 
 int main(int argc, char ** argv)
 {
     QString serviceDir = DEFAULT_SERVICE_DIR;
+    QString extraComponentsDir = EXTRA_COMPONENTS_DIR;
     QStringList importPaths;
 
     for(int i=1; i < argc; i++) {
@@ -22,6 +26,8 @@ int main(int argc, char ** argv)
             serviceDir = strArg.split("=")[1];
         } else if (strArg.startsWith(INCLUDE_DIR_ARGUMENT)) {
             importPaths << strArg.split("=")[1];
+        } else if (strArg.startsWith(EXTRA_COMPONENTS_DIR_ARGUMENT)) {
+            extraComponentsDir = strArg.split("=")[1];
         }
     }
 
@@ -38,6 +44,7 @@ int main(int argc, char ** argv)
         view->engine()->addImportPath(importPath);
     }
 
+    view->rootContext()->setContextProperty("EXTRA_COMPONENTS_DIR", extraComponentsDir);
     view->setSource(QUrl("qrc:/qml/main.qml"));
 
     if (view->errors().size() > 0) {

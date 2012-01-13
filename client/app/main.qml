@@ -6,8 +6,12 @@ import components 1.0
 Item {
     id: stage
 
-    height: 700
+    height: 600
     width: pages.implicitWidth
+
+    onHeightChanged: {
+        console.debug("HEIGHT CHANGED: " + height)
+    }
 
     function addService(description, serviceName, objectPath) {
         servicesModel.append({"description" : description,

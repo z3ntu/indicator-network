@@ -191,7 +191,6 @@ void QDBusMenuItem::updateType()
     }
 
     if (!m_type.isEmpty()) {
-        qDebug() << "Type Discovered: " << m_type;
         Q_EMIT typeDiscovered();
     }
 }

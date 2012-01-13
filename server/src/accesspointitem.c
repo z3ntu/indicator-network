@@ -1,6 +1,8 @@
 #include <glib.h>
 #include <nm-utils.h>
 #include <nm-access-point.h>
+#include <nm-remote-connection.h>
+#include <nm-device.h>
 #include <libdbusmenu-glib/menuitem.h>
 #include <stdlib.h>
 #include <string.h>
@@ -28,6 +30,8 @@ struct _DbusmenuAccesspointitemClass {
 
 struct _DbusmenuAccesspointitemPrivate {
         NMAccessPoint *ap;
+        NMDevice      *device;
+        gulong         handler_id;
 };
 
 
@@ -81,13 +85,67 @@ dbusmenu_accesspointitem_bind_accesspoint (DbusmenuAccesspointitem *self,
 {
   g_return_if_fail (self != NULL);
   g_return_if_fail (ap != NULL);
+  if (self->priv->ap)
+    {
+      g_warning ("Bind accesspoint shouldn't be called more than once");
+      return;
+    }
+
   self->priv->ap = ap;
 
-//  dbusmenu_menuitem_property_set_int ((DbusmenuMenuitem*) self, "x-wifi-strength", 100);
   g_signal_connect (ap, "notify",
                     G_CALLBACK (ap_notify_cb),
                     self);
-  g_object_ref (ap);
+
+  g_object_ref (G_OBJECT (ap));
+}
+
+static void
+connection_changed (NMDevice                *device,
+                    GParamSpec              *pspec,
+                    DbusmenuAccesspointitem *item)
+{
+  if (g_strcmp0 (g_param_spec_get_name (pspec), "active-access-point") == 0)
+    {
+      NMAccessPoint *ap;
+
+      dbusmenu_menuitem_property_set_int (DBUSMENU_MENUITEM (item),
+                                          DBUSMENU_MENUITEM_PROP_TOGGLE_STATE,
+                                          DBUSMENU_MENUITEM_TOGGLE_STATE_UNCHECKED);
+
+      g_object_get (device,
+                    "active-access-point", &ap,
+                    NULL);
+      if (ap == NULL)
+        return;
+
+      if (g_strcmp0 (nm_access_point_get_bssid (ap),
+                     nm_access_point_get_bssid (item->priv->ap)) == 0)
+        {
+          dbusmenu_menuitem_property_set_int (DBUSMENU_MENUITEM (item),
+                                              DBUSMENU_MENUITEM_PROP_TOGGLE_STATE,
+                                              DBUSMENU_MENUITEM_TOGGLE_STATE_CHECKED);
+        }
+      return;
+    }
+}
+
+void
+dbusmenu_accesspointitem_bind_device (DbusmenuAccesspointitem *self,
+                                      NMDevice                *device)
+{
+  g_return_if_fail (self != NULL);
+  g_return_if_fail (device != NULL);
+  if (self->priv->device)
+    {
+      g_warning ("Bind accesspoint shouldn't be called more than once");
+      return;
+    }
+  self->priv->device = device;
+  self->priv->handler_id = g_signal_connect (device, "notify",
+                                             G_CALLBACK (connection_changed),
+                                             self);
+  g_object_ref (device);
 }
 
 DbusmenuAccesspointitem*
@@ -116,15 +174,20 @@ dbusmenu_accesspointitem_instance_init (DbusmenuAccesspointitem * self)
 {
   self->priv = DBUSMENU_ACCESSPOINTITEM_GET_PRIVATE (self);
   self->priv->ap = NULL;
+  self->priv->device = NULL;
 }
 
 
 static void
 dbusmenu_accesspointitem_finalize (GObject* obj)
 {
-  DbusmenuAccesspointitem * self;
-  self = DBUSMENU_ACCESSPOINTITEM (obj);
+  DbusmenuAccesspointitem *self = DBUSMENU_ACCESSPOINTITEM (obj);
+
+  if (self->priv->device)
+    g_signal_handler_disconnect (self->priv->device, self->priv->handler_id);
+
   g_object_unref (self->priv->ap);
+  g_object_unref (self->priv->device);
   G_OBJECT_CLASS (dbusmenu_accesspointitem_parent_class)->finalize (obj);
 }
 

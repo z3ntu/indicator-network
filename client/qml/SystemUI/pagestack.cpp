@@ -175,6 +175,7 @@ void PageStack::onAnimationFinished()
     int count = m_pages.size() - (m_currentIndex + 1);
     while(count) {
         Page page = m_pages.pop();
+        QObject::disconnect(page.first, SIGNAL(heightChanged()), this, SLOT(onHeaderHeightChanged()));
         pageUnloaded(page.second);
         page.first->setVisible(false);
         page.first->setParentItem(0);
@@ -259,6 +260,16 @@ void PageStack::prepareArrangeAnimation(QStack<QDeclarativeItem * > & headers, Q
     }
 }
 
+void PageStack::onHeaderHeightChanged()
+{
+    QDeclarativeItem *header = qobject_cast<QDeclarativeItem *>(QObject::sender());
+    QDeclarativeItem *page = header->property("page").value<QDeclarativeItem *>();
+    if (page) {
+        page->setY(header->height() + m_spacing);
+        page->setHeight(height() - page->y());
+    }
+}
+
 void PageStack::addPage(QDeclarativeItem * header, QDeclarativeItem * page )
 {
     finishAnimation();
@@ -278,8 +289,11 @@ void PageStack::addPage(QDeclarativeItem * header, QDeclarativeItem * page )
     page->setWidth(m_pageWidth);
     page->setHeight(height() - page->y());
     page->setX(xOffset);
-    QDeclarativeProperty::write(page, "index", pageIndex);
 
+    header->setProperty("page", QVariant::fromValue<QDeclarativeItem *>(page));
+
+    QObject::connect(header, SIGNAL(heightChanged()), this, SLOT(onHeaderHeightChanged()));
+    QDeclarativeProperty::write(page, "index", pageIndex);
 
     m_currentIndex = pageIndex;
     Q_EMIT pageLoaded(page);

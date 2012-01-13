@@ -78,7 +78,9 @@ void QDBusMenuItem::onChildMoved(DbusmenuMenuitem *mi, DbusmenuMenuitem *child, 
 QDBusMenuItem::QDBusMenuItem(DbusmenuMenuitem *gitem, QObject *parent)
     : QObject(parent),
       m_gitem(gitem),
-      m_type("")
+      m_type(""),
+      m_isInline(false),
+      m_hasChildren(false)
 {
     //Initialize property
     setProperty(DBUSMENU_PROPERTY_STATE, false);
@@ -145,23 +147,22 @@ QByteArray QDBusMenuItem::type() const
     return m_type;
 }
 
+bool QDBusMenuItem::isInline() const
+{
+    return m_isInline;
+}
+
+bool QDBusMenuItem::hasSubMenu() const
+{
+    return m_hasChildren;
+}
+
 void QDBusMenuItem::updateType()
 {
     if (!m_type.isEmpty())
         return;
 
-    if (dbusmenu_menuitem_property_exist(m_gitem, DBUSMENU_MENUITEM_PROP_TOGGLE_TYPE)) {
-        GVariant *var = dbusmenu_menuitem_property_get_variant(m_gitem, DBUSMENU_MENUITEM_PROP_TOGGLE_TYPE);
-        QByteArray toggleType = GVariantToQVariant(var).toByteArray();
-
-        if (toggleType == DBUSMENU_MENUITEM_TOGGLE_CHECK) {
-            m_type = "unity.widgets.systemsettings.tablet.togglebutton";
-        } else if (toggleType == DBUSMENU_MENUITEM_TOGGLE_RADIO) {
-            m_type = "unity.widgets.systemsettings.tablet.radiobutton";
-        } else {
-            return;
-        }
-    } else if (dbusmenu_menuitem_property_exist(m_gitem, DBUSMENU_MENUITEM_PROP_TYPE)) {
+    if (dbusmenu_menuitem_property_exist(m_gitem, DBUSMENU_MENUITEM_PROP_TYPE)) {
         GVariant *var = dbusmenu_menuitem_property_get_variant(m_gitem, DBUSMENU_MENUITEM_PROP_TYPE);
         QByteArray typeName = GVariantToQVariant(var).toByteArray();
         if (typeName == "x-system-settings") {
@@ -176,9 +177,21 @@ void QDBusMenuItem::updateType()
         } else if (typeName == "separator") {
             m_type = "unity.widgets.systemsettings.tablet.separator";
         }
+    } else if (dbusmenu_menuitem_property_exist(m_gitem, DBUSMENU_MENUITEM_PROP_TOGGLE_TYPE)) {
+        GVariant *var = dbusmenu_menuitem_property_get_variant(m_gitem, DBUSMENU_MENUITEM_PROP_TOGGLE_TYPE);
+        QByteArray toggleType = GVariantToQVariant(var).toByteArray();
+
+        if (toggleType == DBUSMENU_MENUITEM_TOGGLE_CHECK) {
+            m_type = "unity.widgets.systemsettings.tablet.togglebutton";
+        } else if (toggleType == DBUSMENU_MENUITEM_TOGGLE_RADIO) {
+            m_type = "unity.widgets.systemsettings.tablet.radiobutton";
+        } else {
+            return;
+        }
     }
 
     if (!m_type.isEmpty()) {
+        qDebug() << "Type Discovered: " << m_type;
         Q_EMIT typeDiscovered();
     }
 }
@@ -224,7 +237,8 @@ bool QDBusMenuItem::updateProperty(const QByteArray &name, QVariant value)
     } else if (name == DBUSMENU_MENUITEM_PROP_ICON_NAME) {
         setProperty(DBUSMENU_PROPERTY_ICON_NAME, value);
     } else if (name == DBUSMENU_MENUITEM_PROP_CHILD_DISPLAY) {
-        setProperty(DBUSMENU_PROPERTY_HAS_SUBMENU, value.toString() == "submenu");
+        m_hasChildren = true;
+        m_isInline = value.toString() == "inline";
     } else if (name == DBUSMENU_MENUITEM_PROP_TOGGLE_STATE) {
         int newValue = -1;
         if (value.toInt() == DBUSMENU_MENUITEM_TOGGLE_STATE_CHECKED)
@@ -233,7 +247,7 @@ bool QDBusMenuItem::updateProperty(const QByteArray &name, QVariant value)
             newValue = 0;
         setProperty(DBUSMENU_PROPERTY_STATE, newValue);
     } else if (name.startsWith("x-")) {
-        m_extraProperties.insert(name.mid(2), value);
+        m_extraProperties.insert(name.mid(2).replace('-', '_'), value);
     } else {
         return false;
     }

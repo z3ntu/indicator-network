@@ -9,15 +9,15 @@ BasicItem {
     property int index: -1
 
     style: PageStyle { }
-    implicitHeight: scroll.height
+    //implicitHeight: scroll.height + 48
 
     Flickable {
         id: scroll
 
         clip: true
-        contentHeight: contents.height
+        contentHeight: contents.childrenRect.height
         contentWidth: parent.width
-        anchors.fill:  parent
+        anchors.fill: parent
 
         Column {
             id: contents

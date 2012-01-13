@@ -58,6 +58,7 @@ access_point_selected (DbusmenuMenuitem *item,
   const GPtrArray  *apsarray = nm_device_wifi_get_access_points (device);
   NMAccessPoint    *ap       = NULL;
 
+  /* Use SSID instead of BSSID */
   for (i=0; i<apsarray->len; i++)
     {
       const gchar *bssid = dbusmenu_menuitem_property_get (item, "x-wifi-bssid");
@@ -146,6 +147,7 @@ wifi_populate_accesspoints (DbusmenuMenuitem *parent,
       gboolean          is_adhoc   = FALSE;
       gboolean          is_secure  = FALSE;
       NMAccessPoint    *ap = aps[i];
+      NMAccessPoint     *active_ap;
       DbusmenuMenuitem *ap_item = DBUSMENU_MENUITEM (dbusmenu_accesspointitem_new_with_id ((*id)++));
       char             *utf_ssid;
       ClientDevice     *cd = g_malloc (sizeof (ClientDevice));
@@ -159,7 +161,21 @@ wifi_populate_accesspoints (DbusmenuMenuitem *parent,
       if (nm_access_point_get_flags (ap) == NM_802_11_AP_FLAGS_PRIVACY)
         is_secure = TRUE;
 
+      g_object_get (device,
+                    "active-access-point", &active_ap,
+                    NULL);
+
+      if (active_ap && g_strcmp0 (nm_access_point_get_bssid (ap),
+                                  nm_access_point_get_bssid (active_ap)) == 0)
+      {
+          dbusmenu_menuitem_property_set_int (DBUSMENU_MENUITEM (ap_item),
+                                              DBUSMENU_MENUITEM_PROP_TOGGLE_STATE,
+                                              DBUSMENU_MENUITEM_TOGGLE_STATE_CHECKED);
+      }
+
+
       dbusmenu_accesspointitem_bind_accesspoint (DBUSMENU_ACCESSPOINTITEM (ap_item), ap);
+      dbusmenu_accesspointitem_bind_device      (DBUSMENU_ACCESSPOINTITEM (ap_item), NM_DEVICE (device));
 
       dbusmenu_menuitem_property_set (ap_item, DBUSMENU_MENUITEM_PROP_LABEL, utf_ssid);
       dbusmenu_menuitem_property_set (ap_item, DBUSMENU_MENUITEM_PROP_TOGGLE_TYPE, DBUSMENU_MENUITEM_TOGGLE_RADIO);

@@ -13,7 +13,9 @@ set(exportmenu_SRC
 set(networkservice_SRC
     ${CMAKE_CURRENT_BINARY_DIR}/Settings.c
     ${CMAKE_CURRENT_BINARY_DIR}/MenuExporter.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/network-service.c)
+    ${CMAKE_CURRENT_SOURCE_DIR}/network-service.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/accesspointitem.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/accesspointitem.h)
 
 set(CMAKE_C_FLAGS "-Wall -g")
 

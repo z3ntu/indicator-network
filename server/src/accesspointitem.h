@@ -2,13 +2,8 @@
 #define __ACCESSPOINTITEM_H__
 
 #include <glib.h>
-#include <libdbusmenu-glib/client.h>
-#include <libdbusmenu-glib/dbusmenu-glib.h>
-#include <libdbusmenu-glib/enum-types.h>
-#include <libdbusmenu-glib/menuitem-proxy.h>
+#include <nm-access-point.h>
 #include <libdbusmenu-glib/menuitem.h>
-#include <libdbusmenu-glib/server.h>
-#include <libdbusmenu-glib/types.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -29,21 +24,16 @@ typedef struct _DbusmenuAccesspointitemPrivate DbusmenuAccesspointitemPrivate;
 struct _DbusmenuAccesspointitem {
 	DbusmenuMenuitem parent_instance;
 	DbusmenuAccesspointitemPrivate * priv;
-	GByteArray* ssid;
 };
 
 struct _DbusmenuAccesspointitemClass {
 	DbusmenuMenuitemClass parent_class;
 };
 
-
 GType dbusmenu_accesspointitem_get_type (void) G_GNUC_CONST;
-void dbusmenu_accesspointitem_bind_accesspoint (DbusmenuAccesspointitem* self);
+void dbusmenu_accesspointitem_bind_accesspoint (DbusmenuAccesspointitem *self, NMAccessPoint *ap);
 DbusmenuAccesspointitem* dbusmenu_accesspointitem_new (void);
-DbusmenuAccesspointitem* dbusmenu_accesspointitem_construct (GType object_type);
-const gchar* dbusmenu_accesspointitem_get_bssid (DbusmenuAccesspointitem* self);
-void dbusmenu_accesspointitem_set_bssid (DbusmenuAccesspointitem* self, const gchar* value);
-
+DbusmenuAccesspointitem* dbusmenu_accesspointitem_new_with_id (gint id);
 
 G_END_DECLS
 

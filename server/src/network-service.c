@@ -7,7 +7,7 @@
 #include <nm-device-wifi.h>
 #include <libdbusmenu-glib/dbusmenu-glib.h>
 
-GMainLoop *loop;
+#include "accesspointitem.h"
 
 /*
  * unity.widgets.systemsettings.*.sectiontitle
@@ -31,19 +31,36 @@ GMainLoop *loop;
  *    "x-wifi-bssid"      - string - The internal unique id for the AP
  */
 
+
+GMainLoop *loop;
+
+typedef struct {
+  NMDevice *device;
+  NMClient *client;
+} ClientDevice;
+
+static void
+destroy_client_device (gpointer  data,
+                       GClosure *closure)
+{
+  g_free (data);
+}
+
 static void
 access_point_selected (DbusmenuMenuitem *item,
                        guint             timestamp,
                        gpointer          data)
 {
   gint              i;
-  NMDeviceWifi     *device          = (NMDeviceWifi*)data;
-  const GPtrArray  *apsarray        = nm_device_wifi_get_access_points (device);
-  const gchar      *bssid           = dbusmenu_menuitem_property_get (item, "x-wifi-bssid");
-  NMAccessPoint    *ap              = NULL;
+  ClientDevice     *cd       = (ClientDevice*)data;
+  NMClient         *client   = cd->client;
+  NMDeviceWifi     *device   = NM_DEVICE_WIFI (cd->device);
+  const GPtrArray  *apsarray = nm_device_wifi_get_access_points (device);
+  NMAccessPoint    *ap       = NULL;
 
   for (i=0; i<apsarray->len; i++)
     {
+      const gchar *bssid = dbusmenu_menuitem_property_get (item, "x-wifi-bssid");
       NMAccessPoint **aps = (NMAccessPoint**)(apsarray->pdata);
       if (g_strcmp0 (nm_access_point_get_bssid (aps[i]), bssid) == 0)
         {
@@ -52,6 +69,9 @@ access_point_selected (DbusmenuMenuitem *item,
         }
     }
 
+  if (ap && ap == nm_device_wifi_get_active_access_point (device))
+    return;
+
   if (ap != NULL)
     {
       NMRemoteSettings *rs              = nm_remote_settings_new (NULL);
@@ -59,19 +79,24 @@ access_point_selected (DbusmenuMenuitem *item,
       GSList           *dev_connections = nm_device_filter_connections (NM_DEVICE (device), rs_connections);
       GSList           *connections     = nm_access_point_filter_connections (ap, dev_connections);
 
-      if (g_slist_length (connections) < 1)
+      if (g_slist_length (connections) > 0)
         {
-          /*TODO: Fill all the arguments
-          nm_client_add_and_activate_connection (client, //Where do I get the client from :/
-                                                 NMConnection *partial,
-                                                 device,
-                                                 (const char*)specific_object, //dbus path
-                                                 NULL,
-                                                 NULL);*/
+          /* TODO: Select the most recently used one */
+          nm_client_activate_connection(client,
+                                        (NMConnection*)(connections->data),
+                                        NM_DEVICE (device),
+                                        nm_object_get_path (NM_OBJECT (ap)),
+                                        NULL,
+                                        NULL);
         }
       else
         {
-          /* TODO: Check if it contains the active connection */
+          nm_client_add_and_activate_connection (client,
+                                                 NULL,
+                                                 NM_DEVICE (device),
+                                                 nm_object_get_path (NM_OBJECT (ap)),
+                                                 NULL,
+                                                 NULL);
         }
 
       g_slist_free (connections);
@@ -121,8 +146,11 @@ wifi_populate_accesspoints (DbusmenuMenuitem *parent,
       gboolean          is_adhoc   = FALSE;
       gboolean          is_secure  = FALSE;
       NMAccessPoint    *ap = aps[i];
-      DbusmenuMenuitem *ap_item = dbusmenu_menuitem_new_with_id ((*id)++);
+      DbusmenuMenuitem *ap_item = DBUSMENU_MENUITEM (dbusmenu_accesspointitem_new_with_id ((*id)++));
       char             *utf_ssid;
+      ClientDevice     *cd = g_malloc (sizeof (ClientDevice));
+      cd->device = NM_DEVICE (device);
+      cd->client = client;
 
       utf_ssid = nm_utils_ssid_to_utf8 (nm_access_point_get_ssid (ap));
 
@@ -130,6 +158,8 @@ wifi_populate_accesspoints (DbusmenuMenuitem *parent,
         is_adhoc  = TRUE;
       if (nm_access_point_get_flags (ap) == NM_802_11_AP_FLAGS_PRIVACY)
         is_secure = TRUE;
+
+      dbusmenu_accesspointitem_bind_accesspoint (DBUSMENU_ACCESSPOINTITEM (ap_item), ap);
 
       dbusmenu_menuitem_property_set (ap_item, DBUSMENU_MENUITEM_PROP_LABEL, utf_ssid);
       dbusmenu_menuitem_property_set (ap_item, DBUSMENU_MENUITEM_PROP_TOGGLE_TYPE, DBUSMENU_MENUITEM_TOGGLE_RADIO);
@@ -144,9 +174,11 @@ wifi_populate_accesspoints (DbusmenuMenuitem *parent,
 
       dbusmenu_menuitem_child_append  (parent, ap_item);
 
-      g_signal_connect (ap_item, "item-activated",
-                        G_CALLBACK (access_point_selected),
-                        device);
+      g_signal_connect_data (ap_item, "item-activated",
+                             G_CALLBACK (access_point_selected),
+                             cd,
+                             destroy_client_device,
+                             0);
 
       g_free (utf_ssid);
     }
@@ -224,8 +256,8 @@ on_bus (GDBusConnection * connection, const gchar * name, gpointer user_data)
   DbusmenuMenuitem  *root   = dbusmenu_menuitem_new_with_id (id++);
 
   dbusmenu_server_set_root (server, root);
-
   client = nm_client_new ();
+
   devarray = nm_client_get_devices (client);
 
   devices = (NMDevice**) devarray->pdata;
@@ -250,7 +282,7 @@ static void
 name_lost (GDBusConnection * connection, const gchar * name, gpointer user_data)
 {
   g_main_loop_quit (loop);
-	return;
+  return;
 }
 
 int

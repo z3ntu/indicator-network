@@ -139,6 +139,7 @@ wifi_populate_accesspoints (DbusmenuMenuitem *parent,
   if (apsarray == NULL)
     return;
 
+  /* FIXME: Array doesn't get sorted */
   /* Creating a new GPtrArray that we can sort */
   sortedarray = g_ptr_array_new ();
   g_ptr_array_set_size (sortedarray, apsarray->len);

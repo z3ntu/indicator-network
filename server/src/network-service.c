@@ -135,6 +135,10 @@ wifi_populate_accesspoints (DbusmenuMenuitem *parent,
   const GPtrArray  *apsarray = nm_device_wifi_get_access_points (device);
   NMAccessPoint   **aps;
 
+  /* Access point list is empty */
+  if (apsarray == NULL)
+    return;
+
   /* Creating a new GPtrArray that we can sort */
   sortedarray = g_ptr_array_new ();
   g_ptr_array_set_size (sortedarray, apsarray->len);
@@ -147,7 +151,7 @@ wifi_populate_accesspoints (DbusmenuMenuitem *parent,
       gboolean          is_adhoc   = FALSE;
       gboolean          is_secure  = FALSE;
       NMAccessPoint    *ap = aps[i];
-      NMAccessPoint     *active_ap;
+      NMAccessPoint    *active_ap;
       DbusmenuMenuitem *ap_item = DBUSMENU_MENUITEM (dbusmenu_accesspointitem_new_with_id ((*id)++));
       char             *utf_ssid;
       ClientDevice     *cd = g_malloc (sizeof (ClientDevice));
@@ -198,7 +202,7 @@ wifi_populate_accesspoints (DbusmenuMenuitem *parent,
 
       g_free (utf_ssid);
     }
-  g_free (aps);
+  g_ptr_array_free (sortedarray, TRUE);
 }
 
 static void
@@ -234,7 +238,10 @@ device_state_changed (NMDevice            *device,
 }
 
 static void
-wifi_device_handler (DbusmenuMenuitem *parent, NMClient *client, NMDevice *device, gint *id)
+wifi_device_handler (DbusmenuMenuitem *parent,
+                     NMClient         *client,
+                     NMDevice         *device,
+                     gint             *id)
 {
   /* Wifi enable/disable toggle */
   gboolean          wifienabled   = nm_client_wireless_get_enabled (client);

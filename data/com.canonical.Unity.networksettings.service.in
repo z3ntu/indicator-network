@@ -1,0 +1,3 @@
+[D-BUS Service]
+Name=com.canonical.Unity.networksettings
+Exec=@NETWORK_SETTINGS_SERVICE@

@@ -10,16 +10,6 @@ namespace Unity.Settings {
 			this.settings = settings;
 		}
 
-		/*
-		private void property_changed_cb (Dbusmenu.Menuitem item, string property, GLib.Variant variant) {
-						if (property == "toggle-state") {
-							var gset = new GLib.Settings (item.property_get("x-settings-schema"));
-							bool val = variant.get_boolean ();
-							gset.set_boolean(item.property_get("x-settings-name"), val);
-						}
-		}
-		*/
-
 		private bool menu_item_event_cb (Dbusmenu.Menuitem item, string name, GLib.Variant variant, uint timestamp) {
 			if (name == "x-text-changed") {
 				var gset = new GLib.Settings (item.property_get("x-gsettings-schema"));
@@ -62,6 +52,7 @@ namespace Unity.Settings {
 				parent.child_append (item);
 				id++;
 
+				/* TODO: Subscribe to setting changes and notify them */
 				item.property_set ("x-gsettings-type", k.type);
 				item.property_set ("x-gsettings-schema", k.parent.id);
 				item.property_set ("x-gsettings-name",   k.name);
@@ -78,20 +69,18 @@ namespace Unity.Settings {
 
 					item.item_activated.connect(checkbox_item_activated_cb);
 
-					/* TODO: What if this is not about GSettings? More properties I guess */
 					item.property_set("x-tablet-widget", "unity.widgets.systemsettings.tablet.togglebutton");
 				}
 				else if (k.type == "s") {
 					var gset = new GLib.Settings (k.parent.id);
 					item.property_set("x-text", gset.get_string(k.name));
 
-					/* TODO: What if this is not about GSettings? More properties I guess */
 					item.property_set("x-tablet-widget", "unity.widgets.systemsettings.tablet.textentry");
 					item.event.connect(menu_item_event_cb);
 				}
+      	/* List of strings/ints??? hopefully not! */
 			}
 
-			//subgroups
 			foreach (Group sg in g.groups) {
 				var item = new Menuitem.with_id (id);
 				item.property_set ("type", "standard");

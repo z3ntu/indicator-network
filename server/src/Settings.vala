@@ -1,15 +1,15 @@
 namespace Unity.Settings {
-  public class Enum : Object {
+	public class Enum : Object {
 		//HashTable
-  }
-	  
+	}
+
 	public class Key : Object {
 		public string type = null;
 //		public string val;
 		public string name = null;
 		public string display_name;
 		public Group? parent = null;
-		
+
 		public Key (Group parent) {
 			this.parent = parent;
 		}
@@ -18,7 +18,7 @@ namespace Unity.Settings {
 			if (attrs_names.length != attrs_values.length) {
 				error("The amount of attribute names does not match with the amount of values.");
 			}
-		
+
 			for (int i = 0; i < attrs_names.length; i++) {
 				if (attrs_names[i] == "type")
 					type = attrs_values[i];
@@ -27,12 +27,12 @@ namespace Unity.Settings {
 			}
 		}
 	}
-	
+
 	public enum GroupType {
 		SUBMENU,
 		INLINE
 	}
-	
+
 	public class Group : Object {
 		public List<Group> groups = null;
 		public List<Key>   keys = null;
@@ -46,12 +46,12 @@ namespace Unity.Settings {
 
 		public Group () {
 		}
-	
-		public void populate_group (string[] attrs_names, string[] attrs_values) {
+
+                public void populate_group (string[] attrs_names, string[] attrs_values) {
 			if (attrs_names.length != attrs_values.length) {
 				error("The amount of attribute names does not match with the amount of values.");
 			}
-		
+
 			for (int i = 0; i < attrs_names.length; i++) {
 				if (attrs_names[i] == "id")
 					id = attrs_values[i];

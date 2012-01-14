@@ -238,6 +238,26 @@ device_state_changed (NMDevice            *device,
 }
 
 static void
+wireless_state_changed (NMClient         *client,
+                        GParamSpec       *pspec,
+                        DbusmenuMenuitem *item)
+{
+  if (g_strcmp0 (g_param_spec_get_name (pspec),
+                 NM_CLIENT_WIRELESS_ENABLED) == 0)
+  {
+    gboolean enabled;
+    g_object_get (client,
+                  NM_CLIENT_WIRELESS_ENABLED, &enabled,
+                  NULL);
+    dbusmenu_menuitem_property_set_bool (item, DBUSMENU_MENUITEM_PROP_VISIBLE, enabled);
+  }
+/*  if (g_strcmp0 (g_param_spec_get_name (pspec),
+                 NM_CLIENT_WIRELESS_HARDWARE_ENABLED) == 0)
+  {
+  }*/
+}
+
+static void
 wifi_device_handler (DbusmenuMenuitem *parent,
                      NMClient         *client,
                      NMDevice         *device,
@@ -288,9 +308,9 @@ wifi_device_handler (DbusmenuMenuitem *parent,
 
 
   /* TODO: Remove this when toggle is removed */
-  /*g_signal_connect (client, "notify::WirelessEnabled",
-                    G_CALLBACK (wireless_state_changed)
-                    toggle);*/
+  g_signal_connect (client, "notify",
+                    G_CALLBACK (wireless_state_changed),
+                    networksgroup);
   /*g_signal_connect (client, "notify::WirelessHardwareEnabled",
                     G_CALLBACK (wireless_state_changed)
                     toggle);*/

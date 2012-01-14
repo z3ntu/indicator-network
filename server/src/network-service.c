@@ -214,6 +214,26 @@ wireless_toggle_activated (DbusmenuMenuitem *toggle,
 }
 
 static void
+device_state_changed (NMDevice            *device,
+                      NMDeviceState        new_state,
+                      NMDeviceState        old_state,
+                      NMDeviceStateReason  reason,
+                      DbusmenuMenuitem    *item)
+{
+  switch (new_state)
+    {
+    case NM_DEVICE_STATE_UNKNOWN:
+    case NM_DEVICE_STATE_DISCONNECTED:
+    case NM_DEVICE_STATE_UNMANAGED:
+    case NM_DEVICE_STATE_ACTIVATED:
+      dbusmenu_menuitem_property_set_bool (item, "x-busy", FALSE);
+      break;
+    default:
+      dbusmenu_menuitem_property_set_bool (item, "x-busy", TRUE);
+    }
+}
+
+static void
 wifi_device_handler (DbusmenuMenuitem *parent, NMClient *client, NMDevice *device, gint *id)
 {
   /* Wifi enable/disable toggle */
@@ -252,6 +272,14 @@ wifi_device_handler (DbusmenuMenuitem *parent, NMClient *client, NMDevice *devic
       wifi_populate_accesspoints (networksgroup, client, NM_DEVICE_WIFI (device), id);
     }
 
+  /* Network status handling */
+  /* FIXME: We may leak memory if we end up having to delete the networksgroup menuitem */
+  g_object_ref (networksgroup);
+  g_signal_connect (device, "state-changed",
+                    G_CALLBACK (device_state_changed),
+                    networksgroup);
+
+
   /* TODO: Remove this when toggle is removed */
   /*g_signal_connect (client, "notify::WirelessEnabled",
                     G_CALLBACK (wireless_state_changed)
@@ -281,6 +309,11 @@ on_bus (GDBusConnection * connection, const gchar * name, gpointer user_data)
     {
       NMDevice *device = devices[i];
       gint type = nm_device_get_device_type (device);
+      NMDeviceState state = nm_device_get_state (device);
+
+      if (state == NM_DEVICE_STATE_UNMANAGED ||
+          state == NM_DEVICE_STATE_UNAVAILABLE) /* TODO: Inform the user about the situation */
+          continue;
 
       switch (type)
         {

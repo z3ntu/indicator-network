@@ -39,6 +39,11 @@ typedef struct {
   NMClient *client;
 } ClientDevice;
 
+typedef struct {
+  NMAccessPoint *active_ap;
+  GSList        *connections;
+} ActiveAPConnections;
+
 static void
 destroy_client_device (gpointer  data,
                        GClosure *closure)
@@ -107,21 +112,117 @@ access_point_selected (DbusmenuMenuitem *item,
     }
 }
 
-static gint
-wifi_aps_sort (NMAccessPoint **a,
-               NMAccessPoint **b)
+static gboolean
+ssid_hash_equal (GByteArray* a, GByteArray* b)
 {
+  return nm_utils_same_ssid (a, b, TRUE);
+}
+
+static void
+filter_access_points (GPtrArray *apsarray)
+{
+  gint i;
+
+  GHashTableIter  iter;
+  GByteArray     *key;
+  NMAccessPoint  *value;
+
+  GHashTable *ssid_table = g_hash_table_new (g_direct_hash, (GEqualFunc)ssid_hash_equal);
+  NMAccessPoint **aps = (NMAccessPoint**)apsarray->pdata;
+
+  for (i = 0; i < apsarray->len; i++)
+    {
+      NMAccessPoint *tmp = NULL;
+      NMAccessPoint *ap = aps[i];
+      const GByteArray *ssid = nm_access_point_get_ssid (ap);
+      tmp = (NMAccessPoint*)g_hash_table_lookup (ssid_table, ssid);
+
+      if (tmp != NULL)
+        {
+          guint8 strength1 = nm_access_point_get_strength (ap);
+          guint8 strength2 = nm_access_point_get_strength (tmp);
+          if (strength2 > strength1)
+            g_hash_table_replace (ssid_table, (gpointer)ssid, (gpointer)tmp);
+          continue;
+        }
+
+      g_hash_table_insert (ssid_table, (gpointer)ssid, (gpointer)ap);
+    }
+
+  /* We resize the GPtrArray and populate it with the selected APs */
+  g_ptr_array_set_size (apsarray, g_hash_table_size (ssid_table));
+  g_hash_table_iter_init (&iter, ssid_table);
+  i = 0;
+  while (g_hash_table_iter_next(&iter, (gpointer)&key, (gpointer)&value))
+    {
+      NMAccessPoint **ap = (NMAccessPoint**)(apsarray->pdata);
+      ap[i] = value;
+      i++;
+    }
+
+  g_hash_table_destroy (ssid_table);
+}
+
+static gint
+wifi_aps_sort (NMAccessPoint       **a,
+               NMAccessPoint       **b,
+               ActiveAPConnections  *sort_data)
+{
+  /* Note that we are sorting from top to bottom so we return -1 when the
+   * accesspoint has a higher relevance instead of 1.
+   */
   NMAccessPoint *ap1 = *a;
   NMAccessPoint *ap2 = *b;
+  gint           result;
+  GSList        *ap1_connections, *ap2_connections;
 
   guint8 strength1 = nm_access_point_get_strength (ap1);
   guint8 strength2 = nm_access_point_get_strength (ap2);
 
+  /* If one of them is the active connection, that one goes up */
+  if (sort_data->active_ap == ap1)
+    return -1;
+  if (sort_data->active_ap == ap2)
+    return  1;
+
+  ap1_connections = nm_access_point_filter_connections (ap1, sort_data->connections);
+  ap2_connections = nm_access_point_filter_connections (ap2, sort_data->connections);
+
+  /* If only one has an existing connection, that one goes up */
+  if (ap1_connections != NULL && ap2_connections == NULL)
+    {
+      g_slist_free (ap1_connections);
+      return -1;
+    }
+  else if (ap1_connections == NULL && ap2_connections != NULL)
+    {
+      g_slist_free (ap2_connections);
+      return 1;
+    }
+
+  /* If both or none of them has connections, we sort by signal strenght */
   if (strength1 == strength2)
-    return 0;
-  if (strength1 > strength1)
-    return 1;
-  return -1;
+    result = 0;
+  if (strength1 > strength2)
+    result = -1;
+  else
+    result = 1;
+
+  /* If they have the same strenght, we order alphabetically */
+  if (result == 0)
+  {
+    gchar *ap1id = nm_utils_ssid_to_utf8 (nm_access_point_get_ssid (ap1));
+    gchar *ap2id = nm_utils_ssid_to_utf8 (nm_access_point_get_ssid (ap2));
+
+    result = g_strcmp0 (ap2id, ap1id);
+
+    g_free (ap1id);
+    g_free (ap2id);
+  }
+
+  g_slist_free (ap1_connections);
+  g_slist_free (ap2_connections);
+  return result;
 }
 
 static void
@@ -130,21 +231,41 @@ wifi_populate_accesspoints (DbusmenuMenuitem *parent,
                             NMDeviceWifi     *device,
                             gint             *id)
 {
-  gint              i;
-  GPtrArray        *sortedarray;
-  const GPtrArray  *apsarray = nm_device_wifi_get_access_points (device);
-  NMAccessPoint   **aps;
+  gint                  i;
+  GPtrArray            *sortedarray;
+  const GPtrArray      *apsarray = nm_device_wifi_get_access_points (device);
+  NMAccessPoint       **aps;
+  NMRemoteSettings     *rs;
+  GSList               *rs_connections;
+  GSList               *dev_connections;
+  ActiveAPConnections   sort_data;
 
   /* Access point list is empty */
   if (apsarray == NULL)
     return;
 
-  /* FIXME: Array doesn't get sorted */
-  /* Creating a new GPtrArray that we can sort */
+  rs              = nm_remote_settings_new (NULL);
+  rs_connections  = nm_remote_settings_list_connections (rs);
+  dev_connections = nm_device_filter_connections (NM_DEVICE (device), rs_connections);
+
+  /* Filtering */
+
+  /* Creating a new GPtrArray that we can filter and sort */
   sortedarray = g_ptr_array_new ();
   g_ptr_array_set_size (sortedarray, apsarray->len);
   memcpy (sortedarray->pdata, apsarray->pdata, sizeof(NMAccessPoint*) * apsarray->len);
-  g_ptr_array_sort (sortedarray, (GCompareFunc)wifi_aps_sort);
+
+  /* Remove duplicated SSIDs and select the one with higher strenght*/
+  filter_access_points (sortedarray);
+
+  /* Sort access points */
+  sort_data.connections = dev_connections;
+  g_object_get (device,
+                "active-access-point", &(sort_data.active_ap),
+                NULL);
+  g_ptr_array_sort_with_data (sortedarray,
+                              (GCompareDataFunc)wifi_aps_sort,
+                              (gpointer)&sort_data);
 
   aps = (NMAccessPoint**)(sortedarray->pdata);
   for (i=0; i < sortedarray->len; i++)

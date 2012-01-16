@@ -35,8 +35,9 @@ target_link_libraries(dbusmodel
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/qmldbus.conf.in"
                "${CMAKE_CURRENT_BINARY_DIR}/qmldbus.conf")
 
-
+if(DOXYGEN_FOUND)
 add_custom_target(dbusmodeldoc ALL
                   COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/qmldbus.conf
                   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
                   SOURCES ${CLIENTMODEL_HEADERS} ${CMAKE_CURRENT_BINARY_DIR}/qmldbus.conf)
+endif()

@@ -30,10 +30,10 @@ add_custom_command(OUTPUT ${exportmenu_SRC}
                    WORKING_DIRECTORY ${CMAKE_CURRENT_BIN_DIR})
 
 
-add_executable(ExportMenu
+add_executable(export-settings-menu
                ${exportmenu_SRC})
 
-add_executable(NetworkMenu
+add_executable(network-settings-menu
                ${networkservice_SRC})
 
 
@@ -45,13 +45,13 @@ include_directories(
     ${NM_INCLUDE_DIRS}
     ${DBUSMENUGLIB_INCLUDE_DIRS})
 
-target_link_libraries(NetworkMenu
+target_link_libraries(network-settings-menu
     ${GLIB_LDFLAGS}
     ${GIO_LDFLAGS}
     ${NM_LDFLAGS}
     ${DBUSMENUGLIB_LDFLAGS})
 
-target_link_libraries(ExportMenu
+target_link_libraries(export-settings-menu
     ${GLIB_LDFLAGS}
     ${GIO_LDFLAGS}
     ${DBUSMENUGLIB_LDFLAGS})

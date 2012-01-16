@@ -32,7 +32,7 @@ To test the current implementation you should run the server and client
 application simultaneous. To do that follow the steps below:
 
 In the build directory(<project-dir>/build):
-    ./server/src/ExportMenu ../server/xml/test.xml &
-    ./client/examples/run-example.sh ../client/examples/DBusMenuTest.qml
+    ./server/export-settings-menu ../server/xml/test.xml &
+    ./client/examples/run-client-app.sh
 
 

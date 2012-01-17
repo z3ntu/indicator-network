@@ -15,6 +15,7 @@ Item {
     property int index: -1
     property QtObject dbusModel:  null
 
+    visible: dbusModel ? dbusModel.visible : true
     implicitHeight: header.height + sectionContents.childrenRect.height
 
     function load() {

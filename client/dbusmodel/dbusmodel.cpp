@@ -138,6 +138,7 @@ void DBusModel::onItemMoved(int newPos, int oldPos)
 
 void DBusModel::onItemChanged()
 {
+    //qDebug() << "ITEM CHANGED";
     QDBusMenuItem *item = qobject_cast<QDBusMenuItem*>(QObject::sender());
     int row = item->position();
     if (row >=0)
@@ -171,13 +172,23 @@ QVariant DBusModel::data(const QModelIndex &index, int role) const
     case Label:
         return item->property(DBUSMENU_MENUITEM_PROP_LABEL);
     case State:
-        if (item->property(DBUSMENU_MENUITEM_PROP_TOGGLE_STATE).isValid()) {
-            return item->property(DBUSMENU_MENUITEM_PROP_TOGGLE_STATE);
+    {
+        QVariant prop = item->property(DBUSMENU_MENUITEM_PROP_TOGGLE_STATE);
+        if (prop.isValid()) {
+            return prop;
         } else {
             return  false;
         }
+    }
     case Visible:
-        return item->property(DBUSMENU_MENUITEM_PROP_VISIBLE);
+    {
+        QVariant prop = item->property(DBUSMENU_MENUITEM_PROP_VISIBLE);
+        if (prop.isValid()) {
+            return  prop;
+        } else {
+            return true;
+        }
+    }
     case Control:
         return QVariant::fromValue<QObject*>(m_control);
     case HasSubmenu:

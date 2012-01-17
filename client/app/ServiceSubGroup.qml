@@ -37,16 +37,23 @@ Item {
         property QtObject delegate: null
         property string source
 
+        Binding {
+            target: header.delegate
+            property: "dbusModel"
+            value: section.dbusModel
+            when: header.delegate != null
+        }
+
         width: section.width
         height: delegate ? delegate.implicitHeight : 0
+
         onSourceChanged: {
-            if (source.length > 0) {
+            if (source.length > 0) {                
                 delegate = Qt.createQmlObject(source, header, '')
                 if (!delegate) {
                     console.log("FAIL TO LOADER SECTION HEADER: " + delegate.errorString())
                 } else {
                     delegate.anchors.fill = header
-                    delegate.dbusModel = section.dbusModel
                 }
             }
         }

@@ -96,6 +96,7 @@ private:
         State,
         HasSubmenu,
         IsInline,
+        Visible,
         Data,
         Properties,
         Control
@@ -106,6 +107,5 @@ private:
 
     //! Append one object in the model
     void appendItem(QObject * obj);
-
 };
 #endif

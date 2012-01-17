@@ -78,13 +78,8 @@ void QDBusMenuItem::onChildMoved(DbusmenuMenuitem *mi, DbusmenuMenuitem *child, 
 QDBusMenuItem::QDBusMenuItem(DbusmenuMenuitem *gitem, QObject *parent)
     : QObject(parent),
       m_gitem(gitem),
-      m_type(""),
-      m_isInline(false),
-      m_hasChildren(false)
+      m_type("")
 {
-    //Initialize property
-    setProperty(DBUSMENU_PROPERTY_STATE, false);
-
     /*
       Only those properties are current supported
     */
@@ -94,6 +89,7 @@ QDBusMenuItem::QDBusMenuItem(DbusmenuMenuitem *gitem, QObject *parent)
                         << DBUSMENU_MENUITEM_PROP_TOGGLE_TYPE
                         << DBUSMENU_MENUITEM_PROP_TOGGLE_STATE
                         << DBUSMENU_MENUITEM_PROP_CHILD_DISPLAY
+                        << DBUSMENU_MENUITEM_PROP_VISIBLE
                         << DBUSMENU_MENUITEM_PROP_TYPE;
      }
 
@@ -134,6 +130,11 @@ DbusmenuMenuitem *QDBusMenuItem::item() const
     return m_gitem;
 }
 
+int QDBusMenuItem::id() const
+{
+    return dbusmenu_menuitem_get_id(m_gitem);
+}
+
 int QDBusMenuItem::position() const
 {
     if (m_gitem) {
@@ -149,12 +150,14 @@ QByteArray QDBusMenuItem::type() const
 
 bool QDBusMenuItem::isInline() const
 {
-    return m_isInline;
+    return  hasSubMenu() &&
+            property(DBUSMENU_MENUITEM_PROP_CHILD_DISPLAY).toString() == "inline";
 }
 
 bool QDBusMenuItem::hasSubMenu() const
 {
-    return m_hasChildren;
+    return property(DBUSMENU_MENUITEM_PROP_CHILD_DISPLAY).isValid() &&
+           !property(DBUSMENU_MENUITEM_PROP_CHILD_DISPLAY).isNull();
 }
 
 void QDBusMenuItem::updateType()
@@ -209,8 +212,6 @@ void QDBusMenuItem::loadChildren()
 void QDBusMenuItem::loadProperties()
 {
     /* parse the relevant properties */
-    setProperty(DBUSMENU_PROPERTY_ID, dbusmenu_menuitem_get_id(m_gitem));
-
     GList *props = dbusmenu_menuitem_properties_list(m_gitem);
     GList *pointer = props;
     while(props) {
@@ -231,20 +232,8 @@ void QDBusMenuItem::loadProperties()
 bool QDBusMenuItem::updateProperty(const QByteArray &name, QVariant value)
 {
     //qDebug() << (void*) this << "PROPERTY:" << name << "VALUE" << value;
-    if (name == DBUSMENU_MENUITEM_PROP_LABEL) {
-        setProperty(DBUSMENU_PROPERTY_LABEL, value);
-    } else if (name == DBUSMENU_MENUITEM_PROP_ICON_NAME) {
-        setProperty(DBUSMENU_PROPERTY_ICON_NAME, value);
-    } else if (name == DBUSMENU_MENUITEM_PROP_CHILD_DISPLAY) {
-        m_hasChildren = true;
-        m_isInline = value.toString() == "inline";
-    } else if (name == DBUSMENU_MENUITEM_PROP_TOGGLE_STATE) {
-        int newValue = -1;
-        if (value.toInt() == DBUSMENU_MENUITEM_TOGGLE_STATE_CHECKED)
-            newValue = 1;
-        else if(value.toInt() == DBUSMENU_MENUITEM_TOGGLE_STATE_UNCHECKED)
-            newValue = 0;
-        setProperty(DBUSMENU_PROPERTY_STATE, newValue);
+    if (mapedProperties.contains(name)) {
+        setProperty(name, value);
     } else if (name.startsWith("x-")) {
         m_extraProperties.insert(name.mid(2).replace('-', '_'), value);
     } else {

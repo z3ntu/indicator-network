@@ -22,6 +22,7 @@ DBusModel::DBusModel(QObject *parent)
         rolesNames[State] = "state";
         rolesNames[HasSubmenu] = "hasSubmenu";
         rolesNames[IsInline] = "isInline";
+        rolesNames[Visible] = "visible";
         rolesNames[Control] = "control";
         rolesNames[Data] = "data";
         rolesNames[Properties] = "properties";
@@ -164,13 +165,19 @@ QVariant DBusModel::data(const QModelIndex &index, int role) const
     Q_ASSERT(item);
     switch (role) {
     case Id:
-        return item->property(DBUSMENU_PROPERTY_ID);
+        return item->id();
     case Type:
         return item->type();
     case Label:
-        return item->property(DBUSMENU_PROPERTY_LABEL);
+        return item->property(DBUSMENU_MENUITEM_PROP_LABEL);
     case State:
-        return item->property(DBUSMENU_PROPERTY_STATE);
+        if (item->property(DBUSMENU_MENUITEM_PROP_TOGGLE_STATE).isValid()) {
+            return item->property(DBUSMENU_MENUITEM_PROP_TOGGLE_STATE);
+        } else {
+            return  false;
+        }
+    case Visible:
+        return item->property(DBUSMENU_MENUITEM_PROP_VISIBLE);
     case Control:
         return QVariant::fromValue<QObject*>(m_control);
     case HasSubmenu:

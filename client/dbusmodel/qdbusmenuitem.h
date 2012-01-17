@@ -24,6 +24,9 @@ public:
     //! Destructor
     ~QDBusMenuItem();
 
+    //! Unique ID
+    int id() const;
+
     //! The position of menu item in the menu list
     int position() const;
 
@@ -55,8 +58,6 @@ private:
     static ItemList m_globalItemList;
     QByteArray m_type;
     QVariantMap m_extraProperties;
-    bool m_isInline;
-    bool m_hasChildren;
 
     //! Constructor
     QDBusMenuItem() {}

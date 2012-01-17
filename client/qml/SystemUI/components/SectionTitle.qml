@@ -5,7 +5,7 @@ BasicItem {
     id: sectionTitle
 
     property alias caption: label.caption
-    //operty alias busy: busyIndicator.playing
+    property alias busy: busyIndicator.busy
 
     implicitHeight: 24
     implicitWidth: label.implicitWidth
@@ -14,23 +14,13 @@ BasicItem {
 
     Label {
         id:  label
+
         style: sectionTitle.style
         dbusModel: sectionTitle.dbusModel
         anchors { left: parent.left; top: parent.top; right: busyIndicator.left; bottom: parent.bottom }
+        anchors.rightMargin: sectionTitle.busy ? 6 : 0
 
     }
-
-//    Rectangle {
-//        id: busyIndicator
-
-//        property bool busy: sectionTitle.dbusModel && sectionTitle.dbusModel.properties.busy ? sectionTitle.dbusModel.properties.busy : false
-
-//        color: busy ? "red" : "blue"
-//        height: 10
-//        width: 10
-
-//        anchors { verticalCenter: parent.verticalCenter; right: parent.right }
-//    }
 
     AnimatedImage {
         id: busyIndicator

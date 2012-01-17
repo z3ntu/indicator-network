@@ -18,7 +18,7 @@ function createObjectFromFile(file, model, parent)
     var comp = null
     var component = createComponentFromFile(file);
     if (component) {
-        comp = component.createObject(parent);
+        comp = component.createObject(parent,  {"dbusModel" : model});
         if (!comp) {
             console.log("Fail to create component: " + component.errorString())
             return null
@@ -31,9 +31,9 @@ function createObjectFromFile(file, model, parent)
 function createComponent(model, parent)
 {
     if (knowTypes.length == 0) {
-        knowTypes["unity.widgets.systemsettings.tablet.textentry"] = "import components 1.0; TextEntry {}";
-        knowTypes["unity.widgets.systemsettings.tablet.togglebutton"] = "import components 1.0; ToggleButton {}";
-        knowTypes["unity.widgets.systemsettings.tablet.sectiontitle"] = "import components 1.0; SectionTitle {}";
+        knowTypes["unity.widgets.systemsettings.tablet.textentry"] = "import components 1.0; TextEntry { }";
+        knowTypes["unity.widgets.systemsettings.tablet.togglebutton"] = "import components 1.0; ToggleButton { }";
+        knowTypes["unity.widgets.systemsettings.tablet.sectiontitle"] = "import components 1.0; SectionTitle { }";
         knowTypes["unity.widgets.systemsettings.tablet.radiobutton"] = "import components 1.0; ListItem { selectable: true }";
     }
 
@@ -43,7 +43,6 @@ function createComponent(model, parent)
     if (knowTypes[modelType]) {
         if (model.isInline) {
             comp = createObjectFromFile("ServiceSubGroup.qml", model, parent)
-            comp.dbusModel = model
             if (comp) {
                 comp.headerSource = knowTypes[modelType]
                 comp.menuId = model.menuId
@@ -66,9 +65,7 @@ function createComponent(model, parent)
             typeName = modelType
         }
         comp = createObjectFromFile("file://" + EXTRA_COMPONENTS_DIR + "/" + typeName + ".qml", model, parent);
-        comp.dbusModel = model
     }
 
     return comp
 }
-

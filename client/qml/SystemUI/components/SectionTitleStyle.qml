@@ -1,5 +1,7 @@
 import QtQuick 1.1
 
-LabelStyle {
+LabelStyle {                                       
+    property string busyImage: "images/busy-indicator.gif"
+
     fontPointSize: 10
 }

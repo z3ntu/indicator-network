@@ -5,7 +5,7 @@
 
 #include <QDebug>
 #include <QAction>
-
+#include <QThread>
 
 DBusModel::DBusModel(QObject *parent)
     : QAbstractListModel(parent),
@@ -103,18 +103,18 @@ void DBusModel::appendItem(QObject * obj)
     QDBusMenuItem *menuItem = qobject_cast<QDBusMenuItem*>(obj);
     int position = menuItem->position();
 
-    //QObjectList cpyItems = m_items;
-    //cpyItems.insert(position, obj);
-    //int row = cpyItems.indexOf(obj);
-    //qDebug() << "InsertItem" << item->property(DBUSMENU_PROPERTY_LABEL) << "pos:" << position << "Row:" << row;
+    QObjectList cpyItems = m_items;
+    cpyItems.insert(position, obj);
+    int row = cpyItems.indexOf(obj);
+    beginInsertRows(QModelIndex(), row, row);
+
     m_items.insert(position, obj);
-    //int row = m_items.indexOf(obj);
-    //beginInsertRows(QModelIndex(), row, row);
-    //endInsertRows();
-    reset();
     QObject::connect(obj, SIGNAL(changed()), this, SLOT(onItemChanged()));
     QObject::connect(obj, SIGNAL(moved(int, int)), this, SLOT(onItemMoved(int, int)));
     QObject::connect(obj, SIGNAL(destroyed(QObject*)), this, SLOT(onItemDestroyed(QObject*)));
+
+    endInsertRows();
+    //reset();
 }
 
 void DBusModel::onItemDestroyed(QObject * obj)

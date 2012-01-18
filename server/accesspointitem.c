@@ -68,7 +68,7 @@ ap_notify_cb (GObject    *ap,
   if (g_strcmp0 (property, "strength") == 0)
     {
       dbusmenu_menuitem_property_set_int (DBUSMENU_MENUITEM (item),
-                                          "x-wifi-strenght",
+                                          "x-wifi-strength",
                                           nm_access_point_get_strength (NM_ACCESS_POINT (ap)));
     }
   if (g_strcmp0 (property, "bssid") == 0)

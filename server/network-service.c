@@ -31,9 +31,6 @@
  *    "x-wifi-bssid"      - string - The internal unique id for the AP
  */
 
-
-
-
 typedef struct {
   NMDevice *device;
   NMClient *client;
@@ -116,10 +113,16 @@ access_point_selected (DbusmenuMenuitem *item,
  * the ones with a strongest signal.
  */
 static GPtrArray*
-filter_access_points (const GPtrArray *apsarray)
+filter_access_points (const GPtrArray *apsarray,
+                      NMDeviceWifi    *device)
 {
   gint i;
   GPtrArray *collapsedaps = g_ptr_array_new ();
+  NMAccessPoint *active;
+
+  g_object_get(device,
+               "active-access-point", &active,
+               NULL);
 
   for (i = 0; i < apsarray->len; i++)
     {
@@ -143,8 +146,12 @@ filter_access_points (const GPtrArray *apsarray)
           guint8 strength1, strength2;
           strength1 = nm_access_point_get_strength (ap);
           strength2 = nm_access_point_get_strength (candidate);
-          if (strength2 > strength1)
+
+          /* If active access point or stronger then it replaces the previous AP
+           * with the same SSID */
+          if ((candidate == active) || (strength2 > strength1))
             collapsedaps->pdata[i] = candidate;
+
           continue;
         }
       g_ptr_array_add (collapsedaps, ap);
@@ -159,8 +166,7 @@ wifi_aps_sort (NMAccessPoint       **a,
                ActiveAPConnections  *sort_data)
 {
   /* Note that we are sorting from top to bottom so we return -1 when the
-   * accesspoint has a higher relevance instead of 1.
-   */
+   * accesspoint has a higher relevance instead of 1 */
   NMAccessPoint *ap1 = *a;
   NMAccessPoint *ap2 = *b;
   gint           result;
@@ -237,8 +243,8 @@ wifi_populate_accesspoints (DbusmenuMenuitem *parent,
   rs_connections  = nm_remote_settings_list_connections (rs);
   dev_connections = nm_device_filter_connections (NM_DEVICE (device), rs_connections);
 
-  /* Remove duplicated SSIDs and select the one with higher strenght*/
-  sortedarray = filter_access_points (apsarray);
+  /* Remove duplicated SSIDs and select the one which is acive or with higher strenght*/
+  sortedarray = filter_access_points (apsarray, device);
 
   /* Sort access points */
   sort_data.connections = dev_connections;
@@ -255,7 +261,6 @@ wifi_populate_accesspoints (DbusmenuMenuitem *parent,
       gboolean          is_adhoc   = FALSE;
       gboolean          is_secure  = FALSE;
       NMAccessPoint    *ap = g_ptr_array_index (sortedarray, i);
-      NMAccessPoint    *active_ap;
       DbusmenuMenuitem *ap_item = DBUSMENU_MENUITEM (dbusmenu_accesspointitem_new_with_id ((*id)++));
       char             *utf_ssid;
       ClientDevice     *cd = g_malloc (sizeof (ClientDevice));
@@ -269,12 +274,8 @@ wifi_populate_accesspoints (DbusmenuMenuitem *parent,
       if (nm_access_point_get_flags (ap) == NM_802_11_AP_FLAGS_PRIVACY)
         is_secure = TRUE;
 
-      g_object_get (device,
-                    "active-access-point", &active_ap,
-                    NULL);
-
-      if (active_ap && g_strcmp0 (nm_access_point_get_bssid (ap),
-                                  nm_access_point_get_bssid (active_ap)) == 0)
+      if (sort_data.active_ap && g_strcmp0 (nm_access_point_get_bssid (ap),
+                                            nm_access_point_get_bssid (sort_data.active_ap)) == 0)
       {
           dbusmenu_menuitem_property_set_int (DBUSMENU_MENUITEM (ap_item),
                                               DBUSMENU_MENUITEM_PROP_TOGGLE_STATE,

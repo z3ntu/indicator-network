@@ -396,7 +396,11 @@ wifi_device_handler (DbusmenuMenuitem *parent,
     {
       dbusmenu_menuitem_property_set (networksgroup, DBUSMENU_MENUITEM_PROP_LABEL, "Select wireless network");
       dbusmenu_menuitem_property_set (networksgroup, "type",             "x-system-settings");
-      dbusmenu_menuitem_property_set_bool (networksgroup, "x-busy", TRUE);
+      device_state_changed (device,
+                            nm_device_get_state (device),
+                            NM_DEVICE_STATE_UNKNOWN,
+                            NM_DEVICE_STATE_REASON_NONE,
+                            networksgroup);
       dbusmenu_menuitem_property_set (networksgroup, "x-group-class",    "accesspoints");
       dbusmenu_menuitem_property_set (networksgroup, "children-display", "inline");
       dbusmenu_menuitem_property_set (networksgroup, "x-tablet-widget",  "unity.widgets.systemsettings.tablet.sectiontitle");

@@ -112,57 +112,47 @@ access_point_selected (DbusmenuMenuitem *item,
     }
 }
 
-static gboolean
-ssid_hash_equal (GByteArray* a, GByteArray* b)
-{
-  return nm_utils_same_ssid (a, b, TRUE);
-}
-
-static void
-filter_access_points (GPtrArray *apsarray)
+/* This function removes any duplicates by AP SSID and leaves
+ * the ones with a strongest signal.
+ */
+static GPtrArray*
+filter_access_points (const GPtrArray *apsarray)
 {
   gint i;
-
-  GHashTableIter  iter;
-  GByteArray     *key;
-  NMAccessPoint  *value;
-
-  GHashTable *ssid_table = g_hash_table_new (g_direct_hash, (GEqualFunc)ssid_hash_equal);
-  NMAccessPoint **aps = (NMAccessPoint**)apsarray->pdata;
+  GPtrArray *collapsedaps = g_ptr_array_new ();
 
   for (i = 0; i < apsarray->len; i++)
     {
-      NMAccessPoint *tmp = NULL;
-      NMAccessPoint *ap = aps[i];
-      const GByteArray *ssid = nm_access_point_get_ssid (ap);
-      tmp = (NMAccessPoint*)g_hash_table_lookup (ssid_table, ssid);
+      gint j;
+      NMAccessPoint *ap = (NMAccessPoint*) g_ptr_array_index (apsarray, i);
+      NMAccessPoint *candidate = NULL;
 
-      if (tmp != NULL)
+      for (j = 0; j < collapsedaps->len; j++)
         {
-          guint8 strength1 = nm_access_point_get_strength (ap);
-          guint8 strength2 = nm_access_point_get_strength (tmp);
+          NMAccessPoint *tmp = (NMAccessPoint*) g_ptr_array_index (collapsedaps, j);
+          if (nm_utils_same_ssid (nm_access_point_get_ssid (ap),
+                                  nm_access_point_get_ssid (tmp),
+                                  TRUE))
+            {
+              candidate = tmp;
+              break;
+            }
+        }
+      if (candidate != NULL)
+        {
+          guint8 strength1, strength2;
+          strength1 = nm_access_point_get_strength (ap);
+          strength2 = nm_access_point_get_strength (candidate);
           if (strength2 > strength1)
-            g_hash_table_replace (ssid_table, (gpointer)ssid, (gpointer)tmp);
+            collapsedaps->pdata[i] = candidate;
           continue;
         }
-
-      g_hash_table_insert (ssid_table, (gpointer)ssid, (gpointer)ap);
+      g_ptr_array_add (collapsedaps, ap);
     }
-
-  /* We resize the GPtrArray and populate it with the selected APs */
-  g_ptr_array_set_size (apsarray, g_hash_table_size (ssid_table));
-  g_hash_table_iter_init (&iter, ssid_table);
-  i = 0;
-  while (g_hash_table_iter_next(&iter, (gpointer)&key, (gpointer)&value))
-    {
-      NMAccessPoint **ap = (NMAccessPoint**)(apsarray->pdata);
-      ap[i] = value;
-      i++;
-    }
-
-  g_hash_table_destroy (ssid_table);
+  return collapsedaps;
 }
 
+/* This is a sort function to pass on to g_ptr_array_sort_with_data */
 static gint
 wifi_aps_sort (NMAccessPoint       **a,
                NMAccessPoint       **b,
@@ -200,7 +190,7 @@ wifi_aps_sort (NMAccessPoint       **a,
       return 1;
     }
 
-  /* If both or none of them has connections, we sort by signal strenght */
+  /* If both or none of them has connections, we sort by signal strength */
   if (strength1 == strength2)
     result = 0;
   if (strength1 > strength2)
@@ -234,7 +224,6 @@ wifi_populate_accesspoints (DbusmenuMenuitem *parent,
   gint                  i;
   GPtrArray            *sortedarray;
   const GPtrArray      *apsarray = nm_device_wifi_get_access_points (device);
-  NMAccessPoint       **aps;
   NMRemoteSettings     *rs;
   GSList               *rs_connections;
   GSList               *dev_connections;
@@ -248,31 +237,24 @@ wifi_populate_accesspoints (DbusmenuMenuitem *parent,
   rs_connections  = nm_remote_settings_list_connections (rs);
   dev_connections = nm_device_filter_connections (NM_DEVICE (device), rs_connections);
 
-  /* Filtering */
-
-  /* Creating a new GPtrArray that we can filter and sort */
-  sortedarray = g_ptr_array_new ();
-  g_ptr_array_set_size (sortedarray, apsarray->len);
-  memcpy (sortedarray->pdata, apsarray->pdata, sizeof(NMAccessPoint*) * apsarray->len);
-
   /* Remove duplicated SSIDs and select the one with higher strenght*/
-  filter_access_points (sortedarray);
+  sortedarray = filter_access_points (apsarray);
 
   /* Sort access points */
   sort_data.connections = dev_connections;
   g_object_get (device,
                 "active-access-point", &(sort_data.active_ap),
                 NULL);
+
   g_ptr_array_sort_with_data (sortedarray,
                               (GCompareDataFunc)wifi_aps_sort,
                               (gpointer)&sort_data);
 
-  aps = (NMAccessPoint**)(sortedarray->pdata);
   for (i=0; i < sortedarray->len; i++)
     {
       gboolean          is_adhoc   = FALSE;
       gboolean          is_secure  = FALSE;
-      NMAccessPoint    *ap = aps[i];
+      NMAccessPoint    *ap = g_ptr_array_index (sortedarray, i);
       NMAccessPoint    *active_ap;
       DbusmenuMenuitem *ap_item = DBUSMENU_MENUITEM (dbusmenu_accesspointitem_new_with_id ((*id)++));
       char             *utf_ssid;

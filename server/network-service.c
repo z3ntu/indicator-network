@@ -32,7 +32,7 @@
  */
 
 
-GMainLoop *loop;
+
 
 typedef struct {
   NMDevice *device;
@@ -461,14 +461,17 @@ on_bus (GDBusConnection * connection, const gchar * name, gpointer user_data)
 static void
 name_lost (GDBusConnection * connection, const gchar * name, gpointer user_data)
 {
-  g_main_loop_quit (loop);
+  g_main_loop_quit ((GMainLoop*)user_data);
   return;
 }
 
 int
 main (int argc, char** argv)
 {
+  GMainLoop *loop;
+
   g_type_init ();
+  loop = g_main_loop_new (NULL, FALSE);
 
   g_bus_own_name(G_BUS_TYPE_SESSION,
                  "com.ubuntu.networksettings",
@@ -476,12 +479,10 @@ main (int argc, char** argv)
                  on_bus,
                  NULL,
                  name_lost,
-                 NULL,
+                 loop,
                  NULL);
 
-  loop = g_main_loop_new (NULL, FALSE);
   g_main_loop_run (loop);
   g_main_loop_unref (loop);
-
   return 0;
 }

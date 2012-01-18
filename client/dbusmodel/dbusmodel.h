@@ -29,6 +29,12 @@ class DBusModel : public QAbstractListModel
     */
     Q_PROPERTY(QObject* control READ control WRITE setControl NOTIFY controlChanged)
 
+    /*!
+      \proeprty count
+      The number of data entries in the model
+    */
+    Q_PROPERTY(int count READ count NOTIFY countChanged)
+
 public:
     //! Constructor
     DBusModel(QObject *parent = 0);
@@ -47,6 +53,9 @@ public:
 
     //! Set the control object utilized on the model
     void setControl(QObject *control);
+
+    //! The number of data entries in the model
+    int count() const;
 
     //! Load all necessary information from the dbusmenu
     Q_INVOKABLE void load();
@@ -73,6 +82,9 @@ Q_SIGNALS:
 
     //! Called when the control object has changed
     void controlChanged();
+
+    //! Called when the number of intens inside of the model changes
+    void countChanged();
 
 private Q_SLOTS:
     void onItemChanged();

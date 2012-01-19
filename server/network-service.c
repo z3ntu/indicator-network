@@ -25,7 +25,8 @@
  *    "x-wifi-is-secure"  - bool   - Whether the network is open or requires password
  *    "x-wifi-bssid"      - string - The internal unique id for the AP
  */
-extern void
+
+void
 wifi_device_handler (DbusmenuMenuitem *parent,
                      NMClient         *client,
                      NMDevice         *device,
@@ -59,7 +60,6 @@ on_bus (GDBusConnection * connection, const gchar * name, gpointer user_data)
 
       switch (type)
         {
-        case NM_DEVICE_TYPE_WIFI:
           wifi_device_handler (root, client, device, &id);
           break;
         }

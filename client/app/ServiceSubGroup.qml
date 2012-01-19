@@ -117,10 +117,9 @@ Item {
             enableFoward: true
             stack: pages
 
-
             onAboutToLoad: {
                 var count = pages.count
-                while(count > section.index + 1) {
+                while(count > section.index) {
                     pages.pop()
                     count--
                 }

@@ -19,6 +19,7 @@ DBusModel::DBusModel(QObject *parent)
     if (rolesNames.empty()) {
         rolesNames[Id] = "menuId";
         rolesNames[Type] = "type";
+        rolesNames[ToggleType] = "toggleType";
         rolesNames[Label] = "label";
         rolesNames[State] = "state";
         rolesNames[HasSubmenu] = "hasSubmenu";
@@ -154,18 +155,28 @@ void DBusModel::onItemChanged()
         dataChanged(index(row), index(row));
 }
 
-bool DBusModel::eventFilter(QObject *obj, QEvent *event)
+bool DBusModel::eventFilter(QObject * obj, QEvent * event)
 {
     return QObject::eventFilter(obj, event);
 }
 
 /* QAbstractItemModel */
-int DBusModel::columnCount(const QModelIndex &parent) const
+int DBusModel::columnCount(const QModelIndex & parent) const
 {
     return 1;
 }
 
-QVariant DBusModel::data(const QModelIndex &index, int role) const
+QVariant DBusModel::getProperty(QDBusMenuItem * item, QByteArray name, QVariant defaultValue) const
+{
+    QVariant prop = item->property(name);
+    if (prop.isValid()) {
+        return prop;
+    } else {
+        return defaultValue;
+    }
+}
+
+QVariant DBusModel::data(const QModelIndex & index, int role) const
 {
     int row = index.row();
     if(!index.isValid() || (row < 0) || (row > m_items.size()))
@@ -178,26 +189,14 @@ QVariant DBusModel::data(const QModelIndex &index, int role) const
         return item->id();
     case Type:
         return item->type();
+    case ToggleType:
+        return getProperty(item, DBUSMENU_MENUITEM_PROP_TOGGLE_TYPE, "");
     case Label:
-        return item->property(DBUSMENU_MENUITEM_PROP_LABEL);
+        return getProperty(item, DBUSMENU_MENUITEM_PROP_LABEL, "");
     case State:
-    {
-        QVariant prop = item->property(DBUSMENU_MENUITEM_PROP_TOGGLE_STATE);
-        if (prop.isValid()) {
-            return prop;
-        } else {
-            return  false;
-        }
-    }
+        return getProperty(item, DBUSMENU_MENUITEM_PROP_TOGGLE_STATE, false);
     case Visible:
-    {
-        QVariant prop = item->property(DBUSMENU_MENUITEM_PROP_VISIBLE);
-        if (prop.isValid()) {
-            return  prop;
-        } else {
-            return true;
-        }
-    }
+        return getProperty(item, DBUSMENU_MENUITEM_PROP_VISIBLE, true);
     case Control:
         return QVariant::fromValue<QObject*>(m_control);
     case HasSubmenu:

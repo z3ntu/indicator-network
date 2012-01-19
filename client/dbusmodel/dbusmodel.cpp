@@ -6,6 +6,7 @@
 #include <QDebug>
 #include <QAction>
 #include <QThread>
+#include <QAbstractItemModel>
 
 DBusModel::DBusModel(QObject *parent)
     : QAbstractListModel(parent),
@@ -28,6 +29,10 @@ DBusModel::DBusModel(QObject *parent)
         rolesNames[Properties] = "properties";
     }
     setRoleNames(rolesNames);
+    QObject::connect(this, SIGNAL(rowsInserted(const QModelIndex&, int, int)),
+                     this, SIGNAL(countChanged()));
+    QObject::connect(this, SIGNAL(rowsRemoved(const QModelIndex &, int, int)),
+                     this, SIGNAL(countChanged()));
 }
 
 DBusModel::~DBusModel()
@@ -60,6 +65,11 @@ void DBusModel::setControl(QObject *control)
         m_control = qobject_cast<DBusControl*>(control);
         Q_EMIT controlChanged();
     }
+}
+
+int DBusModel::count() const
+{
+    return rowCount();
 }
 
 void DBusModel::load()
@@ -138,7 +148,6 @@ void DBusModel::onItemMoved(int newPos, int oldPos)
 
 void DBusModel::onItemChanged()
 {
-    //qDebug() << "ITEM CHANGED";
     QDBusMenuItem *item = qobject_cast<QDBusMenuItem*>(QObject::sender());
     int row = item->position();
     if (row >=0)

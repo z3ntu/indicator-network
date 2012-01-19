@@ -11,6 +11,7 @@ Item {
     property alias menuId: sectionModel.menuId
     property alias control: sectionModel.control
     property alias headerSource: header.source
+    property int maxItens: 4
 
     property int index: -1
     property QtObject dbusModel:  null
@@ -48,10 +49,10 @@ Item {
         height: delegate ? delegate.implicitHeight : 0
 
         onSourceChanged: {
-            if (source.length > 0) {                
+            if (source.length > 0) {
                 delegate = Qt.createQmlObject(source, header, '')
                 if (!delegate) {
-                    console.log("FAIL TO LOADER SECTION HEADER: " + delegate.errorString())
+                    console.log("Fail to loader section header: " + delegate.errorString())
                 } else {
                     delegate.anchors.fill = header
                 }
@@ -71,8 +72,10 @@ Item {
                 id: item
 
                 property QtObject delegate: null
+
                 width: section.width
                 height: delegate ? delegate.implicitHeight : 0
+                visible: ((section.maxItens == -1) || (index < section.maxItens))
 
                 function onAboutToLoad(event)
                 {
@@ -100,6 +103,34 @@ Item {
                         delegate.pageLoaded.connect(section.pageLoaded)
                     }
                 }
+            }
+        }
+
+        NavigationButton {
+            id: moreItens
+
+            visible: section.maxItens > -1 && sectionModel.count > section.maxItens
+            height: visible ? 48 : 0
+            width: section.width
+            caption: "More items"
+            next: Qt.createComponent("ServiceSubPage.qml")
+            enableFoward: true
+            stack: pages
+
+
+            onAboutToLoad: {
+                var count = pages.count
+                while(count > section.index + 1) {
+                    pages.pop()
+                    count--
+                }
+            }
+
+            onPageLoaded: {
+                page.title = header.delegate ? header.delegate.caption : ""
+                page.menuId = sectionModel.menuId
+                page.index = pages.count
+                page.loadMenu()
             }
         }
     }

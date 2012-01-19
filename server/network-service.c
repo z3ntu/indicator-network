@@ -60,6 +60,7 @@ on_bus (GDBusConnection * connection, const gchar * name, gpointer user_data)
 
       switch (type)
         {
+        case NM_DEVICE_TYPE_WIFI:
           wifi_device_handler (root, client, device, &id);
           break;
         }

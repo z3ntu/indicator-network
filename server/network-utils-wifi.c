@@ -236,11 +236,13 @@ wifi_populate_accesspoints (DbusmenuMenuitem *parent,
 
   for (i=0; i < sortedarray->len; i++)
     {
+      gchar            *utf_ssid;
       gboolean          is_adhoc   = FALSE;
       gboolean          is_secure  = FALSE;
       NMAccessPoint    *ap = g_ptr_array_index (sortedarray, i);
       DbusmenuMenuitem *ap_item = DBUSMENU_MENUITEM (dbusmenu_accesspointitem_new_with_id ((*id)++));
-      char             *utf_ssid;
+      GSList           *ap_connections = nm_access_point_filter_connections (ap, dev_connections);
+
       ClientDevice     *cd = g_malloc (sizeof (ClientDevice));
       cd->device = NM_DEVICE (device);
       cd->client = client;
@@ -252,20 +254,33 @@ wifi_populate_accesspoints (DbusmenuMenuitem *parent,
       if (nm_access_point_get_flags (ap) == NM_802_11_AP_FLAGS_PRIVACY)
         is_secure = TRUE;
 
-      if (sort_data.active_ap && g_strcmp0 (nm_access_point_get_bssid (ap),
-                                            nm_access_point_get_bssid (sort_data.active_ap)) == 0)
-      {
+      if (sort_data.active_ap == ap)
+        {
+          dbusmenu_menuitem_property_set (DBUSMENU_MENUITEM (ap_item),
+                                          DBUSMENU_MENUITEM_PROP_TOGGLE_TYPE,
+                                          "radio");
           dbusmenu_menuitem_property_set_int (DBUSMENU_MENUITEM (ap_item),
                                               DBUSMENU_MENUITEM_PROP_TOGGLE_STATE,
                                               DBUSMENU_MENUITEM_TOGGLE_STATE_CHECKED);
-      }
-
+          /* TODO: Add active AP submenu */
+        }
+      else if (ap_connections != NULL)
+        {
+          dbusmenu_menuitem_property_set (DBUSMENU_MENUITEM (ap_item),
+                                DBUSMENU_MENUITEM_PROP_TOGGLE_TYPE,
+                                "radio");
+          /* TODO: Add forget network menu */
+        }
+      else
+        {
+          /* FIXME: Calum to define behaviour*/
+        }
 
       dbusmenu_accesspointitem_bind_accesspoint (DBUSMENU_ACCESSPOINTITEM (ap_item), ap);
       dbusmenu_accesspointitem_bind_device      (DBUSMENU_ACCESSPOINTITEM (ap_item), NM_DEVICE (device));
 
       dbusmenu_menuitem_property_set (ap_item, DBUSMENU_MENUITEM_PROP_LABEL, utf_ssid);
-      dbusmenu_menuitem_property_set (ap_item, DBUSMENU_MENUITEM_PROP_TOGGLE_TYPE, DBUSMENU_MENUITEM_TOGGLE_RADIO);
+
 
       dbusmenu_menuitem_property_set (ap_item, "x-wifi-bssid", nm_access_point_get_bssid (ap));
       dbusmenu_menuitem_property_set (ap_item, "type", "x-system-settings");
@@ -284,6 +299,7 @@ wifi_populate_accesspoints (DbusmenuMenuitem *parent,
                              0);
 
       g_free (utf_ssid);
+      g_slist_free (ap_connections);
     }
   g_ptr_array_free (sortedarray, TRUE);
 }

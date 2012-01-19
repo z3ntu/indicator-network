@@ -104,6 +104,7 @@ private:
     enum MenuRoles {
         Id,
         Type,
+        ToggleType,
         Label,
         State,
         HasSubmenu,
@@ -119,5 +120,8 @@ private:
 
     //! Append one object in the model
     void appendItem(QObject * obj);
+
+    //! Help function for get item property
+    QVariant getProperty(QDBusMenuItem * item, QByteArray name, QVariant defaultValue) const;
 };
 #endif

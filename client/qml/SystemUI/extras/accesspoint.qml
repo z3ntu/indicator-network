@@ -48,7 +48,7 @@ BasicNavigationButton {
 
     ListItem {
         id: basicItem
-        selectable: true
+        selectable: button.dbusModel.toggleType != ""
         dbusModel: button.dbusModel
         anchors { left: wifiIconFrame.right; top: parent.top; right: parent.right; bottom: parent.bottom }
     }

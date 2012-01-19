@@ -20,6 +20,7 @@ set(networkservice_SRC
     ${CMAKE_CURRENT_BINARY_DIR}/MenuExporter.c
     ${CMAKE_CURRENT_SOURCE_DIR}/network-service.c
     ${CMAKE_CURRENT_SOURCE_DIR}/network-utils-wifi.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/secret-agent.c
     ${CMAKE_CURRENT_SOURCE_DIR}/accesspointitem.c
     ${CMAKE_CURRENT_SOURCE_DIR}/accesspointitem.h)
 

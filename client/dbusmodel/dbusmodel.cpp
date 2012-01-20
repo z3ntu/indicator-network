@@ -7,6 +7,7 @@
 #include <QAction>
 #include <QThread>
 #include <QAbstractItemModel>
+#include <QChildEvent>
 
 DBusModel::DBusModel(QObject *parent)
     : QAbstractListModel(parent),
@@ -38,8 +39,18 @@ DBusModel::DBusModel(QObject *parent)
 
 DBusModel::~DBusModel()
 {
+    Q_FOREACH(QDBusMenuItem *item, m_pendingItems) {
+        removeItem(item);
+    }
+
+    Q_FOREACH(QObject *item, m_items) {
+        QDBusMenuItem *mItem = qobject_cast<QDBusMenuItem*>(item);
+        removeItem(mItem);
+    }
+
     // Do not destroy item this will be destroyed by DBusControl
     m_root = 0;
+
 }
 
 int DBusModel::menuId() const
@@ -84,21 +95,26 @@ void DBusModel::load()
         m_root = m_control->load(m_id);
         if (m_root) {
             m_root->installEventFilter(this);
-            appendItems(m_root->children());
+            appendNewItems(m_root->children());
         }
     }
 }
 
-void DBusModel::appendItems(QObjectList items)
+void DBusModel::appendNewItem(QDBusMenuItem * item)
+{
+    if (!item->type().isEmpty())  {
+        appendItem(item);
+    } else {
+        m_pendingItems << item;
+        QObject::connect(item, SIGNAL(typeDiscovered()), this, SLOT(onItemTypeDiscovered()));
+    }
+}
+
+void DBusModel::appendNewItems(QObjectList items)
 {
     Q_FOREACH(QObject *item, items) {
         QDBusMenuItem *menuItem = qobject_cast<QDBusMenuItem *>(item);
-
-        if (!menuItem->type().isEmpty())  {
-            appendItem(menuItem);
-        } else {
-            QObject::connect(item, SIGNAL(typeDiscovered()), this, SLOT(onItemTypeDiscovered()));
-        }
+        appendNewItem(menuItem);
     }
 }
 
@@ -106,13 +122,16 @@ void DBusModel::onItemTypeDiscovered()
 {
     QObject *sender = QObject::sender();
     QObject::disconnect(sender, SIGNAL(typeDiscovered()), this, SLOT(onItemTypeDiscovered()));
-
     appendItem(sender);
 }
 
 void DBusModel::appendItem(QObject * obj)
 {
     QDBusMenuItem *menuItem = qobject_cast<QDBusMenuItem*>(obj);
+
+    //remove from pending
+    m_pendingItems.removeOne(menuItem);
+
     int position = menuItem->position();
 
     QObjectList cpyItems = m_items;
@@ -129,15 +148,30 @@ void DBusModel::appendItem(QObject * obj)
     //reset();
 }
 
+void DBusModel::removeItem(QDBusMenuItem * item)
+{
+    int index = m_pendingItems.indexOf(item);
+    if (index >= 0) {
+        QObject::disconnect(item, SIGNAL(typeDiscovered()), this, SLOT(onItemTypeDiscovered()));
+        m_pendingItems.takeAt(index);
+    } else {
+        int row = m_items.indexOf(item);
+        if (row >= 0) {
+            QObject::disconnect(item, SIGNAL(changed()), this, SLOT(onItemChanged()));
+            QObject::disconnect(item, SIGNAL(moved(int, int)), this, SLOT(onItemMoved(int, int)));
+            QObject::disconnect(item, SIGNAL(destroyed(QObject*)), this, SLOT(onItemDestroyed(QObject*)));
+
+            beginRemoveRows(QModelIndex(), row, row);
+            m_items.removeAt(row);
+            endRemoveRows();
+        }
+    }
+}
+
 void DBusModel::onItemDestroyed(QObject * obj)
 {
     QDBusMenuItem *item = qobject_cast<QDBusMenuItem*>(obj);
-    int row = m_items.indexOf(obj);
-    if (row >= 0) {
-        beginRemoveRows(QModelIndex(), row, row);
-        m_items.removeAt(row);
-        endRemoveRows();
-    }
+    removeItem(item);
 }
 
 void DBusModel::onItemMoved(int newPos, int oldPos)
@@ -157,6 +191,23 @@ void DBusModel::onItemChanged()
 
 bool DBusModel::eventFilter(QObject * obj, QEvent * event)
 {
+    switch(event->type())
+    {
+        case QEvent::ChildAdded:
+        {
+            QChildEvent *cEvent = reinterpret_cast<QChildEvent*>(event);
+            QDBusMenuItem *item = qobject_cast<QDBusMenuItem*>(cEvent->child());
+
+            Q_ASSERT(item);
+            appendNewItem(item);
+            break;
+        }
+        case QEvent::ChildRemoved: {
+            QChildEvent *cEvent = reinterpret_cast<QChildEvent*>(event);
+            onItemDestroyed(cEvent->child());
+            break;
+        }
+    }
     return QObject::eventFilter(obj, event);
 }
 
@@ -182,7 +233,7 @@ QVariant DBusModel::data(const QModelIndex & index, int role) const
     if(!index.isValid() || (row < 0) || (row > m_items.size()))
         return QVariant();
 
-    QDBusMenuItem *item = qobject_cast<QDBusMenuItem*>(m_root->children()[row]);
+    QDBusMenuItem *item = qobject_cast<QDBusMenuItem*>(m_items[row]);
     Q_ASSERT(item);
     switch (role) {
     case Id:

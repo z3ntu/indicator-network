@@ -95,6 +95,7 @@ private Q_SLOTS:
 private:
     Q_DISABLE_COPY(DBusModel)
 
+    QList<QDBusMenuItem * > m_pendingItems;
     QObjectList m_items;
     QDBusMenuItem *m_root;
     DBusControl *m_control;
@@ -115,11 +116,17 @@ private:
         Control
     };
 
-    //! Append a list of object in the model
-    void appendItems(QObjectList items);
+    //! Prepare a list of object to be appended into the model
+    void appendNewItems(QObjectList items);
+
+    //! Prepare one ojbect to be appended into the model
+    void appendNewItem(QDBusMenuItem * item);
 
     //! Append one object in the model
     void appendItem(QObject * obj);
+
+    //! Remove a item from model
+    void removeItem(QDBusMenuItem * item);
 
     //! Help function for get item property
     QVariant getProperty(QDBusMenuItem * item, QByteArray name, QVariant defaultValue) const;

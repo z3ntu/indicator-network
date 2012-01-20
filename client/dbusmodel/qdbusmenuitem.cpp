@@ -63,7 +63,9 @@ void QDBusMenuItem::onChildAdded(DbusmenuMenuitem *mi, DbusmenuMenuitem *child, 
 void QDBusMenuItem::onChildRemoved(DbusmenuMenuitem *mi, DbusmenuMenuitem *child, gpointer *data)
 {
     QDBusMenuItem *self = reinterpret_cast<QDBusMenuItem*>(data);
-    delete self->getChild(child);
+    QObject *qChild = self->getChild(child);
+    qChild->setParent(0);
+    delete qChild;
 }
 
 void QDBusMenuItem::onChildMoved(DbusmenuMenuitem *mi, DbusmenuMenuitem *child, guint newpos, guint oldpos, gpointer *data)
@@ -76,7 +78,7 @@ void QDBusMenuItem::onChildMoved(DbusmenuMenuitem *mi, DbusmenuMenuitem *child, 
 }
 
 QDBusMenuItem::QDBusMenuItem(DbusmenuMenuitem *gitem, QObject *parent)
-    : QObject(parent),
+    : QObject(0), //avoid call child add before QDBusMenuItem constructor
       m_gitem(gitem),
       m_type("")
 {
@@ -115,6 +117,8 @@ QDBusMenuItem::QDBusMenuItem(DbusmenuMenuitem *gitem, QObject *parent)
 
     // Regiter itself on global list
     m_globalItemList[dbusmenu_menuitem_get_id(m_gitem)] = this;
+
+    setParent(parent);
 }
 
 QDBusMenuItem::~QDBusMenuItem()

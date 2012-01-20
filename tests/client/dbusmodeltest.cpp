@@ -1,47 +1,15 @@
-
 #include "dbusmodeltest.h"
 #include "dbusmodel.h"
 #include "dbuscontrol.h"
+#include "dbusmenuscript.h"
 
 #include <QObject>
 #include <QtTestGui>
 #include <QDebug>
 
-void dumpMenu(DBusModel *model)
-{
-    if (!model)
-        return;
-
-    QTest::qWait(500);
-    for(int i=0; i < model->rowCount(); i++) {
-        QModelIndex index = model->index(i);
-        if (model->data(index, 5).toBool()) {
-            DBusModel subModel;
-            subModel.setControl(model->control());
-            subModel.setMenuId(model->data(index, 0).toInt());
-            subModel.load();
-            dumpMenu(&subModel);
-        }
-    }
-}
-
-void DBusModelTest::testDumpMenu()
-{
-    DBusControl control;
-    control.setService("org.dbusmenu.test");
-    control.setObjectPath("/org/test");
-    control.connectToServer();
-
-    QTest::qWait(500);
-    QVERIFY(control.isConnected());
-
-    DBusModel model;
-    model.setControl(&control);
-    model.setMenuId(0);
-    model.load();
-    dumpMenu(&model);
-}
-
+/*
+ * Check safe exit when connecting to a invalid connection
+ */
 void DBusModelTest::testInvalidConnection()
 {
     DBusControl control;
@@ -52,6 +20,57 @@ void DBusModelTest::testInvalidConnection()
     QTest::qWait(500);
     QVERIFY(control.isConnected() == false);
 }
+
+
+/*
+ * Check item added and item removed in runtinme for DBusModel
+ */
+void DBusModelTest::testSingleMenu()
+{
+    DBusMenuScript script;
+    script.start();
+
+    // Create control object
+    DBusControl control;
+    control.setService(MENU_SERVICE_NAME);
+    control.setObjectPath(MENU_OBJECT_PATH);
+    control.connectToServer();
+
+    // Check if control is connected
+    QTest::qWait(500);
+    QVERIFY(control.isConnected());
+
+    // Create Model
+    DBusModel model;
+    model.setControl(&control);
+    model.setMenuId(0);
+
+    // Load Model
+    model.load();
+
+    // Model is empty in the begginer
+    QCOMPARE(model.count(), 0);
+
+    // Insert 5 intems into model
+    script.walk(5);
+    QCOMPARE(model.count(), 5);
+
+    // Remove one item
+    script.walk(1);
+    QCOMPARE(model.count(), 4);
+
+    // Remove one item
+    script.walk(1);
+    QCOMPARE(model.count(), 3);
+
+    // Add a new item
+    script.walk(1);
+    QCOMPARE(model.count(), 4);
+
+    // Leave script
+    script.stop();
+}
+
 
 QTEST_MAIN(DBusModelTest)
 

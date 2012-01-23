@@ -20,9 +20,12 @@ set(networkservice_SRC
     ${CMAKE_CURRENT_BINARY_DIR}/MenuExporter.c
     ${CMAKE_CURRENT_SOURCE_DIR}/network-service.c
     ${CMAKE_CURRENT_SOURCE_DIR}/network-utils-wifi.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/secret-agent.c
     ${CMAKE_CURRENT_SOURCE_DIR}/accesspointitem.c
     ${CMAKE_CURRENT_SOURCE_DIR}/accesspointitem.h)
+
+set(secretdaemon_SRC
+    ${CMAKE_CURRENT_SOURCE_DIR}/secret-agent-daemon.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/secret-agent.c)
 
 set(CMAKE_C_FLAGS "-Wall -g")
 
@@ -31,6 +34,8 @@ add_custom_command(OUTPUT ${exportmenu_SRC}
                    DEPENDS ${exportmenu_VALA}
                    WORKING_DIRECTORY ${CMAKE_CURRENT_BIN_DIR})
 
+add_executable(secret-daemon
+               ${secretdaemon_SRC})
 
 add_executable(export-settings-menu
                ${exportmenu_SRC})
@@ -47,6 +52,11 @@ include_directories(
     ${NM_INCLUDE_DIRS}
     ${DBUSMENUGLIB_INCLUDE_DIRS})
 
+target_link_libraries(secret-daemon
+    ${GLIB_LDFLAGS}
+    ${GIO_LDFLAGS}
+    ${NM_LDFLAGS})
+
 target_link_libraries(network-settings-menu
     ${GLIB_LDFLAGS}
     ${GIO_LDFLAGS}
@@ -57,5 +67,3 @@ target_link_libraries(export-settings-menu
     ${GLIB_LDFLAGS}
     ${GIO_LDFLAGS}
     ${DBUSMENUGLIB_LDFLAGS})
-
-

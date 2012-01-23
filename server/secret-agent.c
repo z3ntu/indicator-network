@@ -42,7 +42,9 @@ UnitySettingsSecretAgent*
 unity_settings_secret_agent_construct (GType object_type)
 {
 	UnitySettingsSecretAgent * self = NULL;
-	self = (UnitySettingsSecretAgent*) g_object_new (object_type, NULL);
+	self = (UnitySettingsSecretAgent*) g_object_new (object_type,
+                                                         NM_SECRET_AGENT_IDENTIFIER, "com.unity.nm-agent",
+                                                         NULL);
 	return self;
 }
 

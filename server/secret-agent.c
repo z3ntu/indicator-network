@@ -36,30 +36,75 @@ enum  {
 
 UnitySettingsSecretAgent* unity_settings_secret_agent_new       (void);
 UnitySettingsSecretAgent* unity_settings_secret_agent_construct (GType object_type);
+static void
+delete_secrets (NMSecretAgent *agent,
+                NMConnection *connection,
+                const char *connection_path,
+                NMSecretAgentDeleteSecretsFunc callback,
+                gpointer callback_data)
+{
+  g_debug ("delete secrets");
+}
 
+static void
+get_secrets (NMSecretAgent                 *agent,
+             NMConnection                  *connection,
+             const char                    *connection_path,
+             const char                    *setting_name,
+             const char                   **hints,
+             NMSecretAgentGetSecretsFlags   flags,
+             NMSecretAgentGetSecretsFunc    callback,
+             gpointer                       callback_data)
+{
+
+  g_debug ("get secrets");
+}
+
+static void
+save_secrets (NMSecretAgent                *agent,
+              NMConnection                 *connection,
+              const char                   *connection_path,
+              NMSecretAgentSaveSecretsFunc  callback,
+              gpointer                      callback_data)
+{
+  g_debug ("save secrets");
+}
+
+static void
+cancel_get_secrets (NMSecretAgent *agent,
+                    const char *connection_path,
+                    const char *setting_name)
+{
+  g_debug ("cancel get secrets");
+}
 
 UnitySettingsSecretAgent*
 unity_settings_secret_agent_construct (GType object_type)
 {
-	UnitySettingsSecretAgent * self = NULL;
-	self = (UnitySettingsSecretAgent*) g_object_new (object_type,
-                                                         NM_SECRET_AGENT_IDENTIFIER, "com.unity.nm-agent",
-                                                         NULL);
-	return self;
+  UnitySettingsSecretAgent * self = NULL;
+  self = (UnitySettingsSecretAgent*) g_object_new (object_type,
+                                                   NM_SECRET_AGENT_IDENTIFIER, "com.unity.nm-agent",
+                                                   NULL);
+  return self;
 }
 
 
 UnitySettingsSecretAgent*
 unity_settings_secret_agent_new (void)
 {
-	return unity_settings_secret_agent_construct (UNITY_SETTINGS_TYPE_SECRET_AGENT);
+  return unity_settings_secret_agent_construct (UNITY_SETTINGS_TYPE_SECRET_AGENT);
 }
 
 
 static void
 unity_settings_secret_agent_class_init (UnitySettingsSecretAgentClass *klass)
 {
-	unity_settings_secret_agent_parent_class = g_type_class_peek_parent (klass);
+  unity_settings_secret_agent_parent_class = g_type_class_peek_parent (klass);
+  NMSecretAgentClass         *parent_class = NM_SECRET_AGENT_CLASS (klass);
+  parent_class->get_secrets = get_secrets;
+  parent_class->save_secrets = save_secrets;
+  parent_class->delete_secrets = delete_secrets;
+  parent_class->cancel_get_secrets = cancel_get_secrets;
 }
 
 
@@ -69,15 +114,17 @@ unity_settings_secret_agent_instance_init (UnitySettingsSecretAgent *self)
 }
 
 
-GType unity_settings_secret_agent_get_type (void) {
-	static volatile gsize unity_settings_secret_agent_type_id__volatile = 0;
-	if (g_once_init_enter (&unity_settings_secret_agent_type_id__volatile)) {
-		static const GTypeInfo g_define_type_info = { sizeof (UnitySettingsSecretAgentClass), (GBaseInitFunc) NULL, (GBaseFinalizeFunc) NULL, (GClassInitFunc) unity_settings_secret_agent_class_init, (GClassFinalizeFunc) NULL, NULL, sizeof (UnitySettingsSecretAgent), 0, (GInstanceInitFunc) unity_settings_secret_agent_instance_init, NULL };
-		GType unity_settings_secret_agent_type_id;
-		unity_settings_secret_agent_type_id = g_type_register_static (G_TYPE_OBJECT, "UnitySettingsSecretAgent", &g_define_type_info, 0);
-		g_once_init_leave (&unity_settings_secret_agent_type_id__volatile, unity_settings_secret_agent_type_id);
-	}
-	return unity_settings_secret_agent_type_id__volatile;
+GType
+unity_settings_secret_agent_get_type (void) {
+  static volatile gsize unity_settings_secret_agent_type_id__volatile = 0;
+  if (g_once_init_enter (&unity_settings_secret_agent_type_id__volatile))
+    {
+      static const GTypeInfo g_define_type_info = { sizeof (UnitySettingsSecretAgentClass), (GBaseInitFunc) NULL, (GBaseFinalizeFunc) NULL, (GClassInitFunc) unity_settings_secret_agent_class_init, (GClassFinalizeFunc) NULL, NULL, sizeof (UnitySettingsSecretAgent), 0, (GInstanceInitFunc) unity_settings_secret_agent_instance_init, NULL };
+      GType unity_settings_secret_agent_type_id;
+      unity_settings_secret_agent_type_id = g_type_register_static (NM_TYPE_SECRET_AGENT, "UnitySettingsSecretAgent", &g_define_type_info, 0);
+      g_once_init_leave (&unity_settings_secret_agent_type_id__volatile, unity_settings_secret_agent_type_id);
+    }
+  return unity_settings_secret_agent_type_id__volatile;
 }
 
 

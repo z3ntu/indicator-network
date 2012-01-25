@@ -1,9 +1,0 @@
-<RCC>
-    <qresource prefix="/qml">
-        <file>main.qml</file>
-        <file>ServiceListPage.qml</file>
-        <file>ServiceSubPage.qml</file>
-        <file>TypeDiscovery.js</file>
-        <file>ServiceSubGroup.qml</file>
-    </qresource>
-</RCC>

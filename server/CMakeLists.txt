@@ -1,5 +1,10 @@
 project(server)
 
+find_program(GLIB_GENMARSHAL glib-genmarshal)
+if (NOT GLIB_GENMARSHAL)
+  message(FATAL_ERROR "GLib genmarshal not found.")
+endif()
+
 find_program(VALA_BIN valac)
 if (NOT VALA_BIN)
     message(FATAL_ERROR "Vala compiler not found.")
@@ -23,15 +28,36 @@ set(networkservice_SRC
     ${CMAKE_CURRENT_SOURCE_DIR}/accesspointitem.c
     ${CMAKE_CURRENT_SOURCE_DIR}/accesspointitem.h)
 
+set(secretmarshal_LIST
+    ${CMAKE_CURRENT_SOURCE_DIR}/secret-marshal.list)
+
+set(secretmarshal_SRC
+    ${CMAKE_CURRENT_SOURCE_DIR}/secret-marshal.c)
+
+set(secretmarshal_HEADER
+    ${CMAKE_CURRENT_SOURCE_DIR}/secret-marshal.h)
+
 set(secretdaemon_SRC
+    ${secretmarshal_SRC}
     ${CMAKE_CURRENT_SOURCE_DIR}/secret-agent-daemon.c
     ${CMAKE_CURRENT_SOURCE_DIR}/secret-agent.c)
+
 
 set(CMAKE_C_FLAGS "-Wall -g")
 
 add_custom_command(OUTPUT ${exportmenu_SRC}
                    COMMAND ${VALA_BIN} --ccode --pkg Dbusmenu-0.4 --pkg gio-2.0 ${exportmenu_VALA}
                    DEPENDS ${exportmenu_VALA}
+                   WORKING_DIRECTORY ${CMAKE_CURRENT_BIN_DIR})
+
+add_custom_command(OUTPUT  ${secretmarshal_SRC}
+                   COMMAND ${GLIB_GENMARSHAL} ${secretmarshal_LIST} --prefix=_secret_agent_marshal --body > ${secretdaemon_SRC}
+                   DEPENDS ${secretmarshal_LIST} ${secretmarshal_HEADER}
+                   WORKING_DIRECTORY ${CMAKE_CURRENT_BIN_DIR})
+
+add_custom_command(OUTPUT  ${secretmarshal_HEADER}
+                   COMMAND ${GLIB_GENMARSHAL} ${secretmarshal_LIST} --prefix=_secret_agent_marshal --header > ${secretmarshal_HEADER}
+                   DEPENDS ${secretmarshal_LIST}
                    WORKING_DIRECTORY ${CMAKE_CURRENT_BIN_DIR})
 
 add_executable(secret-daemon

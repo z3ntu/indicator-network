@@ -33,11 +33,6 @@ typedef struct _SecretRequest {
   gpointer                       callback_data;
 } SecretRequest;
 
-struct SecretRequestFindData {
-  guint64        id;
-  SecretRequest *req;
-};
-
 GType unity_settings_secret_agent_get_type (void) G_GNUC_CONST;
 enum  {
 	UNITY_SETTINGS_SECRET_AGENT_DUMMY_PROPERTY
@@ -55,16 +50,15 @@ UnitySettingsSecretAgent* unity_settings_secret_agent_new       (void);
 UnitySettingsSecretAgent* unity_settings_secret_agent_construct (GType object_type);
 
 int
-secret_request_find (SecretRequest                *req,
-                     struct SecretRequestFindData *data)
+secret_request_find (SecretRequest  *req,
+                     guint64        *id)
 {
-  if (req->id > data->id)
+  if (req->id > *id)
       return -1;
 
-  if (req->id < data->id)
+  if (req->id < *id)
       return 1;
 
-  data->req = req;
   return 0;
 }
 
@@ -73,14 +67,12 @@ unity_settings_secret_agent_provide_secret (UnitySettingsSecretAgent *agent,
                                             guint64                   request,
                                             GHashTable               *secrets)
 {
-  struct SecretRequestFindData  data;
+  GList  *iter;
 
-  data.id  = request;
-  data.req = NULL;
-
-  g_queue_find_custom (agent->priv->requests, &data, (GCompareFunc)secret_request_find);
-
-  if (data.req == NULL)
+  iter = g_queue_find_custom (agent->priv->requests,
+                              &request,
+                              (GCompareFunc)secret_request_find);
+  if (iter == NULL)
     {
       g_debug ("No request with id <%d> found", (int)request);
       return;
@@ -231,6 +223,14 @@ unity_settings_secret_agent_class_init (UnitySettingsSecretAgentClass *klass)
                                             G_TYPE_NONE, 5,
                                             G_TYPE_UINT64, G_TYPE_POINTER, G_TYPE_STRING, G_TYPE_POINTER, G_TYPE_UINT);
 
+  signals[REQUEST_CANCELLED] = g_signal_new (UNITY_SETTINGS_SECRET_AGENT_REQUEST_CANCELLED,
+                                             G_OBJECT_CLASS_TYPE (G_OBJECT_CLASS (klass)),
+                                             G_SIGNAL_RUN_FIRST,
+                                             G_STRUCT_OFFSET (UnitySettingsSecretAgentClass, request_cancelled),
+                                             NULL, NULL,
+                                             _secret_agent_marshal_VOID__UINT64,
+                                             G_TYPE_NONE, 1,
+                                             G_TYPE_UINT64);
 }
 
 

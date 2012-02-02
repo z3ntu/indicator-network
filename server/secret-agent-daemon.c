@@ -1,5 +1,26 @@
+#include <gtk/gtk.h>
 #include "secret-agent.h"
 
+void
+secret_requested_cb (UnitySettingsSecretAgent      *self,
+                     guint64                        id,
+                     NMConnection                  *connection,
+                     const char                    *setting_name,
+                     const char                   **hints,
+                     NMSecretAgentGetSecretsFlags   flags,
+                     gpointer                       data)
+{
+  g_debug ("Secret requested %s", setting_name);
+}
+
+/*
+  void  (*request_cancelled) (UnitySettingsSecretAgent      *self,
+                              guint64                        id,
+                              NMConnection                  *connection,
+                              const char                    *setting_name,
+                              const char                   **hints,
+                              NMSecretAgentGetSecretsFlags   flags);
+                              */
 gint
 main (gint argc, gchar** argv)
 {

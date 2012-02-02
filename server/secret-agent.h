@@ -40,12 +40,12 @@ struct _UnitySettingsSecretAgentClass {
                              const char                   **hints,
                              NMSecretAgentGetSecretsFlags   flags);
 
-  void  (*requeste_cancelled) (UnitySettingsSecretAgent      *self,
-                               guint64                        id,
-                               NMConnection                  *connection,
-                               const char                    *setting_name,
-                               const char                   **hints,
-                               NMSecretAgentGetSecretsFlags   flags);
+  void  (*request_cancelled) (UnitySettingsSecretAgent      *self,
+                              guint64                        id,
+                              NMConnection                  *connection,
+                              const char                    *setting_name,
+                              const char                   **hints,
+                              NMSecretAgentGetSecretsFlags   flags);
 };
 
 

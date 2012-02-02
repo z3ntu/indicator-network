@@ -32,10 +32,10 @@ set(secretmarshal_LIST
     ${CMAKE_CURRENT_SOURCE_DIR}/secret-marshal.list)
 
 set(secretmarshal_SRC
-    ${CMAKE_CURRENT_SOURCE_DIR}/secret-marshal.c)
+  ${CMAKE_CURRENT_BINARY_DIR}/secret-marshal.c)
 
 set(secretmarshal_HEADER
-    ${CMAKE_CURRENT_SOURCE_DIR}/secret-marshal.h)
+  ${CMAKE_CURRENT_BINARY_DIR}/secret-marshal.h)
 
 set(secretdaemon_SRC
     ${secretmarshal_SRC}
@@ -52,13 +52,12 @@ add_custom_command(OUTPUT ${exportmenu_SRC}
 
 add_custom_command(OUTPUT  ${secretmarshal_SRC}
                    COMMAND ${GLIB_GENMARSHAL} ${secretmarshal_LIST} --prefix=_secret_agent_marshal --body > ${secretdaemon_SRC}
-                   DEPENDS ${secretmarshal_LIST} ${secretmarshal_HEADER}
-                   WORKING_DIRECTORY ${CMAKE_CURRENT_BIN_DIR})
+                   DEPENDS ${secretmarshal_HEADER}
+                   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
 add_custom_command(OUTPUT  ${secretmarshal_HEADER}
                    COMMAND ${GLIB_GENMARSHAL} ${secretmarshal_LIST} --prefix=_secret_agent_marshal --header > ${secretmarshal_HEADER}
-                   DEPENDS ${secretmarshal_LIST}
-                   WORKING_DIRECTORY ${CMAKE_CURRENT_BIN_DIR})
+                   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
 add_executable(secret-daemon
                ${secretdaemon_SRC})
@@ -76,12 +75,14 @@ include_directories(
     ${GLIB_INCLUDE_DIRS}
     ${GIO_INCLUDE_DIRS}
     ${NM_INCLUDE_DIRS}
-    ${DBUSMENUGLIB_INCLUDE_DIRS})
+    ${DBUSMENUGLIB_INCLUDE_DIRS}
+    ${GTK_INCLUDE_DIRS})
 
 target_link_libraries(secret-daemon
     ${GLIB_LDFLAGS}
     ${GIO_LDFLAGS}
-    ${NM_LDFLAGS})
+    ${NM_LDFLAGS}
+    ${GTK_LDFLAGS})
 
 target_link_libraries(network-settings-menu
     ${GLIB_LDFLAGS}

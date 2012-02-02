@@ -10,17 +10,16 @@ secret_requested_cb (UnitySettingsSecretAgent      *self,
                      NMSecretAgentGetSecretsFlags   flags,
                      gpointer                       data)
 {
-  g_debug ("Secret requested %s", setting_name);
+  g_debug ("Secret requested <%d> %s", (int)id, setting_name);
 }
 
-/*
-  void  (*request_cancelled) (UnitySettingsSecretAgent      *self,
-                              guint64                        id,
-                              NMConnection                  *connection,
-                              const char                    *setting_name,
-                              const char                   **hints,
-                              NMSecretAgentGetSecretsFlags   flags);
-                              */
+void
+request_cancelled_cb (UnitySettingsSecretAgent      *self,
+                      guint64                        id)
+{
+  g_debug ("Request cancelled <%d>", (int)id);
+}
+
 gint
 main (gint argc, gchar** argv)
 {
@@ -34,6 +33,11 @@ main (gint argc, gchar** argv)
 
   g_signal_connect (G_OBJECT (agent),
                     UNITY_SETTINGS_SECRET_AGENT_SECRET_REQUESTED,
+                    G_CALLBACK (secret_requested_cb),
+                    NULL);
+
+  g_signal_connect (G_OBJECT (agent),
+                    UNITY_SETTINGS_SECRET_AGENT_REQUEST_CANCELLED,
                     G_CALLBACK (secret_requested_cb),
                     NULL);
 

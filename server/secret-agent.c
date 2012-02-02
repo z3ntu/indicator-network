@@ -155,14 +155,13 @@ get_secrets (NMSecretAgent                 *agent,
   g_debug ("Adding a secret request to the queue");
   g_queue_push_tail (priv->requests, req);
 
-  g_signal_emit (agent,
-                 signals[SECRET_REQUESTED],
-                 0,
-                 priv->request_counter,
-                 connection,
-                 setting_name,
-                 hints,
-                 flags);
+  g_signal_emit_by_name (agent,
+                         UNITY_SETTINGS_SECRET_AGENT_SECRET_REQUESTED,
+                         priv->request_counter,
+                         connection,
+                         setting_name,
+                         hints,
+                         flags);
 }
 
 static void
@@ -223,13 +222,13 @@ unity_settings_secret_agent_class_init (UnitySettingsSecretAgentClass *klass)
   G_OBJECT_CLASS (klass)->finalize = unity_settings_secret_agent_finalize;
 
 
-  signals[SECRET_REQUESTED] = g_signal_new ("secret-requested",
+  signals[SECRET_REQUESTED] = g_signal_new (UNITY_SETTINGS_SECRET_AGENT_SECRET_REQUESTED,
                                             G_OBJECT_CLASS_TYPE (G_OBJECT_CLASS (klass)),
                                             G_SIGNAL_RUN_FIRST,
                                             G_STRUCT_OFFSET (UnitySettingsSecretAgentClass, secret_requested),
                                             NULL, NULL,
                                             _secret_agent_marshal_VOID__UINT64_POINTER_STRING_POINTER_UINT,
-                                            G_TYPE_NONE, 6,
+                                            G_TYPE_NONE, 5,
                                             G_TYPE_UINT64, G_TYPE_POINTER, G_TYPE_STRING, G_TYPE_POINTER, G_TYPE_UINT);
 
 }

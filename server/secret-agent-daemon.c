@@ -24,13 +24,18 @@ secret_requested_cb (UnitySettingsSecretAgent      *self,
 gint
 main (gint argc, gchar** argv)
 {
-  GMainLoop     *loop;
-  NMSecretAgent *agent;
+  GMainLoop                *loop;
+  UnitySettingsSecretAgent *agent;
 
   g_type_init ();
 
-  agent = NM_SECRET_AGENT (unity_settings_secret_agent_new ());
-  nm_secret_agent_register (agent);
+  agent = unity_settings_secret_agent_new ();
+  nm_secret_agent_register (NM_SECRET_AGENT (agent));
+
+  g_signal_connect (G_OBJECT (agent),
+                    UNITY_SETTINGS_SECRET_AGENT_SECRET_REQUESTED,
+                    G_CALLBACK (secret_requested_cb),
+                    NULL);
 
   loop = g_main_loop_new (NULL, FALSE);
   g_main_loop_run (loop);

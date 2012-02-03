@@ -67,17 +67,29 @@ unity_settings_secret_agent_provide_secret (UnitySettingsSecretAgent *agent,
                                             guint64                   request,
                                             GHashTable               *secrets)
 {
-  GList  *iter;
+  GList                           *iter;
+  SecretRequest                   *req;
+  UnitySettingsSecretAgentPrivate *priv = agent->priv;
 
-  iter = g_queue_find_custom (agent->priv->requests,
+  iter = g_queue_find_custom (priv->requests,
                               &request,
                               (GCompareFunc)secret_request_find);
-  if (iter == NULL)
+
+  if (iter == NULL || iter->data == NULL)
     {
-      g_debug ("No request with id <%d> found", (int)request);
+      g_warning ("Secret request with id <%d> was not found", (int)request);
       return;
     }
-  /* TODO: Call callaback */
+
+  req = iter->data;
+
+  req->callback (NM_SECRET_AGENT (agent),
+                 req->connection,
+                 secrets,
+                 NULL,
+                 req->callback_data);
+
+  g_queue_remove (priv->requests, req);
   return;
 }
 
@@ -85,14 +97,12 @@ void
 unity_settings_secret_agent_cancel_request (UnitySettingsSecretAgent *agent,
                                             guint64                   request)
 {
-  GList  *iter;
+  GList                           *iter;
   SecretRequest                   *req;
   UnitySettingsSecretAgentPrivate *priv = agent->priv;
   GError *error;
 
-
-
-  iter = g_queue_find_custom (agent->priv->requests,
+  iter = g_queue_find_custom (priv->requests,
                               &request,
                               (GCompareFunc)secret_request_find);
 

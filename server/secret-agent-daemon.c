@@ -1,6 +1,8 @@
 #include <gtk/gtk.h>
 #include "secret-agent.h"
 
+GtkWidget                *dialog;
+
 void
 secret_requested_cb (UnitySettingsSecretAgent      *self,
                      guint64                        id,
@@ -10,7 +12,12 @@ secret_requested_cb (UnitySettingsSecretAgent      *self,
                      NMSecretAgentGetSecretsFlags   flags,
                      gpointer                       data)
 {
+  gint response = gtk_dialog_run (GTK_DIALOG (dialog));
+  gtk_widget_hide (dialog);
+
   g_debug ("Secret requested <%d> %s", (int)id, setting_name);
+
+  unity_settings_secret_agent_cancel_request (self, id);
 }
 
 void
@@ -23,10 +30,11 @@ request_cancelled_cb (UnitySettingsSecretAgent      *self,
 gint
 main (gint argc, gchar** argv)
 {
+
   GMainLoop                *loop;
   UnitySettingsSecretAgent *agent;
 
-  g_type_init ();
+  gtk_init (0, NULL);
 
   agent = unity_settings_secret_agent_new ();
   nm_secret_agent_register (NM_SECRET_AGENT (agent));
@@ -40,6 +48,15 @@ main (gint argc, gchar** argv)
                     UNITY_SETTINGS_SECRET_AGENT_REQUEST_CANCELLED,
                     G_CALLBACK (secret_requested_cb),
                     NULL);
+
+  dialog = gtk_dialog_new_with_buttons ("My dialog",
+                                        NULL,
+                                        GTK_DIALOG_MODAL,
+                                        GTK_STOCK_OK,
+                                        GTK_RESPONSE_ACCEPT,
+                                        GTK_STOCK_CANCEL,
+                                        GTK_RESPONSE_REJECT,
+                                        NULL);
 
   loop = g_main_loop_new (NULL, FALSE);
   g_main_loop_run (loop);

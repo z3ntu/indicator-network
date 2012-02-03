@@ -77,7 +77,7 @@ unity_settings_secret_agent_provide_secret (UnitySettingsSecretAgent *agent,
       g_debug ("No request with id <%d> found", (int)request);
       return;
     }
-
+  /* TODO: Call callaback */
   return;
 }
 
@@ -85,6 +85,38 @@ void
 unity_settings_secret_agent_cancel_request (UnitySettingsSecretAgent *agent,
                                             guint64                   request)
 {
+  GList  *iter;
+  SecretRequest                   *req;
+  UnitySettingsSecretAgentPrivate *priv = agent->priv;
+  GError *error;
+
+
+
+  iter = g_queue_find_custom (agent->priv->requests,
+                              &request,
+                              (GCompareFunc)secret_request_find);
+
+  if (iter == NULL || iter->data == NULL)
+    {
+      g_warning ("Secret request with id <%d> was not found", (int)request);
+      return;
+    }
+
+  req = iter->data;
+  error = g_error_new (NM_SECRET_AGENT_ERROR,
+                       NM_SECRET_AGENT_ERROR_INTERNAL_ERROR,
+                       "This secret request was canceled by the user.");
+
+  req->callback (NM_SECRET_AGENT (agent),
+                 req->connection,
+                 NULL,
+                 error,
+                 req->callback_data);
+
+  g_queue_remove (priv->requests, req);
+
+  g_error_free (error);
+  return;
 }
 
 static void
@@ -97,6 +129,13 @@ delete_secrets (NMSecretAgent *agent,
   g_debug ("delete secrets");
 }
 
+static guint64
+find_available_id (UnitySettingsSecretAgentPrivate *priv)
+{
+  priv->request_counter++;
+  return priv->request_counter;
+}
+
 static void
 get_secrets (NMSecretAgent                 *agent,
              NMConnection                  *connection,
@@ -107,6 +146,7 @@ get_secrets (NMSecretAgent                 *agent,
              NMSecretAgentGetSecretsFunc    callback,
              gpointer                       callback_data)
 {
+  guint64 id;
   UnitySettingsSecretAgentPrivate *priv = UNITY_SETTINGS_SECRET_AGENT_GET_PRIVATE (agent);
   SecretRequest *req = NULL;
 
@@ -131,10 +171,10 @@ get_secrets (NMSecretAgent                 *agent,
     }
 
   /* Adding a request */
-  priv->request_counter++;
+  id = find_available_id (priv);
   req = (SecretRequest*) g_malloc0 (sizeof (SecretRequest));
   *req = ((SecretRequest)
-          { priv->request_counter,
+          { id,
             agent,
             connection,
             connection_path,
@@ -144,7 +184,6 @@ get_secrets (NMSecretAgent                 *agent,
             callback,
             callback_data });
 
-  g_debug ("Adding a secret request to the queue");
   g_queue_push_tail (priv->requests, req);
 
   g_signal_emit_by_name (agent,

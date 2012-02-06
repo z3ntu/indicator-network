@@ -3,6 +3,7 @@
 #include <nm-access-point.h>
 #include <nm-remote-connection.h>
 #include <nm-device.h>
+#include <nm-device-wifi.h>
 #include <libdbusmenu-glib/menuitem.h>
 #include <stdlib.h>
 #include <string.h>
@@ -31,7 +32,9 @@ struct _DbusmenuAccesspointitemClass {
 struct _DbusmenuAccesspointitemPrivate {
         NMAccessPoint *ap;
         NMDevice      *device;
-        gulong         handler_id;
+        gulong         notify_handler_id;
+        gulong         ap_add_handler_id;
+        gulong         ap_rem_handler_id;
 };
 
 
@@ -164,6 +167,15 @@ connection_changed (NMDevice                *device,
     }
 }
 
+static void
+ap_removed (NMDeviceWifi            *device,
+            NMAccessPoint           *removed,
+            DbusmenuAccesspointitem *self)
+{
+  dbusmenu_menuitem_unparent (DBUSMENU_MENUITEM (self));
+  g_object_unref (self);
+}
+
 void
 dbusmenu_accesspointitem_bind_device (DbusmenuAccesspointitem *self,
                                       NMDevice                *device)
@@ -188,10 +200,13 @@ dbusmenu_accesspointitem_bind_device (DbusmenuAccesspointitem *self,
                                   DBUSMENU_MENUITEM_PROP_TOGGLE_STATE,
                                   DBUSMENU_MENUITEM_TOGGLE_STATE_CHECKED);
 
+
+
   self->priv->device = device;
-  self->priv->handler_id = g_signal_connect (device, "notify",
-                                             G_CALLBACK (connection_changed),
-                                             self);
+  self->priv->notify_handler_id = g_signal_connect (NM_DEVICE_WIFI (device), "notify",
+                                                    G_CALLBACK (connection_changed), self);
+  self->priv->ap_rem_handler_id = g_signal_connect (NM_DEVICE_WIFI (device), "access-point-removed",
+                                                    G_CALLBACK (ap_removed), self);
   g_object_ref (device);
 }
 
@@ -230,7 +245,10 @@ dbusmenu_accesspointitem_finalize (GObject* obj)
   DbusmenuAccesspointitem *self = DBUSMENU_ACCESSPOINTITEM (obj);
 
   if (self->priv->device)
-    g_signal_handler_disconnect (self->priv->device, self->priv->handler_id);
+    {
+      g_signal_handler_disconnect (self->priv->device, self->priv->notify_handler_id);
+      g_signal_handler_disconnect (self->priv->device, self->priv->ap_rem_handler_id);
+    }
 
   g_object_unref (self->priv->ap);
   g_object_unref (self->priv->device);

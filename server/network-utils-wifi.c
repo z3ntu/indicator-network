@@ -142,7 +142,7 @@ static gint
 wifi_aps_sort (NMAccessPoint       **a,
                NMAccessPoint       **b,
                ActiveAPConnections  *sort_data)
-{
+  {
   /* Note that we are sorting from top to bottom so we return -1 when the
    * accesspoint has a higher relevance instead of 1 */
   NMAccessPoint *ap1 = *a;
@@ -199,6 +199,7 @@ wifi_aps_sort (NMAccessPoint       **a,
   return result;
 }
 
+
 static void
 wifi_populate_accesspoints (DbusmenuMenuitem *parent,
                             NMClient         *client,
@@ -236,59 +237,15 @@ wifi_populate_accesspoints (DbusmenuMenuitem *parent,
 
   for (i=0; i < sortedarray->len; i++)
     {
-      gchar            *utf_ssid;
-      gboolean          is_adhoc   = FALSE;
-      gboolean          is_secure  = FALSE;
       NMAccessPoint    *ap = g_ptr_array_index (sortedarray, i);
       DbusmenuMenuitem *ap_item = DBUSMENU_MENUITEM (dbusmenu_accesspointitem_new_with_id ((*id)++));
-      GSList           *ap_connections = nm_access_point_filter_connections (ap, dev_connections);
 
       ClientDevice     *cd = g_malloc (sizeof (ClientDevice));
       cd->device = NM_DEVICE (device);
       cd->client = client;
 
-      utf_ssid = nm_utils_ssid_to_utf8 (nm_access_point_get_ssid (ap));
-
-      if (nm_access_point_get_mode (ap) == NM_802_11_MODE_ADHOC)
-        is_adhoc  = TRUE;
-      if (nm_access_point_get_flags (ap) == NM_802_11_AP_FLAGS_PRIVACY)
-        is_secure = TRUE;
-
-      if (sort_data.active_ap == ap)
-        {
-          dbusmenu_menuitem_property_set (DBUSMENU_MENUITEM (ap_item),
-                                          DBUSMENU_MENUITEM_PROP_TOGGLE_TYPE,
-                                          "radio");
-          dbusmenu_menuitem_property_set_int (DBUSMENU_MENUITEM (ap_item),
-                                              DBUSMENU_MENUITEM_PROP_TOGGLE_STATE,
-                                              DBUSMENU_MENUITEM_TOGGLE_STATE_CHECKED);
-          /* TODO: Add active AP submenu */
-        }
-      else if (ap_connections != NULL)
-        {
-          dbusmenu_menuitem_property_set (DBUSMENU_MENUITEM (ap_item),
-                                DBUSMENU_MENUITEM_PROP_TOGGLE_TYPE,
-                                "radio");
-          /* TODO: Add forget network menu */
-        }
-      else
-        {
-          /* FIXME: Calum to define behaviour*/
-        }
-
       dbusmenu_accesspointitem_bind_accesspoint (DBUSMENU_ACCESSPOINTITEM (ap_item), ap);
       dbusmenu_accesspointitem_bind_device      (DBUSMENU_ACCESSPOINTITEM (ap_item), NM_DEVICE (device));
-
-      dbusmenu_menuitem_property_set (ap_item, DBUSMENU_MENUITEM_PROP_LABEL, utf_ssid);
-
-
-      dbusmenu_menuitem_property_set (ap_item, "x-wifi-bssid", nm_access_point_get_bssid (ap));
-      dbusmenu_menuitem_property_set (ap_item, "type", "x-system-settings");
-      dbusmenu_menuitem_property_set (ap_item, "x-tablet-widget", "unity.widgets.systemsettings.tablet.accesspoint");
-
-      dbusmenu_menuitem_property_set_int  (ap_item, "x-wifi-strength",   nm_access_point_get_strength (ap));
-      dbusmenu_menuitem_property_set_bool (ap_item, "x-wifi-is-adhoc",   is_adhoc);
-      dbusmenu_menuitem_property_set_bool (ap_item, "x-wifi-is-secure",  is_secure);
 
       dbusmenu_menuitem_child_append  (parent, ap_item);
 
@@ -297,9 +254,6 @@ wifi_populate_accesspoints (DbusmenuMenuitem *parent,
                              cd,
                              destroy_client_device,
                              0);
-
-      g_free (utf_ssid);
-      g_slist_free (ap_connections);
     }
   g_ptr_array_free (sortedarray, TRUE);
 }

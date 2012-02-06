@@ -83,8 +83,13 @@ void
 dbusmenu_accesspointitem_bind_accesspoint (DbusmenuAccesspointitem *self,
                                            NMAccessPoint           *ap)
 {
+  gchar         *utf_ssid = NULL;
+  gboolean       is_adhoc = FALSE;
+  gboolean       is_secure = FALSE;
+
   g_return_if_fail (self != NULL);
   g_return_if_fail (ap != NULL);
+
   if (self->priv->ap)
     {
       g_warning ("Bind accesspoint shouldn't be called more than once");
@@ -92,12 +97,38 @@ dbusmenu_accesspointitem_bind_accesspoint (DbusmenuAccesspointitem *self,
     }
 
   self->priv->ap = ap;
-
   g_signal_connect (ap, "notify",
                     G_CALLBACK (ap_notify_cb),
                     self);
 
   g_object_ref (G_OBJECT (ap));
+
+  utf_ssid = nm_utils_ssid_to_utf8 (nm_access_point_get_ssid (ap));
+
+  if (nm_access_point_get_mode (ap) == NM_802_11_MODE_ADHOC)
+    is_adhoc  = TRUE;
+  if (nm_access_point_get_flags (ap) == NM_802_11_AP_FLAGS_PRIVACY)
+    is_secure = TRUE;
+
+  dbusmenu_menuitem_property_set (DBUSMENU_MENUITEM (self),
+                                  DBUSMENU_MENUITEM_PROP_TOGGLE_TYPE,
+                                  "radio");
+
+  dbusmenu_menuitem_property_set_int  (DBUSMENU_MENUITEM (self),
+                                       "x-wifi-strength",   nm_access_point_get_strength (ap));
+  dbusmenu_menuitem_property_set_bool (DBUSMENU_MENUITEM (self),
+                                       "x-wifi-is-adhoc",   is_adhoc);
+  dbusmenu_menuitem_property_set_bool (DBUSMENU_MENUITEM (self),
+                                       "x-wifi-is-secure",  is_secure);
+
+  dbusmenu_menuitem_property_set (DBUSMENU_MENUITEM (self),
+                                  "x-wifi-bssid", nm_access_point_get_bssid (ap));
+  dbusmenu_menuitem_property_set (DBUSMENU_MENUITEM (self),
+                                  "type", "x-system-settings");
+  dbusmenu_menuitem_property_set (DBUSMENU_MENUITEM (self),
+                                  "x-tablet-widget", "unity.widgets.systemsettings.tablet.accesspoint");
+  dbusmenu_menuitem_property_set (DBUSMENU_MENUITEM (self),
+                                  DBUSMENU_MENUITEM_PROP_LABEL, utf_ssid);
 }
 
 static void
@@ -107,25 +138,28 @@ connection_changed (NMDevice                *device,
 {
   if (g_strcmp0 (g_param_spec_get_name (pspec), "active-access-point") == 0)
     {
-      NMAccessPoint *ap;
+      NMAccessPoint *active;
 
+      g_object_get (device,
+              "active-access-point", &active,
+              NULL);
+
+       /* TODO: Remove/add active AP submenu */
       dbusmenu_menuitem_property_set_int (DBUSMENU_MENUITEM (item),
                                           DBUSMENU_MENUITEM_PROP_TOGGLE_STATE,
                                           DBUSMENU_MENUITEM_TOGGLE_STATE_UNCHECKED);
 
-      g_object_get (device,
-                    "active-access-point", &ap,
-                    NULL);
-      if (ap == NULL)
-        return;
+      if (active == NULL)
+          return;
 
-      if (g_strcmp0 (nm_access_point_get_bssid (ap),
-                     nm_access_point_get_bssid (item->priv->ap)) == 0)
+      if (item->priv->ap == active)
         {
           dbusmenu_menuitem_property_set_int (DBUSMENU_MENUITEM (item),
                                               DBUSMENU_MENUITEM_PROP_TOGGLE_STATE,
                                               DBUSMENU_MENUITEM_TOGGLE_STATE_CHECKED);
+          /* TODO: Add active submenu */
         }
+
       return;
     }
 }
@@ -134,13 +168,26 @@ void
 dbusmenu_accesspointitem_bind_device (DbusmenuAccesspointitem *self,
                                       NMDevice                *device)
 {
+  NMAccessPoint *active;
   g_return_if_fail (self != NULL);
   g_return_if_fail (device != NULL);
+
   if (self->priv->device)
     {
       g_warning ("Bind accesspoint shouldn't be called more than once");
       return;
     }
+
+  g_object_get (device,
+                "active-access-point", &active,
+                NULL);
+
+  /* TODO: Add active AP submenu */
+  if (active != NULL && self->priv->ap == active)
+    dbusmenu_menuitem_property_set_int (DBUSMENU_MENUITEM (self),
+                                  DBUSMENU_MENUITEM_PROP_TOGGLE_STATE,
+                                  DBUSMENU_MENUITEM_TOGGLE_STATE_CHECKED);
+
   self->priv->device = device;
   self->priv->handler_id = g_signal_connect (device, "notify",
                                              G_CALLBACK (connection_changed),
@@ -167,7 +214,6 @@ dbusmenu_accesspointitem_class_init (DbusmenuAccesspointitemClass * klass)
   g_type_class_add_private (klass, sizeof (DbusmenuAccesspointitemPrivate));
   G_OBJECT_CLASS (klass)->finalize = dbusmenu_accesspointitem_finalize;
 }
-
 
 static void
 dbusmenu_accesspointitem_instance_init (DbusmenuAccesspointitem * self)

@@ -303,6 +303,18 @@ wireless_state_changed (NMClient         *client,
                   NM_CLIENT_WIRELESS_ENABLED, &enabled,
                   NULL);
     dbusmenu_menuitem_property_set_bool (item, DBUSMENU_MENUITEM_PROP_VISIBLE, enabled);
+
+    if (!enabled)
+    {
+      GList *iter;
+      GList *children = dbusmenu_menuitem_get_children (item);
+      for (iter = children;
+           iter != NULL;
+           iter = g_list_next (iter))
+        {
+          dbusmenu_menuitem_child_delete (item, DBUSMENU_MENUITEM (iter->data));
+        }
+    }
   }
 /*  if (g_strcmp0 (g_param_spec_get_name (pspec),
                  NM_CLIENT_WIRELESS_HARDWARE_ENABLED) == 0)
@@ -362,7 +374,6 @@ wifi_device_handler (DbusmenuMenuitem *parent,
   g_signal_connect (device, "state-changed",
                     G_CALLBACK (device_state_changed),
                     networksgroup);
-
 
   /* TODO: Remove this when toggle is removed */
   g_signal_connect (client, "notify",

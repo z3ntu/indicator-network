@@ -299,18 +299,19 @@ populate_ap_list (NMClient         *client,
                   NMDevice         *device,
                   DbusmenuMenuitem *networksgroup)
 {
-      dbusmenu_menuitem_property_set (networksgroup, DBUSMENU_MENUITEM_PROP_LABEL, "Select wireless network");
-      dbusmenu_menuitem_property_set (networksgroup, "type",             "x-system-settings");
-      device_state_changed (device,
-                            nm_device_get_state (device),
-                            NM_DEVICE_STATE_UNKNOWN,
-                            NM_DEVICE_STATE_REASON_NONE,
-                            networksgroup);
-      dbusmenu_menuitem_property_set (networksgroup, "x-group-class",    "accesspoints");
-      dbusmenu_menuitem_property_set (networksgroup, "children-display", "inline");
-      dbusmenu_menuitem_property_set (networksgroup, "x-tablet-widget",  "unity.widgets.systemsettings.tablet.sectiontitle");
+  dbusmenu_menuitem_property_set (networksgroup, DBUSMENU_MENUITEM_PROP_LABEL, "Select wireless network");
+  dbusmenu_menuitem_property_set (networksgroup, "type",             "x-system-settings");
+  device_state_changed (device,
+                        nm_device_get_state (device),
+                        NM_DEVICE_STATE_UNKNOWN,
+                        NM_DEVICE_STATE_REASON_NONE,
+                        networksgroup);
+  dbusmenu_menuitem_property_set (networksgroup, "x-group-class",    "accesspoints");
+  dbusmenu_menuitem_property_set (networksgroup, "children-display", "inline");
+  dbusmenu_menuitem_property_set (networksgroup, "x-tablet-widget",  "unity.widgets.systemsettings.tablet.sectiontitle");
 
-      wifi_populate_accesspoints (networksgroup, client, NM_DEVICE_WIFI (device));
+  if (nm_client_wireless_get_enabled (client))
+    wifi_populate_accesspoints (networksgroup, client, NM_DEVICE_WIFI (device));
 }
 
 static void
@@ -328,16 +329,10 @@ wireless_state_changed (NMClient         *client,
     dbusmenu_menuitem_property_set_bool (item, DBUSMENU_MENUITEM_PROP_VISIBLE, enabled);
 
     if (!enabled)
-    {
-      GList *iter;
-      GList *children = dbusmenu_menuitem_get_children (item);
-      for (iter = children;
-           iter != NULL;
-           iter = g_list_next (iter))
-        {
-          dbusmenu_menuitem_child_delete (item, DBUSMENU_MENUITEM (iter->data));
-        }
-    }
+      {
+        GList *children = dbusmenu_menuitem_take_children (item);
+        g_list_free (children);
+      }
   }
 /*  if (g_strcmp0 (g_param_spec_get_name (pspec),
                  NM_CLIENT_WIRELESS_HARDWARE_ENABLED) == 0)
@@ -350,9 +345,8 @@ wifi_device_handler (DbusmenuMenuitem *parent,
                      NMClient         *client,
                      NMDevice         *device)
 {
-  /* Wifi enable/disable toggle */
-  ClientItem       *ci            = g_slice_new0 (ClientItem);
   gboolean          wifienabled   = nm_client_wireless_get_enabled (client);
+  /* Wifi enable/disable toggle */
   DbusmenuMenuitem *togglesep     = dbusmenu_menuitem_new ();
   DbusmenuMenuitem *toggle        = dbusmenu_menuitem_new ();
 
@@ -375,22 +369,14 @@ wifi_device_handler (DbusmenuMenuitem *parent,
   dbusmenu_menuitem_child_append (parent, networksgroup);
 
   /* Access points */
-  if (wifienabled)
-    populate_ap_list (client, device, networksgroup);
+  populate_ap_list (client, device, networksgroup);
 
   /* Network status handling */
-  /* FIXME: We may leak memory if we end up having to delete the networksgroup menuitem */
-  /*        The item needs to be unrefed if the device is gone. */
   g_object_ref (networksgroup);
-
-  *ci = ((ClientItem) {client, networksgroup});
-  ci->client = client;
-  ci->item   = networksgroup;
-
   g_signal_connect_data (device, "state-changed",
                          G_CALLBACK (device_state_changed),
-                         ci,
-                         destroy_client_device,
+                         networksgroup,
+                         (GClosureNotify)g_object_unref,
                          0);
 
   g_signal_connect (client, "notify",

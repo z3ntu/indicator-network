@@ -171,9 +171,10 @@ ap_removed (NMDeviceWifi            *device,
             NMAccessPoint           *removed,
             DbusmenuAccesspointitem *self)
 {
-  g_debug ("ap removed");
-  dbusmenu_menuitem_unparent (DBUSMENU_MENUITEM (self));
-  g_object_unref (self);
+  DbusmenuMenuitem *parent = dbusmenu_menuitem_get_parent (DBUSMENU_MENUITEM (self));
+
+  if (parent)
+    dbusmenu_menuitem_child_delete (parent, DBUSMENU_MENUITEM (self));
 }
 
 void

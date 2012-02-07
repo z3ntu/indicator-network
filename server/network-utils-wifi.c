@@ -312,6 +312,8 @@ populate_ap_list (NMClient         *client,
 
   if (nm_client_wireless_get_enabled (client))
     wifi_populate_accesspoints (networksgroup, client, NM_DEVICE_WIFI (device));
+  else
+    dbusmenu_menuitem_property_set_bool (networksgroup, DBUSMENU_MENUITEM_PROP_VISIBLE, FALSE);
 }
 
 static void

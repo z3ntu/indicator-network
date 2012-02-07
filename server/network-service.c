@@ -53,8 +53,7 @@ on_bus (GDBusConnection * connection, const gchar * name, gpointer user_data)
       gint type = nm_device_get_device_type (device);
       NMDeviceState state = nm_device_get_state (device);
 
-      if (state == NM_DEVICE_STATE_UNMANAGED ||
-          state == NM_DEVICE_STATE_UNAVAILABLE) /* TODO: Inform the user about the situation */
+      if (state == NM_DEVICE_STATE_UNMANAGED) /* TODO: Inform the user about the situation */
           continue;
 
       switch (type)

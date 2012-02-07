@@ -15,6 +15,11 @@ typedef struct {
 } ClientDevice;
 
 typedef struct {
+  NMClient         *client;
+  DbusmenuMenuitem *item;
+} ClientItem;
+
+typedef struct {
   NMAccessPoint *active_ap;
   GSList        *connections;
 } ActiveAPConnections;
@@ -203,8 +208,7 @@ wifi_aps_sort (NMAccessPoint       **a,
 static void
 wifi_populate_accesspoints (DbusmenuMenuitem *parent,
                             NMClient         *client,
-                            NMDeviceWifi     *device,
-                            gint             *id)
+                            NMDeviceWifi     *device)
 {
   gint                  i;
   GPtrArray            *sortedarray;
@@ -238,7 +242,7 @@ wifi_populate_accesspoints (DbusmenuMenuitem *parent,
   for (i=0; i < sortedarray->len; i++)
     {
       NMAccessPoint    *ap = g_ptr_array_index (sortedarray, i);
-      DbusmenuMenuitem *ap_item = DBUSMENU_MENUITEM (dbusmenu_accesspointitem_new_with_id ((*id)++));
+      DbusmenuMenuitem *ap_item = DBUSMENU_MENUITEM (dbusmenu_accesspointitem_new ());
 
       ClientDevice     *cd = g_malloc (sizeof (ClientDevice));
       cd->device = NM_DEVICE (device);
@@ -275,7 +279,7 @@ device_state_changed (NMDevice            *device,
                       NMDeviceState        new_state,
                       NMDeviceState        old_state,
                       NMDeviceStateReason  reason,
-                      DbusmenuMenuitem    *item)
+                      DbusmenuMenuitem           *item)
 {
   switch (new_state)
     {
@@ -288,6 +292,25 @@ device_state_changed (NMDevice            *device,
     default:
       dbusmenu_menuitem_property_set_bool (item, "x-busy", TRUE);
     }
+}
+
+static void
+populate_ap_list (NMClient         *client,
+                  NMDevice         *device,
+                  DbusmenuMenuitem *networksgroup)
+{
+      dbusmenu_menuitem_property_set (networksgroup, DBUSMENU_MENUITEM_PROP_LABEL, "Select wireless network");
+      dbusmenu_menuitem_property_set (networksgroup, "type",             "x-system-settings");
+      device_state_changed (device,
+                            nm_device_get_state (device),
+                            NM_DEVICE_STATE_UNKNOWN,
+                            NM_DEVICE_STATE_REASON_NONE,
+                            networksgroup);
+      dbusmenu_menuitem_property_set (networksgroup, "x-group-class",    "accesspoints");
+      dbusmenu_menuitem_property_set (networksgroup, "children-display", "inline");
+      dbusmenu_menuitem_property_set (networksgroup, "x-tablet-widget",  "unity.widgets.systemsettings.tablet.sectiontitle");
+
+      wifi_populate_accesspoints (networksgroup, client, NM_DEVICE_WIFI (device));
 }
 
 static void
@@ -325,15 +348,15 @@ wireless_state_changed (NMClient         *client,
 void
 wifi_device_handler (DbusmenuMenuitem *parent,
                      NMClient         *client,
-                     NMDevice         *device,
-                     gint             *id)
+                     NMDevice         *device)
 {
   /* Wifi enable/disable toggle */
+  ClientItem       *ci            = g_slice_new0 (ClientItem);
   gboolean          wifienabled   = nm_client_wireless_get_enabled (client);
-  DbusmenuMenuitem *togglesep     = dbusmenu_menuitem_new_with_id ((*id)++);
-  DbusmenuMenuitem *toggle        = dbusmenu_menuitem_new_with_id ((*id)++);
+  DbusmenuMenuitem *togglesep     = dbusmenu_menuitem_new ();
+  DbusmenuMenuitem *toggle        = dbusmenu_menuitem_new ();
 
-  DbusmenuMenuitem *networksgroup = dbusmenu_menuitem_new_with_id ((*id)++);
+  DbusmenuMenuitem *networksgroup = dbusmenu_menuitem_new ();
 
   dbusmenu_menuitem_property_set (togglesep, DBUSMENU_MENUITEM_PROP_LABEL, "Turn Wifi On/Off");
   dbusmenu_menuitem_property_set (togglesep, DBUSMENU_MENUITEM_PROP_TYPE,  "x-system-settings");
@@ -349,36 +372,31 @@ wifi_device_handler (DbusmenuMenuitem *parent,
 
   dbusmenu_menuitem_child_append (parent, togglesep);
   dbusmenu_menuitem_child_append (parent, toggle);
-
+  dbusmenu_menuitem_child_append (parent, networksgroup);
 
   /* Access points */
   if (wifienabled)
-    {
-      dbusmenu_menuitem_property_set (networksgroup, DBUSMENU_MENUITEM_PROP_LABEL, "Select wireless network");
-      dbusmenu_menuitem_property_set (networksgroup, "type",             "x-system-settings");
-      device_state_changed (device,
-                            nm_device_get_state (device),
-                            NM_DEVICE_STATE_UNKNOWN,
-                            NM_DEVICE_STATE_REASON_NONE,
-                            networksgroup);
-      dbusmenu_menuitem_property_set (networksgroup, "x-group-class",    "accesspoints");
-      dbusmenu_menuitem_property_set (networksgroup, "children-display", "inline");
-      dbusmenu_menuitem_property_set (networksgroup, "x-tablet-widget",  "unity.widgets.systemsettings.tablet.sectiontitle");
-      dbusmenu_menuitem_child_append (parent, networksgroup);
-      wifi_populate_accesspoints (networksgroup, client, NM_DEVICE_WIFI (device), id);
-    }
+    populate_ap_list (client, device, networksgroup);
 
   /* Network status handling */
   /* FIXME: We may leak memory if we end up having to delete the networksgroup menuitem */
+  /*        The item needs to be unrefed if the device is gone. */
   g_object_ref (networksgroup);
-  g_signal_connect (device, "state-changed",
-                    G_CALLBACK (device_state_changed),
-                    networksgroup);
 
-  /* TODO: Remove this when toggle is removed */
+  *ci = ((ClientItem) {client, networksgroup});
+  ci->client = client;
+  ci->item   = networksgroup;
+
+  g_signal_connect_data (device, "state-changed",
+                         G_CALLBACK (device_state_changed),
+                         ci,
+                         destroy_client_device,
+                         0);
+
   g_signal_connect (client, "notify",
                     G_CALLBACK (wireless_state_changed),
                     networksgroup);
+
   /*g_signal_connect (client, "notify::WirelessHardwareEnabled",
                     G_CALLBACK (wireless_state_changed)
                     toggle);*/

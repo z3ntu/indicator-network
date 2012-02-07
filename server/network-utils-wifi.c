@@ -32,6 +32,72 @@ destroy_client_device (gpointer  data,
 }
 
 static void
+access_point_added (NMDeviceWifi     *device,
+                    NMAccessPoint    *ap,
+                    DbusmenuMenuitem *networksgroup)
+{
+  GList *iter;
+  GList *children = dbusmenu_menuitem_get_children (networksgroup);
+  NMAccessPoint *active;
+
+  g_object_get(device,
+               "active-access-point", &active,
+               NULL);
+
+  /* Find AP with the same name and check signal */
+  for (iter = children;
+       iter != NULL;
+       iter = g_list_next (iter))
+    {
+      DbusmenuAccesspointitem *iter_item = DBUSMENU_ACCESSPOINTITEM (iter->data);
+      NMAccessPoint* iter_ap = (NMAccessPoint*)dbusmenu_accesspointitem_get_ap (iter_item);
+
+      if (iter_ap == NULL)
+        continue;
+
+      if (nm_utils_same_ssid (nm_access_point_get_ssid (ap),
+                              nm_access_point_get_ssid (iter_ap),
+                              TRUE))
+        {
+          guint position;
+          DbusmenuAccesspointitem *new_item;
+
+          /* If the signal is not stronger we don't add the new ap */
+          if (nm_access_point_get_strength (ap) <=
+              nm_access_point_get_strength (iter_ap))
+            break;
+
+          position = dbusmenu_menuitem_get_position (DBUSMENU_MENUITEM (iter_item), networksgroup);
+          dbusmenu_menuitem_child_delete (networksgroup, DBUSMENU_MENUITEM (iter_item));
+
+          new_item = dbusmenu_accesspointitem_new ();
+
+          dbusmenu_accesspointitem_bind_device (new_item, NM_DEVICE (device));
+          dbusmenu_accesspointitem_bind_accesspoint (new_item, ap);
+
+          /* If it is the active AP, we place it first, if not in the previous item's position */
+          if (active == ap)
+            dbusmenu_menuitem_child_add_position (networksgroup, DBUSMENU_MENUITEM (new_item), 0);
+          else
+            dbusmenu_menuitem_child_add_position (networksgroup, DBUSMENU_MENUITEM (new_item), position);
+
+          return;
+        }
+    }
+
+  /* If it's the active access point it goes first */
+  if (active == ap)
+    {
+      DbusmenuAccesspointitem *item = dbusmenu_accesspointitem_new ();
+      dbusmenu_accesspointitem_bind_device (item, NM_DEVICE (device));
+      dbusmenu_accesspointitem_bind_accesspoint (item, ap);
+      dbusmenu_menuitem_child_add_position (networksgroup, DBUSMENU_MENUITEM(item), 0);
+
+      return;
+    }
+}
+
+static void
 access_point_selected (DbusmenuMenuitem *item,
                        guint             timestamp,
                        gpointer          data)
@@ -383,6 +449,10 @@ wifi_device_handler (DbusmenuMenuitem *parent,
 
   g_signal_connect (client, "notify",
                     G_CALLBACK (wireless_state_changed),
+                    networksgroup);
+
+  g_signal_connect (NM_DEVICE_WIFI (device), "access-point-added",
+                    G_CALLBACK (access_point_added),
                     networksgroup);
 
   /*g_signal_connect (client, "notify::WirelessHardwareEnabled",

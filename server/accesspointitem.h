@@ -35,6 +35,8 @@ GType dbusmenu_accesspointitem_get_type (void) G_GNUC_CONST;
 void dbusmenu_accesspointitem_bind_accesspoint (DbusmenuAccesspointitem *self, NMAccessPoint *ap);
 void dbusmenu_accesspointitem_bind_device      (DbusmenuAccesspointitem *self, NMDevice      *device);
 
+const NMAccessPoint* dbusmenu_accesspointitem_get_ap (DbusmenuAccesspointitem *self);
+
 DbusmenuAccesspointitem* dbusmenu_accesspointitem_new (void);
 DbusmenuAccesspointitem* dbusmenu_accesspointitem_new_with_id (gint id);
 

@@ -211,6 +211,12 @@ dbusmenu_accesspointitem_bind_device (DbusmenuAccesspointitem *self,
   g_object_ref (device);
 }
 
+const NMAccessPoint*
+dbusmenu_accesspointitem_get_ap (DbusmenuAccesspointitem *item)
+{
+  return item->priv->ap;
+}
+
 DbusmenuAccesspointitem*
 dbusmenu_accesspointitem_new (void)
 {

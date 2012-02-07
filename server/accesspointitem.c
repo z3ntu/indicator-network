@@ -33,7 +33,6 @@ struct _DbusmenuAccesspointitemPrivate {
         NMAccessPoint *ap;
         NMDevice      *device;
         gulong         notify_handler_id;
-        gulong         ap_add_handler_id;
         gulong         ap_rem_handler_id;
 };
 
@@ -172,6 +171,7 @@ ap_removed (NMDeviceWifi            *device,
             NMAccessPoint           *removed,
             DbusmenuAccesspointitem *self)
 {
+  g_debug ("ap removed");
   dbusmenu_menuitem_unparent (DBUSMENU_MENUITEM (self));
   g_object_unref (self);
 }

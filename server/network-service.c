@@ -29,18 +29,17 @@
 void
 wifi_device_handler (DbusmenuMenuitem *parent,
                      NMClient         *client,
-                     NMDevice         *device,
-                     gint             *id);
+                     NMDevice         *device);
 
 static void
 on_bus (GDBusConnection * connection, const gchar * name, gpointer user_data)
 {
-  gint               i, id = 0;
+  gint               i;
   const GPtrArray   *devarray;
   NMClient          *client;
   NMDevice         **devices;
   DbusmenuServer    *server = dbusmenu_server_new("/com/ubuntu/networksettings");
-  DbusmenuMenuitem  *root   = dbusmenu_menuitem_new_with_id (id++);
+  DbusmenuMenuitem  *root   = dbusmenu_menuitem_new ();
 
   dbusmenu_server_set_root (server, root);
   client = nm_client_new ();
@@ -61,7 +60,7 @@ on_bus (GDBusConnection * connection, const gchar * name, gpointer user_data)
       switch (type)
         {
         case NM_DEVICE_TYPE_WIFI:
-          wifi_device_handler (root, client, device, &id);
+          wifi_device_handler (root, client, device);
           break;
         }
     }

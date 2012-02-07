@@ -34,11 +34,13 @@ destroy_client_device (gpointer  data,
 static void
 access_point_added (NMDeviceWifi     *device,
                     NMAccessPoint    *ap,
-                    DbusmenuMenuitem *networksgroup)
+                    ClientItem       *ci)
 {
-  GList *iter;
-  GList *children = dbusmenu_menuitem_get_children (networksgroup);
-  NMAccessPoint *active;
+  NMClient         *client        = ci->client;
+  DbusmenuMenuitem *networksgroup = ci->item;
+  GList            *iter;
+  GList            *children = dbusmenu_menuitem_get_children (networksgroup);
+  NMAccessPoint    *active;
 
   g_object_get(device,
                "active-access-point", &active,
@@ -95,6 +97,8 @@ access_point_added (NMDeviceWifi     *device,
 
       return;
     }
+
+
 }
 
 static void
@@ -413,6 +417,7 @@ wifi_device_handler (DbusmenuMenuitem *parent,
                      NMClient         *client,
                      NMDevice         *device)
 {
+  ClientItem       *ci            = g_slice_new0 (ClientItem);
   gboolean          wifienabled   = nm_client_wireless_get_enabled (client);
   /* Wifi enable/disable toggle */
   DbusmenuMenuitem *togglesep     = dbusmenu_menuitem_new ();
@@ -441,19 +446,21 @@ wifi_device_handler (DbusmenuMenuitem *parent,
 
   /* Network status handling */
   g_object_ref (networksgroup);
-  g_signal_connect_data (device, "state-changed",
-                         G_CALLBACK (device_state_changed),
-                         networksgroup,
-                         (GClosureNotify)g_object_unref,
-                         0);
+  g_signal_connect (device, "state-changed",
+                    G_CALLBACK (device_state_changed),
+                    networksgroup);
 
   g_signal_connect (client, "notify",
                     G_CALLBACK (wireless_state_changed),
                     networksgroup);
 
-  g_signal_connect (NM_DEVICE_WIFI (device), "access-point-added",
-                    G_CALLBACK (access_point_added),
-                    networksgroup);
+  ci->client = client;
+  ci->item   = networksgroup;
+  g_signal_connect_data (NM_DEVICE_WIFI (device), "access-point-added",
+                         G_CALLBACK (access_point_added),
+                         ci,
+                         (GClosureNotify)destroy_client_device,
+                         0);
 
   /*g_signal_connect (client, "notify::WirelessHardwareEnabled",
                     G_CALLBACK (wireless_state_changed)

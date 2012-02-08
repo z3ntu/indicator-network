@@ -24,9 +24,14 @@ typedef struct {
   GSList        *connections;
 } ActiveAPConnections;
 
+typedef struct {
+  DbusmenuMenuitem *networksgroup;
+  DbusmenuMenuitem *toggle;
+} WifiToggleAndGroup;
+
 static void
-destroy_client_device (gpointer  data,
-                       GClosure *closure)
+destroy_struct (gpointer  data,
+                GClosure *closure)
 {
   g_free (data);
 }
@@ -458,7 +463,7 @@ wifi_populate_accesspoints (DbusmenuMenuitem *parent,
       g_signal_connect_data (ap_item, "item-activated",
                              G_CALLBACK (access_point_selected),
                              cd,
-                             destroy_client_device,
+                             destroy_struct,
                              0);
     }
   g_ptr_array_free (sortedarray, TRUE);
@@ -473,7 +478,6 @@ wireless_toggle_activated (DbusmenuMenuitem *toggle,
   gboolean enabled = nm_client_wireless_get_enabled (client);
 
   nm_client_wireless_set_enabled (client, !enabled);
-  dbusmenu_menuitem_property_set_int (toggle, DBUSMENU_MENUITEM_PROP_TOGGLE_STATE, !enabled);
 }
 
 static void
@@ -519,10 +523,13 @@ populate_ap_list (NMClient         *client,
 }
 
 static void
-wireless_state_changed (NMClient         *client,
-                        GParamSpec       *pspec,
-                        DbusmenuMenuitem *item)
+wireless_state_changed (NMClient           *client,
+                        GParamSpec         *pspec,
+                        WifiToggleAndGroup *wtg)
 {
+  DbusmenuMenuitem *networksgroup = wtg->networksgroup;
+  DbusmenuMenuitem *toggle        = wtg->toggle;
+
   if (g_strcmp0 (g_param_spec_get_name (pspec),
                  NM_CLIENT_WIRELESS_ENABLED) == 0)
   {
@@ -530,7 +537,9 @@ wireless_state_changed (NMClient         *client,
     g_object_get (client,
                   NM_CLIENT_WIRELESS_ENABLED, &enabled,
                   NULL);
-    dbusmenu_menuitem_property_set_bool (item, DBUSMENU_MENUITEM_PROP_VISIBLE, enabled);
+
+    dbusmenu_menuitem_property_set_bool (networksgroup, DBUSMENU_MENUITEM_PROP_VISIBLE,       enabled);
+    dbusmenu_menuitem_property_set_int  (toggle,        DBUSMENU_MENUITEM_PROP_TOGGLE_STATE,  enabled);
   }
 /*  if (g_strcmp0 (g_param_spec_get_name (pspec),
                  NM_CLIENT_WIRELESS_HARDWARE_ENABLED) == 0)
@@ -543,6 +552,7 @@ wifi_device_handler (DbusmenuMenuitem *parent,
                      NMClient         *client,
                      NMDevice         *device)
 {
+  WifiToggleAndGroup *wtg;
   gboolean          wifienabled   = nm_client_wireless_get_enabled (client);
   /* Wifi enable/disable toggle */
   DbusmenuMenuitem *togglesep     = dbusmenu_menuitem_new ();
@@ -571,13 +581,19 @@ wifi_device_handler (DbusmenuMenuitem *parent,
 
   /* Network status handling */
   g_object_ref (networksgroup);
+  g_object_ref (toggle);
   g_signal_connect (device, "state-changed",
                     G_CALLBACK (device_state_changed),
                     networksgroup);
 
-  g_signal_connect (client, "notify",
-                    G_CALLBACK (wireless_state_changed),
-                    networksgroup);
+  wtg = g_slice_new0(WifiToggleAndGroup);
+  wtg->toggle = toggle;
+  wtg->networksgroup = networksgroup;
+  g_signal_connect_data (client, "notify",
+                         G_CALLBACK (wireless_state_changed),
+                         wtg,
+                         destroy_struct,
+                         0);
 
   g_signal_connect (NM_DEVICE_WIFI (device), "access-point-added",
                     G_CALLBACK (access_point_added),

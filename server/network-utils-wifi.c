@@ -550,12 +550,6 @@ wireless_state_changed (NMClient         *client,
                   NM_CLIENT_WIRELESS_ENABLED, &enabled,
                   NULL);
     dbusmenu_menuitem_property_set_bool (item, DBUSMENU_MENUITEM_PROP_VISIBLE, enabled);
-
-    if (!enabled)
-      {
-        GList *children = dbusmenu_menuitem_take_children (item);
-        g_list_free (children);
-      }
   }
 /*  if (g_strcmp0 (g_param_spec_get_name (pspec),
                  NM_CLIENT_WIRELESS_HARDWARE_ENABLED) == 0)

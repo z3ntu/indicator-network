@@ -35,6 +35,7 @@ struct _DbusmenuAccesspointitemPrivate {
         NMDevice      *device;
         gulong         notify_handler_id;
         gulong         ap_rem_handler_id;
+        gulong         ap_notify_handler_id;
 };
 
 
@@ -86,9 +87,10 @@ void
 dbusmenu_accesspointitem_bind_accesspoint (DbusmenuAccesspointitem *self,
                                            NMAccessPoint           *ap)
 {
-  gchar         *utf_ssid = NULL;
-  gboolean       is_adhoc = FALSE;
-  gboolean       is_secure = FALSE;
+
+  gchar    *utf_ssid = NULL;
+  gboolean  is_adhoc = FALSE;
+  gboolean  is_secure = FALSE;
 
   g_return_if_fail (self != NULL);
   g_return_if_fail (ap != NULL);
@@ -100,9 +102,9 @@ dbusmenu_accesspointitem_bind_accesspoint (DbusmenuAccesspointitem *self,
     }
 
   self->priv->ap = ap;
-  g_signal_connect(ap, "notify",
-                    G_CALLBACK (ap_notify_cb),
-                    self);
+  self->priv->ap_notify_handler_id = g_signal_connect(ap, "notify",
+                                                      G_CALLBACK(ap_notify_cb),
+                                                      self);
 
   g_object_ref(G_OBJECT (ap));
 
@@ -326,10 +328,14 @@ dbusmenu_accesspointitem_finalize (GObject* obj)
 {
   DbusmenuAccesspointitem *self = DBUSMENU_ACCESSPOINTITEM (obj);
 
-  if (self->priv->device)
+  if (self->priv->device != NULL)
     {
       g_signal_handler_disconnect (self->priv->device, self->priv->notify_handler_id);
       g_signal_handler_disconnect (self->priv->device, self->priv->ap_rem_handler_id);
+    }
+  if (self->priv->ap != NULL)
+    {
+      g_signal_handler_disconnect (self->priv->ap, self->priv->ap_notify_handler_id);
     }
 
   g_object_unref (self->priv->ap);

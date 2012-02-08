@@ -69,7 +69,7 @@ access_point_added (NMDeviceWifi     *device,
           /* If the signal is not stronger we don't add the new ap */
           if (nm_access_point_get_strength (ap) <=
               nm_access_point_get_strength (iter_ap))
-            break;
+            return;
 
           position = dbusmenu_menuitem_get_position (DBUSMENU_MENUITEM (iter_item), networksgroup);
           dbusmenu_menuitem_child_delete (networksgroup, DBUSMENU_MENUITEM (iter_item));
@@ -177,9 +177,9 @@ access_point_added (NMDeviceWifi     *device,
   else
     {
       children = dbusmenu_menuitem_get_children (networksgroup);
-      for (iter = g_list_last (children);
+      for (iter = children;
            iter != NULL;
-           iter = g_list_previous (iter))
+           iter = iter->next)
         {
           DbusmenuAccesspointitem *iter_item = DBUSMENU_ACCESSPOINTITEM (iter->data);
           NMAccessPoint           *iter_ap = (NMAccessPoint*)dbusmenu_accesspointitem_get_ap (iter_item);
@@ -187,34 +187,13 @@ access_point_added (NMDeviceWifi     *device,
           guint                    n_connections;
 
           if (iter_ap == active)
-            {
-                DbusmenuAccesspointitem *new_item = dbusmenu_accesspointitem_new ();
-                dbusmenu_accesspointitem_bind_device (new_item, NM_DEVICE (device));
-                dbusmenu_accesspointitem_bind_accesspoint (new_item, ap);
-
-                dbusmenu_menuitem_child_add_position (networksgroup, DBUSMENU_MENUITEM (new_item), 1);
-                break;
-            }
+            continue;
 
           iter_connections = nm_access_point_filter_connections (ap, dev_connections);
           n_connections    = g_slist_length (iter_connections);
           g_slist_free (iter_connections);
 
-          if (n_connections > 0)
-            {
-              guint position;
-              DbusmenuAccesspointitem *new_item;
-              position = dbusmenu_menuitem_get_position (DBUSMENU_MENUITEM (iter_item), networksgroup);
-              dbusmenu_menuitem_child_delete (networksgroup, DBUSMENU_MENUITEM (iter_item));
-
-              new_item = dbusmenu_accesspointitem_new ();
-
-              dbusmenu_accesspointitem_bind_device (new_item, NM_DEVICE (device));
-              dbusmenu_accesspointitem_bind_accesspoint (new_item, ap);
-
-              dbusmenu_menuitem_child_add_position (networksgroup, DBUSMENU_MENUITEM (new_item), position+1);
-            }
-          else
+          if (n_connections == 0)
             {
               guint position;
               DbusmenuAccesspointitem *new_item;
@@ -235,6 +214,8 @@ access_point_added (NMDeviceWifi     *device,
               /* If it is the active AP, we place it first, if not in the previous item's position */
               dbusmenu_menuitem_child_add_position (networksgroup, DBUSMENU_MENUITEM (new_item), position);
             }
+          else
+            continue;
         }
       if (iter == NULL)
         {
@@ -242,7 +223,7 @@ access_point_added (NMDeviceWifi     *device,
           dbusmenu_accesspointitem_bind_device (new_item, NM_DEVICE (device));
           dbusmenu_accesspointitem_bind_accesspoint (new_item, ap);
 
-          dbusmenu_menuitem_child_add_position (networksgroup, DBUSMENU_MENUITEM(new_item), 0);
+          dbusmenu_menuitem_child_append (networksgroup, DBUSMENU_MENUITEM(new_item));
         }
     }
 

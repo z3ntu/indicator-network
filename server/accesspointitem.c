@@ -1,6 +1,7 @@
 #include <glib.h>
 #include <nm-utils.h>
 #include <nm-access-point.h>
+#include <nm-remote-settings.h>
 #include <nm-remote-connection.h>
 #include <nm-device.h>
 #include <nm-device-wifi.h>
@@ -59,25 +60,25 @@ ap_notify_cb (GObject    *ap,
 {
 
   DbusmenuAccesspointitem *item     = (DbusmenuAccesspointitem*)data;
-  const gchar             *property = g_param_spec_get_name (pspec);
+  const gchar             *property = g_param_spec_get_name(pspec);
 
   if (g_strcmp0 (property, "ssid") == 0)
     {
-      gchar *ssid_utf8 = nm_utils_ssid_to_utf8 (nm_access_point_get_ssid (NM_ACCESS_POINT (ap)));
-      dbusmenu_menuitem_property_set (DBUSMENU_MENUITEM (item), "label", ssid_utf8);
+      gchar *ssid_utf8 = nm_utils_ssid_to_utf8(nm_access_point_get_ssid(NM_ACCESS_POINT(ap)));
+      dbusmenu_menuitem_property_set(DBUSMENU_MENUITEM(item), "label", ssid_utf8);
       g_free (ssid_utf8);
     }
   if (g_strcmp0 (property, "strength") == 0)
     {
-      dbusmenu_menuitem_property_set_int (DBUSMENU_MENUITEM (item),
-                                          "x-wifi-strength",
-                                          nm_access_point_get_strength (NM_ACCESS_POINT (ap)));
+      dbusmenu_menuitem_property_set_int(DBUSMENU_MENUITEM(item),
+                                         "x-wifi-strength",
+                                         nm_access_point_get_strength(NM_ACCESS_POINT(ap)));
     }
   if (g_strcmp0 (property, "bssid") == 0)
     {
-      dbusmenu_menuitem_property_set (DBUSMENU_MENUITEM (item),
-                                      "x-wifi-bssid",
-                                      nm_access_point_get_bssid (NM_ACCESS_POINT (ap)));
+      dbusmenu_menuitem_property_set(DBUSMENU_MENUITEM(item),
+                                     "x-wifi-bssid",
+                                     nm_access_point_get_bssid(NM_ACCESS_POINT(ap)));
     }
 }
 
@@ -99,38 +100,38 @@ dbusmenu_accesspointitem_bind_accesspoint (DbusmenuAccesspointitem *self,
     }
 
   self->priv->ap = ap;
-  g_signal_connect (ap, "notify",
+  g_signal_connect(ap, "notify",
                     G_CALLBACK (ap_notify_cb),
                     self);
 
-  g_object_ref (G_OBJECT (ap));
+  g_object_ref(G_OBJECT (ap));
 
-  utf_ssid = nm_utils_ssid_to_utf8 (nm_access_point_get_ssid (ap));
+  utf_ssid = nm_utils_ssid_to_utf8(nm_access_point_get_ssid (ap));
 
-  if (nm_access_point_get_mode (ap) == NM_802_11_MODE_ADHOC)
+  if (nm_access_point_get_mode(ap) == NM_802_11_MODE_ADHOC)
     is_adhoc  = TRUE;
-  if (nm_access_point_get_flags (ap) == NM_802_11_AP_FLAGS_PRIVACY)
+  if (nm_access_point_get_flags(ap) == NM_802_11_AP_FLAGS_PRIVACY)
     is_secure = TRUE;
 
-  dbusmenu_menuitem_property_set (DBUSMENU_MENUITEM (self),
-                                  DBUSMENU_MENUITEM_PROP_TOGGLE_TYPE,
-                                  "radio");
+  dbusmenu_menuitem_property_set(DBUSMENU_MENUITEM(self),
+                                 DBUSMENU_MENUITEM_PROP_TOGGLE_TYPE,
+                                 "radio");
 
-  dbusmenu_menuitem_property_set_int  (DBUSMENU_MENUITEM (self),
-                                       "x-wifi-strength",   nm_access_point_get_strength (ap));
-  dbusmenu_menuitem_property_set_bool (DBUSMENU_MENUITEM (self),
-                                       "x-wifi-is-adhoc",   is_adhoc);
-  dbusmenu_menuitem_property_set_bool (DBUSMENU_MENUITEM (self),
-                                       "x-wifi-is-secure",  is_secure);
+  dbusmenu_menuitem_property_set_int (DBUSMENU_MENUITEM(self),
+                                      "x-wifi-strength",   nm_access_point_get_strength(ap));
+  dbusmenu_menuitem_property_set_bool(DBUSMENU_MENUITEM(self),
+                                      "x-wifi-is-adhoc",   is_adhoc);
+  dbusmenu_menuitem_property_set_bool(DBUSMENU_MENUITEM(self),
+                                      "x-wifi-is-secure",  is_secure);
 
-  dbusmenu_menuitem_property_set (DBUSMENU_MENUITEM (self),
-                                  "x-wifi-bssid", nm_access_point_get_bssid (ap));
-  dbusmenu_menuitem_property_set (DBUSMENU_MENUITEM (self),
-                                  "type", "x-system-settings");
-  dbusmenu_menuitem_property_set (DBUSMENU_MENUITEM (self),
-                                  "x-tablet-widget", "unity.widgets.systemsettings.tablet.accesspoint");
-  dbusmenu_menuitem_property_set (DBUSMENU_MENUITEM (self),
-                                  DBUSMENU_MENUITEM_PROP_LABEL, utf_ssid);
+  dbusmenu_menuitem_property_set(DBUSMENU_MENUITEM(self),
+                                 "x-wifi-bssid", nm_access_point_get_bssid(ap));
+  dbusmenu_menuitem_property_set(DBUSMENU_MENUITEM(self),
+                                 "type", "x-system-settings");
+  dbusmenu_menuitem_property_set(DBUSMENU_MENUITEM(self),
+                                 "x-tablet-widget", "unity.widgets.systemsettings.tablet.accesspoint");
+  dbusmenu_menuitem_property_set(DBUSMENU_MENUITEM(self),
+                                 DBUSMENU_MENUITEM_PROP_LABEL, utf_ssid);
 }
 
 static void
@@ -138,27 +139,99 @@ connection_changed (NMDevice                *device,
                     GParamSpec              *pspec,
                     DbusmenuAccesspointitem *item)
 {
-  if (g_strcmp0 (g_param_spec_get_name (pspec), "active-access-point") == 0)
+  if (g_strcmp0 (g_param_spec_get_name(pspec), "active-access-point") == 0)
     {
+      DbusmenuMenuitem *parent = dbusmenu_menuitem_get_parent(DBUSMENU_MENUITEM(item));
+      gint           was_active;
       NMAccessPoint *active;
 
-      g_object_get (device,
-              "active-access-point", &active,
-              NULL);
+      g_object_get(device,
+                   "active-access-point", &active,
+                   NULL);
 
-       /* TODO: Remove/add active AP submenu */
-      dbusmenu_menuitem_property_set_int (DBUSMENU_MENUITEM (item),
-                                          DBUSMENU_MENUITEM_PROP_TOGGLE_STATE,
-                                          DBUSMENU_MENUITEM_TOGGLE_STATE_UNCHECKED);
+      was_active = dbusmenu_menuitem_property_get_int(DBUSMENU_MENUITEM(item),
+                                                      DBUSMENU_MENUITEM_PROP_TOGGLE_STATE);
+
+      /* NOTE: This SHOULDN'T happen, but we want to prevent segfaults in such case */
+/*      if (parent == NULL)
+      {
+        g_warning ("An access point menuitem was left without parent");
+        g_object_unref (item);
+        return;
+      }*/
+
+      if (was_active && active != item->priv->ap)
+        {
+          /* TODO: Remove active AP submenu */
+          /* TODO: Reorder item */
+          GList *iter;
+          GList *children = dbusmenu_menuitem_get_children(parent);
+
+          NMRemoteSettings *rs    = nm_remote_settings_new(NULL);
+          GSList *rs_connections  = nm_remote_settings_list_connections(rs);
+          GSList *dev_connections = nm_device_filter_connections(NM_DEVICE(device),
+                                                                 rs_connections);
+
+
+          dbusmenu_menuitem_property_set_int (DBUSMENU_MENUITEM(item),
+                                              DBUSMENU_MENUITEM_PROP_TOGGLE_STATE,
+                                              DBUSMENU_MENUITEM_TOGGLE_STATE_UNCHECKED);
+
+          for (iter = g_list_nth(children, 1);
+               iter != NULL;
+               iter = g_list_next(iter))
+            {
+              DbusmenuAccesspointitem *iter_item = DBUSMENU_ACCESSPOINTITEM(iter->data);
+              GSList *ap_connections  = nm_access_point_filter_connections(iter_item->priv->ap,
+                                                                           dev_connections);
+              guint   n_connections = g_slist_length(ap_connections);
+              g_slist_free(ap_connections);
+
+              if (n_connections > 0)
+                {
+                  if (nm_access_point_get_strength(item->priv->ap) <=
+                      nm_access_point_get_strength(iter_item->priv->ap))
+                      continue;
+
+                  dbusmenu_menuitem_child_reorder(parent,
+                                                  DBUSMENU_MENUITEM(item),
+                                                  dbusmenu_menuitem_get_position(DBUSMENU_MENUITEM(iter_item),
+                                                                                 parent));
+                  break;
+                }
+              else
+                {
+                  dbusmenu_menuitem_child_reorder(parent,
+                                                  DBUSMENU_MENUITEM(item),
+                                                  dbusmenu_menuitem_get_position(DBUSMENU_MENUITEM(iter_item),
+                                                                                 parent));
+                  break;
+                }
+            }
+          if (iter == NULL)
+            {
+              dbusmenu_menuitem_child_reorder(parent,
+                                              DBUSMENU_MENUITEM(item),
+                                              g_list_length(children));
+            }
+
+          g_slist_free (rs_connections);
+          g_slist_free (dev_connections);
+          return;
+        }
+
 
       if (active == NULL)
-          return;
+        return;
 
       if (item->priv->ap == active)
         {
-          dbusmenu_menuitem_property_set_int (DBUSMENU_MENUITEM (item),
-                                              DBUSMENU_MENUITEM_PROP_TOGGLE_STATE,
-                                              DBUSMENU_MENUITEM_TOGGLE_STATE_CHECKED);
+          dbusmenu_menuitem_child_reorder(parent, DBUSMENU_MENUITEM(item), 0);
+
+
+          dbusmenu_menuitem_property_set_int(DBUSMENU_MENUITEM(item),
+                                             DBUSMENU_MENUITEM_PROP_TOGGLE_STATE,
+                                             DBUSMENU_MENUITEM_TOGGLE_STATE_CHECKED);
           /* TODO: Add active submenu */
         }
 
@@ -171,10 +244,12 @@ ap_removed (NMDeviceWifi            *device,
             NMAccessPoint           *removed,
             DbusmenuAccesspointitem *self)
 {
-  DbusmenuMenuitem *parent = dbusmenu_menuitem_get_parent (DBUSMENU_MENUITEM (self));
+  DbusmenuMenuitem *parent = dbusmenu_menuitem_get_parent(DBUSMENU_MENUITEM (self));
 
   if (parent)
-    dbusmenu_menuitem_child_delete (parent, DBUSMENU_MENUITEM (self));
+    dbusmenu_menuitem_child_delete(parent, DBUSMENU_MENUITEM(self));
+
+  g_object_unref (self);
 }
 
 void
@@ -182,8 +257,8 @@ dbusmenu_accesspointitem_bind_device (DbusmenuAccesspointitem *self,
                                       NMDevice                *device)
 {
   NMAccessPoint *active;
-  g_return_if_fail (self != NULL);
-  g_return_if_fail (device != NULL);
+  g_return_if_fail(self != NULL);
+  g_return_if_fail(device != NULL);
 
   if (self->priv->device)
     {
@@ -198,15 +273,15 @@ dbusmenu_accesspointitem_bind_device (DbusmenuAccesspointitem *self,
   /* TODO: Add active AP submenu */
   if (active != NULL && self->priv->ap == active)
     dbusmenu_menuitem_property_set_int (DBUSMENU_MENUITEM (self),
-                                  DBUSMENU_MENUITEM_PROP_TOGGLE_STATE,
-                                  DBUSMENU_MENUITEM_TOGGLE_STATE_CHECKED);
+                                        DBUSMENU_MENUITEM_PROP_TOGGLE_STATE,
+                                        DBUSMENU_MENUITEM_TOGGLE_STATE_CHECKED);
 
 
 
   self->priv->device = device;
-  self->priv->notify_handler_id = g_signal_connect (NM_DEVICE_WIFI (device), "notify",
+  self->priv->notify_handler_id = g_signal_connect (NM_DEVICE_WIFI(device), "notify",
                                                     G_CALLBACK (connection_changed), self);
-  self->priv->ap_rem_handler_id = g_signal_connect (NM_DEVICE_WIFI (device), "access-point-removed",
+  self->priv->ap_rem_handler_id = g_signal_connect (NM_DEVICE_WIFI(device), "access-point-removed",
                                                     G_CALLBACK (ap_removed), self);
   g_object_ref (device);
 }

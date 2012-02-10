@@ -61,23 +61,28 @@ create_network_item (NMAccessPoint *ap)
 }
 
 static DbusmenuMenuitem*
-create_signalstrength_item ()
+create_signalstrength_item (NMAccessPoint *ap)
 {
-  return NULL;
+  DbusmenuMenuitem *item;
+  gchar *strength_string = g_strdup_printf ("%d%s", nm_access_point_get_strength (ap), "%");
+  item = create_infobar("Strength", strength_string);
+  g_free (strength_string);
+  return item;
 }
 
 void
 create_accespoint_submenu (DbusmenuAccesspointitem *item)
 {
-  DbusmenuMenuitem *status  = create_status_item   (dbusmenu_accesspointitem_get_ap (item),
+  DbusmenuMenuitem *status   = create_status_item   (dbusmenu_accesspointitem_get_ap (item),
                                                     dbusmenu_accesspointitem_get_device (item));
-  DbusmenuMenuitem *network = create_network_item  (dbusmenu_accesspointitem_get_ap (item));
-  DbusmenuMenuitem *strengh = create_signalstrength_item (dbusmenu_accesspointitem_get_ap (item));
+  DbusmenuMenuitem *network  = create_network_item  (dbusmenu_accesspointitem_get_ap (item));
+  DbusmenuMenuitem *strength = create_signalstrength_item (dbusmenu_accesspointitem_get_ap (item));
 
   dbusmenu_menuitem_child_append (DBUSMENU_MENUITEM (item), status);
   dbusmenu_menuitem_child_append (DBUSMENU_MENUITEM (item), network);
+  dbusmenu_menuitem_child_append (DBUSMENU_MENUITEM (item), strength);
 
   g_object_unref (status);
   g_object_unref (network);
-  g_object_unref (strengh);
+  g_object_unref (strength);
 }

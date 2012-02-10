@@ -6,6 +6,10 @@
 
 /*
  * unity.widgets.systemsettings.*.sectiontitle
+ *
+ * ==Section label===================
+ * [                                ]
+ *
  * Build properties:
  *    "type"             - string = "x-system-settings"
  *    "children-display" - string = "inline"
@@ -13,8 +17,11 @@
  * Other properties:
  *    "label"  - string  - Optional, may have label or not
  *    "x-busy" - boolean - Shows a progress indicator
- *
+ *-------------------------------------------------------------------------------------
  * unity.widgets.systemsettings.*.accesspoint
+ *
+ * [ *))) AP_SSID  # | > ]
+ *
  * Build properties:
  *    "type"            - string = "x-system-settings"
  *    "toggle-type"     - string = "radio"
@@ -24,6 +31,17 @@
  *    "x-wifi-is-adhoc"   - bool   - Whether it is an adhoc network or not
  *    "x-wifi-is-secure"  - bool   - Whether the network is open or requires password
  *    "x-wifi-bssid"      - string - The internal unique id for the AP
+ *------------------------------------------------------------------------------------
+ * unity.widgets.systemsettings.*.infobar
+ *
+ * [ *STATUS*    connected ]
+ *
+ * Build properties:
+ *    "type"            - string = "x-system-settings"
+ *    "x-tablet-widget" - string = "unity.widgets.systemsettings.tablet.infobar"
+ * Other properties:
+ *    "label"           - string - The title of the information (ie "Status")
+ *    "x-extra-label"   - string - The value of the information (ie "Connected")
  */
 
 void

@@ -26,7 +26,7 @@ set(networkservice_SRC
     ${CMAKE_CURRENT_SOURCE_DIR}/network-service.c
     ${CMAKE_CURRENT_SOURCE_DIR}/network-utils-wifi.c
     ${CMAKE_CURRENT_SOURCE_DIR}/accesspointitem.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/accesspointitem.h)
+    ${CMAKE_CURRENT_SOURCE_DIR}/accesspoint-info.c)
 
 set(secretmarshal_LIST
     ${CMAKE_CURRENT_SOURCE_DIR}/secret-marshal.list)

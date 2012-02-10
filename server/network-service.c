@@ -32,13 +32,13 @@
  *    "x-wifi-is-secure"  - bool   - Whether the network is open or requires password
  *    "x-wifi-bssid"      - string - The internal unique id for the AP
  *------------------------------------------------------------------------------------
- * unity.widgets.systemsettings.*.infobar
+ * unity.widgets.systemsettings.*.listitem
  *
  * [ *STATUS*    connected ]
  *
  * Build properties:
  *    "type"            - string = "x-system-settings"
- *    "x-tablet-widget" - string = "unity.widgets.systemsettings.tablet.infobar"
+ *    "x-tablet-widget" - string = "unity.widgets.systemsettings.tablet.listitem"
  * Other properties:
  *    "label"           - string - The title of the information (ie "Status")
  *    "x-extra-label"   - string - The value of the information (ie "Connected")

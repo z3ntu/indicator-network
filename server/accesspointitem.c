@@ -9,26 +9,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-
-#define DBUSMENU_TYPE_ACCESSPOINTITEM (dbusmenu_accesspointitem_get_type ())
-#define DBUSMENU_ACCESSPOINTITEM(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), DBUSMENU_TYPE_ACCESSPOINTITEM, DbusmenuAccesspointitem))
-#define DBUSMENU_ACCESSPOINTITEM_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), DBUSMENU_TYPE_ACCESSPOINTITEM, DbusmenuAccesspointitemClass))
-#define DBUSMENU_IS_ACCESSPOINTITEM(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), DBUSMENU_TYPE_ACCESSPOINTITEM))
-#define DBUSMENU_IS_ACCESSPOINTITEM_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), DBUSMENU_TYPE_ACCESSPOINTITEM))
-#define DBUSMENU_ACCESSPOINTITEM_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), DBUSMENU_TYPE_ACCESSPOINTITEM, DbusmenuAccesspointitemClass))
-
-typedef struct _DbusmenuAccesspointitem DbusmenuAccesspointitem;
-typedef struct _DbusmenuAccesspointitemClass DbusmenuAccesspointitemClass;
-typedef struct _DbusmenuAccesspointitemPrivate DbusmenuAccesspointitemPrivate;
-
-struct _DbusmenuAccesspointitem {
-	DbusmenuMenuitem                parent_instance;
-	DbusmenuAccesspointitemPrivate *priv;
-};
-
-struct _DbusmenuAccesspointitemClass {
-	DbusmenuMenuitemClass parent_class;
-};
+#include "accesspointitem.h"
+#include "accesspoint-info.h"
 
 struct _DbusmenuAccesspointitemPrivate {
         NMAccessPoint *ap;
@@ -53,6 +35,14 @@ DbusmenuAccesspointitem* dbusmenu_accesspointitem_new              (void);
 DbusmenuAccesspointitem* dbusmenu_accesspointitem_construct        (GType object_type);
 
 static void  dbusmenu_accesspointitem_finalize (GObject      *obj);
+
+static void
+populate_submenu (DbusmenuAccesspointitem *self)
+{
+    if (self->priv->ap != NULL &&
+        self->priv->device != NULL)
+      create_accespoint_submenu (self);
+}
 
 static void
 ap_notify_cb (GObject    *ap,
@@ -134,6 +124,8 @@ dbusmenu_accesspointitem_bind_accesspoint (DbusmenuAccesspointitem *self,
                                  "x-tablet-widget", "unity.widgets.systemsettings.tablet.accesspoint");
   dbusmenu_menuitem_property_set(DBUSMENU_MENUITEM(self),
                                  DBUSMENU_MENUITEM_PROP_LABEL, utf_ssid);
+
+  populate_submenu (self);
 }
 
 static void
@@ -286,12 +278,20 @@ dbusmenu_accesspointitem_bind_device (DbusmenuAccesspointitem *self,
   self->priv->ap_rem_handler_id = g_signal_connect (NM_DEVICE_WIFI(device), "access-point-removed",
                                                     G_CALLBACK (ap_removed), self);
   g_object_ref (device);
+
+  populate_submenu (self);
 }
 
-const NMAccessPoint*
+NMAccessPoint*
 dbusmenu_accesspointitem_get_ap (DbusmenuAccesspointitem *item)
 {
   return item->priv->ap;
+}
+
+NMDevice*
+dbusmenu_accesspointitem_get_device (DbusmenuAccesspointitem *item)
+{
+  return item->priv->device;
 }
 
 DbusmenuAccesspointitem*

@@ -47,7 +47,7 @@ AC_SUBST(DBUSMENU_CFLAGS)
 
 NM_REQUIRED_VERSION=0.9
 PKG_CHECK_MODULES(NM, libnm-glib >= $NM_REQUIRED_VERSION
-                      libnn-util >= $NM_REQUIRED_VERSION)
+                      libnm-util >= $NM_REQUIRED_VERSION)
 AC_SUBST(NM_LIBS)
 AC_SUBST(NM_CFLAGS)
 

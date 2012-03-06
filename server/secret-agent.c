@@ -2,7 +2,6 @@
 #include <glib-object.h>
 #include <nm-secret-agent.h>
 #include "secret-agent.h"
-#include "secret-marshal.h"
 
 #define UNITY_SETTINGS_TYPE_SECRET_AGENT (unity_settings_secret_agent_get_type ())
 #define UNITY_SETTINGS_SECRET_AGENT(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), UNITY_SETTINGS_TYPE_SECRET_AGENT, UnitySettingsSecretAgent))
@@ -267,8 +266,7 @@ unity_settings_secret_agent_class_init (UnitySettingsSecretAgentClass *klass)
                                             G_OBJECT_CLASS_TYPE (G_OBJECT_CLASS (klass)),
                                             G_SIGNAL_RUN_FIRST,
                                             G_STRUCT_OFFSET (UnitySettingsSecretAgentClass, secret_requested),
-                                            NULL, NULL,
-                                            _secret_agent_marshal_VOID__UINT64_POINTER_STRING_POINTER_UINT,
+                                            NULL, NULL, NULL,
                                             G_TYPE_NONE, 5,
                                             G_TYPE_UINT64, G_TYPE_POINTER, G_TYPE_STRING, G_TYPE_POINTER, G_TYPE_UINT);
 
@@ -276,8 +274,7 @@ unity_settings_secret_agent_class_init (UnitySettingsSecretAgentClass *klass)
                                              G_OBJECT_CLASS_TYPE (G_OBJECT_CLASS (klass)),
                                              G_SIGNAL_RUN_FIRST,
                                              G_STRUCT_OFFSET (UnitySettingsSecretAgentClass, request_cancelled),
-                                             NULL, NULL,
-                                             _secret_agent_marshal_VOID__UINT64,
+                                             NULL, NULL, NULL,
                                              G_TYPE_NONE, 1,
                                              G_TYPE_UINT64);
 }

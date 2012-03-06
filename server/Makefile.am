@@ -1,24 +1,37 @@
 bin_PROGRAMS = \
+	secretdaemon   \
 	networkservice
 
-networkservice_SOURCES = \
-	Settings.c \
-	MenuExporter.c \
-	network-service.c \
+
+secretdaemon_SOURCES = \
+	secret-agent-daemon.c \
+	secret-agent.c
+
+secretdaemon_LDFLAGS = \
+	$(GTK_LIBS)    \
+	$(NM_LIBS)
+
+secretdaemon_CFLAGS = \
+	$(GTK_CFLAGS) \
+	$(NM_CFLAGS)
+
+networkservice_SOURCES =     \
+	Settings.c           \
+	MenuExporter.c       \
+	network-service.c    \
 	network-utils-wifi.c \
-	accesspointitem.c \
+	accesspointitem.c    \
 	accesspoint-info.c
 
 networkservice_LDFLAGS = \
-	$(GLIB_LIBS) \
+	$(GLIB_LIBS)     \
 	$(DBUSMENU_LIBS) \
 	$(NM_LIBS)
 
-networkservice_CFLAGS = \
-	$(GLIB_CFLAGS) \
+networkservice_CFLAGS =    \
+	$(GLIB_CFLAGS)     \
 	$(DBUSMENU_CFLAGS) \
 	$(NM_CFLAGS)
-
 
 Settings.c: Settings.vala
 	$(VALAC) --ccode Settings.vala

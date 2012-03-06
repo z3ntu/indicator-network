@@ -51,6 +51,14 @@ PKG_CHECK_MODULES(NM, libnm-glib >= $NM_REQUIRED_VERSION
 AC_SUBST(NM_LIBS)
 AC_SUBST(NM_CFLAGS)
 
+################################
+# Dependencies - Gtk+
+################################
+
+GTK_REQUIRED_VERSION=3.0
+PKG_CHECK_MODULES(GTK, gtk+-3.0 >= $GTK_REQUIRED_VERSION)
+AC_SUBST(GTK_LIBS)
+AC_SUBST(NM_CFLAGS)
 
 ###########################
 # Vala Compiler

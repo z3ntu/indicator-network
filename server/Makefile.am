@@ -2,6 +2,8 @@ bin_PROGRAMS =         \
 	exportmenu     \
 	networkservice
 
+noinst_HEADERS = accesspointitem.h accesspoint-info.h
+
 ############### Export menu ###############
 exportmenu_SOURCES =      \
 	Parser.vala       \

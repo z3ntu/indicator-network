@@ -1,2 +1,4 @@
 #!/bin/sh
-autoreconf
+automake --add-missing && \
+autoreconf && \
+./configure

@@ -73,6 +73,7 @@ AM_CONDITIONAL([HAVE_VALAC], [test -n "$VALAC"])
 
 AC_OUTPUT([
 Makefile
-server/Makefile
+network/Makefile
+exportmenu/Makefile
 agent/Makefile
 ])

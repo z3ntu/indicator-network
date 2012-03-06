@@ -1,1 +1,1 @@
-SUBDIRS = server agent
+SUBDIRS = exportmenu network agent

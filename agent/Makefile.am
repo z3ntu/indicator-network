@@ -3,7 +3,8 @@ bin_PROGRAMS = secretdaemon
 ############## Secret daemon ##############
 secretdaemon_SOURCES =        \
 	secret-agent-daemon.c \
-	secret-agent.c
+	secret-agent.c        \
+	secret-agent.h
 
 secretdaemon_LDFLAGS = \
 	$(GTK_LIBS)    \

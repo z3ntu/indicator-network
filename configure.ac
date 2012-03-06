@@ -5,7 +5,7 @@ AC_COPYRIGHT([Copyright 2011,2012 Canonical])
 AC_PREREQ(2.62)
 
 AM_CONFIG_HEADER(config.h)
-AM_INIT_AUTOMAKE(chewie, 0.5.92, [-Wno-portability])
+AM_INIT_AUTOMAKE(chewie, 0.1)
 
 AM_MAINTAINER_MODE
 

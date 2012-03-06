@@ -1,4 +1,4 @@
-bin_PROGRAMS = secretdaemon
+noinst_PROGRAMS = secretdaemon
 
 ############## Secret daemon ##############
 secretdaemon_SOURCES =        \

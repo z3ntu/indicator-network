@@ -1,10 +1,4 @@
 Makefile
-moc_*.cxx
-cmake_install.cmake
-CMakeFiles
-CMakeCache.txt
-CMakeLists.txt.user
-build/
 server/Parser.c
 server/Settings.c
 server/MenuExporter.c
@@ -17,7 +11,6 @@ client/dbusmodel/doc
 client/app/system-settings
 client/app/qrc_systemsettings.cxx
 client/app/systemsettings.qrc.depends
-INSTALL
 Makefile.in
 aclocal.m4
 autom4te.cache/
@@ -41,7 +34,6 @@ xmldocs.make
 agent/.deps/
 agent/.libs/
 agent/Makefile.in
-agent/secretdaemon
 exportmenu/.deps/
 exportmenu/.libs/
 exportmenu/Makefile.in
@@ -57,3 +49,7 @@ network/MenuExporter.c
 network/Settings.c
 network/chewie-network-menu-server
 network/chewie_network_menu_server_vala.stamp
+agent/chewie-secret-agent
+tests/.deps/
+tests/.libs/
+tests/test-parser

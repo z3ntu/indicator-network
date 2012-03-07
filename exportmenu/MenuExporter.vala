@@ -78,7 +78,7 @@ namespace Unity.Settings {
 					item.property_set("x-tablet-widget", "unity.widgets.systemsettings.tablet.textentry");
 					item.event.connect(menu_item_event_cb);
 				}
-      	/* List of strings/ints??? hopefully not! */
+			/* List of strings/ints??? hopefully not! */
 			}
 
 			foreach (Group sg in g.groups) {

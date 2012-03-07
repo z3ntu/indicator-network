@@ -1,15 +1,16 @@
-noinst_PROGRAMS = secretdaemon
+noinst_PROGRAMS = chewie-secret-agent
 
+bindir = $(libdir)/chewie
 ############## Secret daemon ##############
-secretdaemon_SOURCES =        \
+chewie_secret_agent_SOURCES = \
 	secret-agent-daemon.c \
 	secret-agent.c        \
 	secret-agent.h
 
-secretdaemon_LDFLAGS = \
-	$(GTK_LIBS)    \
+chewie_secret_agent_LDFLAGS = \
+	$(GTK_LIBS)           \
 	$(NM_LIBS)
 
-secretdaemon_CFLAGS = \
-	$(GTK_CFLAGS) \
+chewie_secret_agent_CFLAGS = \
+	$(GTK_CFLAGS)        \
 	$(NM_CFLAGS)

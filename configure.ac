@@ -76,4 +76,5 @@ Makefile
 network/Makefile
 exportmenu/Makefile
 agent/Makefile
+tests/Makefile
 ])

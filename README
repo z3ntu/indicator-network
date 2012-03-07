@@ -11,28 +11,22 @@ This file will guide you to compile these applications.
 The Server application is the application which make available the menu
 structure over dbus.
 
-2. CLIENT
-=========
-
-The client side application read the information exported by the server and
-create a QML menu structure based on this information
-
 3. COMPILING
 ============
 
-mkdir build
-cd build
-cmake ../
-
+./autogen.sh
+make
 
 3. EXAMPLES
 ===========
 
 To test the current implementation you should run the server and client
-application simultaneous. To do that follow the steps below:
+application simultaneously. To do that follow the steps below:
 
 In the build directory(<project-dir>/build):
-    ./server/export-settings-menu ../server/xml/test.xml &
-    ./client/examples/run-client-app.sh
+    ./exportmenu/exportmenu examples/test.xml &
+
+Then from the chewie-client package run:
+     ./client/examples/run-client-app.sh
 
 

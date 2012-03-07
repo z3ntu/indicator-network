@@ -1,0 +1,16 @@
+Installation
+============
+
+From a tarball release
+======================
+
+./configure
+make
+make install
+
+From a repository checkout
+==========================
+
+./autogen.sh
+make
+make install

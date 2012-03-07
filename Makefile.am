@@ -1,1 +1,1 @@
-SUBDIRS = exportmenu network agent
+SUBDIRS = exportmenu network agent tests

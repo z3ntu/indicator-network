@@ -15,6 +15,6 @@
 		<key type="s" name="custom-time-format">
 			<description>This sets the time format for the date time indicator.</description>
 			<display_name>Custom Time Format</display_name>
-		</key>		
+		</key>
 	</group>
 </settings>

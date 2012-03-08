@@ -67,6 +67,13 @@ AC_SUBST(NM_CFLAGS)
 AC_PATH_PROG([VALAC], [valac])
 AM_CONDITIONAL([HAVE_VALAC], [test -n "$VALAC"])
 
+############################
+# GSettings schema compiler
+############################
+
+AC_PATH_PROG([GSCHEMA_COMPILER], [glib-compile-schemas])
+AM_CONDITIONAL([HAVE_GSCHEMA_COMPILER], [test -n "$GSCHEMA_COMPILER"])
+
 ###########################
 # Files
 ###########################

@@ -1,8 +1,10 @@
 #include <glib.h>
+#include <gio/gio.h>
 
 static void
 test_parser ()
 {
+  GSettings *settings = g_settings_new ("com.ubuntu.test.chewie");
   return;
 }
 

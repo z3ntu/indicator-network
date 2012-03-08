@@ -2,6 +2,7 @@ check_PROGRAMS = \
 		 test-parser
 
 TESTS = $(check_PROGRAMS)
+TESTS_ENVIRONMENT = XDG_DATA_DIRS=$(top_srcdir)/tests/data:/usr/share
 
 test_parser_SOURCES = test-parser.c
 

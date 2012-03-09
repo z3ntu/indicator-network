@@ -2,16 +2,17 @@
 #include <gio/gio.h>
 
 static void
-test_parser ()
+test_settings ()
 {
   GSettings *settings = g_settings_new ("com.ubuntu.test.chewie");
+  g_object_unref (settings);
   return;
 }
 
 static void
 test_parser_suite ()
 {
-  g_test_add_func ("/chewie/exportmenu/parser", test_parser);
+  g_test_add_func ("/chewie/exportmenu/settings", test_settings);
 }
 
 gint

@@ -1,7 +1,6 @@
 using GLib;
 
-Unity.Settings.Parser self;
-
+Unity.Settings.Parser self = null;
 
 namespace Unity.Settings {
 	public class Parser : Object {
@@ -17,11 +16,11 @@ namespace Unity.Settings {
 			parser.start_element = start_element_fn;
 			parser.end_element   = end_element_fn;
 			parser.text          = text_element_fn;
-
-                        self = this;
 		}
 
 		public async void parse (File document) {
+                        self = this;
+
 			var ctx = new MarkupParseContext (parser, 0, this, null);
 
 			try {

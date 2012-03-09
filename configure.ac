@@ -84,4 +84,7 @@ network/Makefile
 exportmenu/Makefile
 agent/Makefile
 tests/Makefile
+tests/data/Makefile
+tests/data/glib-2.0/Makefile
+tests/data/glib-2.0/schemas/Makefile
 ])

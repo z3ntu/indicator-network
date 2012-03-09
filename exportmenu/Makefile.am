@@ -5,7 +5,8 @@ bin_PROGRAMS = exportmenu
 exportmenu_SOURCES =      \
 	Parser.vala       \
 	Settings.vala     \
-	MenuExporter.vala
+	MenuExporter.vala \
+	ExportMenu.vala 
 
 exportmenu_LDFLAGS = \
 	$(GLIB_LIBS) \

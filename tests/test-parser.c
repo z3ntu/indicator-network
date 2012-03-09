@@ -12,6 +12,7 @@ test_settings ()
 static void
 test_parser_suite ()
 {
+  g_debug (g_get_current_dir ());
   g_test_add_func ("/chewie/exportmenu/settings", test_settings);
 }
 

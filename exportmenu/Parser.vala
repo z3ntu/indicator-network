@@ -1,5 +1,10 @@
+/* vim: set noet */
+
 using GLib;
 
+/* This global variable is due to a bug in the vala bindings for
+ * the markup parser, get_user_data is missing.
+ * see: https://bugzilla.gnome.org/show_bug.cgi?id=671749   */
 Unity.Settings.Parser self = null;
 
 namespace Unity.Settings {

@@ -24,28 +24,31 @@ namespace Unity.Settings {
 		}
 
 		public async void parse (File document) {
+			try {
+				var stream = document.read();
+				parse_input_stream (stream);
+                        } catch (Error e) {
+				error (e.message);
+			}
+                }
+
+                public async void parse_input_stream (InputStream stream)
+                {
                         self = this;
 
 			var ctx = new MarkupParseContext (parser, 0, this, null);
 
-			try {
-				var stream = document.read();
-				uint8[] buffer = new uint8[1024];
-                                ssize_t size = 0;
+                        uint8[] buffer = new uint8[1024];
+                        ssize_t size = 0;
 
-				while ((size = yield stream.read_async (buffer)) != 0) {
-					ctx.parse ((string)buffer, size);
-				}
-			} catch (Error e) {
-				error (e.message);
-			}
-
+                        while ((size = yield stream.read_async (buffer)) != 0) {
+                                ctx.parse ((string)buffer, size);
+                        }
 			self.current_group = null;
 			self.current_key = null;
 
-
 			parsed (settings);
-		}
+                }
 
 		private static void start_element_fn (MarkupParseContext ctx,
 			                                   string              element_name,

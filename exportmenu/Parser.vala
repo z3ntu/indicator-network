@@ -1,5 +1,4 @@
-/* vim: set noet */
-
+// vim: tabstop=4 noexpandtab shiftwidth=4 softtabstop=4
 using GLib;
 
 /* This global variable is due to a bug in the vala bindings for

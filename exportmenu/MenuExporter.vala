@@ -1,4 +1,8 @@
+// vim: tabstop=4 noexpandtab shiftwidth=4 softtabstop=4
+
 using Dbusmenu;
+
+const string BUS_NAME = "org.dbusmenu.test";
 
 namespace Unity.Settings {
 	public class MenuExporter {
@@ -22,25 +26,25 @@ namespace Unity.Settings {
 		}
 
 		private void checkbox_item_activated_cb (Dbusmenu.Menuitem item, uint timestamp) {
-					int state;
+			int state;
 
-					string schema = item.property_get("x-gsettings-schema");
-					string key_name = item.property_get("x-gsettings-name");
+			string schema = item.property_get("x-gsettings-schema");
+			string key_name = item.property_get("x-gsettings-name");
 
-					if (schema == null || key_name == null)
-						return;
+			if (schema == null || key_name == null)
+				return;
 
-					var gset = new GLib.Settings (schema);
-					bool val = gset.get_boolean(key_name);
+			var gset = new GLib.Settings (schema);
+			bool val = gset.get_boolean(key_name);
 
-					if (val)
-						state = Dbusmenu.MENUITEM_TOGGLE_STATE_UNCHECKED;
-					else
-						state = Dbusmenu.MENUITEM_TOGGLE_STATE_CHECKED;
+			if (val)
+				state = Dbusmenu.MENUITEM_TOGGLE_STATE_UNCHECKED;
+			else
+				state = Dbusmenu.MENUITEM_TOGGLE_STATE_CHECKED;
 
-					item.property_set_int ("toggle-state", state);
+			item.property_set_int ("toggle-state", state);
 
-					gset.set_boolean(key_name, !val);
+			gset.set_boolean(key_name, !val);
 		}
 
 		private void export_menus (Menuitem parent, Group g) {
@@ -112,10 +116,10 @@ namespace Unity.Settings {
 		}
 
 		public void export () {
-			    Bus.own_name (BusType.SESSION, "org.dbusmenu.test", BusNameOwnerFlags.NONE,
-                  on_bus,
-                  () => {},
-                  () => stderr.printf ("Could not aquire name\n"));
+			Bus.own_name (BusType.SESSION, BUS_NAME, BusNameOwnerFlags.NONE,
+			              on_bus,
+			              () => {},
+			              () => stderr.printf ("Could not aquire name\n"));
 		}
 	}
 }

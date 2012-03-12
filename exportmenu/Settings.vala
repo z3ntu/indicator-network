@@ -1,3 +1,5 @@
+// vim: tabstop=4 noexpandtab shiftwidth=4 softtabstop=4
+
 namespace Unity.Settings {
 	public class Enum : Object {
 		//HashTable

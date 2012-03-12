@@ -44,6 +44,7 @@ namespace Unity.Settings {
                         while ((size = yield stream.read_async (buffer)) != 0) {
                                 ctx.parse ((string)buffer, size);
                         }
+
 			self.current_group = null;
 			self.current_key = null;
 

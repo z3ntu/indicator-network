@@ -1,6 +1,5 @@
 bin_PROGRAMS = exportmenu
 
-
 ############### Export menu ###############
 exportmenu_SOURCES =      \
 	Parser.vala       \

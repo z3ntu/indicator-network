@@ -60,6 +60,14 @@ PKG_CHECK_MODULES(GTK, gtk+-3.0 >= $GTK_REQUIRED_VERSION)
 AC_SUBST(GTK_LIBS)
 AC_SUBST(NM_CFLAGS)
 
+############################
+# Dependencies - PulseAudio
+############################
+
+PULSE_REQUIRED_VERSION=1.1
+PKG_CHECK_MODULES(PULSE, libpulse               >= $PULSE_REQUIRED_VERSION
+                         libpulse-mainloop-glib >= $PULSE_REQUIRED_VERSION)
+
 ###########################
 # Vala Compiler
 ###########################
@@ -83,6 +91,7 @@ Makefile
 network/Makefile
 exportmenu/Makefile
 agent/Makefile
+audio/Makefile
 tests/Makefile
 tests/data/Makefile
 tests/data/glib-2.0/Makefile

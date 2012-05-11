@@ -10,12 +10,14 @@ chewie_sound_menu_server_SOURCES =               \
 #	$(top_srcdir)/exportmenu/Settings.vala     
 #	$(top_srcdir)/exportmenu/MenuExporter.vala 
 
-chewie_sound_menu_server_VALAFLAGS = --pkg libpulse --pkg libpulse-mainloop-glib
+chewie_sound_menu_server_VALAFLAGS = --pkg libpulse --pkg libpulse-mainloop-glib --pkg gio-2.0
 
 chewie_sound_menu_server_LDFLAGS = \
-	$(GLIB_LIBS)                 \
+	$(GLIB_LIBS)               \
+	$(GIO_LIBS)                \
 	$(PULSE_LIBS)
 
 chewie_sound_menu_server_CFLAGS =    \
-	$(GLIB_CFLAGS)                 \
+	$(GLIB_CFLAGS)               \
+	$(GIO_CFLAGS)                \
 	$(PULSE_CFLAGS)

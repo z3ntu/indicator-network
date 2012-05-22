@@ -11,30 +11,52 @@ namespace Unity.Settings
 		private GLib.Menu menu;
 		private GLib.SimpleActionGroup ag;
 
-		public void activate_cb (Application app)
-		{
-			stdout.printf("asdasdasd");
+		private signal void ready ();
 
-			var loop = new GLib.MainLoop ();
-			loop.run ();
+		private void
+		notify_cb (Context c)
+		{
+			if (c.get_state () == Context.State.READY)
+			{
+				c.set_sink_mute_by_index (0, true, null);
+			}
 		}
 
-		public AudioMenu () throws IOError
+		public void init_pa ()
+		{
+			loop = new PulseAudio.GLibMainLoop ();
+
+			var props = new Proplist ();
+			props.sets (Proplist.PROP_APPLICATION_NAME, "Ubuntu Audio Settings");
+			props.sets (Proplist.PROP_APPLICATION_ID, "com.ubuntu.audiosettings");
+			props.sets (Proplist.PROP_APPLICATION_ICON_NAME, "multimedia-volume-control");
+			props.sets (Proplist.PROP_APPLICATION_VERSION, "0.1");
+
+			context = new PulseAudio.Context (loop.get_api(), null, props);
+
+			context.set_state_callback (notify_cb);
+
+			if (context.connect(null, Context.Flags.NOFAIL, null) < 0)
+			{
+				warning( "pa_context_connect() failed: %s\n", PulseAudio.strerror(context.errno()));
+				return;
+			}
+		}
+
+		public AudioMenu ()
 		{
 			Object (application_id: "com.ubuntu.audiosettings");
 			flags = ApplicationFlags.IS_SERVICE;
 
-			loop = new PulseAudio.GLibMainLoop();
-			context = new PulseAudio.Context(loop.get_api(), null);
-
-			if (context.connect(null, Context.Flags.NOFAIL, null) < 0)
+			try
 			{
-				print( "pa_context_connect() failed: %s\n", PulseAudio.strerror(context.errno()));
+				conn = Bus.get_sync (BusType.SESSION, null);
+			}
+			catch (IOError e)
+			{
+				return;
 			}
 
-			activate.connect(activate_cb);
-
-			conn = Bus.get_sync (BusType.SESSION, null);
 			menu = new Menu ();
 			ag   = new SimpleActionGroup ();
 
@@ -45,22 +67,19 @@ namespace Unity.Settings
 			}
 			catch (GLib.Error e)
 			{
+				warning ("Menu model and/or action group could not be exported.");
 				return;
 			}
+
+			init_pa();
 		}
 
 		public static int main (string[] args)
 		{
-			try
-			{
-				var menu = new AudioMenu ();
-				menu.hold ();
-				return menu.run ();
-			}
-			catch (IOError e)
-			{
-				return -1;
-			}
+			var menu = new AudioMenu ();
+			menu.hold ();
+
+			return menu.run ();
 		}
 	}
 }

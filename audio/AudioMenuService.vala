@@ -10,6 +10,7 @@ namespace Unity.Settings
 	{
 		private PulseAudio.GLibMainLoop loop;
 		private PulseAudio.Context context;
+		private bool   _mute;
 		private double _volume;
 
 		public signal void ready ();
@@ -38,8 +39,7 @@ namespace Unity.Settings
 		}
 
 		/* PulseAudio logic*/
-		private void
-		notify_cb (Context c)
+		private void notify_cb (Context c)
 		{
 			if (c.get_state () == Context.State.READY)
 			{
@@ -47,27 +47,20 @@ namespace Unity.Settings
 			}
 		}
 
-		private void
-		toggle_mute_cb (Context c, SinkInfo? i, int eol)
+		/* Mute */
+		private void toggle_mute_success (Context c, int success)
 		{
-			if (i == null)
-				return;
-
-			bool mute = ! (bool) i.mute;
-			c.set_sink_mute_by_index (i.index, mute, null);
+			if ((bool)success)
+				mute_toggled (_mute);
 		}
 
-		private void
-		set_volume_cb (Context c, SinkInfo? i, int eol)
+		private void toggle_mute_cb (Context c, SinkInfo? i, int eol)
 		{
 			if (i == null)
 				return;
 
-			double range = (double)(PulseAudio.Volume.NORM - PulseAudio.Volume.MUTED);
-			PulseAudio.Volume vol = (PulseAudio.Volume)(range * _volume) + PulseAudio.Volume.MUTED;
-
-			unowned CVolume cvol = vol_set (i.volume, 1, vol);
-			c.set_sink_volume_by_index (i.index, cvol);
+			_mute = ! (bool) i.mute;
+			c.set_sink_mute_by_index (i.index, _mute, toggle_mute_success);
 		}
 
 		public void switch_mute ()
@@ -79,6 +72,25 @@ namespace Unity.Settings
 			}
 
 			context.get_sink_info_by_index (0, toggle_mute_cb);
+		}
+
+		/* Set volume */
+		private void set_volume_success_cb (Context c, int success)
+		{
+			if ((bool)success)
+				volume_changed (_volume);
+		}
+
+		private void set_volume_cb (Context c, SinkInfo? i, int eol)
+		{
+			if (i == null)
+				return;
+
+			double range = (double)(PulseAudio.Volume.NORM - PulseAudio.Volume.MUTED);
+			PulseAudio.Volume vol = (PulseAudio.Volume)(range * _volume) + PulseAudio.Volume.MUTED;
+
+			unowned CVolume cvol = vol_set (i.volume, 1, vol);
+			c.set_sink_volume_by_index (i.index, cvol, set_volume_success_cb);
 		}
 
 		public void set_volume (double volume)
@@ -106,7 +118,7 @@ namespace Unity.Settings
 		public AudioMenu ()
 		{
 			Object (application_id: "com.ubuntu.audiosettings");
-			flags = ApplicationFlags.IS_SERVICE;
+			//flags = ApplicationFlags.IS_SERVICE;
 
 			try
 			{
@@ -121,6 +133,23 @@ namespace Unity.Settings
 			gmenu = new Menu ();
 			ag   = new SimpleActionGroup ();
 
+			ac = new AudioControl ();
+			ac.ready.connect (ready_cb);
+		}
+
+		private void bootstrap_actions ()
+		{
+		}
+
+		private void bootstrap_menu ()
+		{
+		}
+
+		private void ready_cb ()
+		{
+			bootstrap_actions ();
+			bootstrap_menu ();
+
 			try
 			{
 				conn.export_menu_model ("/com/ubuntu/audiosettings", gmenu);
@@ -132,13 +161,6 @@ namespace Unity.Settings
 				return;
 			}
 
-			ac = new AudioControl ();
-			ac.ready.connect (ready_cb);
-		}
-
-		public void ready_cb ()
-		{
-			ac.switch_mute();
 		}
 
 		public static int main (string[] args)
@@ -146,7 +168,7 @@ namespace Unity.Settings
 			var menu = new AudioMenu ();
 			menu.hold ();
 
-			return menu.run ();
+			return menu.run (args);
 		}
 	}
 }

@@ -6,28 +6,44 @@ namespace Unity.Settings
 	[CCode(cname="pa_cvolume_set", cheader_filename = "pulse/volume.h")]
 	extern unowned PulseAudio.CVolume? vol_set (PulseAudio.CVolume? cv, uint channels, PulseAudio.Volume v);
 
-	public class AudioMenu : Application
+	public class AudioControl : Object
 	{
 		private PulseAudio.GLibMainLoop loop;
 		private PulseAudio.Context context;
-		private DBusConnection conn;
-		private GLib.Menu gmenu;
-		private GLib.SimpleActionGroup ag;
-
-		//FIXME: This is here until user_data can be passed to callbacks
 		private double _volume;
 
-		private signal void ready ();
-		private signal void mute_toggled (bool mute);
-		private signal void volume_changed (PulseAudio.Volume v);
+		public signal void ready ();
+		public signal void mute_toggled (bool mute);
+		public signal void volume_changed (double v);
 
+		public AudioControl ()
+		{
+			loop = new PulseAudio.GLibMainLoop ();
 
+			var props = new Proplist ();
+			props.sets (Proplist.PROP_APPLICATION_NAME, "Ubuntu Audio Settings");
+			props.sets (Proplist.PROP_APPLICATION_ID, "com.ubuntu.audiosettings");
+			props.sets (Proplist.PROP_APPLICATION_ICON_NAME, "multimedia-volume-control");
+			props.sets (Proplist.PROP_APPLICATION_VERSION, "0.1");
+
+			context = new PulseAudio.Context (loop.get_api(), null, props);
+
+			context.set_state_callback (notify_cb);
+
+			if (context.connect(null, Context.Flags.NOFAIL, null) < 0)
+			{
+				warning( "pa_context_connect() failed: %s\n", PulseAudio.strerror(context.errno()));
+				return;
+			}
+		}
+
+		/* PulseAudio logic*/
 		private void
 		notify_cb (Context c)
 		{
 			if (c.get_state () == Context.State.READY)
 			{
-				set_volume (0.333);
+				ready ();
 			}
 		}
 
@@ -47,8 +63,6 @@ namespace Unity.Settings
 			if (i == null)
 				return;
 
-			bool mute = ! (bool) i.mute;
-//			c.set_sink_mute_by_index (i.index, mute, null);
 			double range = (double)(PulseAudio.Volume.NORM - PulseAudio.Volume.MUTED);
 			PulseAudio.Volume vol = (PulseAudio.Volume)(range * _volume) + PulseAudio.Volume.MUTED;
 
@@ -79,26 +93,15 @@ namespace Unity.Settings
 			context.get_sink_info_by_index (0, set_volume_cb);
 		}
 
-		public void init_pa ()
-		{
-			loop = new PulseAudio.GLibMainLoop ();
+	}
 
-			var props = new Proplist ();
-			props.sets (Proplist.PROP_APPLICATION_NAME, "Ubuntu Audio Settings");
-			props.sets (Proplist.PROP_APPLICATION_ID, "com.ubuntu.audiosettings");
-			props.sets (Proplist.PROP_APPLICATION_ICON_NAME, "multimedia-volume-control");
-			props.sets (Proplist.PROP_APPLICATION_VERSION, "0.1");
 
-			context = new PulseAudio.Context (loop.get_api(), null, props);
-
-			context.set_state_callback (notify_cb);
-
-			if (context.connect(null, Context.Flags.NOFAIL, null) < 0)
-			{
-				warning( "pa_context_connect() failed: %s\n", PulseAudio.strerror(context.errno()));
-				return;
-			}
-		}
+	public class AudioMenu : Application
+	{
+		private DBusConnection conn;
+		private GLib.Menu gmenu;
+		private GLib.SimpleActionGroup ag;
+		private AudioControl ac;
 
 		public AudioMenu ()
 		{
@@ -129,7 +132,13 @@ namespace Unity.Settings
 				return;
 			}
 
-			init_pa();
+			ac = new AudioControl ();
+			ac.ready.connect (ready_cb);
+		}
+
+		public void ready_cb ()
+		{
+			ac.switch_mute();
 		}
 
 		public static int main (string[] args)

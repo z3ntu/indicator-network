@@ -62,7 +62,7 @@ namespace Unity.Settings
 			}
 		}
 
-		/* Mute */
+		/* Mute operations */
 		private void toggle_mute_success (Context c, int success)
 		{
 			if ((bool)success)
@@ -89,14 +89,14 @@ namespace Unity.Settings
 			context.get_sink_info_by_index (0, toggle_mute_cb);
 		}
 
-		/* Set volume */
+		/* Volume operations */
 		private void set_volume_success_cb (Context c, int success)
 		{
 			if ((bool)success)
 				volume_changed (_volume);
 		}
 
-		private void sink_info_cb (Context c, SinkInfo? i, int eol)
+		private void sink_info_set_volume_cb (Context c, SinkInfo? i, int eol)
 		{
 			if (i == null)
 				return;
@@ -107,7 +107,7 @@ namespace Unity.Settings
 			c.set_sink_volume_by_index (i.index, cvol, set_volume_success_cb);
 		}
 
-		private void server_info_cb_for_volume (Context c, ServerInfo? i)
+		private void server_info_cb_for_set_volume (Context c, ServerInfo? i)
 		{
 			if (i == null)
 			{
@@ -115,7 +115,7 @@ namespace Unity.Settings
 				return;
 			}
 
-			context.get_sink_info_by_name (i.default_sink_name, sink_info_cb);
+			context.get_sink_info_by_name (i.default_sink_name, sink_info_set_volume_cb);
 		}
 
 		public void set_volume (double volume)
@@ -127,7 +127,11 @@ namespace Unity.Settings
 			}
 			_volume = volume;
 
-			context.get_server_info (server_info_cb_for_volume);
+			context.get_server_info (server_info_cb_for_set_volume);
+		}
+
+		public void get_volume ()
+		{
 		}
 
 	}
@@ -139,13 +143,12 @@ namespace Unity.Settings
 		private GLib.Menu gmenu;
 		private GLib.SimpleActionGroup ag;
 		private AudioControl ac;
+		private bool _ready = false;
 
 		public AudioMenu ()
 		{
 			Object (application_id: "com.ubuntu.audiosettings");
 			//flags = ApplicationFlags.IS_SERVICE;
-
-
 
 			gmenu = new Menu ();
 			ag   = new SimpleActionGroup ();
@@ -186,6 +189,11 @@ namespace Unity.Settings
 
 		private void ready_cb ()
 		{
+			if (_ready)
+				return;
+
+			_ready = true;
+
 			bootstrap_actions ();
 			bootstrap_menu ();
 

@@ -1,5 +1,5 @@
 
-AC_INIT(chewie, 0.1, alberto.ruiz@canonical.com)
+AC_INIT(chewie, 0.2, alberto.ruiz@canonical.com)
 AC_COPYRIGHT([Copyright 2011,2012 Canonical])
 
 AC_PREREQ(2.62)

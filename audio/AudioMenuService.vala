@@ -25,8 +25,8 @@ namespace Unity.Settings
 	{
 		private PulseAudio.GLibMainLoop loop;
 		private PulseAudio.Context context;
-		private bool   _mute;
-		private double _volume;
+		private bool   _mute = true;
+		private double _volume = 0.0;
 
 		public signal void ready ();
 		public signal void mute_toggled (bool mute);
@@ -54,10 +54,23 @@ namespace Unity.Settings
 		}
 
 		/* PulseAudio logic*/
+		private void sink_info_cb_for_props (Context c, SinkInfo? i, int eol)
+		{
+			if (i == null)
+				return;
+		}
+
+		private void server_info_cb_for_props (Context s, ServerInfo? i)
+		{
+			if (i == null)
+				return;
+		}
+
 		private void notify_cb (Context c)
 		{
 			if (c.get_state () == Context.State.READY)
 			{
+				//TODO: Get properties and notify
 				ready ();
 			}
 		}
@@ -130,10 +143,15 @@ namespace Unity.Settings
 			context.get_server_info (server_info_cb_for_set_volume);
 		}
 
-		public void get_volume ()
+		public double get_volume ()
 		{
+			return 0.0;
 		}
 
+		public bool is_muted ()
+		{
+			return true;
+		}
 	}
 
 

@@ -45,6 +45,9 @@ namespace Unity.Settings
 			context = new PulseAudio.Context (loop.get_api(), null, props);
 
 			context.set_state_callback (notify_cb);
+			context.set_subscribe_callback (context_events_cb);
+			context.subscribe (PulseAudio.Context.SubscriptionMask.SINK |
+							   PulseAudio.Context.SubscriptionMask.SERVER);
 
 			if (context.connect(null, Context.Flags.NOFAIL, null) < 0)
 			{
@@ -54,16 +57,27 @@ namespace Unity.Settings
 		}
 
 		/* PulseAudio logic*/
+		private void context_events_cb (Context c, Context.SubscriptionEventType t, uint32 index)
+		{
+			warning ("Context event");
+		}
+
 		private void sink_info_cb_for_props (Context c, SinkInfo? i, int eol)
 		{
 			if (i == null)
 				return;
 
-			_mute = (bool)i.volume.is_muted ();
-			mute_toggled (_mute);
+			if (_mute != (bool)i.volume.is_muted ())
+			{
+				_mute = (bool)i.volume.is_muted ();
+				mute_toggled (_mute);
+			}
 
-			_volume = volume_to_double (i.volume.values[0]);
-			volume_changed (_volume);
+			if (_volume != volume_to_double (i.volume.values[0]))
+			{
+				_volume = volume_to_double (i.volume.values[0]);
+				volume_changed (_volume);
+			}
 		}
 
 		private void server_info_cb_for_props (Context c, ServerInfo? i)
@@ -112,6 +126,11 @@ namespace Unity.Settings
 			}
 
 			context.get_sink_info_by_index (0, toggle_mute_cb);
+		}
+
+		public bool is_muted ()
+		{
+			return _mute;
 		}
 
 		/* Volume operations */
@@ -167,12 +186,7 @@ namespace Unity.Settings
 
 		public double get_volume ()
 		{
-			return 0.0;
-		}
-
-		public bool is_muted ()
-		{
-			return true;
+			return _volume;
 		}
 	}
 
@@ -184,6 +198,8 @@ namespace Unity.Settings
 		private GLib.SimpleActionGroup ag;
 		private AudioControl ac;
 		private bool _ready = false;
+		private SimpleAction mute_action;
+		private SimpleAction volume_action;
 
 		public AudioMenu ()
 		{
@@ -204,15 +220,22 @@ namespace Unity.Settings
 			{
 				ac.set_volume (val.get_double ());
 			}
+
+			if (name == "mute")
+			{
+				if (val.get_boolean () == ac.is_muted ())
+					return;
+
+				ac.switch_mute ();
+			}
 		}
 
 		private void bootstrap_actions ()
 		{
-			//TODO: Set the state accordingly
-			var mute = new SimpleAction.stateful ("mute", new VariantType("b"),  new Variant.boolean(true));
-			var volume = new SimpleAction.stateful ("volume", new VariantType("d"), new Variant.double(0.9));
-			ag.insert (mute);
-			ag.insert (volume);
+			mute_action = new SimpleAction.stateful ("mute", new VariantType("b"),  new Variant.boolean(true));
+			volume_action = new SimpleAction.stateful ("volume", new VariantType("d"), new Variant.double(0.0));
+			ag.insert (mute_action);
+			ag.insert (volume_action);
 
 			ag.action_state_changed.connect (state_changed_cb);
 		}
@@ -262,6 +285,12 @@ namespace Unity.Settings
 
 		private void volume_changed_cb (double vol)
 		{
+			volume_action.set_state (new Variant.double(ac.get_volume ()));
+		}
+
+		private void mute_toggled (bool mute)
+		{
+			mute_action.set_state (new Variant.boolean(ac.is_muted()));
 		}
 
 		public static int main (string[] args)

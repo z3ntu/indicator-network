@@ -58,19 +58,31 @@ namespace Unity.Settings
 		{
 			if (i == null)
 				return;
+
+			_mute = (bool)i.volume.is_muted ();
+			mute_toggled (_mute);
+
+			_volume = volume_to_double (i.volume.values[0]);
+			volume_changed (_volume);
 		}
 
-		private void server_info_cb_for_props (Context s, ServerInfo? i)
+		private void server_info_cb_for_props (Context c, ServerInfo? i)
 		{
 			if (i == null)
 				return;
+			context.get_sink_info_by_name (i.default_sink_name, sink_info_cb_for_props);
+		}
+
+		private void get_properties ()
+		{
+			context.get_server_info (server_info_cb_for_props);
 		}
 
 		private void notify_cb (Context c)
 		{
 			if (c.get_state () == Context.State.READY)
 			{
-				//TODO: Get properties and notify
+				get_properties ();
 				ready ();
 			}
 		}
@@ -103,6 +115,18 @@ namespace Unity.Settings
 		}
 
 		/* Volume operations */
+		private static PulseAudio.Volume double_to_volume (double vol)
+		{
+			double tmp = (double)(PulseAudio.Volume.NORM - PulseAudio.Volume.MUTED) * vol;
+			return (PulseAudio.Volume)tmp + PulseAudio.Volume.MUTED;
+		}
+
+		private static double volume_to_double (PulseAudio.Volume vol)
+		{
+			double tmp = (double)(vol - PulseAudio.Volume.MUTED);
+			return tmp / (double)(PulseAudio.Volume.NORM - PulseAudio.Volume.MUTED);
+		}
+
 		private void set_volume_success_cb (Context c, int success)
 		{
 			if ((bool)success)
@@ -114,9 +138,7 @@ namespace Unity.Settings
 			if (i == null)
 				return;
 
-			double tmp = (double)(PulseAudio.Volume.NORM - PulseAudio.Volume.MUTED) * _volume;
-			PulseAudio.Volume vol = (PulseAudio.Volume)tmp + PulseAudio.Volume.MUTED;
-			unowned CVolume cvol = vol_set (i.volume, 1, vol);
+			unowned CVolume cvol = vol_set (i.volume, 1, double_to_volume (_volume));
 			c.set_sink_volume_by_index (i.index, cvol, set_volume_success_cb);
 		}
 

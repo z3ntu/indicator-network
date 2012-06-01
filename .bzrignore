@@ -1,3 +1,5 @@
+.anjuta*
+*.anjuta
 Makefile
 server/Parser.c
 server/Settings.c

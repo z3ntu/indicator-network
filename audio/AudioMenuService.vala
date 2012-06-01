@@ -58,7 +58,7 @@ namespace Unity.Settings
 		{
 			if ((t & Context.SubscriptionEventType.FACILITY_MASK) == Context.SubscriptionEventType.SINK)
 			{
-				//TODO: Update volume properties
+				get_properties ();
 			}
 		}
 
@@ -67,9 +67,9 @@ namespace Unity.Settings
 			if (i == null)
 				return;
 
-			if (_mute != (bool)i.volume.is_muted ())
+			if (_mute != (bool)i.mute)
 			{
-				_mute = (bool)i.volume.is_muted ();
+				_mute = (bool)i.mute;
 				mute_toggled (_mute);
 			}
 
@@ -214,6 +214,7 @@ namespace Unity.Settings
 			ac = new AudioControl ();
 			ac.ready.connect (ready_cb);
 			ac.volume_changed.connect (volume_changed_cb);
+			ac.mute_toggled.connect (mute_toggled_cb);
 		}
 
 		private void state_changed_cb (ActionGroup action_group, string name, Variant val)
@@ -238,8 +239,6 @@ namespace Unity.Settings
 			volume_action = new SimpleAction.stateful ("volume", new VariantType("d"), new Variant.double(0.0));
 			ag.insert (mute_action);
 			ag.insert (volume_action);
-
-			ag.action_state_changed.connect (state_changed_cb);
 		}
 
 		private void bootstrap_menu ()
@@ -290,7 +289,7 @@ namespace Unity.Settings
 			volume_action.set_state (new Variant.double(ac.get_volume ()));
 		}
 
-		private void mute_toggled (bool mute)
+		private void mute_toggled_cb (bool mute)
 		{
 			mute_action.set_state (new Variant.boolean(ac.is_muted()));
 		}

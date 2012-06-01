@@ -45,9 +45,6 @@ namespace Unity.Settings
 			context = new PulseAudio.Context (loop.get_api(), null, props);
 
 			context.set_state_callback (notify_cb);
-			context.set_subscribe_callback (context_events_cb);
-			context.subscribe (PulseAudio.Context.SubscriptionMask.SINK |
-							   PulseAudio.Context.SubscriptionMask.SERVER);
 
 			if (context.connect(null, Context.Flags.NOFAIL, null) < 0)
 			{
@@ -59,7 +56,10 @@ namespace Unity.Settings
 		/* PulseAudio logic*/
 		private void context_events_cb (Context c, Context.SubscriptionEventType t, uint32 index)
 		{
-			warning ("Context event");
+			if ((t & Context.SubscriptionEventType.FACILITY_MASK) == Context.SubscriptionEventType.SINK)
+			{
+				//TODO: Update volume properties
+			}
 		}
 
 		private void sink_info_cb_for_props (Context c, SinkInfo? i, int eol)
@@ -96,6 +96,8 @@ namespace Unity.Settings
 		{
 			if (c.get_state () == Context.State.READY)
 			{
+				c.subscribe (PulseAudio.Context.SubscriptionMask.SINK);
+				c.set_subscribe_callback (context_events_cb);
 				get_properties ();
 				ready ();
 			}

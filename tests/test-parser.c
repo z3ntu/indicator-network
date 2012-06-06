@@ -1,6 +1,6 @@
 #include <glib.h>
 #include <gio/gio.h>
-#include "unity-settings.h"
+#include <libexportmenu.h>
 
 
 #define TEST_DATA  "<settings> \

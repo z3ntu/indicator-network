@@ -9,8 +9,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "accesspointitem.h"
-#include "accesspoint-info.h"
+#include "network-accesspointitem.h"
+#include "network-accesspoint-info.h"
 
 struct _DbusmenuAccesspointitemPrivate {
         NMAccessPoint *ap;

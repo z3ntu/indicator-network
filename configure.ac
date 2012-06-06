@@ -85,14 +85,16 @@ AM_CONDITIONAL([HAVE_GSCHEMA_COMPILER], [test -n "$GSCHEMA_COMPILER"])
 # Files
 ###########################
 
+#tests/Makefile
+#tests/data/Makefile
+#tests/data/glib-2.0/Makefile
+#tests/data/glib-2.0/schemas/Makefile
+
+
 AC_OUTPUT([
 Makefile
 network/Makefile
 exportmenu/Makefile
 agent/Makefile
-audio/Makefile
-tests/Makefile
-tests/data/Makefile
-tests/data/glib-2.0/Makefile
-tests/data/glib-2.0/schemas/Makefile
+sound/Makefile
 ])

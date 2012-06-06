@@ -7,7 +7,7 @@
 #include <nm-device-wifi.h>
 #include <libdbusmenu-glib/dbusmenu-glib.h>
 
-#include "accesspointitem.h"
+#include "network-accesspointitem.h"
 
 typedef struct {
   NMDevice *device;

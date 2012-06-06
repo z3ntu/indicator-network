@@ -95,6 +95,6 @@ AC_OUTPUT([
 Makefile
 network/Makefile
 exportmenu/Makefile
-agent/Makefile
+network-agent/Makefile
 sound/Makefile
 ])

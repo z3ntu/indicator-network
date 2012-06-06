@@ -1,25 +1,30 @@
 bin_PROGRAMS = chewie-network-menu-server
-noinst_HEADERS = accesspointitem.h accesspoint-info.h
+noinst_HEADERS = network-accesspointitem.h network-accesspoint-info.h
+noinst_LTLIBRARIES = libnetwork.la
 
 ############### Network Service ##############
 bindir = ${libdir}/chewie
 
 chewie_network_menu_server_SOURCES =               \
-	$(top_srcdir)/exportmenu/Settings.vala     \
-	$(top_srcdir)/exportmenu/MenuExporter.vala \
-	network-service.c                          \
+	network-menu-server.c
+
+libnetwork_la_SOURCES =                            \
 	network-utils-wifi.c                       \
-	accesspointitem.c                          \
-	accesspoint-info.c
+	network-accesspointitem.c                  \
+	network-accesspoint-info.c
 
-chewie_network_menu_server_VALAFLAGS = --pkg Dbusmenu-0.4 --pkg gio-2.0
+chewie_network_menu_server_LDADD = \
+	libnetwork.la
 
-chewie_network_menu_server_LDFLAGS = \
+libnetwork_la_LDFLAGS =              \
 	$(GLIB_LIBS)                 \
 	$(DBUSMENU_LIBS)             \
 	$(NM_LIBS)
 
-chewie_network_menu_server_CFLAGS =    \
+libnetwork_la_CFLAGS =                 \
 	$(GLIB_CFLAGS)                 \
 	$(DBUSMENU_CFLAGS)             \
-	$(NM_CFLAGS)
+	$(NM_CFLAGS) 
+
+chewie_network_menu_server_LDFLAGS = $(libnetwork_la_LDFLAGS)
+chewie_network_menu_server_CFLAGS  = $(libnetwork_la_CFLAGS)

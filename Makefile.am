@@ -1,1 +1,1 @@
-SUBDIRS = exportmenu network agent tests audio
+SUBDIRS = exportmenu network sound agent

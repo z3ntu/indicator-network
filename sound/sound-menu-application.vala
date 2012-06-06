@@ -21,7 +21,7 @@ namespace Unity.Settings
 	[CCode(cname="pa_cvolume_set", cheader_filename = "pulse/volume.h")]
 	extern unowned PulseAudio.CVolume? vol_set (PulseAudio.CVolume? cv, uint channels, PulseAudio.Volume v);
 
-	public class AudioControl : Object
+	public class VolumeControl : Object
 	{
 		private PulseAudio.GLibMainLoop loop;
 		private PulseAudio.Context context;
@@ -32,7 +32,7 @@ namespace Unity.Settings
 		public signal void mute_toggled (bool mute);
 		public signal void volume_changed (double v);
 
-		public AudioControl ()
+		public VolumeControl ()
 		{
 			loop = new PulseAudio.GLibMainLoop ();
 
@@ -193,17 +193,17 @@ namespace Unity.Settings
 	}
 
 
-	public class AudioMenu : Application
+	public class SoundMenu : Application
 	{
 		private DBusConnection conn;
 		private GLib.Menu gmenu;
 		private GLib.SimpleActionGroup ag;
-		private AudioControl ac;
+		private VolumeControl ac;
 		private bool _ready = false;
 		private SimpleAction mute_action;
 		private SimpleAction volume_action;
 
-		public AudioMenu ()
+		public SoundMenu ()
 		{
 			Object (application_id: "com.ubuntu.audiosettings");
 			//flags = ApplicationFlags.IS_SERVICE;
@@ -211,7 +211,7 @@ namespace Unity.Settings
 			gmenu = new Menu ();
 			ag   = new SimpleActionGroup ();
 
-			ac = new AudioControl ();
+			ac = new VolumeControl ();
 			ac.ready.connect (ready_cb);
 			ac.volume_changed.connect (volume_changed_cb);
 			ac.mute_toggled.connect (mute_toggled_cb);
@@ -292,14 +292,6 @@ namespace Unity.Settings
 		private void mute_toggled_cb (bool mute)
 		{
 			mute_action.set_state (new Variant.boolean(ac.is_muted()));
-		}
-
-		public static int main (string[] args)
-		{
-			var menu = new AudioMenu ();
-			menu.hold ();
-
-			return menu.run (args);
 		}
 	}
 }

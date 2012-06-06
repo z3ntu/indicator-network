@@ -3,7 +3,7 @@
 
 #include <nm-access-point.h>
 #include <libdbusmenu-glib/menuitem.h>
-#include "accesspointitem.h"
+#include "network-accesspointitem.h"
 
 void create_accespoint_submenu (DbusmenuAccesspointitem *item);
 

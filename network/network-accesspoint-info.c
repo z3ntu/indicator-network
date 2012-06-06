@@ -5,7 +5,7 @@
 #include <nm-utils.h>
 #include <libdbusmenu-glib/menuitem.h>
 
-#include "accesspointitem.h"
+#include "network-accesspointitem.h"
 
 #define CONNECTED "Connected"
 #define DISCONNECTED "Disconnected"

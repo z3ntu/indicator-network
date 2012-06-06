@@ -1,4 +1,4 @@
-bin_PROGRAMS = export-menu
+noinst_PROGRAMS = chewie-export-menu
 noinst_LTLIBRARIES = libexportmenu.la
 noinst_HEADERS = libexportmenu.h
 libexportmenu_la_SOURCES =      \
@@ -14,21 +14,21 @@ libexportmenu_la_CFLAGS =    \
 	$(GLIB_CFLAGS) \
 	$(DBUSMENU_CFLAGS)
 
-export_menu_SOURCES = \
+chewie_export_menu_SOURCES = \
 	export-menu.vala \
 	libexportmenu.vapi
 
-export_menu_LDADD = \
+chewie_export_menu_LDADD = \
 	libexportmenu.la
 
-export_menu_LDFLAGS = \
+chewie_export_menu_LDFLAGS = \
 	$(GLIB_LIBS) \
 	$(DBUSMENU_LIBS)
 
-export_menu_CFLAGS =    \
+chewie_export_menu_CFLAGS =    \
 	$(GLIB_CFLAGS) \
 	$(DBUSMENU_CFLAGS) \
 	-I $(top_srcidir)/exportmenu
 
 libexportmenu_la_VALAFLAGS = --pkg Dbusmenu-0.4 --pkg gio-2.0 --library=libexportmenu --vapi=libexportmenu.vapi --header=libexportmenu.h
-export_menu_VALAFLAGS = --pkg Dbusmenu-0.4 --pkg gio-2.0
+chewie_export_menu_VALAFLAGS = --pkg Dbusmenu-0.4 --pkg gio-2.0

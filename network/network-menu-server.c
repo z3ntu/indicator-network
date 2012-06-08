@@ -4,46 +4,6 @@
 #include <nm-device.h>
 #include <libdbusmenu-glib/dbusmenu-glib.h>
 
-/*
- * unity.widgets.systemsettings.*.sectiontitle
- *
- * ==Section label===================
- * [                                ]
- *
- * Build properties:
- *    "type"             - string = "x-system-settings"
- *    "children-display" - string = "inline"
- *    "x-tablet-widget"  - string = "unity.widgets.systemsettings.tablet.sectiontitle"
- * Other properties:
- *    "label"  - string  - Optional, may have label or not
- *    "x-busy" - boolean - Shows a progress indicator
- *-------------------------------------------------------------------------------------
- * unity.widgets.systemsettings.*.accesspoint
- *
- * [ *))) AP_SSID  # | > ]
- *
- * Build properties:
- *    "type"            - string = "x-system-settings"
- *    "toggle-type"     - string = "radio"
- *    "x-tablet-widget" - string = "unity.widgets.systemsettings.tablet.accesspoint"
- * Other properties:
- *    "x-wifi-strength"   - int    - Signal strength
- *    "x-wifi-is-adhoc"   - bool   - Whether it is an adhoc network or not
- *    "x-wifi-is-secure"  - bool   - Whether the network is open or requires password
- *    "x-wifi-bssid"      - string - The internal unique id for the AP
- *------------------------------------------------------------------------------------
- * unity.widgets.systemsettings.*.listitem
- *
- * [ *STATUS*    connected ]
- *
- * Build properties:
- *    "type"            - string = "x-system-settings"
- *    "x-tablet-widget" - string = "unity.widgets.systemsettings.tablet.listitem"
- * Other properties:
- *    "label"           - string - The title of the information (ie "Status")
- *    "x-extra-label"   - string - The value of the information (ie "Connected")
- */
-
 void
 wifi_device_handler (DbusmenuMenuitem *parent,
                      NMClient         *client,

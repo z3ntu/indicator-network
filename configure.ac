@@ -11,6 +11,7 @@ AM_MAINTAINER_MODE
 
 AC_ISC_POSIX
 AC_PROG_CC
+AC_PROG_CXX
 AM_PROG_CC_C_O
 AC_STDC_HEADERS
 AC_PROG_LIBTOOL
@@ -92,8 +93,8 @@ network/Makefile
 exportmenu/Makefile
 network-agent/Makefile
 sound/Makefile
-tests/Makefile
-tests/data/Makefile
-tests/data/glib-2.0/Makefile
-tests/data/glib-2.0/schemas/Makefile
+test/Makefile
+test/data/Makefile
+test/data/glib-2.0/Makefile
+test/data/glib-2.0/schemas/Makefile
 ])

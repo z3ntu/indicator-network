@@ -1,6 +1,7 @@
 #include <glib.h>
 #include <gio/gio.h>
 #include <libexportmenu.h>
+#include <gtest/gtest.h>
 
 
 #define TEST_DATA  "<settings> \
@@ -19,13 +20,24 @@ test_export_parsed_cb (UnitySettingsParser   *parser,
                        UnitySettingsSettings *settings,
                        gpointer               data)
 {
+  gboolean *result = (gboolean*)data;
+  *result = TRUE;
   g_main_loop_quit(mainloop);
 }
 
+static gboolean
+timeout_cb (gpointer data)
+{
+  gboolean *result = (gboolean*)data;
+  *result = FALSE;
+  g_main_loop_quit(mainloop);
+  return FALSE;
+}
 
-static void
+static gboolean
 test_export ()
 {
+  gboolean result = FALSE;
   UnitySettingsParser *parser = unity_settings_parser_new ();
   GInputStream *stream = g_memory_input_stream_new_from_data (TEST_DATA,
                                                               strlen (TEST_DATA) + 1,
@@ -37,37 +49,39 @@ test_export ()
                                             NULL);
 
   g_signal_connect (parser, "parsed",
-                    G_CALLBACK (test_export_parsed_cb), NULL);
+                    G_CALLBACK (test_export_parsed_cb), &result);
+  g_timeout_add    (2000, timeout_cb, &result);
+
   g_main_loop_run (mainloop);
 
   g_main_loop_unref (mainloop);
   g_object_unref (stream);
   g_object_unref (parser);
+  return result;
 }
 
-static void
+static gboolean
 test_gsettings ()
 {
   GSettings *settings = g_settings_new ("com.ubuntu.test.chewie");
   g_object_unref (settings);
-  return;
+  return TRUE;
 }
 
-static void
-test_parser_suite ()
+TEST(Exportmenu, GSettings)
 {
-  g_debug (g_get_current_dir ());
-  g_test_add_func ("/chewie/exportmenu/gsettings", test_gsettings);
-  g_test_add_func ("/chewie/exportmenu/export",    test_export);
+  EXPECT_TRUE(test_gsettings ());
+}
+
+TEST(Exportmenu, Parse)
+{
+  EXPECT_TRUE(test_export ());
 }
 
 gint
 main (gint argc, gchar** argv)
 {
   g_type_init ();
-  g_test_init (&argc, &argv, NULL);
-
-  test_parser_suite ();
-
-  return g_test_run ();
+  ::testing::InitGoogleTest (&argc, argv);
+  return RUN_ALL_TESTS();
 }

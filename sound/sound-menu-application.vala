@@ -1,20 +1,6 @@
 // vim: tabstop=4 noexpandtab shiftwidth=4 softtabstop=4
 using PulseAudio;
 
-/*
- * unity.widgets.systemsettings.*.volumecontrol
- *
- * [ ))) ---------*-------- ]
- *
- * Properties:
- * "type"			- string = "x-system-settings"
- * "x-tablet-widget	- string = "unity.widget.systemsettings.tablet.volumecontrol"
- * "action"         - string = "volume"
- *
- * The volume value has to be taken off the GAction state
- * "volume"         - double [0.0..1.0]
- *
- */
 
 namespace Unity.Settings
 {

@@ -1,11 +1,6 @@
 // vim: tabstop=4 noexpandtab shiftwidth=4 softtabstop=4
 using GLib;
 
-/* This global variable is due to a bug in the vala bindings for
- * the markup parser, get_user_data is missing.
- * see: https://bugzilla.gnome.org/show_bug.cgi?id=671749   */
-Unity.Settings.Parser self = null;
-
 namespace Unity.Settings {
 	public class Parser : Object {
 		private MarkupParser parser;
@@ -26,35 +21,35 @@ namespace Unity.Settings {
 			try {
 				var stream = document.read();
 				parse_input_stream (stream);
-                        } catch (Error e) {
+			} catch (Error e) {
 				error (e.message);
 			}
-                }
+		}
 
-                public async void parse_input_stream (InputStream stream)
-                {
-                        self = this;
-
+		public async void parse_input_stream (InputStream stream) throws GLib.MarkupError
+		{
 			var ctx = new MarkupParseContext (parser, 0, this, null);
 
-                        uint8[] buffer = new uint8[1024];
-                        ssize_t size = 0;
+			uint8[] buffer = new uint8[1024];
+			ssize_t size = 0;
 
-                        while ((size = yield stream.read_async (buffer)) != 0) {
-                                ctx.parse ((string)buffer, size);
-                        }
+			while ((size = yield stream.read_async (buffer)) != 0) {
+					ctx.parse ((string)buffer, size);
+			}
 
-			self.current_group = null;
-			self.current_key = null;
+			current_group = null;
+			current_key = null;
 
 			parsed (settings);
-                }
+		}
 
-		private static void start_element_fn (MarkupParseContext ctx,
+		private static void start_element_fn (MarkupParseContext   ctx,
 			                                   string              element_name,
 			                                   string[]            attrs_names,
 			                                   string[]            attrs_values) throws MarkupError {
+			Parser self     = (Parser)ctx.get_user_data ();
 			var elements = ctx.get_element_stack().copy();
+
 			/* Root element */
 			if (element_name == "settings" && self.settings == null) {
 				self.settings = new Settings ();
@@ -88,6 +83,7 @@ namespace Unity.Settings {
 		private static void text_element_fn (MarkupParseContext ctx,
 		                                     string             text,
 		                                     size_t             size) throws MarkupError {
+			Parser self = (Parser)ctx.get_user_data ();
 			var element = ctx.get_element_stack().nth_data(0);
 			var parent  = ctx.get_element_stack().nth_data(1);
 
@@ -102,6 +98,7 @@ namespace Unity.Settings {
 
 		private static void end_element_fn (MarkupParseContext ctx,
 	                                  string             element_name) throws MarkupError {
+			Parser self = (Parser)ctx.get_user_data ();
 			if (element_name == "group")
 				self.current_group = self.current_group.parent;
 			if (element_name == "key")

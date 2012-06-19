@@ -30,6 +30,7 @@ exportmenu/*.c
 exportmenu/*.h
 sound/*.c
 sound/*.h
+network/network-menu-application.c
 */*.la
 */*.lo
 *.tar.gz
@@ -43,6 +44,6 @@ exportmenu/export-menu
 network/chewie-network-menu-server
 network-agent/chewie-secret-agent
 sound/chewie-sound-menu-server
-tests/test-exportmenu
-tests/test-parser
-tests/data/glib-2.0/schemas/gschemas.compiled
+test/test-exportmenu
+test/test-parser
+test/data/glib-2.0/schemas/gschemas.compiled

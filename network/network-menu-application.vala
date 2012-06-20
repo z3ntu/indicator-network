@@ -8,6 +8,7 @@ namespace Unity.Settings
 		private Menu gmenu;
 		private SimpleActionGroup ag;
 		private RemoteSettings rs;
+		private NM.Client client;
 
 		public NetworkMenu ()
 		{
@@ -17,7 +18,7 @@ namespace Unity.Settings
 			gmenu = new Menu ();
 			ag    = new SimpleActionGroup ();
 			rs    = new NM.RemoteSettings (null);
-
+			client = new NM.Client();
 			bootstrap_menu ();
 
 
@@ -37,36 +38,36 @@ namespace Unity.Settings
 		{
 			var strength_action_id = ap.get_path () + "::strength";
 
-			item.set_label     (Utils.ssid_to_utf8 (ap.get_ssid()));
+			item.set_label     (Utils.ssid_to_utf8 (ap.get_ssid ()));
 			item.set_attribute ("type",                      "s", "x-system-settings");
 			item.set_attribute ("x-tablet-widget",           "s", "unity.widgets.systemsettings.tablet.accesspoint");
-			item.set_attribute ("x-wifi-ap-is-adhoc",        "b",  ap.get_mode()  == NM.80211Mode.ADHOC);
-			item.set_attribute ("x-wifi-ap-is-secure",       "b",  ap.get_flags() == NM.80211ApFlags.PRIVACY);
-			item.set_attribute ("x-wifi-ap-bssid",           "s",  ap.get_bssid());
+			item.set_attribute ("x-wifi-ap-is-adhoc",        "b",  ap.get_mode ()  == NM.80211Mode.ADHOC);
+			item.set_attribute ("x-wifi-ap-is-secure",       "b",  ap.get_flags () == NM.80211ApFlags.PRIVACY);
+			item.set_attribute ("x-wifi-ap-bssid",           "s",  ap.get_bssid ());
 			item.set_attribute ("x-wifi-ap-strength-action", "s",  strength_action_id);
 			item.set_attribute ("x-wifi-ap-dbus-path",       "s",  ap.get_path ());
 
-			var strength = new SimpleAction.stateful (strength_action_id, new VariantType((string)VariantType.UINT16), ap.get_strength ());
+			var strength = new SimpleAction.stateful (strength_action_id, new VariantType((string)VariantType.BYTE), ap.get_strength ());
 			ag.insert (strength);
 
 			ap.notify.connect ((obj, pspec) => {
-									var prop = pspec.get_name();
+									var prop = pspec.get_name ();
 									if (prop == "strength")
 									{
 										AccessPoint _ap = (AccessPoint)obj;
-										var action = ag.lookup(_ap.get_path() + "::strength");
+										var action = ag.lookup (_ap.get_path() + "::strength");
 										if (action != null)
 										{
-											((SimpleAction)action).set_state (new Variant.uint16(_ap.get_strength ()));
+											((SimpleAction)action).set_state (new Variant.byte(_ap.get_strength ()));
 										}
 									}
 							   });
+			//TODO: Active or inactive property
 		}
 
 		private void bootstrap_menu ()
 		{
 			//TODO: Add WiFi toggle if at least one item is found
-			var client = new NM.Client();
 			var devices = client.get_devices ();
 			for (uint i = 0; i < devices.length; i++)
 			{
@@ -92,15 +93,106 @@ namespace Unity.Settings
 			var aps = wifidevice.get_access_points ();
 			for (uint i = 0; i<aps.length; i++)
 			{
-				var item = new MenuItem (null, null);
-				bind_ap_item (item, aps.get(i));
-				//TODO: Insert method with ordering algorithm
-				apsmenu.append_item (item);
+				insert_ap_item (wifidevice, aps.get (i), apsmenu);
 			}
 
-			wifidevice.access_point_added.connect ((device, ap) => { return; });
-			wifidevice.access_point_removed.connect ((device, ap) => { return; });
+			wifidevice.access_point_added.connect ((device, ap) => { insert_ap_item (device, (AccessPoint)ap, apsmenu); });
+			wifidevice.access_point_removed.connect ((device, ap) => { remove_ap_item (device, (AccessPoint)ap, apsmenu); });
+			//TODO: subscribe to the active-access-point prop notify wifidevice.notify.connect();
+			//TODO: subscribe to the device add/remove
+			//TODO: subscribe to the device state change
 		}
+
+		/*
+		 * AccessPoints are inserted with the follow priority policy:
+		 * - The active access point of the device always goes first
+		 * - Previously used APs go first
+		 * - Previously used APs are ordered by signal strength
+		 * - Unused APs are ordered by signal strenght
+		 */
+		private void insert_ap_item (DeviceWifi dev, AccessPoint ap, Menu m)
+		{
+				var item = new MenuItem (null, null);
+				bind_ap_item (item, ap);
+
+				//If it is the active access point it always goes first
+				if (ap == dev.active_access_point)
+				{
+					m.prepend_item (item);
+					//TODO: Remove duplicates anyhow?
+					return;
+				}
+
+				var conns = rs.list_connections ();
+				var dev_conns = dev.filter_connections (conns);
+				var has_connection = ap_has_connections (ap, dev_conns);
+
+				//Remove duplicate SSID
+				for (int i = 1; i < m.get_n_items(); i++)
+				{
+					string path;
+
+					if (!m.get_item_attribute (i, "x-wifi-ap-dbus-path", "s", out path))
+						continue;
+					var i_ap = dev.get_access_point_by_path (path);
+
+					//If both have the same SSID and security flags they are a duplicate
+					if (Utils.same_ssid (i_ap.get_ssid (), ap.get_ssid (), false) && i_ap.get_flags () == ap.get_flags ())
+					{
+						//The one AP with the srongest signal wins
+						if (i_ap.get_strength () >= ap.get_strength ())
+							return;
+
+						m.remove (i);
+						break;
+					}
+				}
+
+				//Find the right spot for the AP
+				for (int i = 1; i < m.get_n_items(); i++)
+				{
+					string path;
+
+					if (!m.get_item_attribute (i, "x-wifi-ap-dbus-path", "s", out path))
+						continue;
+					var i_ap = dev.get_access_point_by_path (path);
+
+					//APs that have been used previously have priority
+					if (ap_has_connections(i_ap, dev_conns))
+					{
+						if (!has_connection)
+							continue;
+					}
+
+					if (ap.get_strength () > i_ap.get_strength ())
+					{
+						m.insert_item (i, item);
+						break;
+					}
+				}
+				m.append_item (item);
+		}
+
+		private static bool ap_has_connections (AccessPoint ap, SList<NM.Connection> dev_conns)
+		{
+				var ap_conns = ap.filter_connections (dev_conns);
+				return ap_conns.length() > 0;
+		}
+
+		private void remove_ap_item (DeviceWifi dev, AccessPoint ap, Menu m)
+		{
+			for (int i = 1; i < m.get_n_items(); i++)
+			{
+				string path;
+
+				if (!m.get_item_attribute (i, "x-wifi-ap-dbus-path", "s", out path))
+					continue;
+
+				if (path == ap.get_path ())
+					m.remove (i);
+			}
+		}
+
 		public static int main (string[] args)
 		{
 			var menu = new NetworkMenu ();

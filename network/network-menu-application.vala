@@ -124,12 +124,11 @@ namespace Unity.Settings
 		 */
 		private void insert_ap (DeviceWifi dev, AccessPoint ap, Menu m)
 		{
-				var item = new MenuItem (null, null);
-				bind_ap_item (ap, item);
-
 				//If it is the active access point it always goes first
 				if (ap == dev.active_access_point)
 				{
+					var item = new MenuItem (null, null);
+					bind_ap_item (ap, item);
 					m.prepend_item (item);
 					//TODO: Remove duplicates anyhow?
 					return;
@@ -161,6 +160,8 @@ namespace Unity.Settings
 				}
 
 				//Find the right spot for the AP
+				var item = new MenuItem (null, null);
+				bind_ap_item (ap, item);
 				for (int i = 1; i < m.get_n_items(); i++)
 				{
 					string path;
@@ -175,13 +176,14 @@ namespace Unity.Settings
 						if (!has_connection)
 							continue;
 					}
-
+					//APs with higher strenght have priority
 					if (ap.get_strength () > i_ap.get_strength ())
 					{
 						m.insert_item (i, item);
-						break;
+						return;
 					}
 				}
+				//AP is last in the menu
 				m.append_item (item);
 		}
 

@@ -29,16 +29,21 @@ namespace Unity.Settings
 				var conn = Bus.get_sync (BusType.SESSION, null);
 				conn.export_menu_model ("/com/ubuntu/networksettings", gmenu);
 				conn.export_action_group ("/com/ubuntu/networksettings/actions", ag);
-			} catch (GLib.Error e) {
+			}
+			catch (GLib.IOError e)
+			{
 				return;
-			} catch (GLib.IOError e) {
+			}
+			catch (GLib.Error e)
+			{
 				return;
 			}
 		}
 
-		private void bind_ap_item (AccessPoint ap, MenuItem item)
+		private void bind_ap_item (DeviceWifi device, AccessPoint ap, MenuItem item)
 		{
 			var strength_action_id = ap.get_path () + "::strength";
+			var activate_action_id = ap.get_path () + "::activate";
 
 			item.set_label     (Utils.ssid_to_utf8 (ap.get_ssid ()));
 			item.set_attribute ("type",                      "s", "x-system-settings");
@@ -46,14 +51,18 @@ namespace Unity.Settings
 			item.set_attribute ("x-wifi-ap-is-adhoc",        "b",  ap.get_mode ()  == NM.80211Mode.ADHOC);
 			item.set_attribute ("x-wifi-ap-is-secure",       "b",  ap.get_flags () == NM.80211ApFlags.PRIVACY);
 			item.set_attribute ("x-wifi-ap-bssid",           "s",  ap.get_bssid ());
-			item.set_attribute ("x-wifi-ap-strength-action", "s",  strength_action_id);
 			item.set_attribute ("x-wifi-ap-dbus-path",       "s",  ap.get_path ());
 
-			var strength = new SimpleAction.stateful (strength_action_id, new VariantType((string)VariantType.BYTE), ap.get_strength ());
-			ag.insert (strength);
+			item.set_attribute ("x-wifi-ap-strength-action", "s",  strength_action_id);
+			item.set_attribute ("x-wifi-ap-activate-action", "s",  activate_action_id);
 
+			var strength = new SimpleAction.stateful (strength_action_id, new VariantType((string)VariantType.BYTE), ap.get_strength ());
+			var activate = new SimpleAction.stateful (activate_action_id, new VariantType((string)VariantType.BOOLEAN), device.active_access_point == ap);
+
+			ag.insert (strength);
+			ag.insert (activate);
 			ap.notify.connect (strength_changed);
-			//TODO: Active or inactive property
+			//TODO: Active or inactive action
 		}
 
 		private void strength_changed (GLib.Object obj, ParamSpec pspec)
@@ -75,8 +84,6 @@ namespace Unity.Settings
 			var devices = client.get_devices ();
 			for (uint i = 0; i < devices.length; i++)
 			{
-				nwifi++;
-				//TODO: Add WiFi toggle if at least one item is found
 				add_device (devices.get (i));
 			}
 		}
@@ -92,6 +99,42 @@ namespace Unity.Settings
 
 			if (new_state != NM.DeviceState.UNMANAGED && reason == NM.DeviceStateReason.NOW_MANAGED)
 				add_wifi_device (wifidevice);
+		}
+
+		private void add_device (NM.Device device)
+		{
+			switch (device.get_device_type ())
+			{
+				case NM.DeviceType.WIFI:
+					add_wifi_device (device);
+					break;
+			}
+		}
+
+		private void add_wifi_device (NM.Device device)
+		{
+			device.state_changed.connect (wifi_device_state_changed);
+			if (device.get_state () == NM.DeviceState.UNMANAGED)
+				return;
+
+			var wifidevice = (NM.DeviceWifi)device;
+			var apsmenu = new Menu ();
+			var device_item = create_item_for_wifi_device (wifidevice);
+
+			device_item.set_section (apsmenu);
+			gmenu.append_item (device_item);
+
+			var aps = wifidevice.get_access_points ();
+			for (uint i = 0; i<aps.length; i++)
+			{
+				insert_ap (wifidevice, aps.get (i), apsmenu);
+			}
+
+			wifidevice.access_point_added.connect (access_point_added_cb);
+			wifidevice.access_point_removed.connect (access_point_removed_cb);
+			wifidevice.notify.connect (active_access_point_changed);
+
+			if (++nwifi == 1) {	/*TODO: Add WiFi toggle if at least one item is found */ }
 		}
 
 		private void remove_wifi_device (NM.DeviceWifi wifidevice)
@@ -113,44 +156,9 @@ namespace Unity.Settings
 				wifidevice.access_point_added.disconnect (access_point_added_cb);
 				wifidevice.access_point_removed.disconnect (access_point_removed_cb);
 				wifidevice.notify.disconnect (active_access_point_changed);
+				if (--nwifi == 0) { /* TODO: Remove toggle */ }
 				return;
 			}
-		}
-
-		private void add_device (NM.Device device)
-		{
-			switch (device.get_device_type ())
-			{
-				case NM.DeviceType.WIFI:
-					add_wifi_device (device);
-					break;
-			}
-		}
-
-		private void add_wifi_device (NM.Device device)
-		{
-			device.state_changed.connect (wifi_device_state_changed);
-			if (device.get_state () == NM.DeviceState.UNMANAGED)
-				return;
-
-			var wifidevice = (NM.DeviceWifi)device;
-
-			add_wifi_device (device);
-			var apsmenu = new Menu ();
-
-			var device_item = create_item_for_wifi_device (wifidevice);
-			device_item.set_section (apsmenu);
-			gmenu.append_item (device_item);
-
-			var aps = wifidevice.get_access_points ();
-			for (uint i = 0; i<aps.length; i++)
-			{
-				insert_ap (wifidevice, aps.get (i), apsmenu);
-			}
-
-			wifidevice.access_point_added.connect (access_point_added_cb);
-			wifidevice.access_point_removed.connect (access_point_removed_cb);
-			wifidevice.notify.connect (active_access_point_changed);
 		}
 
 		private void access_point_added_cb (NM.DeviceWifi device, GLib.Object ap)
@@ -179,7 +187,6 @@ namespace Unity.Settings
 			for (int i = 0; i < gmenu.get_n_items (); i++)
 			{
 				string path;
-				string busy_action_id;
 
 				if (!gmenu.get_item_attribute (i, "x-wifi-device-path", "s", out path))
 					continue;
@@ -195,11 +202,11 @@ namespace Unity.Settings
 		{
 			var busy_action_id = device.get_path () + "::is-busy";
 			var device_item = new MenuItem ("Select wireless network", null);
-			device_item.set_attribute ("type",   "x-system-settings");
-			device_item.set_attribute ("x-tablet-widget", "unity.widget.systemsettings.tablet.sectiontitle");
+			device_item.set_attribute ("type",               "s", "x-system-settings");
+			device_item.set_attribute ("x-tablet-widget",    "s", "unity.widget.systemsettings.tablet.sectiontitle");
 			device_item.set_attribute ("x-children-display", "s", "inline");
 			device_item.set_attribute ("x-wifi-device-path", "s",  device.get_path ());
-			device_item.set_attribute ("x-busy-action", "s", busy_action_id);
+			device_item.set_attribute ("x-busy-action",      "s",  busy_action_id);
 
 			var strength = new SimpleAction.stateful (busy_action_id, new VariantType((string)VariantType.BOOLEAN), device_is_busy (device));
 			ag.insert (strength);
@@ -234,7 +241,7 @@ namespace Unity.Settings
 				if (ap == dev.active_access_point)
 				{
 					var item = new MenuItem (null, null);
-					bind_ap_item (ap, item);
+					bind_ap_item (dev, ap, item);
 					m.prepend_item (item);
 					//TODO: Remove duplicates anyhow?
 					return;
@@ -267,7 +274,7 @@ namespace Unity.Settings
 
 				//Find the right spot for the AP
 				var item = new MenuItem (null, null);
-				bind_ap_item (ap, item);
+				bind_ap_item (dev, ap, item);
 				for (int i = 1; i < m.get_n_items(); i++)
 				{
 					string path;
@@ -304,7 +311,7 @@ namespace Unity.Settings
 					continue;
 				remove_item (m, i, ap);
 				var item = new MenuItem (null, null);
-				bind_ap_item (ap, item);
+				bind_ap_item (dev, ap, item);
 				m.append_item (item);
 			}
 		}
@@ -335,8 +342,13 @@ namespace Unity.Settings
 		private void remove_item (Menu m, int index, AccessPoint ap)
 		{
 			string strength_action_id;
+			string activate_action_id;
+
 			if (m.get_item_attribute (index, "x-wifi-ap-strength-action", "s", out strength_action_id))
 				ag.remove (strength_action_id);
+			if (m.get_item_attribute (index, "x-wifi-ap-activate-action", "s", out activate_action_id))
+				ag.remove (activate_action_id);
+
 			m.remove (index);
 			ap.notify.disconnect (strength_changed);
 			//TODO: Check if removed dups need to be added

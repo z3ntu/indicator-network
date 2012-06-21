@@ -163,26 +163,45 @@ namespace Unity.Settings
 
 		private void access_point_added_cb (NM.DeviceWifi device, GLib.Object ap)
 		{
-			var apsmenu = find_menu_index_for_device(device);
+			var apsmenu = find_menu_for_device(device);
 			insert_ap (device, (AccessPoint)ap, apsmenu);
 		}
 
 		private void access_point_removed_cb (NM.DeviceWifi device, GLib.Object ap)
 		{
-			var apsmenu = find_menu_index_for_device(device);
+			var apsmenu = find_menu_for_device(device);
 			remove_ap (device, (AccessPoint)ap, apsmenu);
 		}
 
 		private void active_access_point_changed (GLib.Object obj, ParamSpec pspec)
 		{
 			var wifidevice = (NM.DeviceWifi)obj;
-			var apsmenu = find_menu_index_for_device(wifidevice);
+			Menu? apsmenu = find_menu_for_device(wifidevice);
+
+			if (apsmenu == null)
+				return;
 
 			if (pspec.get_name () == "active-access-point")
 				set_active_ap (wifidevice, wifidevice.active_access_point, apsmenu);
+
+			for (int i = 0; i < apsmenu.get_n_items (); i++)
+			{
+				string path;
+				string activate_action_id;
+
+				if (!apsmenu.get_item_attribute (i, "x-wifi-ap-dbus-path", "s", out path))
+					continue;
+				if (!apsmenu.get_item_attribute (i, "x-wifi-ap-activate-action", "s", out activate_action_id))
+					continue;
+
+				if (wifidevice.active_access_point.get_path () == path)
+					ag.change_action_state (activate_action_id, new Variant.boolean (true));
+				else
+					ag.change_action_state (activate_action_id, new Variant.boolean (false));
+			}
 		}
 
-		private Menu? find_menu_index_for_device (NM.Device device)
+		private Menu? find_menu_for_device (NM.Device device)
 		{
 			for (int i = 0; i < gmenu.get_n_items (); i++)
 			{
@@ -195,7 +214,7 @@ namespace Unity.Settings
 
 				return (Menu?)gmenu.get_item_link (i, Menu.LINK_SECTION);
 			}
-			return null;
+			return (Menu?)null;
 		}
 
 		private MenuItem create_item_for_wifi_device (NM.DeviceWifi device)
@@ -300,8 +319,11 @@ namespace Unity.Settings
 				m.append_item (item);
 		}
 
-		private void set_active_ap (DeviceWifi dev, AccessPoint ap, Menu m)
+		private void set_active_ap (DeviceWifi dev, AccessPoint? ap, Menu m)
 		{
+			if (ap == null)
+				return;
+
 			for (int i = 1; i < m.get_n_items(); i++)
 			{
 				string path;

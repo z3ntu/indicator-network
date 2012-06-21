@@ -30,9 +30,12 @@ Properties:
     "x-wifi-ap-is-secure"       - bool   - Whether the network is open or requires password
     "x-wifi-ap-bssid"           - string - The internal unique id for the AP
     "x-wifi-ap-strength-action" - string - The action string id to gather the strength from
+    "x-wifi-ap-activate-action" - string - The action string id to check whether the AP is active
 Actions:
     $(x-wifi-ap-strength-action):
         - byte - Signal strength of the access point [0-100]
+    $(x-wifi-ap-activate-action):
+        - bool - Whether the AP is the active one or not
 
     
 

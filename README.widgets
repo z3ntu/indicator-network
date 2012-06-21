@@ -1,31 +1,40 @@
 ########################## DBUSMENU WIDGETS PROPERTIES #############################
 
-unity.widgets.systemsettings.*.sectiontitle
+unity.widgets.systemsettings.*.wifisection
 
-==Section label===================
-[                                ]
+==[$(label)]========$(busy)=
+[ AP                       ]
+[ AP                       ]
+[ ...                      ]
 
-Build properties:
-    "type"             - string = "x-system-settings"
-    "children-display" - string = "inline"
-    "x-tablet-widget"  - string = "unity.widgets.systemsettings.tablet.sectiontitle"
-Other properties:
-    "label"  - string  - Optional, may have label or not
-    "x-busy" - boolean - Shows a progress indicator
+Properties:
+    "label"              - string - Optional, may have label or not
+    "type"               - string = "x-system-settings"
+    "x-children-display" - string = "inline"
+    "x-tablet-widget"    - string = "unity.widgets.systemsettings.tablet.wifisection"
+    "x-busy-action"      - boolean - Shows a spinner indicating activity
+Actions:
+    $(x-busy-action):
+        - boolean - Whether the item is busy or not
+
 ------------------------------------------------------------------------------------
 unity.widgets.systemsettings.*.accesspoint
 
  [ *))) AP_SSID  # | > ]
 
- Build properties:
-    "type"            - string = "x-system-settings"
-    "toggle-type"     - string = "radio"
-    "x-tablet-widget" - string = "unity.widgets.systemsettings.tablet.accesspoint"
- Other properties:
-    "x-wifi-strength"   - int    - Signal strength
-    "x-wifi-is-adhoc"   - bool   - Whether it is an adhoc network or not
-    "x-wifi-is-secure"  - bool   - Whether the network is open or requires password
-    "x-wifi-bssid"      - string - The internal unique id for the AP
+Properties:
+    "type"                      - string = "x-system-settings"
+    "toggle-type"               - string = "radio"
+    "x-tablet-widget"           - string = "unity.widgets.systemsettings.tablet.accesspoint"
+    "x-wifi-ap-is-adhoc"        - bool   - Whether it is an adhoc network or not
+    "x-wifi-ap-is-secure"       - bool   - Whether the network is open or requires password
+    "x-wifi-ap-bssid"           - string - The internal unique id for the AP
+    "x-wifi-ap-strength-action" - string - The action string id to gather the strength from
+Actions:
+    $(x-wifi-ap-strength-action):
+        - byte - Signal strength of the access point [0-100]
+
+    
 
 ------------------------------------------------------------------------------------
 unity.widgets.systemsettings.*.listitem

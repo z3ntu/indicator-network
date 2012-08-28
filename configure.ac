@@ -73,7 +73,7 @@ PKG_CHECK_MODULES(PULSE, libpulse               >= $PULSE_REQUIRED_VERSION
 # Vala Compiler
 ###########################
 
-AM_PROG_VALAC(0.16.0)
+AM_PROG_VALAC(0.17.4)
 
 ############################
 # GSettings schema compiler

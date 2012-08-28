@@ -3,44 +3,53 @@ using NM;
 
 namespace Unity.Settings
 {
-	public class NetworkMenu : Application
+	public class WifiMenu : GLib.Object
 	{
-		private Menu gmenu;
+		private Menu              gmenu;
+		private Menu              apsmenu;
+		private MenuItem          device_item;
+		internal DeviceWifi        device;
 		private SimpleActionGroup ag;
-		private RemoteSettings rs;
-		private NM.Client client;
-		private uint32    nwifi;
+		private RemoteSettings    rs;
 
-		public NetworkMenu ()
+		public WifiMenu (DeviceWifi device, Menu global_menu, SimpleActionGroup ag)
 		{
-			GLib.Object (application_id: "com.ubuntu.networksettings");
-			//flags = ApplicationFlags.IS_SERVICE;
+			gmenu = global_menu;
+			this.ag = ag;
+			this.device = device;
 
-			gmenu  = new Menu ();
-			ag     = new SimpleActionGroup ();
-			rs     = new NM.RemoteSettings (null);
-			client = new NM.Client();
-			nwifi  = 0;
+			apsmenu = new Menu ();
+			device_item = create_item_for_wifi_device ();
 
-			bootstrap_menu ();
+			device_item.set_section (apsmenu);
+			gmenu.append_item (device_item);
 
-			try
+			var aps = device.get_access_points ();
+			for (uint i = 0; i<aps.length; i++)
 			{
-				var conn = Bus.get_sync (BusType.SESSION, null);
-				conn.export_menu_model ("/com/ubuntu/networksettings", gmenu);
-				conn.export_action_group ("/com/ubuntu/networksettings/actions", ag);
+				insert_ap (aps.get (i));
 			}
-			catch (GLib.IOError e)
-			{
-				return;
-			}
-			catch (GLib.Error e)
-			{
-				return;
-			}
+
+			device.access_point_added.connect (access_point_added_cb);
+			device.access_point_removed.connect (access_point_removed_cb);
+			device.notify.connect (active_access_point_changed);
 		}
 
-		private void bind_ap_item (DeviceWifi device, AccessPoint ap, MenuItem item)
+		~WifiMenu ()
+		{
+			device.access_point_added.disconnect (access_point_added_cb);
+			device.access_point_removed.disconnect (access_point_removed_cb);
+			device.notify.disconnect (active_access_point_changed);
+		}
+
+		/*private void wifi_device_state_changed (NM.Device  dev,
+		                                        uint       new_state,
+		                                        uint       old_state,
+		                                        uint       reason)
+		{
+		}*/
+
+		private void bind_ap_item (AccessPoint ap, MenuItem item)
 		{
 			var strength_action_id = ap.get_path () + "::strength";
 			var activate_action_id = ap.get_path () + "::activate";
@@ -62,7 +71,6 @@ namespace Unity.Settings
 			ag.insert (strength);
 			ag.insert (activate);
 			ap.notify.connect (strength_changed);
-			//TODO: Active or inactive action
 		}
 
 		private void strength_changed (GLib.Object obj, ParamSpec pspec)
@@ -79,110 +87,23 @@ namespace Unity.Settings
 			}
 		}
 
-		private void bootstrap_menu ()
-		{
-			var devices = client.get_devices ();
-			for (uint i = 0; i < devices.length; i++)
-			{
-				add_device (devices.get (i));
-			}
-		}
-
-		private void wifi_device_state_changed (NM.Device  dev,
-		                                        uint       new_state,
-		                                        uint       old_state,
-		                                        uint       reason)
-		{
-			var wifidevice = (NM.DeviceWifi)dev;
-			if (new_state == NM.DeviceState.UNMANAGED && reason == NM.DeviceStateReason.NOW_UNMANAGED)
-				remove_wifi_device (wifidevice);
-
-			if (new_state != NM.DeviceState.UNMANAGED && reason == NM.DeviceStateReason.NOW_MANAGED)
-				add_wifi_device (wifidevice);
-		}
-
-		private void add_device (NM.Device device)
-		{
-			switch (device.get_device_type ())
-			{
-				case NM.DeviceType.WIFI:
-					add_wifi_device (device);
-					break;
-			}
-		}
-
-		private void add_wifi_device (NM.Device device)
-		{
-			device.state_changed.connect (wifi_device_state_changed);
-			if (device.get_state () == NM.DeviceState.UNMANAGED)
-				return;
-
-			var wifidevice = (NM.DeviceWifi)device;
-			var apsmenu = new Menu ();
-			var device_item = create_item_for_wifi_device (wifidevice);
-
-			device_item.set_section (apsmenu);
-			gmenu.append_item (device_item);
-
-			var aps = wifidevice.get_access_points ();
-			for (uint i = 0; i<aps.length; i++)
-			{
-				insert_ap (wifidevice, aps.get (i), apsmenu);
-			}
-
-			wifidevice.access_point_added.connect (access_point_added_cb);
-			wifidevice.access_point_removed.connect (access_point_removed_cb);
-			wifidevice.notify.connect (active_access_point_changed);
-
-			if (++nwifi == 1) {	/*TODO: Add WiFi toggle if at least one item is found */ }
-		}
-
-		private void remove_wifi_device (NM.DeviceWifi wifidevice)
-		{
-			for (int i = 0; i < gmenu.get_n_items (); i++)
-			{
-				string path;
-				string busy_action_id;
-
-				if (!gmenu.get_item_attribute (i, "x-wifi-device-path", "s", out path))
-					continue;
-				if (path != wifidevice.get_path ())
-					continue;
-				if (gmenu.get_item_attribute (i, "x-busy-action", "s", out  busy_action_id))
-					ag.remove (busy_action_id);
-
-				gmenu.remove (i);
-
-				wifidevice.access_point_added.disconnect (access_point_added_cb);
-				wifidevice.access_point_removed.disconnect (access_point_removed_cb);
-				wifidevice.notify.disconnect (active_access_point_changed);
-				if (--nwifi == 0) { /* TODO: Remove toggle */ }
-				return;
-			}
-		}
-
 		private void access_point_added_cb (NM.DeviceWifi device, GLib.Object ap)
 		{
-			var apsmenu = find_menu_for_device(device);
-			insert_ap (device, (AccessPoint)ap, apsmenu);
+			insert_ap ((AccessPoint)ap);
 		}
 
 		private void access_point_removed_cb (NM.DeviceWifi device, GLib.Object ap)
 		{
-			var apsmenu = find_menu_for_device(device);
-			remove_ap (device, (AccessPoint)ap, apsmenu);
+			remove_ap ((AccessPoint)ap);
 		}
 
 		private void active_access_point_changed (GLib.Object obj, ParamSpec pspec)
 		{
-			var wifidevice = (NM.DeviceWifi)obj;
-			Menu? apsmenu = find_menu_for_device(wifidevice);
-
 			if (apsmenu == null)
 				return;
 
 			if (pspec.get_name () == "active-access-point")
-				set_active_ap (wifidevice, wifidevice.active_access_point, apsmenu);
+				set_active_ap (device.active_access_point);
 
 			for (int i = 0; i < apsmenu.get_n_items (); i++)
 			{
@@ -194,30 +115,16 @@ namespace Unity.Settings
 				if (!apsmenu.get_item_attribute (i, "x-wifi-ap-activate-action", "s", out activate_action_id))
 					continue;
 
-				if (wifidevice.active_access_point.get_path () == path)
+				if (device.active_access_point.get_path () == path)
 					ag.change_action_state (activate_action_id, new Variant.boolean (true));
 				else
 					ag.change_action_state (activate_action_id, new Variant.boolean (false));
+
+				//TODO: Change the appropriate submenu
 			}
 		}
 
-		private Menu? find_menu_for_device (NM.Device device)
-		{
-			for (int i = 0; i < gmenu.get_n_items (); i++)
-			{
-				string path;
-
-				if (!gmenu.get_item_attribute (i, "x-wifi-device-path", "s", out path))
-					continue;
-				if (path != device.get_path ())
-					continue;
-
-				return (Menu?)gmenu.get_item_link (i, Menu.LINK_SECTION);
-			}
-			return (Menu?)null;
-		}
-
-		private MenuItem create_item_for_wifi_device (NM.DeviceWifi device)
+		private MenuItem create_item_for_wifi_device ()
 		{
 			var busy_action_id = device.get_path () + "::is-busy";
 			var device_item = new MenuItem ("Select wireless network", null);
@@ -229,6 +136,8 @@ namespace Unity.Settings
 
 			var strength = new SimpleAction.stateful (busy_action_id, new VariantType((string)VariantType.BOOLEAN), device_is_busy (device));
 			ag.insert (strength);
+
+			//TODO: Submenu for active and previously used APs
 
 			return device_item;
 		}
@@ -254,30 +163,30 @@ namespace Unity.Settings
 		 * - Previously used APs are ordered by signal strength
 		 * - Unused APs are ordered by signal strenght
 		 */
-		private void insert_ap (DeviceWifi dev, AccessPoint ap, Menu m)
+		private void insert_ap (AccessPoint ap)
 		{
 				//If it is the active access point it always goes first
-				if (ap == dev.active_access_point)
+				if (ap == device.active_access_point)
 				{
 					var item = new MenuItem (null, null);
-					bind_ap_item (dev, ap, item);
-					m.prepend_item (item);
-					//TODO: Remove duplicates anyhow?
+					bind_ap_item (ap, item);
+					apsmenu.prepend_item (item);
+					//TODO: Remove duplicates???
 					return;
 				}
 
 				var conns = rs.list_connections ();
-				var dev_conns = dev.filter_connections (conns);
+				var dev_conns = device.filter_connections (conns);
 				var has_connection = ap_has_connections (ap, dev_conns);
 
 				//Remove duplicate SSID
-				for (int i = 1; i < m.get_n_items(); i++)
+				for (int i = 1; i < apsmenu.get_n_items(); i++)
 				{
 					string path;
 
-					if (!m.get_item_attribute (i, "x-wifi-ap-dbus-path", "s", out path))
+					if (!apsmenu.get_item_attribute (i, "x-wifi-ap-dbus-path", "s", out path))
 						continue;
-					var i_ap = dev.get_access_point_by_path (path);
+					var i_ap = device.get_access_point_by_path (path);
 
 					//If both have the same SSID and security flags they are a duplicate
 					if (Utils.same_ssid (i_ap.get_ssid (), ap.get_ssid (), false) && i_ap.get_flags () == ap.get_flags ())
@@ -286,21 +195,21 @@ namespace Unity.Settings
 						if (i_ap.get_strength () >= ap.get_strength ())
 							return;
 
-						remove_item (m, i, i_ap);
+						remove_item (i, i_ap);
 						break;
 					}
 				}
 
 				//Find the right spot for the AP
 				var item = new MenuItem (null, null);
-				bind_ap_item (dev, ap, item);
-				for (int i = 1; i < m.get_n_items(); i++)
+				bind_ap_item (ap, item);
+				for (int i = 1; i < apsmenu.get_n_items(); i++)
 				{
 					string path;
 
-					if (!m.get_item_attribute (i, "x-wifi-ap-dbus-path", "s", out path))
+					if (!apsmenu.get_item_attribute (i, "x-wifi-ap-dbus-path", "s", out path))
 						continue;
-					var i_ap = dev.get_access_point_by_path (path);
+					var i_ap = device.get_access_point_by_path (path);
 
 					//APs that have been used previously have priority
 					if (ap_has_connections(i_ap, dev_conns))
@@ -311,30 +220,31 @@ namespace Unity.Settings
 					//APs with higher strenght have priority
 					if (ap.get_strength () > i_ap.get_strength ())
 					{
-						m.insert_item (i, item);
+						apsmenu.insert_item (i, item);
 						return;
 					}
 				}
 				//AP is last in the menu
-				m.append_item (item);
+				apsmenu.append_item (item);
 		}
 
-		private void set_active_ap (DeviceWifi dev, AccessPoint? ap, Menu m)
+		private void set_active_ap (AccessPoint? ap)
 		{
+			//TODO: Set the previously active AP in the right order
 			if (ap == null)
 				return;
 
-			for (int i = 1; i < m.get_n_items(); i++)
+			for (int i = 1; i < apsmenu.get_n_items(); i++)
 			{
 				string path;
-				if (!m.get_item_attribute (i, "x-wifi-ap-dbus-path", "s", out path))
+				if (!apsmenu.get_item_attribute (i, "x-wifi-ap-dbus-path", "s", out path))
 					continue;
 				if (path != ap.get_path ())
 					continue;
-				remove_item (m, i, ap);
+				remove_item (i, ap);
 				var item = new MenuItem (null, null);
-				bind_ap_item (dev, ap, item);
-				m.append_item (item);
+				bind_ap_item (ap, item);
+				apsmenu.append_item (item);
 			}
 		}
 
@@ -344,37 +254,143 @@ namespace Unity.Settings
 				return ap_conns.length() > 0;
 		}
 
-		private void remove_ap (DeviceWifi dev, AccessPoint ap, Menu m)
+		private void remove_ap (AccessPoint ap)
 		{
-			for (int i = 1; i < m.get_n_items(); i++)
+			for (int i = 1; i < apsmenu.get_n_items(); i++)
 			{
 				string path;
 
-				if (!m.get_item_attribute (i, "x-wifi-ap-dbus-path", "s", out path))
+				if (!apsmenu.get_item_attribute (i, "x-wifi-ap-dbus-path", "s", out path))
 					continue;
 
 				if (path == ap.get_path ())
 				{
-					remove_item (m, i, ap);
+					remove_item (i, ap);
 					return;
 				}
 			}
 		}
 
-		private void remove_item (Menu m, int index, AccessPoint ap)
+		private void remove_item (int index, AccessPoint ap)
 		{
 			string strength_action_id;
 			string activate_action_id;
 
-			if (m.get_item_attribute (index, "x-wifi-ap-strength-action", "s", out strength_action_id))
+			if (apsmenu.get_item_attribute (index, "x-wifi-ap-strength-action", "s", out strength_action_id))
 				ag.remove (strength_action_id);
-			if (m.get_item_attribute (index, "x-wifi-ap-activate-action", "s", out activate_action_id))
+			if (apsmenu.get_item_attribute (index, "x-wifi-ap-activate-action", "s", out activate_action_id))
 				ag.remove (activate_action_id);
 
-			m.remove (index);
+			apsmenu.remove (index);
 			ap.notify.disconnect (strength_changed);
 			//TODO: Check if removed dups need to be added
 		}
+	}
+
+	public class NetworkMenu : Application
+	{
+		private Menu gmenu;
+		private SimpleActionGroup ag;
+		private RemoteSettings rs;
+		private NM.Client client;
+		private List<WifiMenu> wifidevices;
+
+		public NetworkMenu ()
+		{
+			GLib.Object (application_id: "com.ubuntu.networksettings");
+			//flags = ApplicationFlags.IS_SERVICE;
+
+			gmenu  = new Menu ();
+			ag     = new SimpleActionGroup ();
+			rs     = new NM.RemoteSettings (null);
+			client = new NM.Client();
+			bootstrap_menu ();
+
+			try
+			{
+				var conn = Bus.get_sync (BusType.SESSION, null);
+				conn.export_menu_model ("/com/ubuntu/networksettings", gmenu);
+				conn.export_action_group ("/com/ubuntu/networksettings/actions", ag);
+			}
+			catch (GLib.IOError e)
+			{
+				return;
+			}
+			catch (GLib.Error e)
+			{
+				return;
+			}
+		}
+
+		private void bootstrap_menu ()
+		{
+			var devices = client.get_devices ();
+			for (uint i = 0; i < devices.length; i++)
+			{
+				add_device (devices.get (i));
+			}
+		}
+
+		private void add_device (NM.Device device)
+		{
+			switch (device.get_device_type ())
+			{
+				case NM.DeviceType.WIFI:
+					add_wifi_device ((NM.DeviceWifi)device);
+					break;
+			}
+		}
+
+		private void add_wifi_device (NM.DeviceWifi device)
+		{
+			device.state_changed.connect (wifi_device_state_changed);
+			var wifimenu = new WifiMenu (device, gmenu, ag);
+			wifidevices.append (wifimenu);
+		}
+
+		private void remove_wifi_device (NM.DeviceWifi device)
+		{
+			for (int i = 0; i < gmenu.get_n_items (); i++)
+			{
+				string path;
+				string busy_action_id;
+
+				if (!gmenu.get_item_attribute (i, "x-wifi-device-path", "s", out path))
+					continue;
+				if (path != device.get_path ())
+					continue;
+				if (gmenu.get_item_attribute (i, "x-busy-action", "s", out  busy_action_id))
+					ag.remove (busy_action_id);
+
+				gmenu.remove (i);
+
+				for (int j = 0; j < wifidevices.length (); j++)
+				{
+					if (wifidevices.nth_data(j).device == device)
+					{
+						var wifimenu = wifidevices.nth_data(j);
+						wifidevices.remove (wifidevices.nth_data (j));
+					}
+				}
+
+				return;
+			}
+		}
+
+		private void wifi_device_state_changed (NM.Device  dev,
+		                                        uint       new_state,
+		                                        uint       old_state,
+		                                        uint       reason)
+		{
+			var wifidevice = (NM.DeviceWifi)dev;
+
+			if (new_state == NM.DeviceState.UNMANAGED && reason == NM.DeviceStateReason.NOW_UNMANAGED)
+				remove_wifi_device (wifidevice);
+
+			if (new_state != NM.DeviceState.UNMANAGED && reason == NM.DeviceStateReason.NOW_MANAGED)
+				add_wifi_device (wifidevice);
+		}
+
 
 		public static int main (string[] args)
 		{

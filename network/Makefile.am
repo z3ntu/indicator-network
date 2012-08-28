@@ -38,4 +38,4 @@ chewie_network_menu_server_CFLAGS  = \
 chewie_network_menu_server_LDADD   = \
 			$(GLIB_LIBS) \
 			$(NM_LIBS)
-chewie_network_menu_server_VALAFLAGS = --vapidir . --pkg libnm-glib
+chewie_network_menu_server_VALAFLAGS = --pkg libnm-glib

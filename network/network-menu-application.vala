@@ -305,6 +305,8 @@ namespace Unity.Settings
 			rs     = new NM.RemoteSettings (null);
 			client = new NM.Client();
 			bootstrap_menu ();
+			client.device_added.connect   ((client, device) => { add_device (device); });
+			client.device_removed.connect ((client, device) => { remove_device (device); });
 
 			try
 			{
@@ -337,6 +339,16 @@ namespace Unity.Settings
 			{
 				case NM.DeviceType.WIFI:
 					add_wifi_device ((NM.DeviceWifi)device);
+					break;
+			}
+		}
+
+		private void remove_device (NM.Device device)
+		{
+			switch (device.get_device_type ())
+			{
+				case NM.DeviceType.WIFI:
+					remove_wifi_device ((NM.DeviceWifi)device);
 					break;
 			}
 		}

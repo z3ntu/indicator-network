@@ -64,7 +64,7 @@ namespace Unity.Settings
 
 			var ap = new NM.AccessPoint (device.get_connection (), ac.name);
 			var conns = rs.list_connections ();
-			if (conns != null)
+			if (conns == null)
 			{
 				add_and_activate_ap (ac.name);
 				return;

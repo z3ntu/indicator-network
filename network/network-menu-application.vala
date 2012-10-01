@@ -19,6 +19,7 @@ namespace Unity.Settings
 			this.ag = ag;
 			this.device = device;
 			this.client = client;
+			rs          = new NM.RemoteSettings (null);
 
 			apsmenu = new Menu ();
 			device_item = create_item_for_wifi_device ();
@@ -53,7 +54,6 @@ namespace Unity.Settings
 
 		private void add_and_activate_ap (string ap_path)
 		{
-			/* FIXME: Use a single client instance */
 			client.add_and_activate_connection (null, device, ap_path, null);
 		}
 
@@ -204,67 +204,75 @@ namespace Unity.Settings
 		 */
 		private void insert_ap (AccessPoint ap)
 		{
-				//If it is the active access point it always goes first
-				if (ap == device.active_access_point)
-				{
-					var item = new MenuItem (null, null);
-					bind_ap_item (ap, item);
-					apsmenu.prepend_item (item);
-					//TODO: Remove duplicates???
-					return;
-				}
+			SList <NM.Connection>? dev_conns = null;
+			bool has_connection = false;
 
-				var conns = rs.list_connections ();
-				var dev_conns = device.filter_connections (conns);
-				var has_connection = ap_has_connections (ap, dev_conns);
-
-				//Remove duplicate SSID
-				for (int i = 1; i < apsmenu.get_n_items(); i++)
-				{
-					string path;
-
-					if (!apsmenu.get_item_attribute (i, "x-canonical-wifi-ap-dbus-path", "s", out path))
-						continue;
-					var i_ap = device.get_access_point_by_path (path);
-
-					//If both have the same SSID and security flags they are a duplicate
-					if (Utils.same_ssid (i_ap.get_ssid (), ap.get_ssid (), false) && i_ap.get_flags () == ap.get_flags ())
-					{
-						//The one AP with the srongest signal wins
-						if (i_ap.get_strength () >= ap.get_strength ())
-							return;
-
-						remove_item (i, i_ap);
-						break;
-					}
-				}
-
-				//Find the right spot for the AP
+			//If it is the active access point it always goes first
+			if (ap == device.active_access_point)
+			{
 				var item = new MenuItem (null, null);
 				bind_ap_item (ap, item);
-				for (int i = 1; i < apsmenu.get_n_items(); i++)
+				apsmenu.prepend_item (item);
+				//TODO: Remove duplicates???
+				return;
+			}
+
+			var conns = rs.list_connections ();
+			if (conns != null)
+			{
+				dev_conns = device.filter_connections (conns);
+				if (dev_conns != null)
+					has_connection = ap_has_connections (ap, dev_conns);
+			}
+
+
+			//Remove duplicate SSID
+			for (int i = 1; i < apsmenu.get_n_items(); i++)
+			{
+				string path;
+
+				if (!apsmenu.get_item_attribute (i, "x-canonical-wifi-ap-dbus-path", "s", out path))
+					continue;
+				var i_ap = device.get_access_point_by_path (path);
+
+				//If both have the same SSID and security flags they are a duplicate
+				if (Utils.same_ssid (i_ap.get_ssid (), ap.get_ssid (), false) && i_ap.get_flags () == ap.get_flags ())
 				{
-					string path;
-
-					if (!apsmenu.get_item_attribute (i, "x-canonical-wifi-ap-dbus-path", "s", out path))
-						continue;
-					var i_ap = device.get_access_point_by_path (path);
-
-					//APs that have been used previously have priority
-					if (ap_has_connections(i_ap, dev_conns))
-					{
-						if (!has_connection)
-							continue;
-					}
-					//APs with higher strenght have priority
-					if (ap.get_strength () > i_ap.get_strength ())
-					{
-						apsmenu.insert_item (i, item);
+					//The one AP with the srongest signal wins
+					if (i_ap.get_strength () >= ap.get_strength ())
 						return;
-					}
+
+					remove_item (i, i_ap);
+					break;
 				}
-				//AP is last in the menu
-				apsmenu.append_item (item);
+			}
+
+			//Find the right spot for the AP
+			var item = new MenuItem (null, null);
+			bind_ap_item (ap, item);
+			for (int i = 1; i < apsmenu.get_n_items(); i++)
+			{
+				string path;
+
+				if (!apsmenu.get_item_attribute (i, "x-canonical-wifi-ap-dbus-path", "s", out path))
+					continue;
+				var i_ap = device.get_access_point_by_path (path);
+
+				//APs that have been used previously have priority
+				if (ap_has_connections(i_ap, dev_conns))
+				{
+					if (!has_connection)
+						continue;
+				}
+				//APs with higher strenght have priority
+				if (ap.get_strength () > i_ap.get_strength ())
+				{
+					apsmenu.insert_item (i, item);
+					return;
+				}
+			}
+			//AP is last in the menu
+			apsmenu.append_item (item);
 		}
 
 		private void set_active_ap (AccessPoint? ap)
@@ -287,10 +295,13 @@ namespace Unity.Settings
 			}
 		}
 
-		private static bool ap_has_connections (AccessPoint ap, SList<NM.Connection> dev_conns)
+		private static bool ap_has_connections (AccessPoint ap, SList<NM.Connection>? dev_conns)
 		{
-				var ap_conns = ap.filter_connections (dev_conns);
-				return ap_conns.length() > 0;
+			if (dev_conns == null)
+				return false;
+
+			var ap_conns = ap.filter_connections (dev_conns);
+			return ap_conns.length() > 0;
 		}
 
 		private void remove_ap (AccessPoint ap)

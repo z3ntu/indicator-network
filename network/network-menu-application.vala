@@ -8,15 +8,17 @@ namespace Unity.Settings
 		private Menu              gmenu;
 		private Menu              apsmenu;
 		private MenuItem          device_item;
-		internal DeviceWifi        device;
+		internal DeviceWifi       device;
 		private SimpleActionGroup ag;
 		private RemoteSettings    rs;
+		private NM.Client         client;
 
-		public WifiMenu (DeviceWifi device, Menu global_menu, SimpleActionGroup ag)
+		public WifiMenu (NM.Client client, DeviceWifi device, Menu global_menu, SimpleActionGroup ag)
 		{
 			gmenu = global_menu;
 			this.ag = ag;
 			this.device = device;
+			this.client = client;
 
 			apsmenu = new Menu ();
 			device_item = create_item_for_wifi_device ();
@@ -49,24 +51,61 @@ namespace Unity.Settings
 		{
 		}*/
 
+		private void add_and_activate_ap (string ap_path)
+		{
+			/* FIXME: Use a single client instance */
+			client.add_and_activate_connection (null, device, ap_path, null);
+		}
+
+		private void ap_activated (SimpleAction ac, Variant? val)
+		{
+			if (ac.get_name () == device.get_active_access_point ().get_path ())
+				return;
+
+			var ap = new NM.AccessPoint (device.get_connection (), ac.name);
+			var conns = rs.list_connections ();
+			if (conns != null)
+			{
+				add_and_activate_ap (ac.name);
+				return;
+			}
+
+			var dev_conns = device.filter_connections (conns);
+			if (dev_conns == null)
+			{
+				add_and_activate_ap (ac.name);
+				return;
+			}
+
+			var ap_conns = ap.filter_connections (dev_conns);
+			if (ap_conns == null)
+			{
+				add_and_activate_ap (ac.name);
+				return;
+			}
+
+			client.activate_connection (ap_conns.data, device, ac.name, null);
+		}
+
 		private void bind_ap_item (AccessPoint ap, MenuItem item)
 		{
 			var strength_action_id = ap.get_path () + "::strength";
-			var activate_action_id = ap.get_path () + "::activate";
+			var activate_action_id = ap.get_path ();
 
 			item.set_label     (Utils.ssid_to_utf8 (ap.get_ssid ()));
-			item.set_attribute ("type",                      "s", "x-system-settings");
-			item.set_attribute ("x-tablet-widget",           "s", "unity.widgets.systemsettings.tablet.accesspoint");
-			item.set_attribute ("x-wifi-ap-is-adhoc",        "b",  ap.get_mode ()  == NM.80211Mode.ADHOC);
-			item.set_attribute ("x-wifi-ap-is-secure",       "b",  ap.get_flags () == NM.80211ApFlags.PRIVACY);
-			item.set_attribute ("x-wifi-ap-bssid",           "s",  ap.get_bssid ());
-			item.set_attribute ("x-wifi-ap-dbus-path",       "s",  ap.get_path ());
+			item.set_attribute ("type",                      "s", "x-canonical-system-settings");
+			item.set_attribute ("x-canonical-tablet-widget",           "s", "unity.widgets.systemsettings.tablet.accesspoint");
+			item.set_attribute ("x-canonical-wifi-ap-is-adhoc",        "b",  ap.get_mode ()  == NM.80211Mode.ADHOC);
+			item.set_attribute ("x-canonical-wifi-ap-is-secure",       "b",  ap.get_flags () == NM.80211ApFlags.PRIVACY);
+			item.set_attribute ("x-canonical-wifi-ap-bssid",           "s",  ap.get_bssid ());
+			item.set_attribute ("x-canonical-wifi-ap-dbus-path",       "s",  ap.get_path ());
 
-			item.set_attribute ("x-wifi-ap-strength-action", "s",  strength_action_id);
-			item.set_attribute ("x-wifi-ap-activate-action", "s",  activate_action_id);
+			item.set_attribute ("x-canonical-wifi-ap-strength-action", "s",  strength_action_id);
+			item.set_attribute ("action", "s",  activate_action_id);
 
 			var strength = new SimpleAction.stateful (strength_action_id, new VariantType((string)VariantType.BYTE), ap.get_strength ());
 			var activate = new SimpleAction.stateful (activate_action_id, new VariantType((string)VariantType.BOOLEAN), device.active_access_point == ap);
+			activate.activate.connect (ap_activated);
 
 			ag.insert (strength);
 			ag.insert (activate);
@@ -110,9 +149,9 @@ namespace Unity.Settings
 				string path;
 				string activate_action_id;
 
-				if (!apsmenu.get_item_attribute (i, "x-wifi-ap-dbus-path", "s", out path))
+				if (!apsmenu.get_item_attribute (i, "x-canonical-wifi-ap-dbus-path", "s", out path))
 					continue;
-				if (!apsmenu.get_item_attribute (i, "x-wifi-ap-activate-action", "s", out activate_action_id))
+				if (!apsmenu.get_item_attribute (i, "x-canonical-wifi-ap-activate-action", "s", out activate_action_id))
 					continue;
 
 				if (device.active_access_point.get_path () == path)
@@ -128,11 +167,11 @@ namespace Unity.Settings
 		{
 			var busy_action_id = device.get_path () + "::is-busy";
 			var device_item = new MenuItem ("Select wireless network", null);
-			device_item.set_attribute ("type",               "s", "x-system-settings");
-			device_item.set_attribute ("x-tablet-widget",    "s", "unity.widget.systemsettings.tablet.sectiontitle");
-			device_item.set_attribute ("x-children-display", "s", "inline");
-			device_item.set_attribute ("x-wifi-device-path", "s",  device.get_path ());
-			device_item.set_attribute ("x-busy-action",      "s",  busy_action_id);
+			device_item.set_attribute ("type",               "s", "x-canonical-system-settings");
+			device_item.set_attribute ("x-canonical-tablet-widget",    "s", "unity.widget.systemsettings.tablet.sectiontitle");
+			device_item.set_attribute ("x-canonical-children-display", "s", "inline");
+			device_item.set_attribute ("x-canonical-wifi-device-path", "s",  device.get_path ());
+			device_item.set_attribute ("x-canonical-busy-action",      "s",  busy_action_id);
 
 			var strength = new SimpleAction.stateful (busy_action_id, new VariantType((string)VariantType.BOOLEAN), device_is_busy (device));
 			ag.insert (strength);
@@ -184,7 +223,7 @@ namespace Unity.Settings
 				{
 					string path;
 
-					if (!apsmenu.get_item_attribute (i, "x-wifi-ap-dbus-path", "s", out path))
+					if (!apsmenu.get_item_attribute (i, "x-canonical-wifi-ap-dbus-path", "s", out path))
 						continue;
 					var i_ap = device.get_access_point_by_path (path);
 
@@ -207,7 +246,7 @@ namespace Unity.Settings
 				{
 					string path;
 
-					if (!apsmenu.get_item_attribute (i, "x-wifi-ap-dbus-path", "s", out path))
+					if (!apsmenu.get_item_attribute (i, "x-canonical-wifi-ap-dbus-path", "s", out path))
 						continue;
 					var i_ap = device.get_access_point_by_path (path);
 
@@ -237,7 +276,7 @@ namespace Unity.Settings
 			for (int i = 1; i < apsmenu.get_n_items(); i++)
 			{
 				string path;
-				if (!apsmenu.get_item_attribute (i, "x-wifi-ap-dbus-path", "s", out path))
+				if (!apsmenu.get_item_attribute (i, "x-canonical-wifi-ap-dbus-path", "s", out path))
 					continue;
 				if (path != ap.get_path ())
 					continue;
@@ -260,7 +299,7 @@ namespace Unity.Settings
 			{
 				string path;
 
-				if (!apsmenu.get_item_attribute (i, "x-wifi-ap-dbus-path", "s", out path))
+				if (!apsmenu.get_item_attribute (i, "x-canonical-wifi-ap-dbus-path", "s", out path))
 					continue;
 
 				if (path == ap.get_path ())
@@ -276,9 +315,9 @@ namespace Unity.Settings
 			string strength_action_id;
 			string activate_action_id;
 
-			if (apsmenu.get_item_attribute (index, "x-wifi-ap-strength-action", "s", out strength_action_id))
+			if (apsmenu.get_item_attribute (index, "x-canonical-wifi-ap-strength-action", "s", out strength_action_id))
 				ag.remove (strength_action_id);
-			if (apsmenu.get_item_attribute (index, "x-wifi-ap-activate-action", "s", out activate_action_id))
+			if (apsmenu.get_item_attribute (index, "action", "s", out activate_action_id))
 				ag.remove (activate_action_id);
 
 			apsmenu.remove (index);
@@ -356,7 +395,7 @@ namespace Unity.Settings
 		private void add_wifi_device (NM.DeviceWifi device)
 		{
 			device.state_changed.connect (wifi_device_state_changed);
-			var wifimenu = new WifiMenu (device, gmenu, ag);
+			var wifimenu = new WifiMenu (client, device, gmenu, ag);
 			wifidevices.append (wifimenu);
 		}
 
@@ -367,11 +406,11 @@ namespace Unity.Settings
 				string path;
 				string busy_action_id;
 
-				if (!gmenu.get_item_attribute (i, "x-wifi-device-path", "s", out path))
+				if (!gmenu.get_item_attribute (i, "x-canonical-wifi-device-path", "s", out path))
 					continue;
 				if (path != device.get_path ())
 					continue;
-				if (gmenu.get_item_attribute (i, "x-busy-action", "s", out  busy_action_id))
+				if (gmenu.get_item_attribute (i, "x-canonical-busy-action", "s", out  busy_action_id))
 					ag.remove (busy_action_id);
 
 				gmenu.remove (i);

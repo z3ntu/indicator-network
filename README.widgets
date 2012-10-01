@@ -9,12 +9,12 @@ unity.widgets.systemsettings.*.wifisection
 
 Properties:
     "label"              - string - Optional, may have label or not
-    "type"               - string = "x-system-settings"
-    "x-children-display" - string = "inline"
-    "x-tablet-widget"    - string = "unity.widgets.systemsettings.tablet.wifisection"
-    "x-busy-action"      - boolean - Shows a spinner indicating activity
+    "type"               - string = "x-canonical-system-settings"
+    "x-canonical-children-display" - string = "inline"
+    "x-canonical-tablet-widget"    - string = "unity.widgets.systemsettings.tablet.wifisection"
+    "x-canonical-busy-action"      - boolean - Shows a spinner indicating activity
 Actions:
-    $(x-busy-action):
+    $(x-canonical-busy-action):
         - boolean - Whether the item is busy or not
 
 ------------------------------------------------------------------------------------
@@ -23,18 +23,18 @@ unity.widgets.systemsettings.*.accesspoint
  [ *))) AP_SSID  # | > ]
 
 Properties:
-    "type"                      - string = "x-system-settings"
+    "type"                      - string = "x-canonical-system-settings"
     "toggle-type"               - string = "radio"
-    "x-tablet-widget"           - string = "unity.widgets.systemsettings.tablet.accesspoint"
-    "x-wifi-ap-is-adhoc"        - bool   - Whether it is an adhoc network or not
-    "x-wifi-ap-is-secure"       - bool   - Whether the network is open or requires password
-    "x-wifi-ap-bssid"           - string - The internal unique id for the AP
-    "x-wifi-ap-strength-action" - string - The action string id to gather the strength from
-    "x-wifi-ap-activate-action" - string - The action string id to check whether the AP is active
+    "x-canonical-tablet-widget"           - string = "unity.widgets.systemsettings.tablet.accesspoint"
+    "x-canonical-wifi-ap-is-adhoc"        - bool   - Whether it is an adhoc network or not
+    "x-canonical-wifi-ap-is-secure"       - bool   - Whether the network is open or requires password
+    "x-canonical-wifi-ap-bssid"           - string - The internal unique id for the AP
+    "x-canonical-wifi-ap-strength-action" - string - The action string id to gather the strength from
+    "x-canonical-wifi-ap-activate-action" - string - The action string id to check whether the AP is active
 Actions:
-    $(x-wifi-ap-strength-action):
+    $(x-canonical-wifi-ap-strength-action):
         - byte - Signal strength of the access point [0-100]
-    $(x-wifi-ap-activate-action):
+    $(x-canonical-wifi-ap-activate-action):
         - bool - Whether the AP is the active one or not
 
     
@@ -45,11 +45,11 @@ unity.widgets.systemsettings.*.listitem
  [ *STATUS*    connected ]
 
  Build properties:
-    "type"            - string = "x-system-settings"
-    "x-tablet-widget" - string = "unity.widgets.systemsettings.tablet.listitem"
+    "type"            - string = "x-canonical-system-settings"
+    "x-canonical-tablet-widget" - string = "unity.widgets.systemsettings.tablet.listitem"
  Other properties:
     "label"           - string - The title of the information (ie "Status")
-    "x-extra-label"   - string - The value of the information (ie "Connected")
+    "x-canonical-extra-label"   - string - The value of the information (ie "Connected")
 -----------------------------------------------------------------------------------
 
 ############################# GMenu Widgets #######################################
@@ -58,8 +58,8 @@ unity.widgets.systemsettings.*.volumecontrol
 [ ))) ---------*-------- ]
 
 Properties:
-  "type"	      - string = "x-system-settings"
-  "x-tablet-widget"   - string = "unity.widget.systemsettings.tablet.volumecontrol"
+  "type"	      - string = "x-canonical-system-settings"
+  "x-canonical-tablet-widget"   - string = "unity.widget.systemsettings.tablet.volumecontrol"
   "action"            - string = "volume"
 
   The volume value has to be taken off the GAction state

@@ -452,13 +452,5 @@ namespace Unity.Settings
 			if (new_state != NM.DeviceState.UNMANAGED && reason == NM.DeviceStateReason.NOW_MANAGED)
 				add_wifi_device (wifidevice);
 		}
-
-
-		public static int main (string[] args)
-		{
-			var menu = new NetworkMenu ();
-			menu.hold ();
-			return menu.run (args);
-		}
 	}
 }

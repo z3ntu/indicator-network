@@ -42,6 +42,9 @@ m4/lt~obsolete.m4
 exportmenu/chewie-export-menu
 exportmenu/export-menu
 network/chewie-network-menu-server
+network/*.c
+network/*.h
+network/*.vapi
 network-agent/chewie-secret-agent
 sound/chewie-sound-menu-server
 test/test-exportmenu

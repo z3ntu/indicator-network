@@ -2,15 +2,6 @@
 #include "secret-agent.h"
 
 void
-destroy_secret (GValue *value)
-{
-  if (g_value_get_gtype (value) == G_TYPE_STRING)
-      g_free ((char*)g_value_get_string (value));
-
-  g_free (value);
-}
-
-void
 secret_requested_cb (UnitySettingsSecretAgent      *self,
                      guint64                        id,
                      NMConnection                  *connection,
@@ -24,13 +15,18 @@ secret_requested_cb (UnitySettingsSecretAgent      *self,
    * the outer hash table stores secrets per settings keys
    * and the inner one the secrets themselves
    */
-  GValue    *value;
-  GHashTable *settings;
-  GHashTable *secrets;
+  GValue mgmt  = G_VALUE_INIT;
+  GValue pw    = G_VALUE_INIT;
+  GValue ktype = G_VALUE_INIT;
+  GValue auth  = G_VALUE_INIT;
+
+  NMSettingWirelessSecurity *wisec;
+  GHashTable                *settings;
+  gchar                     *key_mgmt;
 
   gint response = gtk_dialog_run (GTK_DIALOG (dialog));
   gtk_widget_hide (dialog);
-  entry = gtk_bin_get_child (GTK_BIN (gtk_dialog_get_content_area (GTK_DIALOG (dialog))));
+  entry = gtk_container_get_children ((GTK_CONTAINER (gtk_dialog_get_content_area (GTK_DIALOG (dialog)))))->data;
 
   if (response != GTK_RESPONSE_ACCEPT)
     {
@@ -38,26 +34,25 @@ secret_requested_cb (UnitySettingsSecretAgent      *self,
       return;
     }
 
-  settings = g_hash_table_new_full (g_str_hash,
-                                    g_str_equal,
-                                    g_free,
-                                    (GDestroyNotify) g_hash_table_destroy);
-  secrets  = g_hash_table_new_full (g_str_hash,
-                                    g_str_equal,
-                                    g_free,
-                                    (GDestroyNotify) destroy_secret);
+  wisec = nm_connection_get_setting_wireless_security (connection);
+  key_mgmt = (gchar*)nm_setting_wireless_security_get_key_mgmt (wisec);
 
-  value = (GValue*) g_slice_alloc0 (sizeof (GValue));
-  g_value_set_string (value, gtk_entry_get_text (GTK_ENTRY (entry)));
-
-  g_hash_table_insert (secrets, "setting-key", value);
-  g_hash_table_insert (settings, (gpointer)setting_name, secrets);
-
-  g_debug ("Secret requested <%d> %s", (int)id, setting_name);
+  if (!g_strcmp0 (key_mgmt, "wpa-none") || !g_strcmp0 (key_mgmt, "wpa-psk"))
+    {
+      g_object_set (G_OBJECT (wisec),
+                NM_SETTING_WIRELESS_SECURITY_PSK, gtk_entry_get_text (GTK_ENTRY (entry)),
+                NULL);
+    }
+  else if (!g_strcmp0 (key_mgmt, "none"))
+    {
+      g_object_set (G_OBJECT (wisec),
+                NM_SETTING_WIRELESS_SECURITY_WEP_KEY0, gtk_entry_get_text (GTK_ENTRY (entry)),
+                NULL);
+    }
+  settings = nm_connection_to_hash (connection, NM_SETTING_HASH_FLAG_ALL);
 
   unity_settings_secret_agent_provide_secret (self, id, settings);
-
-//  g_hash_table_destroy (settings);
+  g_hash_table_unref (settings);
 }
 
 void
@@ -65,7 +60,6 @@ request_cancelled_cb (UnitySettingsSecretAgent      *self,
                       guint64                        id,
                       gpointer                       data)
 {
-  g_debug ("Request cancelled <%d>", (int)id);
 }
 
 gint

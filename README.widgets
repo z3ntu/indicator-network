@@ -11,7 +11,7 @@ Properties:
     "label"              - string - Optional, may have label or not
     "type"               - string = "x-canonical-system-settings"
     "x-canonical-children-display" - string = "inline"
-    "x-canonical-tablet-widget"    - string = "unity.widgets.systemsettings.tablet.wifisection"
+    "x-canonical-widget-type"      - string = "unity.widgets.systemsettings.tablet.wifisection"
     "x-canonical-busy-action"      - boolean - Shows a spinner indicating activity
 Actions:
     $(x-canonical-busy-action):
@@ -25,7 +25,7 @@ unity.widgets.systemsettings.*.accesspoint
 Properties:
     "type"                      - string = "x-canonical-system-settings"
     "toggle-type"               - string = "radio"
-    "x-canonical-tablet-widget"           - string = "unity.widgets.systemsettings.tablet.accesspoint"
+    "x-canonical-widget-type"   - string = "unity.widgets.systemsettings.tablet.accesspoint"
     "x-canonical-wifi-ap-is-adhoc"        - bool   - Whether it is an adhoc network or not
     "x-canonical-wifi-ap-is-secure"       - bool   - Whether the network is open or requires password
     "x-canonical-wifi-ap-bssid"           - string - The internal unique id for the AP
@@ -45,10 +45,10 @@ unity.widgets.systemsettings.*.listitem
  [ *STATUS*    connected ]
 
  Build properties:
-    "type"            - string = "x-canonical-system-settings"
-    "x-canonical-tablet-widget" - string = "unity.widgets.systemsettings.tablet.listitem"
+    "type"                    - string = "x-canonical-system-settings"
+    "x-canonical-widget-type" - string = "unity.widgets.systemsettings.tablet.listitem"
  Other properties:
-    "label"           - string - The title of the information (ie "Status")
+    "label"                     - string - The title of the information (ie "Status")
     "x-canonical-extra-label"   - string - The value of the information (ie "Connected")
 -----------------------------------------------------------------------------------
 

@@ -19,7 +19,7 @@ namespace Unity.Settings
 			this.ag = ag;
 			this.device = device;
 			this.client = client;
-			rs          = new NM.RemoteSettings (null);
+
 
 			apsmenu = new Menu ();
 			device_item = create_item_for_wifi_device ();
@@ -59,6 +59,7 @@ namespace Unity.Settings
 
 		private void ap_activated (SimpleAction ac, Variant? val)
 		{
+			var rs = new NM.RemoteSettings (null);
 			if (ac.get_name () == device.get_active_access_point ().get_path ())
 				return;
 
@@ -204,6 +205,7 @@ namespace Unity.Settings
 		 */
 		private void insert_ap (AccessPoint ap)
 		{
+			var rs = new NM.RemoteSettings (null);
 			SList <NM.Connection>? dev_conns = null;
 			bool has_connection = false;
 
@@ -218,10 +220,10 @@ namespace Unity.Settings
 			}
 
 			var conns = rs.list_connections ();
-			if (conns != null)
+			if (conns.length() > 0)
 			{
 				dev_conns = device.filter_connections (conns);
-				if (dev_conns != null)
+				if (dev_conns.length() > 0)
 					has_connection = ap_has_connections (ap, dev_conns);
 			}
 
@@ -297,7 +299,7 @@ namespace Unity.Settings
 
 		private static bool ap_has_connections (AccessPoint ap, SList<NM.Connection>? dev_conns)
 		{
-			if (dev_conns == null)
+			if (dev_conns.length() < 1)
 				return false;
 
 			var ap_conns = ap.filter_connections (dev_conns);
@@ -352,7 +354,6 @@ namespace Unity.Settings
 
 			gmenu  = new Menu ();
 			ag     = new SimpleActionGroup ();
-			rs     = new NM.RemoteSettings (null);
 			client = new NM.Client();
 			bootstrap_menu ();
 			client.device_added.connect   ((client, device) => { add_device (device); });

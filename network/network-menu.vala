@@ -3,6 +3,9 @@ using NM;
 
 namespace Unity.Settings
 {
+	private const string APPLICATION_ID  = "com.canonical.settings.network";
+	private const string PHONE_MENU_PATH = "/com/canonical/settings/network/phone";
+
 	public class WifiMenu : GLib.Object
 	{
 		private Menu              gmenu;
@@ -349,21 +352,22 @@ namespace Unity.Settings
 
 		public NetworkMenu ()
 		{
-			GLib.Object (application_id: "com.ubuntu.networksettings");
-			//flags = ApplicationFlags.IS_SERVICE;
+			GLib.Object (application_id: APPLICATION_ID);
+			flags = ApplicationFlags.IS_SERVICE;
 
 			gmenu  = new Menu ();
-			ag     = new SimpleActionGroup ();
+			ag = new SimpleActionGroup ();
 			client = new NM.Client();
 			bootstrap_menu ();
 			client.device_added.connect   ((client, device) => { add_device (device); });
 			client.device_removed.connect ((client, device) => { remove_device (device); });
 
+			set_action_group (ag);
+
 			try
 			{
 				var conn = Bus.get_sync (BusType.SESSION, null);
-				conn.export_menu_model ("/com/ubuntu/networksettings", gmenu);
-				conn.export_action_group ("/com/ubuntu/networksettings/actions", ag);
+				conn.export_menu_model (PHONE_MENU_PATH, gmenu);
 			}
 			catch (GLib.IOError e)
 			{

@@ -148,17 +148,17 @@ namespace Unity.Settings
 			for (int i = 0; i < apsmenu.get_n_items (); i++)
 			{
 				string path;
-				string activate_action_id;
+				string action;
 
 				if (!apsmenu.get_item_attribute (i, "x-canonical-wifi-ap-dbus-path", "s", out path))
 					continue;
-				if (!apsmenu.get_item_attribute (i, "x-canonical-wifi-ap-activate-action", "s", out activate_action_id))
+				if (!apsmenu.get_item_attribute (i, "action", "s", out action))
 					continue;
 
 				if (device.active_access_point.get_path () == path)
-					ag.change_action_state (activate_action_id, new Variant.boolean (true));
+					ag.change_action_state (action, new Variant.boolean (true));
 				else
-					ag.change_action_state (activate_action_id, new Variant.boolean (false));
+					ag.change_action_state (action, new Variant.boolean (false));
 
 				//TODO: Change the appropriate submenu
 			}

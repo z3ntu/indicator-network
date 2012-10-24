@@ -20,7 +20,6 @@ namespace Unity.Settings
 			this.device = device;
 			this.client = client;
 
-
 			apsmenu = new Menu ();
 			device_item = create_item_for_wifi_device ();
 
@@ -240,12 +239,13 @@ namespace Unity.Settings
 				//If both have the same SSID and security flags they are a duplicate
 				if (Utils.same_ssid (i_ap.get_ssid (), ap.get_ssid (), false) && i_ap.get_flags () == ap.get_flags ())
 				{
+
 					//The one AP with the srongest signal wins
 					if (i_ap.get_strength () >= ap.get_strength ())
 						return;
 
 					remove_item (i, i_ap);
-					break;
+					continue;
 				}
 			}
 

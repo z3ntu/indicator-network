@@ -1,0 +1,25 @@
+Source: chewie
+Section: gnome
+Priority: optional
+Maintainer: Ken VanDine <ken.vandine@canonical.com>
+Build-Depends: debhelper (>= 8.0.0),
+               pkg-config,
+               dbus,
+               libnm-glib-dev (>= 0.9),
+               libnm-util-dev (>= 0.9),
+               libglib2.0-dev,
+               libgtk-3-dev,
+               libdbusmenu-glib-dev (>= 0.4),
+               libpulse-dev,
+               valac-0.16,
+               gnome-common,
+               dh-autoreconf
+Standards-Version: 3.9.3
+Homepage: https://launchpad.net/chewie
+
+Package: chewie
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Systems settings menu service - Chewie
+ The Chewie service is responsible for exporting the system settings menu 
+ through dbus

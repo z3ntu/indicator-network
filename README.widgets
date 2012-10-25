@@ -52,15 +52,14 @@ unity.widgets.systemsettings.*.listitem
     "x-canonical-extra-label"   - string - The value of the information (ie "Connected")
 -----------------------------------------------------------------------------------
 
-############################# GMenu Widgets #######################################
 unity.widgets.systemsettings.*.volumecontrol
 
 [ ))) ---------*-------- ]
 
 Properties:
-  "type"	      - string = "x-canonical-system-settings"
-  "x-canonical-tablet-widget"   - string = "unity.widget.systemsettings.tablet.volumecontrol"
-  "action"            - string = "volume"
+  "type"	              - string = "x-canonical-system-settings"
+  "x-canonical-widget-type"   - string = "unity.widget.systemsettings.tablet.volumecontrol"
+  "action"                    - string = "volume"
 
   The volume value has to be taken off the GAction state
   "volume"            - double [0.0..1.0]

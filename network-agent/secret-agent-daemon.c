@@ -1,41 +1,31 @@
 #include <gtk/gtk.h>
 #include "secret-agent.h"
 
-void
-secret_requested_cb (UnitySettingsSecretAgent      *self,
-                     guint64                        id,
-                     NMConnection                  *connection,
-                     const char                    *setting_name,
-                     const char                   **hints,
-                     NMSecretAgentGetSecretsFlags   flags,
-                     GtkWidget                     *dialog)
+struct SecretData
+{
+  UnitySettingsSecretAgent  *agent;
+  NMConnection *connection;
+  guint64 id;
+};
+
+void secret_dialog_response_cb (GtkDialog *dialog,
+                                gint response_id,
+                                struct SecretData *data)
 {
   GtkWidget *entry;
-  /* The GetSecrets NM call expects a{sa{sv}}
-   * the outer hash table stores secrets per settings keys
-   * and the inner one the secrets themselves
-   */
-  GValue mgmt  = G_VALUE_INIT;
-  GValue pw    = G_VALUE_INIT;
-  GValue ktype = G_VALUE_INIT;
-  GValue auth  = G_VALUE_INIT;
+  GHashTable *settings;
 
-  NMSettingWirelessSecurity *wisec;
-  GHashTable                *settings;
-  gchar                     *key_mgmt;
-
-  gint response = gtk_dialog_run (GTK_DIALOG (dialog));
-  gtk_widget_hide (dialog);
+  gtk_widget_hide (GTK_WIDGET (dialog));
   entry = gtk_container_get_children ((GTK_CONTAINER (gtk_dialog_get_content_area (GTK_DIALOG (dialog)))))->data;
 
-  if (response != GTK_RESPONSE_ACCEPT)
+  if (response_id != GTK_RESPONSE_ACCEPT)
     {
-      unity_settings_secret_agent_cancel_request (self, id);
+      unity_settings_secret_agent_cancel_request (data->agent, data->id);
       return;
     }
 
-  wisec = nm_connection_get_setting_wireless_security (connection);
-  key_mgmt = (gchar*)nm_setting_wireless_security_get_key_mgmt (wisec);
+  NMSettingWirelessSecurity *wisec = nm_connection_get_setting_wireless_security (data->connection);
+  const gchar *key_mgmt = nm_setting_wireless_security_get_key_mgmt (wisec);
 
   if (!g_strcmp0 (key_mgmt, "wpa-none") || !g_strcmp0 (key_mgmt, "wpa-psk"))
     {
@@ -49,10 +39,44 @@ secret_requested_cb (UnitySettingsSecretAgent      *self,
                 NM_SETTING_WIRELESS_SECURITY_WEP_KEY0, gtk_entry_get_text (GTK_ENTRY (entry)),
                 NULL);
     }
-  settings = nm_connection_to_hash (connection, NM_SETTING_HASH_FLAG_ALL);
+  settings = nm_connection_to_hash (data->connection, NM_SETTING_HASH_FLAG_ALL);
 
-  unity_settings_secret_agent_provide_secret (self, id, settings);
+  unity_settings_secret_agent_provide_secret (data->agent, data->id, settings);
+  g_object_unref (data->connection);
   g_hash_table_unref (settings);
+}
+
+
+void
+secret_requested_cb (UnitySettingsSecretAgent      *self,
+                     guint64                        id,
+                     NMConnection                  *connection,
+                     const char                    *setting_name,
+                     const char                   **hints,
+                     NMSecretAgentGetSecretsFlags   flags,
+                     GtkWidget                     *dialog)
+{
+  /* The GetSecrets NM call expects a{sa{sv}}
+   * the outer hash table stores secrets per settings keys
+   * and the inner one the secrets themselves
+   */
+  GValue mgmt  = G_VALUE_INIT;
+  GValue pw    = G_VALUE_INIT;
+  GValue ktype = G_VALUE_INIT;
+  GValue auth  = G_VALUE_INIT;
+
+  struct SecretData *secretData = g_new0 (struct SecretData, 1);
+  secretData->agent = self;
+  secretData->connection = connection;
+  secretData->id = id;
+
+  g_signal_connect (G_OBJECT (dialog),
+                    "response",
+                    G_CALLBACK (secret_dialog_response_cb),
+                    secretData);
+
+  g_object_ref (connection);
+  gtk_widget_show (GTK_WIDGET (dialog));
 }
 
 void

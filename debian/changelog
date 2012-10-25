@@ -1,0 +1,24 @@
+chewie (0.2.2) UNRELEASED; urgency=low
+
+  * Version bump 
+
+ -- Alberto Ruiz <aruiz@raynor>  Wed, 24 Oct 2012 16:31:05 +0200
+
+chewie (0.2.1-0precise1) precise; urgency=low
+
+  * New snapshot from tag 0.2.1
+
+ -- Ken VanDine <ken.vandine@canonical.com>  Fri, 08 Jun 2012 13:33:38 -0400
+
+chewie (0.0-0precise1) precise; urgency=low
+
+  * debian/rules
+    - override auto_test
+
+ -- Ken VanDine <ken.vandine@canonical.com>  Tue, 13 Mar 2012 15:18:54 -0400
+
+chewie (0.0) precise; urgency=low
+
+  * Initial package
+
+ -- Ken VanDine <ken.vandine@canonical.com>  Mon, 12 Mar 2012 17:05:02 -0400

@@ -5,7 +5,7 @@ AC_COPYRIGHT([Copyright 2011,2012 Canonical])
 AC_PREREQ(2.62)
 
 AM_CONFIG_HEADER(config.h)
-AM_INIT_AUTOMAKE(chewie, 0.2.1)
+AM_INIT_AUTOMAKE(chewie, 0.2.2)
 
 AM_MAINTAINER_MODE
 
@@ -105,14 +105,17 @@ AM_CONDITIONAL([BUILD_TESTS],[test "x$enable_tests" = "xyes"])
 # Files
 ###########################
 
-AC_OUTPUT([
+AC_CONFIG_FILES([
 Makefile
 network/Makefile
 exportmenu/Makefile
 network-agent/Makefile
 sound/Makefile
+data/Makefile
 test/Makefile
 test/data/Makefile
 test/data/glib-2.0/Makefile
 test/data/glib-2.0/schemas/Makefile
 ])
+
+AC_OUTPUT

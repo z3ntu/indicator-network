@@ -5,6 +5,7 @@ noinst_HEADERS     = libnetwork.h
 libnetwork_la_SOURCES = \
 	network-menu.vala
 
+bindir = $(libdir)/$(PACKAGE_NAME)
 chewie_network_menu_server_SOURCES = \
 	network-menu-service.vala    \
 	libnetwork.vapi
@@ -24,4 +25,3 @@ chewie_network_menu_server_LDADD = \
 
 libnetwork_la_CFLAGS = $(chewie_network_menu_server_CFLAGS)
 libnetwork_la_LDFLAGS = $(chewie_network_menu_server_LDFLAGS)
-

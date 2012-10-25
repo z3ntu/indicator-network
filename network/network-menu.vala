@@ -12,14 +12,14 @@ namespace Unity.Settings
 		private Menu              apsmenu;
 		private MenuItem          device_item;
 		internal DeviceWifi       device;
-		private SimpleActionGroup ag;
-		private RemoteSettings    rs;
+		private Application       app;
 		private NM.Client         client;
+		private SimpleAction      device_busy_action;
 
-		public WifiMenu (NM.Client client, DeviceWifi device, Menu global_menu, SimpleActionGroup ag)
+		public WifiMenu (NM.Client client, DeviceWifi device, Menu global_menu, Application app)
 		{
 			gmenu = global_menu;
-			this.ag = ag;
+			this.app = app;
 			this.device = device;
 			this.client = client;
 
@@ -38,6 +38,7 @@ namespace Unity.Settings
 			device.access_point_added.connect (access_point_added_cb);
 			device.access_point_removed.connect (access_point_removed_cb);
 			device.notify.connect (active_access_point_changed);
+			device.state_changed.connect (wifi_device_state_changed);
 		}
 
 		~WifiMenu ()
@@ -47,12 +48,13 @@ namespace Unity.Settings
 			device.notify.disconnect (active_access_point_changed);
 		}
 
-		/*private void wifi_device_state_changed (NM.Device  dev,
+		private void wifi_device_state_changed (NM.Device  dev,
 		                                        uint       new_state,
 		                                        uint       old_state,
 		                                        uint       reason)
 		{
-		}*/
+			device_busy_action.set_state (new Variant.boolean (device_is_busy (dev)));
+		}
 
 		private void add_and_activate_ap (string ap_path)
 		{
@@ -110,8 +112,8 @@ namespace Unity.Settings
 			var activate = new SimpleAction.stateful (activate_action_id, new VariantType((string)VariantType.BOOLEAN), device.active_access_point == ap);
 			activate.activate.connect (ap_activated);
 
-			ag.insert (strength);
-			ag.insert (activate);
+			app.add_action (strength);
+			app.add_action (activate);
 			ap.notify.connect (strength_changed);
 		}
 
@@ -121,10 +123,10 @@ namespace Unity.Settings
 			if (prop == "strength")
 			{
 				AccessPoint _ap = (AccessPoint)obj;
-				var action = ag.lookup (_ap.get_path() + "::strength");
-				if (action != null)
+				var action = _ap.get_path() + "::strength";
+				if (app.has_action (action))
 				{
-					((SimpleAction)action).set_state (new Variant.byte(_ap.get_strength ()));
+					app.change_action_state (action, new Variant.byte(_ap.get_strength ()));
 				}
 			}
 		}
@@ -158,9 +160,9 @@ namespace Unity.Settings
 					continue;
 
 				if (device.active_access_point.get_path () == path)
-					ag.change_action_state (action, new Variant.boolean (true));
+					app.change_action_state (action, new Variant.boolean (true));
 				else
-					ag.change_action_state (action, new Variant.boolean (false));
+					app.change_action_state (action, new Variant.boolean (false));
 
 				//TODO: Change the appropriate submenu
 			}
@@ -176,8 +178,10 @@ namespace Unity.Settings
 			device_item.set_attribute ("x-canonical-wifi-device-path", "s",  device.get_path ());
 			device_item.set_attribute ("x-canonical-busy-action",      "s",  busy_action_id);
 
-			var strength = new SimpleAction.stateful (busy_action_id, new VariantType((string)VariantType.BOOLEAN), device_is_busy (device));
-			ag.insert (strength);
+			device_busy_action = new SimpleAction.stateful (busy_action_id,
+															new VariantType((string)VariantType.BOOLEAN),
+															device_is_busy (device));
+			app.add_action (device_busy_action);
 
 			//TODO: Submenu for active and previously used APs
 
@@ -188,10 +192,11 @@ namespace Unity.Settings
 		{
 			switch (device.get_state ())
 			{
-			    case NM.DeviceState.UNKNOWN:
-			    case NM.DeviceState.DISCONNECTED:
-				case NM.DeviceState.UNMANAGED:
 				case NM.DeviceState.ACTIVATED:
+				case NM.DeviceState.UNKNOWN:
+				case NM.DeviceState.UNMANAGED:
+				case NM.DeviceState.UNAVAILABLE:
+				case NM.DeviceState.DISCONNECTED:
 					return false;
 				default:
 					return true;
@@ -332,9 +337,9 @@ namespace Unity.Settings
 			string activate_action_id;
 
 			if (apsmenu.get_item_attribute (index, "x-canonical-wifi-ap-strength-action", "s", out strength_action_id))
-				ag.remove (strength_action_id);
+				app.remove_action (strength_action_id);
 			if (apsmenu.get_item_attribute (index, "action", "s", out activate_action_id))
-				ag.remove (activate_action_id);
+				app.remove_action (activate_action_id);
 
 			apsmenu.remove (index);
 			ap.notify.disconnect (strength_changed);
@@ -345,8 +350,6 @@ namespace Unity.Settings
 	public class NetworkMenu : Application
 	{
 		private Menu gmenu;
-		private SimpleActionGroup ag;
-		private RemoteSettings rs;
 		private NM.Client client;
 		private List<WifiMenu> wifidevices;
 
@@ -356,13 +359,10 @@ namespace Unity.Settings
 			flags = ApplicationFlags.IS_SERVICE;
 
 			gmenu  = new Menu ();
-			ag = new SimpleActionGroup ();
 			client = new NM.Client();
 			bootstrap_menu ();
 			client.device_added.connect   ((client, device) => { add_device (device); });
 			client.device_removed.connect ((client, device) => { remove_device (device); });
-
-			set_action_group (ag);
 
 			try
 			{
@@ -411,7 +411,7 @@ namespace Unity.Settings
 		private void add_wifi_device (NM.DeviceWifi device)
 		{
 			device.state_changed.connect (wifi_device_state_changed);
-			var wifimenu = new WifiMenu (client, device, gmenu, ag);
+			var wifimenu = new WifiMenu (client, device, gmenu, this);
 			wifidevices.append (wifimenu);
 		}
 
@@ -427,7 +427,7 @@ namespace Unity.Settings
 				if (path != device.get_path ())
 					continue;
 				if (gmenu.get_item_attribute (i, "x-canonical-busy-action", "s", out  busy_action_id))
-					ag.remove (busy_action_id);
+					remove_action (busy_action_id);
 
 				gmenu.remove (i);
 
@@ -435,7 +435,6 @@ namespace Unity.Settings
 				{
 					if (wifidevices.nth_data(j).device == device)
 					{
-						var wifimenu = wifidevices.nth_data(j);
 						wifidevices.remove (wifidevices.nth_data (j));
 					}
 				}

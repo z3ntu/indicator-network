@@ -24,7 +24,7 @@ namespace Unity.Settings
 
 			var props = new Proplist ();
 			props.sets (Proplist.PROP_APPLICATION_NAME, "Ubuntu Audio Settings");
-			props.sets (Proplist.PROP_APPLICATION_ID, "com.ubuntu.audiosettings");
+			props.sets (Proplist.PROP_APPLICATION_ID, "com.canonical.settings.sound");
 			props.sets (Proplist.PROP_APPLICATION_ICON_NAME, "multimedia-volume-control");
 			props.sets (Proplist.PROP_APPLICATION_VERSION, "0.1");
 
@@ -183,7 +183,6 @@ namespace Unity.Settings
 	{
 		private DBusConnection conn;
 		private GLib.Menu gmenu;
-		private GLib.SimpleActionGroup ag;
 		private VolumeControl ac;
 		private bool _ready = false;
 		private SimpleAction mute_action;
@@ -191,11 +190,11 @@ namespace Unity.Settings
 
 		public SoundMenu ()
 		{
-			Object (application_id: "com.ubuntu.audiosettings");
-			//flags = ApplicationFlags.IS_SERVICE;
+			Object (application_id: "com.canonical.settings.sound");
+			flags = ApplicationFlags.IS_SERVICE;
 
 			gmenu = new Menu ();
-			ag   = new SimpleActionGroup ();
+			//TODO: Port to GMenuMap
 
 			ac = new VolumeControl ();
 			ac.ready.connect (ready_cb);
@@ -221,17 +220,20 @@ namespace Unity.Settings
 
 		private void bootstrap_actions ()
 		{
-			mute_action = new SimpleAction.stateful ("mute", new VariantType("b"),  new Variant.boolean(true));
+			mute_action =   new SimpleAction.stateful ("mute", new VariantType("b"),  new Variant.boolean(true));
 			volume_action = new SimpleAction.stateful ("volume", new VariantType("d"), new Variant.double(0.0));
-			ag.insert (mute_action);
-			ag.insert (volume_action);
+
+			add_action (mute_action);
+			add_action (volume_action);
+
+			action_state_changed.connect (state_changed_cb);
 		}
 
 		private void bootstrap_menu ()
 		{
 			var volume_control = new MenuItem (null, null);
-			volume_control.set_attribute ("type", "s", "x-system-settings");
-			volume_control.set_attribute ("x-tablet-widget", "s", "unity.widgets.systemsettings.tablet.volumecontrol");
+			volume_control.set_attribute ("type",                     "s", "x-canonical-system-settings");
+			volume_control.set_attribute ("x-canonical-widget-type",  "s", "unity.widgets.systemsettings.tablet.volumecontrol");
 			volume_control.set_attribute (GLib.Menu.ATTRIBUTE_ACTION, "s", "volume");
 
 			gmenu.append_item (volume_control);
@@ -259,8 +261,7 @@ namespace Unity.Settings
 
 			try
 			{
-				conn.export_menu_model ("/com/ubuntu/audiosettings", gmenu);
-				conn.export_action_group ("/com/ubuntu/audiosettings/actions", ag);
+				conn.export_menu_model   ("/com/canonical/settings/sound/phone", gmenu);
 			}
 			catch (GLib.Error e)
 			{

@@ -202,7 +202,7 @@ namespace Unity.Settings
 			ac.mute_toggled.connect (mute_toggled_cb);
 		}
 
-/*		private void state_changed_cb (ActionGroup action_group, string name, Variant val)
+		private void state_changed_cb (ActionGroup action_group, string name, Variant val)
 		{
 			if (name == "volume")
 			{
@@ -216,7 +216,7 @@ namespace Unity.Settings
 
 				ac.switch_mute ();
 			}
-		}*/
+		}
 
 		private void bootstrap_actions ()
 		{
@@ -225,6 +225,8 @@ namespace Unity.Settings
 
 			add_action (mute_action);
 			add_action (volume_action);
+
+			action_state_changed.connect (state_changed_cb);
 		}
 
 		private void bootstrap_menu ()

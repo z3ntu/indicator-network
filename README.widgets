@@ -63,3 +63,15 @@ Properties:
 
   The volume value has to be taken off the GAction state
   "volume"            - double [0.0..1.0]
+
+
+-----------------------------------------------------------------------------------
+
+[ *LABEL*        ( |#) ]
+
+Properties:
+    "type"                    - string = "x-canonical-system-settings"
+    "x-canonical-widget-type" - string = "unity.widgets.systemsettings.tablet.switch"
+    "action"                  - string = "mute"
+    "label"                   - string = The title of the information (ie "Mute")
+

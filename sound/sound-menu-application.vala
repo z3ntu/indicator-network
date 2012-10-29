@@ -227,6 +227,7 @@ namespace Unity.Settings
 			add_action (volume_action);
 
 			action_state_changed.connect (state_changed_cb);
+			mute_action
 		}
 
 		private void bootstrap_menu ()

@@ -49,6 +49,7 @@ namespace Unity.Settings.Network
 				                         new Variant.boolean (false));
 			}
 		}
+
 		private void access_point_added_cb (NM.DeviceWifi device, GLib.Object ap)
 		{
 			insert_ap ((AccessPoint)ap);
@@ -132,7 +133,6 @@ namespace Unity.Settings.Network
 
 		private void ap_activated (SimpleAction ac, Variant? val)
 		{
-			message ("activated %s", ac.get_name ());
 			if (val.get_boolean () == false         &&
 				wifidev.active_access_point != null &&
 				wifidev.active_access_point.get_path () == ac.get_name ())

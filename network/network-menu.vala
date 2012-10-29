@@ -248,7 +248,7 @@ namespace Unity.Settings.Network
 	{
 		private Menu gmenu;
 		private NM.Client client;
-		private Unity.Settings.Network.ActionManager am;
+		private ActionManager am;
 
 		public NetworkMenu ()
 		{
@@ -258,6 +258,8 @@ namespace Unity.Settings.Network
 			gmenu  = new Menu ();
 			client = new NM.Client();
 			am     = new ActionManager (this, client);
+
+			return;
 
 			bootstrap_menu ();
 			client.device_added.connect   ((client, device) => { add_device (device); });
@@ -281,6 +283,9 @@ namespace Unity.Settings.Network
 		private void bootstrap_menu ()
 		{
 			var devices = client.get_devices ();
+
+			if (devices == null)
+				return;
 			for (uint i = 0; i < devices.length; i++)
 			{
 				add_device (devices.get (i));
@@ -289,6 +294,7 @@ namespace Unity.Settings.Network
 
 		private void add_device (NM.Device device)
 		{
+			device.state_changed.connect (device_state_changed);
 			switch (device.get_device_type ())
 			{
 				case NM.DeviceType.WIFI:
@@ -299,6 +305,7 @@ namespace Unity.Settings.Network
 
 		private void remove_device (NM.Device device)
 		{
+			device.state_changed.disconnect (device_state_changed);
 			switch (device.get_device_type ())
 			{
 				case NM.DeviceType.WIFI:
@@ -309,7 +316,8 @@ namespace Unity.Settings.Network
 
 		private void add_wifi_device (NM.DeviceWifi device)
 		{
-			var wifimenu = new WifiMenu (client, device, gmenu, this);
+			//TODO: Get rid of wifimenu on device removal
+			new WifiMenu (client, device, gmenu, this);
 		}
 
 		private void remove_wifi_device (NM.DeviceWifi device)
@@ -328,20 +336,18 @@ namespace Unity.Settings.Network
 			}
 		}
 
-		private void wifi_device_state_changed (NM.Device  dev,
-		                                        uint       new_state,
-		                                        uint       old_state,
-		                                        uint       reason)
+		private void device_state_changed (NM.Device  device,
+		                                   uint       new_state,
+		                                   uint       old_state,
+		                                   uint       reason)
 		{
-			var wifidevice = (NM.DeviceWifi)dev;
-
 			if (new_state == NM.DeviceState.UNMANAGED &&
 			    reason == NM.DeviceStateReason.NOW_UNMANAGED)
-				remove_wifi_device (wifidevice);
+				remove_device (device);
 
 			if (new_state != NM.DeviceState.UNMANAGED &&
 			    reason == NM.DeviceStateReason.NOW_MANAGED)
-				add_wifi_device (wifidevice);
+				add_device (device);
 		}
 	}
 }

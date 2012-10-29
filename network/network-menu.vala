@@ -259,8 +259,6 @@ namespace Unity.Settings.Network
 			client = new NM.Client();
 			am     = new ActionManager (this, client);
 
-			return;
-
 			bootstrap_menu ();
 			client.device_added.connect   ((client, device) => { add_device (device); });
 			client.device_removed.connect ((client, device) => { remove_device (device); });
@@ -316,8 +314,8 @@ namespace Unity.Settings.Network
 
 		private void add_wifi_device (NM.DeviceWifi device)
 		{
-			//TODO: Get rid of wifimenu on device removal
-			new WifiMenu (client, device, gmenu, this);
+			//FIXME: Get rid of wifimenu on device removal
+			WifiMenu* menu = new WifiMenu (client, device, gmenu, this);
 		}
 
 		private void remove_wifi_device (NM.DeviceWifi device)

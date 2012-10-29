@@ -218,6 +218,11 @@ namespace Unity.Settings
 			}
 		}
 
+		private void mute_activate_cb (SimpleAction action, Variant? val)
+		{
+			ac.switch_mute();
+		}
+
 		private void bootstrap_actions ()
 		{
 			mute_action =   new SimpleAction.stateful ("mute", new VariantType("b"),  new Variant.boolean(true));
@@ -226,8 +231,9 @@ namespace Unity.Settings
 			add_action (mute_action);
 			add_action (volume_action);
 
+			volume_action.activate.connect (mute_activate_cb);
+
 			action_state_changed.connect (state_changed_cb);
-			mute_action
 		}
 
 		private void bootstrap_menu ()

@@ -77,17 +77,24 @@ namespace Unity.Settings.Network
 			{
 				var ap = aps.get(i);
 				if (ap == null)
-					return;
+					continue;
 
 				if (app.lookup_action (ap.get_path ()) == null)
-					return;
+				{
+					insert_ap (ap);
+					continue;
+				}
 
-				if (ap.get_path () == active_ap)
+				if (ap.get_path () == wifidev.active_access_point.get_path ())
+				{
 					app.change_action_state (ap.get_path(),
 				                             new Variant.boolean (true));
+				}
 				else
+				{
 					app.change_action_state (ap.get_path(),
 				                             new Variant.boolean (false));
+				}
 			}
 		}
 

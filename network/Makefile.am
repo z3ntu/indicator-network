@@ -2,8 +2,7 @@ bin_PROGRAMS = chewie-network-menu-server
 noinst_LTLIBRARIES = libnetwork.la
 noinst_HEADERS     = libnetwork.h
 
-libnetwork_la_SOURCES = \
-	network-menu.vala
+libnetwork_la_SOURCES = network-action-manager.vala network-menu.vala
 
 bindir = $(libdir)/$(PACKAGE_NAME)
 chewie_network_menu_server_SOURCES = \

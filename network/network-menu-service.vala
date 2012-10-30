@@ -2,7 +2,7 @@
 
 public static int main (string[] args)
 {
-	var menu = new Unity.Settings.NetworkMenu ();
+	var menu = new Unity.Settings.Network.NetworkMenu ();
 	menu.hold ();
 	return menu.run (args);
 }

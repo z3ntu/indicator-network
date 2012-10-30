@@ -109,7 +109,7 @@ AC_CONFIG_FILES([
 Makefile
 network/Makefile
 exportmenu/Makefile
-network-agent/Makefile
+secret-agent/Makefile
 sound/Makefile
 data/Makefile
 test/Makefile

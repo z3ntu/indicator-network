@@ -85,7 +85,7 @@ namespace Unity.Settings.Network
 					continue;
 				}
 
-				if (ap.get_path () == wifidev.active_access_point.get_path ())
+				if (ap.get_path () == active_ap)
 				{
 					app.change_action_state (ap.get_path(),
 				                             new Variant.boolean (true));
@@ -111,6 +111,10 @@ namespace Unity.Settings.Network
 				return;
 
 			bool is_active = false;
+
+			/* If the ap is already included we skip this callback */
+			if (app.lookup_action (ap.get_path ()) != null)
+				return;
 
 			//TODO: Add actions for each AP NM connection
 			var strength_action_id = ap.get_path () + "::strength";

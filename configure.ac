@@ -105,17 +105,15 @@ AM_CONDITIONAL([BUILD_TESTS],[test "x$enable_tests" = "xyes"])
 # Files
 ###########################
 
-AC_CONFIG_FILES([
+AC_OUTPUT([
 Makefile
+data/Makefile
 network/Makefile
 exportmenu/Makefile
 secret-agent/Makefile
 sound/Makefile
-data/Makefile
 test/Makefile
 test/data/Makefile
 test/data/glib-2.0/Makefile
 test/data/glib-2.0/schemas/Makefile
 ])
-
-AC_OUTPUT

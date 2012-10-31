@@ -1,8 +1,9 @@
-chewie (0.2.2) UNRELEASED; urgency=low
+chewie (0.2.2) quantal; urgency=low
 
+  [ Alberto Ruiz ]
   * Version bump 
 
- -- Alberto Ruiz <aruiz@raynor>  Wed, 24 Oct 2012 16:31:05 +0200
+ -- Olivier Tilloy <olivier.tilloy@canonical.com>  Tue, 30 Oct 2012 23:53:28 +0100
 
 chewie (0.2.1-0precise1) precise; urgency=low
 

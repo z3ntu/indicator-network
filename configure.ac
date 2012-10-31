@@ -57,15 +57,6 @@ fi
 
 AC_SUBST(DBUS_SERVICE_DIR)
 
-###########################
-# Dependencies - Dbusmenu 
-###########################
-
-DBUSMENU_REQUIRED_VERSION=0.4
-PKG_CHECK_MODULES(DBUSMENU, dbusmenu-glib-0.4 >= $DBUSMENU_REQUIRED_VERSION)
-AC_SUBST(DBUSMENU_LIBS)
-AC_SUBST(DBUSMENU_CFLAGS)
-
 #################################
 # Dependencies - NetworkManager
 #################################
@@ -133,11 +124,11 @@ AC_OUTPUT([
 Makefile
 data/Makefile
 network/Makefile
-exportmenu/Makefile
 secret-agent/Makefile
 sound/Makefile
-test/Makefile
-test/data/Makefile
-test/data/glib-2.0/Makefile
-test/data/glib-2.0/schemas/Makefile
 ])
+#test/Makefile
+#test/data/Makefile
+#test/data/glib-2.0/Makefile
+#test/data/glib-2.0/schemas/Makefile
+#exportmenu/Makefile

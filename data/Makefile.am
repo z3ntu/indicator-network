@@ -3,16 +3,15 @@ dbusservice_DATA = \
 	com.canonical.settings.network.service \
 	com.canonical.settings.sound.service
 
-
-network = sed -e 's|@NETWORK_SERVICE[@]|$(libdir)/$(PACKAGE_NAME)/chewie-network-menu-server|g '
-sound   = sed -e 's|@SOUND_SERVICE[@]|$(libdir)/$(PACKAGE_NAME)/chewie-sound-menu-server|g '
-
-DISTFILES = \
+EXTRA_DIST = \
 	    com.canonical.settings.network.service.in \
 	    com.canonical.settings.sound.service.in
 
-com.canonical.settings.network.service: com.canonical.settings.network.service.in
-	$(network) $< >$@
+CLEANFILES = $(dbusservice_DATA)
 
-com.canonical.settings.sound.service: com.canonical.settings.sound.service.in
-	$(sound) $< >$@
+com.canonical.settings.network.service: com.canonical.settings.network.service.in Makefile
+	sed -e 's|@NETWORK_SERVICE[@]|$(pkglibdir)/chewie-network-menu-server|g' $< >$@
+
+com.canonical.settings.sound.service: com.canonical.settings.sound.service.in Makefile
+	sed -e 's|@SOUND_SERVICE[@]|$(pkglibdir)/chewie-sound-menu-server|g ' $< >$@
+

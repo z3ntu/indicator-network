@@ -21,7 +21,15 @@ AC_CONFIG_MACRO_DIR([m4])
 
 m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
 
-AC_PATH_PROG([GLIB_MKENUMS], [glib-mkenums])
+##################################################
+# Option to allow distcheck to run smoothly
+##################################################
+AC_ARG_WITH([localenabled],
+            [AC_HELP_STRING([--with-localenabled],
+                            [Enable local install instead of a system install of files.])],
+            [],
+            [with_localenabled=no])
+
 
 ###########################
 # Dependencies - GLib
@@ -32,6 +40,22 @@ PKG_CHECK_MODULES(GLIB, glib-2.0 >= $GLIB_REQUIRED_VERSION
                         gio-2.0 >= $GLIB_REQUIRED_VERSION)
 AC_SUBST(GLIB_LIBS)
 AC_SUBST(GLIB_CFLAGS)
+
+###########################
+# Dependencies - Dbusmenu 
+###########################
+
+DBUS_REQUIRED_VERSION=1.6
+PKG_CHECK_MODULES(DBUS, dbus-1 >= $DBUS_REQUIRED_VERSION)
+
+if test "x$with_localenabled" = xno;
+then
+  DBUS_SERVICE_DIR=`pkg-config dbus-1 --variable=session_bus_services_dir`
+else
+  DBUS_SERVICE_DIR=${datadir}/dbus-1/services
+fi
+
+AC_SUBST(DBUS_SERVICE_DIR)
 
 ###########################
 # Dependencies - Dbusmenu 

@@ -1,4 +1,4 @@
-dbusservicedir = $(datadir)/dbus-1/services
+dbusservicedir = $(DBUS_SERVICE_DIR)
 dbusservice_DATA = \
 	com.canonical.settings.network.service \
 	com.canonical.settings.sound.service

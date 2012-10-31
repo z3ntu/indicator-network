@@ -344,6 +344,7 @@ namespace Unity.Settings.Network
 
 		private void remove_wifi_device (NM.DeviceWifi device)
 		{
+			//TODO: Move this code to WifiMenu
 			if (device == null)
 				return;
 

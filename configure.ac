@@ -21,7 +21,15 @@ AC_CONFIG_MACRO_DIR([m4])
 
 m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
 
-AC_PATH_PROG([GLIB_MKENUMS], [glib-mkenums])
+##################################################
+# Option to allow distcheck to run smoothly
+##################################################
+AC_ARG_WITH([localenabled],
+            [AC_HELP_STRING([--with-localenabled],
+                            [Enable local install instead of a system install of files.])],
+            [],
+            [with_localenabled=no])
+
 
 ###########################
 # Dependencies - GLib
@@ -37,10 +45,17 @@ AC_SUBST(GLIB_CFLAGS)
 # Dependencies - Dbusmenu 
 ###########################
 
-DBUSMENU_REQUIRED_VERSION=0.4
-PKG_CHECK_MODULES(DBUSMENU, dbusmenu-glib-0.4 >= $DBUSMENU_REQUIRED_VERSION)
-AC_SUBST(DBUSMENU_LIBS)
-AC_SUBST(DBUSMENU_CFLAGS)
+DBUS_REQUIRED_VERSION=1.6
+PKG_CHECK_MODULES(DBUS, dbus-1 >= $DBUS_REQUIRED_VERSION)
+
+if test "x$with_localenabled" = xno;
+then
+  DBUS_SERVICE_DIR=`pkg-config dbus-1 --variable=session_bus_services_dir`
+else
+  DBUS_SERVICE_DIR=${datadir}/dbus-1/services
+fi
+
+AC_SUBST(DBUS_SERVICE_DIR)
 
 #################################
 # Dependencies - NetworkManager
@@ -105,17 +120,15 @@ AM_CONDITIONAL([BUILD_TESTS],[test "x$enable_tests" = "xyes"])
 # Files
 ###########################
 
-AC_CONFIG_FILES([
+AC_OUTPUT([
 Makefile
+data/Makefile
 network/Makefile
-exportmenu/Makefile
 secret-agent/Makefile
 sound/Makefile
-data/Makefile
-test/Makefile
-test/data/Makefile
-test/data/glib-2.0/Makefile
-test/data/glib-2.0/schemas/Makefile
 ])
-
-AC_OUTPUT
+#test/Makefile
+#test/data/Makefile
+#test/data/glib-2.0/Makefile
+#test/data/glib-2.0/schemas/Makefile
+#exportmenu/Makefile

@@ -1,3 +1,26 @@
+/*
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ *
+ * A NetworkManager secret agent to handle network credentials in Unity
+ *
+ * Copyright 2012 Canonical, Ltd.
+ * Authors:
+ *     Alberto Ruiz <alberto.ruiz@canonical.com>
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the the GNU Lesser General Public License version 3, as published by the Free
+ * Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranties of MERCHANTABILITY,
+ * SATISFACTORY QUALITY or FITNESS FOR A PARTICULAR PURPOSE.  See the applicable
+ * version of the GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * version 3 along with this program. If not, see <http://www.gnu.org/licenses/>
+ *
+ */
+
 #include <glib.h>
 #include <glib-object.h>
 #include <nm-secret-agent.h>
@@ -11,12 +34,13 @@
 #define UNITY_SETTINGS_SECRET_AGENT_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), UNITY_SETTINGS_TYPE_SECRET_AGENT, UnitySettingsSecretAgentClass))
 #define UNITY_SETTINGS_SECRET_AGENT_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), UNITY_SETTINGS_TYPE_SECRET_AGENT, UnitySettingsSecretAgentPrivate))
 
+#define AGENT_ID "com.canonical.settings.network.nm-agent"
+
 static gpointer unity_settings_secret_agent_parent_class = NULL;
 
 typedef struct _UnitySettingsSecretAgentPrivate UnitySettingsSecretAgentPrivate;
 
 struct _UnitySettingsSecretAgentPrivate {
-  guint64  request_counter;
   GQueue  *requests;
 };
 
@@ -50,7 +74,7 @@ UnitySettingsSecretAgent* unity_settings_secret_agent_construct (GType object_ty
 
 int
 secret_request_find (SecretRequest  *req,
-                     guint64        *id)
+                     guint          *id)
 {
   if (req->id > *id)
       return -1;
@@ -63,7 +87,7 @@ secret_request_find (SecretRequest  *req,
 
 void
 unity_settings_secret_agent_provide_secret (UnitySettingsSecretAgent *agent,
-                                            guint64                   request,
+                                            guint                     request,
                                             GHashTable               *secrets)
 {
   GList                           *iter;
@@ -88,13 +112,21 @@ unity_settings_secret_agent_provide_secret (UnitySettingsSecretAgent *agent,
                  NULL,
                  req->callback_data);
 
-  g_queue_remove (priv->requests, req);
+  g_queue_remove_all (priv->requests, req);
+  g_free (req);
   return;
 }
 
 void
+free_request (SecretRequest *req)
+{
+  g_object_unref (req->connection);
+  g_free (req);
+}
+
+void
 unity_settings_secret_agent_cancel_request (UnitySettingsSecretAgent *agent,
-                                            guint64                   request)
+                                            guint                     request)
 {
   GList                           *iter;
   SecretRequest                   *req;
@@ -122,9 +154,8 @@ unity_settings_secret_agent_cancel_request (UnitySettingsSecretAgent *agent,
                  error,
                  req->callback_data);
 
-  g_queue_remove (priv->requests, req);
-
-  g_error_free (error);
+  g_queue_remove_all (priv->requests, req);
+  free_request (req);
   return;
 }
 
@@ -138,11 +169,32 @@ delete_secrets (NMSecretAgent *agent,
   g_debug ("delete secrets");
 }
 
-static guint64
+/* If it returns G_MAXUINT it's considered an error */
+static guint
 find_available_id (UnitySettingsSecretAgentPrivate *priv)
 {
-  priv->request_counter++;
-  return priv->request_counter;
+  guint i         = 0;
+  guint candidate = 0;
+
+  if (g_queue_get_length (priv->requests) == G_MAXUINT)
+    return G_MAXUINT;
+
+  while (i < g_queue_get_length (priv->requests))
+    {
+      SecretRequest *req = (SecretRequest*)g_queue_peek_nth (priv->requests, i);
+
+      if (req->id == candidate)
+      {
+        candidate++;
+        i = 0;
+      }
+      else
+      {
+        i++;
+      }
+    }
+
+  return i;
 }
 
 static void
@@ -155,7 +207,7 @@ get_secrets (NMSecretAgent                 *agent,
              NMSecretAgentGetSecretsFunc    callback,
              gpointer                       callback_data)
 {
-  guint64 id;
+  guint   id;
   UnitySettingsSecretAgentPrivate *priv = UNITY_SETTINGS_SECRET_AGENT_GET_PRIVATE (agent);
   SecretRequest *req = NULL;
 
@@ -169,7 +221,8 @@ get_secrets (NMSecretAgent                 *agent,
       return;
     }
 
-  if (priv->request_counter >= G_MAXUINT64)
+  id = find_available_id (priv);
+  if (id == G_MAXUINT)
     {
       GError *error = g_error_new (NM_SECRET_AGENT_ERROR,
                                    NM_SECRET_AGENT_ERROR_INTERNAL_ERROR,
@@ -180,7 +233,6 @@ get_secrets (NMSecretAgent                 *agent,
     }
 
   /* Adding a request */
-  id = find_available_id (priv);
   req = (SecretRequest*) g_malloc0 (sizeof (SecretRequest));
   *req = ((SecretRequest)
           { id,
@@ -193,11 +245,13 @@ get_secrets (NMSecretAgent                 *agent,
             callback,
             callback_data });
 
+  g_object_ref (connection);
+
   g_queue_push_tail (priv->requests, req);
 
   g_signal_emit_by_name (agent,
                          UNITY_SETTINGS_SECRET_AGENT_SECRET_REQUESTED,
-                         priv->request_counter,
+                         id,
                          connection,
                          setting_name,
                          hints,
@@ -227,7 +281,7 @@ unity_settings_secret_agent_construct (GType object_type)
 {
   UnitySettingsSecretAgent * self = NULL;
   self = (UnitySettingsSecretAgent*) g_object_new (object_type,
-                                                   NM_SECRET_AGENT_IDENTIFIER, "com.unity.nm-agent",
+                                                   NM_SECRET_AGENT_IDENTIFIER, AGENT_ID,
                                                    NULL);
   return self;
 }
@@ -239,13 +293,24 @@ unity_settings_secret_agent_new (void)
   return unity_settings_secret_agent_construct (UNITY_SETTINGS_TYPE_SECRET_AGENT);
 }
 
+static void
+destroy_pending_request (gpointer data)
+{
+  SecretRequest* req = (SecretRequest*)data;
+  /* Reporting the cancellation of all pending requests */
+  g_signal_emit_by_name (req->agent,
+                         UNITY_SETTINGS_SECRET_AGENT_REQUEST_CANCELLED,
+                         req->id);
+
+  free_request (req);
+}
 
 static void
 unity_settings_secret_agent_finalize (GObject *agent)
 {
   UnitySettingsSecretAgentPrivate *priv = UNITY_SETTINGS_SECRET_AGENT_GET_PRIVATE (agent);
-  /*FIXME: Get rid of all requests */
-  g_queue_free (priv->requests);
+
+  g_queue_free_full (priv->requests, destroy_pending_request);
 }
 
 static void
@@ -285,7 +350,6 @@ unity_settings_secret_agent_instance_init (UnitySettingsSecretAgent *self)
 {
   self->priv = UNITY_SETTINGS_SECRET_AGENT_GET_PRIVATE (self);
   self->priv->requests = g_queue_new ();
-  self->priv->request_counter = 0;
 }
 
 GType

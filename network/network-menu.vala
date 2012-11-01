@@ -8,12 +8,12 @@ namespace Unity.Settings.Network
 
 	internal class WifiMenu
 	{
-		private Menu              gmenu;
-		private Menu              apsmenu;
-		private MenuItem          device_item;
-		internal DeviceWifi       device;
-		private Application       app;
-		private NM.Client         client;
+		private  Menu        gmenu;
+		private  Menu        apsmenu;
+		private  MenuItem    device_item;
+		public   DeviceWifi  device;
+		private  Application app;
+		private  NM.Client   client;
 
 		public WifiMenu (NM.Client client, DeviceWifi device, Menu global_menu, Application app)
 		{
@@ -28,15 +28,19 @@ namespace Unity.Settings.Network
 			device_item.set_section (apsmenu);
 			gmenu.append_item (device_item);
 
+			device.access_point_added.connect (access_point_added_cb);
+			device.access_point_removed.connect (access_point_removed_cb);
+			device.notify.connect (active_access_point_changed);
+
 			var aps = device.get_access_points ();
+
+			if (aps == null)
+				return;
+
 			for (uint i = 0; i<aps.length; i++)
 			{
 				insert_ap (aps.get (i));
 			}
-
-			device.access_point_added.connect (access_point_added_cb);
-			device.access_point_removed.connect (access_point_removed_cb);
-			device.notify.connect (active_access_point_changed);
 		}
 
 		~WifiMenu ()
@@ -128,10 +132,10 @@ namespace Unity.Settings.Network
 			}
 
 			var conns = rs.list_connections ();
-			if (conns.length() > 0)
+			if (conns.length () > 0)
 			{
 				dev_conns = device.filter_connections (conns);
-				if (dev_conns.length() > 0)
+				if (dev_conns.length () > 0)
 					has_connection = ap_has_connections (ap, dev_conns);
 			}
 
@@ -214,11 +218,11 @@ namespace Unity.Settings.Network
 
 		private static bool ap_has_connections (AccessPoint ap, SList<NM.Connection>? dev_conns)
 		{
-			if (dev_conns.length() < 1)
+			if (dev_conns.length () < 1)
 				return false;
 
 			var ap_conns = ap.filter_connections (dev_conns);
-			return ap_conns.length() > 0;
+			return ap_conns.length () > 0;
 		}
 
 		private void remove_ap (AccessPoint ap)
@@ -255,9 +259,10 @@ namespace Unity.Settings.Network
 
 	public class NetworkMenu : Application
 	{
-		private Menu gmenu;
-		private NM.Client client;
-		private ActionManager am;
+		private Menu                gmenu;
+		private NM.Client           client;
+		private ActionManager       am;
+		private List<WifiMenu>      devices;
 
 		public NetworkMenu ()
 		{
@@ -324,11 +329,25 @@ namespace Unity.Settings.Network
 		private void add_wifi_device (NM.DeviceWifi device)
 		{
 			//FIXME: Get rid of wifimenu on device removal
-			WifiMenu* menu = new WifiMenu (client, device, gmenu, this);
+			for (int i = 0; i < gmenu.get_n_items (); i++)
+			{
+				string path;
+
+				if (!gmenu.get_item_attribute (i, "x-canonical-wifi-device-path", "s", out path))
+					continue;
+				if (path == device.get_path ())
+					return;
+			}
+
+			devices.append (new WifiMenu (client, device, gmenu, this));
 		}
 
 		private void remove_wifi_device (NM.DeviceWifi device)
 		{
+			//TODO: Move this code to WifiMenu
+			if (device == null)
+				return;
+
 			for (int i = 0; i < gmenu.get_n_items (); i++)
 			{
 				string path;
@@ -340,6 +359,17 @@ namespace Unity.Settings.Network
 
 				gmenu.remove (i);
 				return;
+			}
+
+			for (uint i = 0; i < devices.length (); i++)
+			{
+				var wifimenu = devices.nth_data (i);
+				if (wifimenu        != null &&
+					wifimenu.device != null &&
+					wifimenu.device.get_path () == device.get_path ())
+				{
+					devices.remove (wifimenu);
+				}
 			}
 		}
 

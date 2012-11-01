@@ -7,7 +7,7 @@ namespace Unity.Settings.Network
 	{
 		private Application   app;
 		private NM.Client     client;
-		private NM.DeviceWifi wifidev = null;
+		public  NM.DeviceWifi wifidev = null;
 
 		public WifiActionManager (Application app, NM.Client client, NM.DeviceWifi dev)
 		{
@@ -236,6 +236,7 @@ namespace Unity.Settings.Network
 	{
 		private Application app;
 		private NM.Client   client;
+		private List<WifiActionManager> wifimgrs;
 
 		public ActionManager (Application app, NM.Client client)
 		{
@@ -251,8 +252,7 @@ namespace Unity.Settings.Network
 			//TODO: Wifi enabled/disabled action
 
 			client.device_added.connect ((client, device) => {add_device (device);});
-			//TODO: Counter for device classes
-			//client.device_removed.connect (...)
+			client.device_removed.connect ((client, device) => {remove_device (device);});
 
 			var devices = client.get_devices ();
 			if (devices == null)
@@ -274,6 +274,7 @@ namespace Unity.Settings.Network
 
 		private void add_device (NM.Device device)
 		{
+			//TODO: More device types
 			device.state_changed.connect (device_state_changed);
 			switch (device.get_device_type ())
 			{
@@ -281,8 +282,33 @@ namespace Unity.Settings.Network
 					var wifidev = (NM.DeviceWifi)device;
 					//TODO: Get rid of the action manager on device removal
 					//FIXME: Manage WAM instances
-					WifiActionManager* wam = new WifiActionManager (app, client, wifidev);
+					wifimgrs.append (new WifiActionManager (app, client, wifidev));
 					break;
+			}
+		}
+		private void remove_device (NM.Device device)
+		{
+			device.state_changed.disconnect (device_state_changed);
+			switch (device.get_device_type ())
+			{
+				case NM.DeviceType.WIFI:
+					remove_wifi_device ((NM.DeviceWifi)device);
+					break;
+			}
+		}
+
+		private void remove_wifi_device (NM.DeviceWifi device)
+		{
+			for (uint i = 0; i < wifimgrs.length (); i++)
+			{
+				var mgr = wifimgrs.nth_data(i);
+				if (mgr == null || mgr.wifidev == null)
+					continue;
+				if (mgr.wifidev.get_path () != device.get_path ())
+					continue;
+
+				wifimgrs.remove (mgr);
+				return;
 			}
 		}
 

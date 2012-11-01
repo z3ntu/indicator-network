@@ -114,6 +114,9 @@ namespace Unity.Settings.Network
 			SList <NM.Connection>? dev_conns = null;
 			bool has_connection = false;
 
+			if (ap == null)
+				return;
+
 			//If it is the active access point it always goes first
 			if (ap == device.active_access_point)
 			{
@@ -140,7 +143,10 @@ namespace Unity.Settings.Network
 
 				if (!apsmenu.get_item_attribute (i, "x-canonical-wifi-ap-dbus-path", "s", out path))
 					continue;
+
 				var i_ap = device.get_access_point_by_path (path);
+				if (i_ap == null)
+					continue;
 
 				//If both have the same SSID and security flags they are a duplicate
 				if (Utils.same_ssid (i_ap.get_ssid (), ap.get_ssid (), false) && i_ap.get_flags () == ap.get_flags ())
@@ -165,6 +171,9 @@ namespace Unity.Settings.Network
 				if (!apsmenu.get_item_attribute (i, "x-canonical-wifi-ap-dbus-path", "s", out path))
 					continue;
 				var i_ap = device.get_access_point_by_path (path);
+
+				if (i_ap == null)
+					continue;
 
 				//APs that have been used previously have priority
 				if (ap_has_connections(i_ap, dev_conns))
@@ -339,13 +348,6 @@ namespace Unity.Settings.Network
 		                                   uint       old_state,
 		                                   uint       reason)
 		{
-			if (new_state == NM.DeviceState.UNMANAGED &&
-			    reason == NM.DeviceStateReason.NOW_UNMANAGED)
-				remove_device (device);
-
-			if (new_state != NM.DeviceState.UNMANAGED &&
-			    reason == NM.DeviceStateReason.NOW_MANAGED)
-				add_device (device);
 		}
 	}
 }

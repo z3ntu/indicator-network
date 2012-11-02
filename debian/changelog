@@ -1,3 +1,11 @@
+chewie (0.2.3) quantal; urgency=low
+
+  [ Alberto Ruiz ]
+  * Memory management fixes in secret-agent.
+  * Fix some memory leaks issues on device removal/additin.
+
+ -- Olivier Tilloy <olivier.tilloy@canonical.com>  Fri, 02 Nov 2012 12:36:37 +0100
+
 chewie (0.2.2) quantal; urgency=low
 
   [ Alberto Ruiz ]

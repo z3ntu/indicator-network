@@ -28,9 +28,9 @@ namespace Unity.Settings.Network
 			device_item.set_section (apsmenu);
 			gmenu.append_item (device_item);
 
-			device.access_point_added.connect (access_point_added_cb);
+			device.access_point_added.connect   (access_point_added_cb);
 			device.access_point_removed.connect (access_point_removed_cb);
-			device.notify.connect (active_access_point_changed);
+			device.notify.connect               (active_access_point_changed);
 
 			var aps = device.get_access_points ();
 
@@ -45,9 +45,9 @@ namespace Unity.Settings.Network
 
 		~WifiMenu ()
 		{
-			device.access_point_added.disconnect (access_point_added_cb);
+			device.access_point_added.disconnect   (access_point_added_cb);
 			device.access_point_removed.disconnect (access_point_removed_cb);
-			device.notify.disconnect (active_access_point_changed);
+			device.notify.disconnect               (active_access_point_changed);
 		}
 
 
@@ -259,10 +259,10 @@ namespace Unity.Settings.Network
 
 	public class NetworkMenu : Application
 	{
-		private Menu                gmenu;
-		private NM.Client           client;
-		private ActionManager       am;
-		private List<WifiMenu>      devices;
+		private Menu            gmenu;
+		private NM.Client       client;
+		private ActionManager   am;
+		private List<WifiMenu*> device_menus;
 
 		public NetworkMenu ()
 		{
@@ -328,7 +328,6 @@ namespace Unity.Settings.Network
 
 		private void add_wifi_device (NM.DeviceWifi device)
 		{
-			//FIXME: Get rid of wifimenu on device removal
 			for (int i = 0; i < gmenu.get_n_items (); i++)
 			{
 				string path;
@@ -339,7 +338,7 @@ namespace Unity.Settings.Network
 					return;
 			}
 
-			devices.append (new WifiMenu (client, device, gmenu, this));
+			device_menus.append (new WifiMenu (client, device, gmenu, this));
 		}
 
 		private void remove_wifi_device (NM.DeviceWifi device)
@@ -358,17 +357,18 @@ namespace Unity.Settings.Network
 					continue;
 
 				gmenu.remove (i);
-				return;
+				break;
 			}
 
-			for (uint i = 0; i < devices.length (); i++)
+			for (uint i = 0; i < device_menus.length (); i++)
 			{
-				var wifimenu = devices.nth_data (i);
-				if (wifimenu        != null &&
-					wifimenu.device != null &&
-					wifimenu.device.get_path () == device.get_path ())
+				var wifimenu = device_menus.nth_data (i);
+				if (wifimenu         != null &&
+					wifimenu->device != null &&
+					wifimenu->device.get_path () == device.get_path ())
 				{
-					devices.remove (wifimenu);
+					device_menus.remove (wifimenu);
+					delete wifimenu;
 				}
 			}
 		}

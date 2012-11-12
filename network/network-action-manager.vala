@@ -15,11 +15,23 @@ namespace Unity.Settings.Network
 			this.app     = app;
 			this.wifidev = dev;
 
-			wifidev.access_point_added.connect (access_point_added_cb);
+			/* This object should be disposed by ActionManager on device removal
+			 * but we still disconnect signals if that signal is emmited before
+			 * this object was disposed
+			 */
+			client.device_removed.connect (remove_device);
+
+			wifidev.access_point_added.connect   (access_point_added_cb);
 			wifidev.access_point_removed.connect (access_point_removed_cb);
-			wifidev.notify.connect (active_access_point_changed);
-			client.device_removed.connect ((client, device) => {remove_device (device);});
-			wifidev.state_changed.connect (device_state_changed_cb);
+			wifidev.notify.connect               (active_access_point_changed);
+			wifidev.state_changed.connect        (device_state_changed_cb);
+
+			var busy_action_id = wifidev.get_path () + "::is-busy";
+			var is_busy = device_is_busy (wifidev);
+			var action = new SimpleAction.stateful (busy_action_id,
+			                                        VariantType.BOOLEAN,
+			                                        new Variant.boolean (is_busy));
+			app.add_action (action);
 
 			var aps = dev.get_access_points ();
 			if (aps == null)
@@ -27,6 +39,22 @@ namespace Unity.Settings.Network
 
 			for (int i = 0; i < aps.length; i++)
 				insert_ap (aps.get(i));
+		}
+
+		~WifiActionManager ()
+		{
+			remove_device (client, wifidev);
+			client.device_removed.disconnect (remove_device);
+
+			app.remove_action (wifidev.get_path () + "::is-busy");
+		}
+
+		private void remove_device (NM.Client client, NM.Device device)
+		{
+			wifidev.access_point_added.disconnect (access_point_added_cb);
+			wifidev.access_point_removed.disconnect (access_point_removed_cb);
+			wifidev.notify.disconnect (active_access_point_changed);
+			wifidev.state_changed.disconnect (device_state_changed_cb);
 		}
 
 		private void device_state_changed_cb (NM.Device  device,
@@ -96,13 +124,6 @@ namespace Unity.Settings.Network
 				                             new Variant.boolean (false));
 				}
 			}
-		}
-
-		private void remove_device (NM.Device device)
-		{
-			wifidev.access_point_added.disconnect (access_point_added_cb);
-			wifidev.access_point_removed.disconnect (access_point_removed_cb);
-			wifidev.notify.disconnect (active_access_point_changed);
 		}
 
 		private void insert_ap (NM.AccessPoint ap)
@@ -236,7 +257,7 @@ namespace Unity.Settings.Network
 	{
 		private Application app;
 		private NM.Client   client;
-		private List<WifiActionManager> wifimgrs;
+		private List<WifiActionManager*> wifimgrs;
 
 		public ActionManager (Application app, NM.Client client)
 		{
@@ -261,13 +282,6 @@ namespace Unity.Settings.Network
 			for (uint i = 0; i < devices.length ; i++)
 			{
 				var device = devices.get(i);
-				var busy_action_id = device.get_path () + "::is-busy";
-				var is_busy = device_is_busy (device);
-				var action = new SimpleAction.stateful (busy_action_id,
-				                                        VariantType.BOOLEAN,
-				                                        new Variant.boolean (is_busy));
-
-				app.add_action (action);
 				add_device (device);
 			}
 		}
@@ -302,28 +316,14 @@ namespace Unity.Settings.Network
 			for (uint i = 0; i < wifimgrs.length (); i++)
 			{
 				var mgr = wifimgrs.nth_data(i);
-				if (mgr == null || mgr.wifidev == null)
+				if (mgr == null || mgr->wifidev == null)
 					continue;
-				if (mgr.wifidev.get_path () != device.get_path ())
+				if (mgr->wifidev.get_path () != device.get_path ())
 					continue;
 
 				wifimgrs.remove (mgr);
+				delete mgr;
 				return;
-			}
-		}
-
-		private static bool device_is_busy (NM.Device device)
-		{
-			switch (device.get_state ())
-			{
-				case NM.DeviceState.ACTIVATED:
-				case NM.DeviceState.UNKNOWN:
-				case NM.DeviceState.UNMANAGED:
-				case NM.DeviceState.UNAVAILABLE:
-				case NM.DeviceState.DISCONNECTED:
-					return false;
-				default:
-					return true;
 			}
 		}
 
@@ -334,6 +334,22 @@ namespace Unity.Settings.Network
 		{
 			app.change_action_state (device.get_path() + "::is-busy",
 			                         new Variant.boolean (device_is_busy (device)));
+		}
+	}
+
+	/* Common utils */
+	private static bool device_is_busy (NM.Device device)
+	{
+		switch (device.get_state ())
+		{
+			case NM.DeviceState.ACTIVATED:
+			case NM.DeviceState.UNKNOWN:
+			case NM.DeviceState.UNMANAGED:
+			case NM.DeviceState.UNAVAILABLE:
+			case NM.DeviceState.DISCONNECTED:
+				return false;
+			default:
+				return true;
 		}
 	}
 }

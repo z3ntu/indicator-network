@@ -16,6 +16,7 @@
 #test_exportmenu_LDADD = $(top_builddir)/exportmenu/libexportmenu.la libgtest.a
 
 TESTS =
+TESTS_ENVIRONMENT = PATH=$(PATH):$(top_builddir)/network/
 
 if HAVE_DBUSMOCK
 TESTS += network.py

@@ -9,6 +9,9 @@ chewie_network_menu_server_SOURCES = \
 	network-menu-service.vala    \
 	libnetwork.vapi
 
+libnetwork.vapi: libnetwork.la
+libnetwork.h: libnetwork.la
+
 libnetwork_la_VALAFLAGS = --pkg libnm-glib --library=libnetwork --vapi=libnetwork.vapi --header=libnetwork.h
 chewie_network_menu_server_VALAFLAGS = --pkg libnm-glib
 

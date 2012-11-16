@@ -12,6 +12,9 @@ chewie_sound_menu_server_SOURCES = \
 	sound-menu-server.vala     \
 	libsound.vapi
 
+libsound.vapi: libsound.la
+libsound.h: libsound.la
+
 libsound_la_VALAFLAGS = --pkg libpulse --pkg libpulse-mainloop-glib --pkg gio-2.0 --library=libsound --vapi=libsound.vapi --header=libsound.h
 chewie_sound_menu_server_VALAFLAGS = --pkg libpulse --pkg libpulse-mainloop-glib --pkg gio-2.0
 

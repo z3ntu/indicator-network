@@ -21,22 +21,21 @@ def check_aps_actions(self, ret, aps):
         self.assertTrue(strength_action in ret)
 
 def check_aps_in_menu(self, ret, aps):
-    root = ret[0][2][0]
+    ap_items = []
+    for group in ret:
+        a, b, items = group
+        for item in items:
+            if 'x-canonical-wifi-ap-dbus-path' in item:
+                ap_items.append(item)
 
-    #TODO: Check several devices/sections
-    self.assertTrue(':section' in root)
-    self.assertTrue('label'   in root)
-    self.assertTrue('type'    in root)
-    for prop in ('busy-action', 'children-display', 'widget-type', 'wifi-device-path'):
-        self.assertTrue(('x-canonical-' + prop) in root)
+    self.assertTrue(len(ap_items) > 0)
 
     for ap in aps:
         ap_path = AP_PREFIX + ap
-        items = [item[2][0] for item in ret[1:]]
+        items_map = map(lambda item: item['x-canonical-wifi-ap-dbus-path'] == ap_path, items)
+        has_ap = functools.reduce(lambda a, b: a or b, items_map)
+        self.assertTrue (has_ap)
 
-        res = map(lambda item: item['x-canonical-wifi-ap-dbus-path'] == ap_path, items)
-        self.assertTrue (functools.reduce(lambda a, b: a and b, res))
-            
 
 class TestNetworkMenu(dbusmock.DBusTestCase):
     '''Test network menu'''

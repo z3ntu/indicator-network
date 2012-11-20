@@ -110,7 +110,7 @@ namespace Unity.Settings.Network
 		 * - The active access point of the device always goes first
 		 * - Previously used APs go first
 		 * - Previously used APs are ordered by signal strength
-		 * - Unused APs are ordered by signal strenght
+		 * - Unused APs are ordered by signal strength
 		 */
 		private void insert_ap (AccessPoint ap)
 		{

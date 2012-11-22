@@ -215,6 +215,14 @@ namespace Unity.Settings.Network
 				return;
 			}
 
+			if (wifidev.active_access_point != null &&
+				wifidev.active_access_point.get_path () == path &&
+				val.get_boolean () == false)
+			{
+				wifidev.disconnect(null);
+				return;
+			}
+
 			var aps = wifidev.get_access_points ();
 			if (aps == null)
 			{
@@ -231,7 +239,12 @@ namespace Unity.Settings.Network
 				if (ap.get_path () != path)
 					continue;
 
-				ac.set_state (val);
+		                ac.set_state (val);
+
+                		if (val.get_boolean ())
+		                        ap_activated (ac, val);
+		                
+				return;
 			}
 		}
 

@@ -117,6 +117,14 @@ fi
 AM_CONDITIONAL([BUILD_TESTS],[test "x$enable_tests" = "xyes"])
 
 ###########################
+# dbusmock
+###########################
+
+AM_PATH_PYTHON(3.0,, [:])
+AC_PYTHON_MODULE(dbusmock)
+AM_CONDITIONAL([HAVE_DBUSMOCK],[test "x$HAVE_PYMOD_DBUSMOCK" = "xyes"])
+
+###########################
 # Files
 ###########################
 
@@ -126,8 +134,8 @@ data/Makefile
 network/Makefile
 secret-agent/Makefile
 sound/Makefile
+test/Makefile
 ])
-#test/Makefile
 #test/data/Makefile
 #test/data/glib-2.0/Makefile
 #test/data/glib-2.0/schemas/Makefile

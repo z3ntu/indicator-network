@@ -231,14 +231,14 @@ namespace Unity.Settings.Network
 				if (ap.get_path () != path)
 					continue;
 
-                ac.set_state (val);
+		                ac.set_state (val);
 
-                if (val.get_boolean ())
-                    ap_activated (ac, val);
-                else
-                    wifidev.disconnect (null);
+                		if (val.get_boolean ())
+		                        ap_activated (ac, val);
+                		else
+		                        wifidev.disconnect (null);
 
-                return;
+		                return;
 			}
 		}
 

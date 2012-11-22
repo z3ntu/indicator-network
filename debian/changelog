@@ -1,3 +1,16 @@
+chewie (0.2.4) quantal; urgency=low
+
+  [ Alberto Ruiz ]
+  * Add python-dbusmock tests.
+  * Fix memory management issues by doing manual memory 
+    management on the per device objects.
+
+  [ Ricardo Mendoza ]
+  * Fix activation of AP upon receipt of action from the client.
+  * Perform disconnection of the active AP if requested.
+
+ -- Ricardo Mendoza <ricardo.mendoza@canonical.com>  Thu, 22 Nov 2012 15:02:11 -0430
+
 chewie (0.2.3) quantal; urgency=low
 
   [ Alberto Ruiz ]

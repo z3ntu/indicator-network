@@ -235,6 +235,10 @@ namespace Unity.Settings.Network
 
                 if (val.get_boolean ())
                     ap_activated (ac, val);
+                else
+                    wifidev.disconnect (null);
+
+                return;
 			}
 		}
 

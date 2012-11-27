@@ -369,6 +369,7 @@ namespace Unity.Settings.Network
 				{
 					device_menus.remove (wifimenu);
 					delete wifimenu;
+					break;
 				}
 			}
 		}
@@ -378,6 +379,21 @@ namespace Unity.Settings.Network
 		                                   uint       old_state,
 		                                   uint       reason)
 		{
+			var type = device.get_device_type ();
+
+			switch (new_state)
+			{
+				case NM.DeviceState.UNAVAILABLE:
+				case NM.DeviceState.UNKNOWN:
+				case NM.DeviceState.UNMANAGED:
+					if (type == NM.DeviceType.WIFI)
+						remove_wifi_device ((NM.DeviceWifi)device);
+					break;
+				default:
+					if (type == NM.DeviceType.WIFI)
+						add_wifi_device ((NM.DeviceWifi)device);
+					break;
+			}
 		}
 	}
 }

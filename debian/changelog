@@ -1,3 +1,9 @@
+chewie (0.2.5) quantal; urgency=low
+
+  * Updated widget type property name to the value specified in the spec.
+
+ -- Renato Araujo Oliveira Filho <renato@canonical.com>  Tue, 27 Nov 2012 15:47:29 -0300
+
 chewie (0.2.4) quantal; urgency=low
 
   [ Alberto Ruiz ]

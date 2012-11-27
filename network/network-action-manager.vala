@@ -5,9 +5,11 @@ namespace Unity.Settings.Network
 {
 	internal class WifiActionManager
 	{
-		private Application   app;
-		private NM.Client     client;
-		public  NM.DeviceWifi wifidev = null;
+		private Application       app;
+		private NM.Client         client;
+		public NM.RemoteSettings rs  = null;
+
+		public  NM.DeviceWifi     wifidev = null;
 
 		public WifiActionManager (Application app, NM.Client client, NM.DeviceWifi dev)
 		{
@@ -15,6 +17,20 @@ namespace Unity.Settings.Network
 			this.app     = app;
 			this.wifidev = dev;
 
+			var busy_action_id = wifidev.get_path () + "::is-busy";
+			var is_busy = device_is_busy (wifidev);
+			var action = new SimpleAction.stateful (busy_action_id,
+			                                        VariantType.BOOLEAN,
+			                                        new Variant.boolean (is_busy));
+			app.add_action (action);
+
+			rs = new NM.RemoteSettings (wifidev.get_connection ());
+			rs.connections_read.connect (bootstrap_actions);
+		}
+
+
+		private  void bootstrap_actions ()
+		{
 			/* This object should be disposed by ActionManager on device removal
 			 * but we still disconnect signals if that signal is emmited before
 			 * this object was disposed
@@ -26,14 +42,8 @@ namespace Unity.Settings.Network
 			wifidev.notify.connect               (active_access_point_changed);
 			wifidev.state_changed.connect        (device_state_changed_cb);
 
-			var busy_action_id = wifidev.get_path () + "::is-busy";
-			var is_busy = device_is_busy (wifidev);
-			var action = new SimpleAction.stateful (busy_action_id,
-			                                        VariantType.BOOLEAN,
-			                                        new Variant.boolean (is_busy));
-			app.add_action (action);
 
-			var aps = dev.get_access_points ();
+			var aps = wifidev.get_access_points ();
 			if (aps == null)
 				return;
 
@@ -44,7 +54,13 @@ namespace Unity.Settings.Network
 		~WifiActionManager ()
 		{
 			remove_device (client, wifidev);
+
 			client.device_removed.disconnect (remove_device);
+			wifidev.access_point_added.disconnect   (access_point_added_cb);
+			wifidev.access_point_removed.disconnect (access_point_removed_cb);
+			wifidev.notify.disconnect               (active_access_point_changed);
+			wifidev.state_changed.disconnect        (device_state_changed_cb);
+			rs.connections_read.disconnect          (bootstrap_actions);
 
 			app.remove_action (wifidev.get_path () + "::is-busy");
 		}
@@ -173,7 +189,6 @@ namespace Unity.Settings.Network
 				return;
 			}
 
-			var rs = new NM.RemoteSettings (null);
 			if (wifidev.active_access_point != null &&
 				wifidev.active_access_point.get_path () == ac.get_name ())
 				return;

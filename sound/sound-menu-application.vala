@@ -238,19 +238,22 @@ namespace Unity.Settings
 
 		private void bootstrap_menu ()
 		{
+			var section = new Menu ();
+
 			var mute_control = new MenuItem (null, null);
 			mute_control.set_attribute ("type",                     "s", "x-canonical-system-settings");
 			mute_control.set_attribute (GLib.Menu.ATTRIBUTE_LABEL,  "s", "Mute");
 			mute_control.set_attribute ("x-canonical-type",         "s", "unity.widgets.systemsettings.tablet.switch");
 			mute_control.set_attribute (GLib.Menu.ATTRIBUTE_ACTION, "s", "mute");
-			gmenu.append_item (mute_control);
+			section.append_item (mute_control);
 
 			var volume_control = new MenuItem (null, null);
 			volume_control.set_attribute ("type",                     "s", "x-canonical-system-settings");
 			volume_control.set_attribute ("x-canonical-type",         "s", "unity.widgets.systemsettings.tablet.volumecontrol");
 			volume_control.set_attribute (GLib.Menu.ATTRIBUTE_ACTION, "s", "volume");
+			section.append_item (volume_control);
 
-			gmenu.append_item (volume_control);
+			gmenu.append_section (null, section);
 		}
 
 		private void ready_cb ()

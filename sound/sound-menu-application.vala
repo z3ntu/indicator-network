@@ -247,7 +247,7 @@ namespace Unity.Settings
 			mute_control.set_attribute (GLib.Menu.ATTRIBUTE_ACTION, "s", "mute");
 			section.append_item (mute_control);
 
-			var volume_control = new MenuItem (null, null);
+			var volume_control = new MenuItem ("Volume", null);
 			volume_control.set_attribute ("type",                     "s", "x-canonical-system-settings");
 			volume_control.set_attribute ("x-canonical-type",         "s", "unity.widgets.systemsettings.tablet.volumecontrol");
 			volume_control.set_attribute (GLib.Menu.ATTRIBUTE_ACTION, "s", "volume");

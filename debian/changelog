@@ -1,3 +1,9 @@
+chewie (0.2.6) quantal; urgency=low
+
+  * Group volume controls into a section
+
+ -- Lars Uebernickel <lars.uebernickel@ubuntu.com>  Fri, 07 Dec 2012 15:06:45 +0000
+
 chewie (0.2.5) quantal; urgency=low
 
   * Updated widget type property name to the value specified in the spec.

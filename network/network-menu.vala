@@ -259,6 +259,8 @@ namespace Unity.Settings.Network
 
 	public class NetworkMenu : Application
 	{
+		private Menu            root_menu;
+		private MenuItem        root_item;
 		private Menu            gmenu;
 		private NM.Client       client;
 		private ActionManager   am;
@@ -269,10 +271,6 @@ namespace Unity.Settings.Network
 			GLib.Object (application_id: APPLICATION_ID);
 			flags = ApplicationFlags.IS_SERVICE;
 
-			gmenu  = new Menu ();
-			client = new NM.Client();
-			am     = new ActionManager (this, client);
-
 			bootstrap_menu ();
 			client.device_added.connect   ((client, device) => { add_device (device); });
 			client.device_removed.connect ((client, device) => { remove_device (device); });
@@ -280,7 +278,7 @@ namespace Unity.Settings.Network
 			try
 			{
 				var conn = Bus.get_sync (BusType.SESSION, null);
-				conn.export_menu_model (PHONE_MENU_PATH, gmenu);
+				conn.export_menu_model (PHONE_MENU_PATH, root_menu);
 			}
 			catch (GLib.IOError e)
 			{
@@ -294,6 +292,14 @@ namespace Unity.Settings.Network
 
 		private void bootstrap_menu ()
 		{
+			root_menu = new Menu ();
+			gmenu     = new Menu ();
+			client    = new NM.Client();
+			am        = new ActionManager (this, client);
+
+			root_item = new MenuItem.submenu (null, gmenu as MenuModel);
+			root_menu.append_item (root_item);
+
 			var devices = client.get_devices ();
 
 			if (devices == null)

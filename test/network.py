@@ -65,7 +65,7 @@ class TestNetworkMenu(dbusmock.DBusTestCase):
                 'myap', '00:23:f8:7e:12:ba', 0, 2425, 5400, 80, 0x400)
         
         p = subprocess.Popen(['chewie-network-menu-server'])
-        time.sleep (0.3)
+        time.sleep (0.6)
 
         bus = dbus.SessionBus ()
 
@@ -78,7 +78,7 @@ class TestNetworkMenu(dbusmock.DBusTestCase):
         phone_menu_iface = dbus.Interface(phone,   dbus_interface='org.gtk.Menus')
 
         check_aps_actions (self, actions_iface.List(), aps)
-        check_aps_in_menu (self, phone_menu_iface.Start([0]), aps)
+        check_aps_in_menu (self, phone_menu_iface.Start([0, 1]), aps)
 
         p.terminate()
         p.wait()

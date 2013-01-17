@@ -271,6 +271,8 @@ namespace Unity.Settings.Network
 			GLib.Object (application_id: APPLICATION_ID);
 			flags = ApplicationFlags.IS_SERVICE;
 
+			client    = new NM.Client();
+
 			bootstrap_menu ();
 			client.device_added.connect   ((client, device) => { add_device (device); });
 			client.device_removed.connect ((client, device) => { remove_device (device); });
@@ -294,10 +296,10 @@ namespace Unity.Settings.Network
 		{
 			root_menu = new Menu ();
 			gmenu     = new Menu ();
-			client    = new NM.Client();
 			am        = new ActionManager (this, client);
 
 			root_item = new MenuItem.submenu (null, gmenu as MenuModel);
+			root_item.set_attribute ("x-canonical-network-status", "s", "network-status");
 			root_menu.append_item (root_item);
 
 			var devices = client.get_devices ();

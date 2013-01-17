@@ -254,11 +254,11 @@ namespace Unity.Settings.Network
 				if (ap.get_path () != path)
 					continue;
 
-		                ac.set_state (val);
+				ac.set_state (val);
 
-                		if (val.get_boolean ())
-		                        ap_activated (ac, val);
-		                
+				if (val.get_boolean ())
+					ap_activated (ac, val);
+
 				return;
 			}
 		}
@@ -283,9 +283,10 @@ namespace Unity.Settings.Network
 
 	public class ActionManager
 	{
-		private Application app;
-		private NM.Client   client;
+		private Application              app;
+		private NM.Client                client;
 		private List<WifiActionManager*> wifimgrs;
+		private SimpleAction             conn_status;
 
 		public ActionManager (Application app, NM.Client client)
 		{
@@ -303,6 +304,7 @@ namespace Unity.Settings.Network
 			client.device_added.connect ((client, device) => {add_device (device);});
 			client.device_removed.connect ((client, device) => {remove_device (device);});
 
+			add_network_status_action ();
 			var devices = client.get_devices ();
 			if (devices == null)
 				return;
@@ -312,6 +314,126 @@ namespace Unity.Settings.Network
 				var device = devices.get(i);
 				add_device (device);
 			}
+		}
+
+		private void add_network_status_action ()
+		{
+			/* This is the action that represents the global status of the network.
+			 *
+			 * - The first guint32 is for the device type of the main connection as per
+			 *   NetworkManager.h's NMDeviceType.
+			 * - The second one represents the connection state as per NMActiveConnectionState.
+			 * - The third one is for the extended status. In the case of Wifi it represents
+			 *   signal strength.
+			 */
+
+			conn_status = new SimpleAction.stateful ("network-status",
+													 new VariantType ("(uuu)"),
+													 new Variant("(uuu)", 0,0,0));
+
+			var act_conn = get_active_connection ();
+			if (act_conn != null)
+			{
+				var type = get_device_type_from_connection (act_conn);
+				switch (type)
+				{
+					case NM.DeviceType.WIFI:
+						var dev = act_conn.get_devices ().get(0) as NM.DeviceWifi;
+						dev.active_access_point.notify["strength"].connect (active_connection_strength_changed);
+
+						conn_status = new SimpleAction.stateful ("network-status",
+						                                         new VariantType ("(uuu)"),
+						                                         new Variant ("(uuu)",
+																			  type,
+																			  act_conn.state,
+																			  dev.active_access_point.strength));
+						break;
+					default:
+						break;
+				}
+			}
+
+			app.add_action (conn_status);
+		}
+
+		/* This function guesses the default connection in case
+		 * multiple ones are connected */
+		private NM.ActiveConnection? get_active_connection ()
+		{
+			ActiveConnection? def6 = null;
+
+			/* The default IPv4 connection has precedence */
+			var conns = client.get_active_connections ();
+			for (uint i = 0; i < conns.length; i++)
+			{
+				var conn = conns.get(i);
+
+				if (conn.default)
+					return conn;
+
+				if (conn.default6)
+					def6 = conn;
+			}
+
+			/* Then the default IPv6 connection otherwise the first in the list */
+			if (def6 != null)
+				return def6;
+			else if (conns.length > 0)
+				return conns.get(0);
+
+			/* If the list is empty we return null */
+			return null;
+		}
+
+		private NM.DeviceType get_device_type_from_connection (NM.ActiveConnection conn)
+		{
+			var devices = conn.get_devices ();
+			bool equal = true;
+
+			if (devices.length == 0)
+				return NM.DeviceType.UNKNOWN;
+
+			if (devices.length == 1)
+				return devices.get (0).get_device_type ();
+
+			for (uint i = 1; i < devices.length; i++)
+			{
+				equal = (devices.get (i-1).get_device_type () == devices.get (i).get_device_type ());
+				if (!equal)
+					break;
+			}
+
+			if (equal)
+				return devices.get(0).get_device_type ();
+
+			warning ("Connection with multiple devices of different types not supported");
+			return NM.DeviceType.UNKNOWN;
+		}
+
+		private void active_connection_strength_changed (GLib.Object a, ParamSpec ps)
+		{
+			/* If there's no active connection we disconnect this signal */
+			var act_conn = get_active_connection ();
+			if (act_conn == null)
+			{
+				a.notify["strength"].disconnect (active_connection_strength_changed);
+				return;
+			}
+
+			/* If the device type is not WIFI anymore we disconnect this signal */
+			var type = get_device_type_from_connection (act_conn);
+			if (type != NM.DeviceType.WIFI)
+			{
+				a.notify["strength"].disconnect (active_connection_strength_changed);
+				return;
+			}
+
+			var dev = act_conn.get_devices ().get (0) as NM.DeviceWifi;
+
+			conn_status.set_state (new Variant ("(uuu)",
+			                                    type,
+			                                    act_conn.state,
+			                                    dev.active_access_point.strength));
 		}
 
 		private void add_device (NM.Device device)

@@ -287,6 +287,8 @@ namespace Unity.Settings.Network
 		private NM.Client                client;
 		private List<WifiActionManager*> wifimgrs;
 		private SimpleAction             conn_status;
+		private NM.ActiveConnection?     act_conn;
+		private NM.AccessPoint?          act_ap;
 
 		public ActionManager (Application app, NM.Client client)
 		{
@@ -330,30 +332,98 @@ namespace Unity.Settings.Network
 			conn_status = new SimpleAction.stateful ("network-status",
 													 new VariantType ("(uuu)"),
 													 new Variant("(uuu)", 0,0,0));
+			app.add_action (conn_status);
 
-			var act_conn = get_active_connection ();
+			client.notify["active-connections"].connect (active_connections_changed);
+			set_active_connection ();
+		}
+
+		private void set_active_connection ()
+		{
+			act_conn = get_active_connection ();
 			if (act_conn != null)
 			{
+				act_conn.notify["state"].connect (connection_state_changed);
 				var type = get_device_type_from_connection (act_conn);
 				switch (type)
 				{
 					case NM.DeviceType.WIFI:
-						var dev = act_conn.get_devices ().get(0) as NM.DeviceWifi;
-						dev.active_access_point.notify["strength"].connect (active_connection_strength_changed);
-
-						conn_status = new SimpleAction.stateful ("network-status",
-						                                         new VariantType ("(uuu)"),
-						                                         new Variant ("(uuu)",
-																			  type,
-																			  act_conn.state,
-																			  dev.active_access_point.strength));
+						set_wifi_device ();
 						break;
 					default:
+						conn_status.set_state (new Variant ("(uuu)", 0, 0, 0));
 						break;
 				}
 			}
+			else
+			{
+				conn_status.set_state (new Variant ("(uuu)", 0, 0, 0));
+			}
+		}
 
-			app.add_action (conn_status);
+		private void set_wifi_device ()
+		{
+			uint8 strength = 0;
+			var dev = act_conn.get_devices ().get(0) as NM.DeviceWifi;
+			if (dev != null)
+			{
+				dev.notify["active-access-point"].connect (active_access_point_changed);
+				act_ap = dev.active_access_point;
+				if (act_ap != null)
+				{
+					act_ap.notify["strength"].connect (active_connection_strength_changed);
+					strength = act_ap.strength;
+				}
+			}
+
+			conn_status.set_state (new Variant ("(uuu)", NM.DeviceType.WIFI, act_conn.state, strength));
+		}
+
+		private void connection_state_changed (GLib.Object client, ParamSpec ps)
+		{
+			conn_status.set_state (new Variant ("(uuu)", NM.DeviceType.WIFI, act_conn.state, act_ap.strength));
+		}
+
+		private void active_access_point_changed (GLib.Object client, ParamSpec ps)
+		{
+			if (act_ap != null)
+			{
+				act_ap.notify["strength"].disconnect (active_connection_strength_changed);
+				act_ap = null;
+			}
+
+			set_wifi_device ();
+		}
+
+		private void active_connection_strength_changed (GLib.Object client, ParamSpec ps)
+		{
+			conn_status.set_state (new Variant ("(uuu)", NM.DeviceType.WIFI, act_conn.state, act_ap.strength));
+		}
+
+		private void active_connections_changed (GLib.Object client, ParamSpec ps)
+		{
+			/* Remove previous active connection */
+			act_conn.notify["state"].disconnect (connection_state_changed);
+			var type = get_device_type_from_connection (act_conn);
+			switch (type)
+			{
+				case NM.DeviceType.WIFI:
+					var dev = act_conn.get_devices ().get(0) as NM.DeviceWifi;
+					if (dev != null)
+						dev.notify["active-access-point"].connect (active_access_point_changed);
+
+					if (act_ap != null)
+					{
+						act_ap.notify["strength"].disconnect (active_connection_strength_changed);
+						act_ap = null;
+					}
+
+					break;
+				default:
+					break;
+			}
+
+			set_active_connection ();
 		}
 
 		/* This function guesses the default connection in case
@@ -378,6 +448,7 @@ namespace Unity.Settings.Network
 			/* Then the default IPv6 connection otherwise the first in the list */
 			if (def6 != null)
 				return def6;
+			/*TODO: Do we show an active connetion if no default route is present? */
 			else if (conns.length > 0)
 				return conns.get(0);
 
@@ -388,52 +459,13 @@ namespace Unity.Settings.Network
 		private NM.DeviceType get_device_type_from_connection (NM.ActiveConnection conn)
 		{
 			var devices = conn.get_devices ();
-			bool equal = true;
 
-			if (devices.length == 0)
-				return NM.DeviceType.UNKNOWN;
-
+			/* The list length should always == 1 */
 			if (devices.length == 1)
 				return devices.get (0).get_device_type ();
 
-			for (uint i = 1; i < devices.length; i++)
-			{
-				equal = (devices.get (i-1).get_device_type () == devices.get (i).get_device_type ());
-				if (!equal)
-					break;
-			}
-
-			if (equal)
-				return devices.get(0).get_device_type ();
-
-			warning ("Connection with multiple devices of different types not supported");
+			warning ("Connection has a list of devices length different than 0");
 			return NM.DeviceType.UNKNOWN;
-		}
-
-		private void active_connection_strength_changed (GLib.Object a, ParamSpec ps)
-		{
-			/* If there's no active connection we disconnect this signal */
-			var act_conn = get_active_connection ();
-			if (act_conn == null)
-			{
-				a.notify["strength"].disconnect (active_connection_strength_changed);
-				return;
-			}
-
-			/* If the device type is not WIFI anymore we disconnect this signal */
-			var type = get_device_type_from_connection (act_conn);
-			if (type != NM.DeviceType.WIFI)
-			{
-				a.notify["strength"].disconnect (active_connection_strength_changed);
-				return;
-			}
-
-			var dev = act_conn.get_devices ().get (0) as NM.DeviceWifi;
-
-			conn_status.set_state (new Variant ("(uuu)",
-			                                    type,
-			                                    act_conn.state,
-			                                    dev.active_access_point.strength));
 		}
 
 		private void add_device (NM.Device device)

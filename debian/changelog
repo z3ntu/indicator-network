@@ -1,3 +1,9 @@
+chewie (0.2.7) quantal; urgency=low
+
+  * Root item support added in the network menu
+
+ -- Alberto ruiz <alberto.ruiz@canonical.com>  Fri, 08 Feb 2013 17:54:56 +0000
+
 chewie (0.2.6) quantal; urgency=low
 
   * Group volume controls into a section

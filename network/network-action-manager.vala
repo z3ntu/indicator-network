@@ -287,8 +287,8 @@ namespace Unity.Settings.Network
 		private NM.Client                client;
 		private List<WifiActionManager*> wifimgrs;
 		private SimpleAction             conn_status;
-		private NM.ActiveConnection?     act_conn;
-		private NM.AccessPoint?          act_ap;
+		private NM.ActiveConnection?     act_conn = null;
+		private NM.AccessPoint?          act_ap   = null;
 
 		public ActionManager (Application app, NM.Client client)
 		{
@@ -350,6 +350,9 @@ namespace Unity.Settings.Network
 					case NM.DeviceType.WIFI:
 						set_wifi_device ();
 						break;
+					case NM.DeviceType.ETHERNET:
+						conn_status.set_state (new Variant ("(uuu)", NM.DeviceType.ETHERNET, act_conn.state, 0));
+						break;
 					default:
 						conn_status.set_state (new Variant ("(uuu)", 0, 0, 0));
 						break;
@@ -381,7 +384,19 @@ namespace Unity.Settings.Network
 
 		private void connection_state_changed (GLib.Object client, ParamSpec ps)
 		{
-			conn_status.set_state (new Variant ("(uuu)", NM.DeviceType.WIFI, act_conn.state, act_ap.strength));
+			switch (get_device_type_from_connection (act_conn))
+			{
+				case NM.DeviceType.WIFI:
+					uint8 strength = 0;
+					if (act_ap != null)
+						strength = act_ap.strength;
+
+					conn_status.set_state (new Variant ("(uuu)", get_device_type_from_connection (act_conn), act_conn.state, strength));
+					break;
+				default:
+					conn_status.set_state (new Variant ("(uuu)", get_device_type_from_connection (act_conn), act_conn.state, 0));
+					break;
+			}
 		}
 
 		private void active_access_point_changed (GLib.Object client, ParamSpec ps)
@@ -397,30 +412,38 @@ namespace Unity.Settings.Network
 
 		private void active_connection_strength_changed (GLib.Object client, ParamSpec ps)
 		{
+			uint8 strength = 0;
+			if (act_ap != null)
+				strength = act_ap.strength;
+
 			conn_status.set_state (new Variant ("(uuu)", NM.DeviceType.WIFI, act_conn.state, act_ap.strength));
 		}
 
 		private void active_connections_changed (GLib.Object client, ParamSpec ps)
 		{
 			/* Remove previous active connection */
-			act_conn.notify["state"].disconnect (connection_state_changed);
-			var type = get_device_type_from_connection (act_conn);
-			switch (type)
+			if (act_conn != null)
 			{
-				case NM.DeviceType.WIFI:
-					var dev = act_conn.get_devices ().get(0) as NM.DeviceWifi;
-					if (dev != null)
-						dev.notify["active-access-point"].connect (active_access_point_changed);
+				act_conn.notify["state"].disconnect (connection_state_changed);
 
-					if (act_ap != null)
-					{
-						act_ap.notify["strength"].disconnect (active_connection_strength_changed);
-						act_ap = null;
-					}
+				var type = get_device_type_from_connection (act_conn);
+				switch (type)
+				{
+					case NM.DeviceType.WIFI:
+						var dev = act_conn.get_devices ().get(0) as NM.DeviceWifi;
+						if (dev != null)
+							dev.notify["active-access-point"].connect (active_access_point_changed);
 
-					break;
-				default:
-					break;
+						if (act_ap != null)
+						{
+							act_ap.notify["strength"].disconnect (active_connection_strength_changed);
+							act_ap = null;
+						}
+
+						break;
+					default:
+						break;
+				}
 			}
 
 			set_active_connection ();
@@ -434,6 +457,10 @@ namespace Unity.Settings.Network
 
 			/* The default IPv4 connection has precedence */
 			var conns = client.get_active_connections ();
+
+			if (conns == null)
+				return null;
+
 			for (uint i = 0; i < conns.length; i++)
 			{
 				var conn = conns.get(i);

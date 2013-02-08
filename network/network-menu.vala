@@ -1,4 +1,23 @@
 // vim: tabstop=4 noexpandtab shiftwidth=4 softtabstop=4
+/*
+ * Copyright 2013 Canonical Ltd.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; version 3.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Authors:
+ *      Alberto Ruiz <alberto.ruiz@canonical.com>
+ */
+
 using NM;
 
 namespace Unity.Settings.Network
@@ -259,6 +278,8 @@ namespace Unity.Settings.Network
 
 	public class NetworkMenu : Application
 	{
+		private Menu            root_menu;
+		private MenuItem        root_item;
 		private Menu            gmenu;
 		private NM.Client       client;
 		private ActionManager   am;
@@ -269,9 +290,7 @@ namespace Unity.Settings.Network
 			GLib.Object (application_id: APPLICATION_ID);
 			flags = ApplicationFlags.IS_SERVICE;
 
-			gmenu  = new Menu ();
-			client = new NM.Client();
-			am     = new ActionManager (this, client);
+			client    = new NM.Client();
 
 			bootstrap_menu ();
 			client.device_added.connect   ((client, device) => { add_device (device); });
@@ -280,7 +299,7 @@ namespace Unity.Settings.Network
 			try
 			{
 				var conn = Bus.get_sync (BusType.SESSION, null);
-				conn.export_menu_model (PHONE_MENU_PATH, gmenu);
+				conn.export_menu_model (PHONE_MENU_PATH, root_menu);
 			}
 			catch (GLib.IOError e)
 			{
@@ -294,6 +313,15 @@ namespace Unity.Settings.Network
 
 		private void bootstrap_menu ()
 		{
+			root_menu = new Menu ();
+			gmenu     = new Menu ();
+			am        = new ActionManager (this, client);
+
+			root_item = new MenuItem.submenu (null, gmenu as MenuModel);
+			root_item.set_attribute (GLib.Menu.ATTRIBUTE_ACTION, "s", "network-status");
+			root_item.set_attribute ("x-canonical-type", "s", "com.canonical.indicator.root.network");
+			root_menu.append_item (root_item);
+
 			var devices = client.get_devices ();
 
 			if (devices == null)

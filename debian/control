@@ -1,7 +1,8 @@
 Source: chewie
 Section: gnome
 Priority: optional
-Maintainer: Ken VanDine <ken.vandine@canonical.com>
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+XSBC-Original-Maintainer: Ken VanDine <ken.vandine@canonical.com>
 Build-Depends: debhelper (>= 8.0.0),
                pkg-config,
                dbus,

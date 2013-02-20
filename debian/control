@@ -3,6 +3,8 @@ Section: gnome
 Priority: optional
 Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
 XSBC-Original-Maintainer: Ken VanDine <ken.vandine@canonical.com>
+Vcs-Bzr: lp:indicator-server
+Vcs-Browser: http://code.launchpad.net/indicator-server
 Build-Depends: debhelper (>= 9.0.0),
                dh-autoreconf,
                gnome-common,               
@@ -13,7 +15,7 @@ Build-Depends: debhelper (>= 9.0.0),
                libglib2.0-dev,
                libgtk-3-dev,
                libpulse-dev,
-               valac-0.18
+               valac-0.18,
 
 Standards-Version: 3.9.3
 Homepage: https://launchpad.net/chewie

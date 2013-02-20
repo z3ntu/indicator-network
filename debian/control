@@ -22,7 +22,9 @@ Homepage: https://launchpad.net/chewie
 
 Package: chewie
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+
 Description: Systems settings menu service - Chewie
  The Chewie service is responsible for exporting the system settings menu 
  through dbus

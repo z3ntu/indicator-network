@@ -1,3 +1,9 @@
+chewie (0.2.8) UNRELEASED; urgency=low
+
+  * fix licensing issues
+
+ -- Michael Zanetti <michael.zanetti@canonical.com>  Wed, 20 Feb 2013 22:40:58 +0100
+
 chewie (0.2.7) quantal; urgency=low
 
   * Root item support added in the network menu

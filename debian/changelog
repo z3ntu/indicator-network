@@ -1,3 +1,10 @@
+chewie (0.2.8) quantal; urgency=low
+
+  [ Michael Zanetti ]
+  * fix licensing issues
+
+ -- Michał Sawicz <michal.sawicz@canonical.com>  Thu, 21 Feb 2013 00:52:58 +0100
+
 chewie (0.2.7) quantal; urgency=low
 
   * Root item support added in the network menu

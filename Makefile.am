@@ -1,2 +1,2 @@
-SUBDIRS = network sound secret-agent data test
+SUBDIRS = network secret-agent test
 DISTCHECK_CONFIGURE_FLAGS=--with-localenabled

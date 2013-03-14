@@ -81,7 +81,7 @@ class TestNetworkMenu(dbusmock.DBusTestCase):
         self.dbusmock.AddAccessPoint (wifi1, 'mock_ap',
                 'myap', '00:23:f8:7e:12:ba', 0, 2425, 5400, 80, 0x400)
         
-        p = subprocess.Popen(['chewie-network-menu-server'])
+        p = subprocess.Popen(['indicator-network-menu-server'])
         time.sleep (0.6)
 
         bus = dbus.SessionBus ()

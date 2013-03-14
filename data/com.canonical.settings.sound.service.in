@@ -1,3 +1,0 @@
-[D-BUS Service]
-Name=com.canonical.settings.sound
-Exec=@SOUND_SERVICE@

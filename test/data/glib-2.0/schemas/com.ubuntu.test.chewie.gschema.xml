@@ -1,9 +1,0 @@
-<schemalist>
-  <schema id="com.ubuntu.test.chewie" path="/com/ubuntu/test/chewie/">
-    <key name="somestring" type="s">
-      <default>'asdasds'</default>
-      <summary>DPI</summary>
-      <description>The resolution used for converting font sizes to pixel sizes, in dots per inch.</description>
-    </key>
-  </schema>
-</schemalist>

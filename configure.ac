@@ -1,11 +1,11 @@
 
-AC_INIT(chewie, 0.2, alberto.ruiz@canonical.com)
-AC_COPYRIGHT([Copyright 2011,2012 Canonical])
+AC_INIT(indicator-network, 0.5, alberto.ruiz@canonical.com)
+AC_COPYRIGHT([Copyright 2011,2012,2013 Canonical])
 
 AC_PREREQ(2.62)
 
 AM_CONFIG_HEADER(config.h)
-AM_INIT_AUTOMAKE(chewie, 0.2.7)
+AM_INIT_AUTOMAKE(indicator-network, 0.5.0)
 
 AM_MAINTAINER_MODE
 
@@ -130,13 +130,7 @@ AM_CONDITIONAL([HAVE_DBUSMOCK],[test "x$HAVE_PYMOD_DBUSMOCK" = "xyes"])
 
 AC_OUTPUT([
 Makefile
-data/Makefile
 network/Makefile
 secret-agent/Makefile
-sound/Makefile
 test/Makefile
 ])
-#test/data/Makefile
-#test/data/glib-2.0/Makefile
-#test/data/glib-2.0/schemas/Makefile
-#exportmenu/Makefile

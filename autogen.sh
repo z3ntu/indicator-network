@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU General Public License along 
 # with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-PKG_NAME="chewie"
+PKG_NAME="indicator-network"
 
 which gnome-autogen.sh || {
 	echo "You need gnome-common from GNOME GIT"

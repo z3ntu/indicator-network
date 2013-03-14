@@ -1,9 +1,0 @@
-<settings>
-	<group id="com.ubuntu.test.chewie"
-	       name="Chewie tests"
-	       tablet:icon="time.png">
-		<display_name>General</display_name>
-                <key type="s" name="somestring">
-		</key>
-	</group>
-</settings>

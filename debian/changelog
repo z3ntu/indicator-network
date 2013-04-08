@@ -1,29 +1,45 @@
-chewie (0.2.8) quantal; urgency=low
+indicator-network (0.2.8-0ubuntu1) UNRELEASED; urgency=low
+
+  * debian/copyright: update, fix license texts, we use (L)GPL-3, not "and
+    later" versions.
+  * debian/changelog: use the right version number for non-native package, name
+    to indicator-network properly.
+  * debian/control:
+    - Update Vcs-Bzr, Vcs-Browser, add notice to developers. 
+  * debian/rules:
+    - Reorder targets.
+    - Add DPKG_GENSYMBOLS_CHECK_LEVEL.
+    - Clean *.la, *.a files.
+    - Drop the override for dh_auto_test.
+
+ -- Mathieu Trudel-Lapierre <mathieu-tl@ubuntu.com>  Mon, 08 Apr 2013 14:57:37 -0400
+
+indicator-network (0.2.8) quantal; urgency=low
 
   [ Michael Zanetti ]
   * fix licensing issues
 
  -- Michał Sawicz <michal.sawicz@canonical.com>  Thu, 21 Feb 2013 00:52:58 +0100
 
-chewie (0.2.7) quantal; urgency=low
+indicator-network (0.2.7) quantal; urgency=low
 
   * Root item support added in the network menu
 
  -- Alberto ruiz <alberto.ruiz@canonical.com>  Fri, 08 Feb 2013 17:54:56 +0000
 
-chewie (0.2.6) quantal; urgency=low
+indicator-network (0.2.6) quantal; urgency=low
 
   * Group volume controls into a section
 
  -- Lars Uebernickel <lars.uebernickel@ubuntu.com>  Fri, 07 Dec 2012 15:06:45 +0000
 
-chewie (0.2.5) quantal; urgency=low
+indicator-network (0.2.5) quantal; urgency=low
 
   * Updated widget type property name to the value specified in the spec.
 
  -- Renato Araujo Oliveira Filho <renato@canonical.com>  Tue, 27 Nov 2012 15:47:29 -0300
 
-chewie (0.2.4) quantal; urgency=low
+indicator-network (0.2.4) quantal; urgency=low
 
   [ Alberto Ruiz ]
   * Add python-dbusmock tests.
@@ -36,7 +52,7 @@ chewie (0.2.4) quantal; urgency=low
 
  -- Ricardo Mendoza <ricardo.mendoza@canonical.com>  Thu, 22 Nov 2012 15:02:11 -0430
 
-chewie (0.2.3) quantal; urgency=low
+indicator-network (0.2.3) quantal; urgency=low
 
   [ Alberto Ruiz ]
   * Memory management fixes in secret-agent.
@@ -44,27 +60,27 @@ chewie (0.2.3) quantal; urgency=low
 
  -- Olivier Tilloy <olivier.tilloy@canonical.com>  Fri, 02 Nov 2012 12:36:37 +0100
 
-chewie (0.2.2) quantal; urgency=low
+indicator-network (0.2.2) quantal; urgency=low
 
   [ Alberto Ruiz ]
   * Version bump 
 
  -- Olivier Tilloy <olivier.tilloy@canonical.com>  Tue, 30 Oct 2012 23:53:28 +0100
 
-chewie (0.2.1-0precise1) precise; urgency=low
+indicator-network (0.2.1-0precise1) precise; urgency=low
 
   * New snapshot from tag 0.2.1
 
  -- Ken VanDine <ken.vandine@canonical.com>  Fri, 08 Jun 2012 13:33:38 -0400
 
-chewie (0.0-0precise1) precise; urgency=low
+indicator-network (0.0-0precise1) precise; urgency=low
 
   * debian/rules
     - override auto_test
 
  -- Ken VanDine <ken.vandine@canonical.com>  Tue, 13 Mar 2012 15:18:54 -0400
 
-chewie (0.0) precise; urgency=low
+indicator-network (0.0) precise; urgency=low
 
   * Initial package
 

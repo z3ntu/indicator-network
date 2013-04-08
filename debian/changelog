@@ -6,6 +6,8 @@ indicator-network (0.2.8-0ubuntu1) UNRELEASED; urgency=low
     to indicator-network properly.
   * debian/control:
     - Update Vcs-Bzr, Vcs-Browser, add notice to developers. 
+    - Add python3 to Build-Depends.
+    - Drop libpulse-dev from Build-Depends.
   * debian/rules:
     - Reorder targets.
     - Add DPKG_GENSYMBOLS_CHECK_LEVEL.

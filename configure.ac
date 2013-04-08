@@ -122,6 +122,7 @@ AM_CONDITIONAL([HAVE_DBUSMOCK],[test "x$HAVE_PYMOD_DBUSMOCK" = "xyes"])
 
 AC_OUTPUT([
 Makefile
+data/Makefile
 network/Makefile
 secret-agent/Makefile
 test/Makefile

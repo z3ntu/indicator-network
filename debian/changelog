@@ -8,12 +8,13 @@ indicator-network (0.2.8-0ubuntu1) UNRELEASED; urgency=low
     - Update Vcs-Bzr, Vcs-Browser, add notice to developers. 
     - Add python3 to Build-Depends.
     - Add python3-dbusmock to Build-Depends.
+    - Add dbus-test-runner to Build-Depends.
     - Drop libpulse-dev from Build-Depends.
   * debian/rules:
     - Reorder targets.
     - Add DPKG_GENSYMBOLS_CHECK_LEVEL.
     - Clean *.la, *.a files.
-    - Drop the override for dh_auto_test.
+    - Run tests within dbus-test-runner.
 
  -- Mathieu Trudel-Lapierre <mathieu-tl@ubuntu.com>  Mon, 08 Apr 2013 14:57:37 -0400
 

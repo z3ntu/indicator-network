@@ -7,6 +7,7 @@ indicator-network (0.2.8-0ubuntu1) UNRELEASED; urgency=low
   * debian/control:
     - Update Vcs-Bzr, Vcs-Browser, add notice to developers. 
     - Add python3 to Build-Depends.
+    - Add python3-dbusmock to Build-Depends.
     - Drop libpulse-dev from Build-Depends.
   * debian/rules:
     - Reorder targets.

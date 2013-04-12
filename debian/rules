@@ -16,3 +16,6 @@ override_dh_install:
 	find $(CURDIR) -name \*.a -delete
 	dh_install --list-missing
 
+override_dh_auto_test:
+	dbus-test-runner -t dh_auto_test
+

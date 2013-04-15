@@ -76,14 +76,6 @@ PKG_CHECK_MODULES(GTK, gtk+-3.0 >= $GTK_REQUIRED_VERSION)
 AC_SUBST(GTK_LIBS)
 AC_SUBST(NM_CFLAGS)
 
-############################
-# Dependencies - PulseAudio
-############################
-
-PULSE_REQUIRED_VERSION=1.1
-PKG_CHECK_MODULES(PULSE, libpulse               >= $PULSE_REQUIRED_VERSION
-                         libpulse-mainloop-glib >= $PULSE_REQUIRED_VERSION)
-
 ###########################
 # Vala Compiler
 ###########################
@@ -130,6 +122,7 @@ AM_CONDITIONAL([HAVE_DBUSMOCK],[test "x$HAVE_PYMOD_DBUSMOCK" = "xyes"])
 
 AC_OUTPUT([
 Makefile
+data/Makefile
 network/Makefile
 secret-agent/Makefile
 test/Makefile

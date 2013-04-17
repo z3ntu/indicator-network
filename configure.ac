@@ -1,5 +1,5 @@
 
-AC_INIT(indicator-network, 0.5, alberto.ruiz@canonical.com)
+AC_INIT(indicator-network, 0.5, ted@canonical.com)
 AC_COPYRIGHT([Copyright 2011,2012,2013 Canonical])
 
 AC_PREREQ(2.62)

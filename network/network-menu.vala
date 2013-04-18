@@ -22,8 +22,8 @@ using NM;
 
 namespace Unity.Settings.Network
 {
-	private const string APPLICATION_ID  = "com.canonical.settings.network";
-	private const string PHONE_MENU_PATH = "/com/canonical/settings/network/phone";
+	private const string APPLICATION_ID  = "com.canonical.indicator.network";
+	private const string PHONE_MENU_PATH = "/com/canonical/indicator/network/phone";
 
 	internal class WifiMenu
 	{

@@ -24,6 +24,7 @@ namespace Unity.Settings.Network
 {
 	private const string APPLICATION_ID  = "com.canonical.indicator.network";
 	private const string PHONE_MENU_PATH = "/com/canonical/indicator/network/phone";
+	private const string DESKTOP_MENU_PATH = "/com/canonical/indicator/network/desktop";
 
 	internal class WifiMenu
 	{
@@ -300,6 +301,7 @@ namespace Unity.Settings.Network
 			{
 				var conn = Bus.get_sync (BusType.SESSION, null);
 				conn.export_menu_model (PHONE_MENU_PATH, root_menu);
+				conn.export_menu_model (DESKTOP_MENU_PATH, root_menu);
 			}
 			catch (GLib.IOError e)
 			{

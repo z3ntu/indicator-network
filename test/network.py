@@ -74,66 +74,31 @@ class TestNetworkMenu(dbusmock.DBusTestCase):
         self.p_mock.terminate()
         self.p_mock.wait()
 
-
-    def start_menu_server(self):
-        self.menuserver = subprocess.Popen(['indicator-network-menu-server'])
-        time.sleep (1.0)
-
-    def stop_menu_server(self):
-        self.menuserver.terminate()
-        self.menuserver.wait()
-
-    def add_aps (self, wifi_dev, aps):
-        for ap in aps:
-            self.dbusmock.AddAccessPoint(wifi_dev, ap[0], ap[1], ap[2], ap[3], ap[4], ap[5], ap[6], ap[7])
-
-    def get_actions_and_menus(self):
-        bus = dbus.SessionBus()
-        actions = bus.get_object('com.canonical.settings.network',
-                                 '/com/canonical/settings/network')
-        phone   = bus.get_object('com.canonical.settings.network',
-                                 '/com/canonical/settings/network/phone')
-
-        actions_iface    = dbus.Interface(actions, dbus_interface='org.gtk.Actions')
-        phone_menu_iface = dbus.Interface(phone,   dbus_interface='org.gtk.Menus')
-
-        return (actions_iface, phone_menu_iface)
-
     def test_phone_one_wlan(self):
         aps   = ['mock_ap',]
         wifi1 = self.dbusmock.AddWiFiDevice('mock_wifi0', 'wlan0', ACTIVATED)
 
-        self.dbusmock.AddAccessPoint(wifi1, 'mock_ap',
+        self.dbusmock.AddAccessPoint (wifi1, 'mock_ap',
                 'myap', '00:23:f8:7e:12:ba', 0, 2425, 5400, 80, 0x400)
         
-        self.start_menu_server()
+        p = subprocess.Popen(['indicator-network-menu-server'])
+        time.sleep (0.6)
 
-        actions, menus = self.get_actions_and_menus ()
+        bus = dbus.SessionBus ()
 
-        check_aps_actions(self, actions.List(), aps)
-        check_aps_in_menu(self, menus.Start([0, 1]), aps)
+        actions = bus.get_object ('com.canonical.settings.network',
+                                  '/com/canonical/settings/network')
+        phone   = bus.get_object ('com.canonical.settings.network',
+                                  '/com/canonical/settings/network/phone')
 
-        self.stop_menu_server()
+        actions_iface    = dbus.Interface(actions, dbus_interface='org.gtk.Actions')
+        phone_menu_iface = dbus.Interface(phone,   dbus_interface='org.gtk.Menus')
 
-    def test_phone_duplicated_aps(self):
-        # ap path name, ssid, hw address, mode, freq, rate, strength, security
-        aps = [('1', 'ap1', '00:23:f8:7e:12:00', 0, 2425, 5400, 50, 0x400),
-               ('2', 'ap1', '00:23:f8:7e:12:01', 0, 2425, 5400, 80, 0x400),
-               ('3', 'ap1', '00:23:f8:7e:12:02', 0, 2425, 5400, 90, 0x400),
-               ('4', 'ap1', '00:23:f8:7e:12:03', 0, 2425, 5400, 40, 0x400),
-               ('5', 'ap1', '00:23:f8:7e:12:04', 0, 2425, 5400, 50, 0x400),]
+        check_aps_actions (self, actions_iface.List(), aps)
+        check_aps_in_menu (self, phone_menu_iface.Start([0, 1]), aps)
 
-        wifi1 = self.dbusmock.AddWiFiDevice('mock_wifi0', 'wlan0', ACTIVATED)
-
-        self.add_aps(wifi1, aps)
-
-        actions, menus = self.get_actions_and_menus ()
-
-        print (actions.List())
-
-        self.start_menu_server()
-        self.stop_menu_server()
-
+        p.terminate()
+        p.wait()
 
 if __name__ == '__main__':
     unittest.main(testRunner=unittest.TextTestRunner(stream=sys.stdout, verbosity=2))

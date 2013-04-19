@@ -320,8 +320,8 @@ namespace Unity.Settings.Network
 			am        = new ActionManager (this, client);
 
 			root_item = new MenuItem.submenu (null, gmenu as MenuModel);
-			root_item.set_attribute (GLib.Menu.ATTRIBUTE_ACTION, "s", "network-status");
-			root_item.set_attribute ("x-canonical-type", "s", "com.canonical.indicator.root.network");
+			root_item.set_attribute (GLib.Menu.ATTRIBUTE_ACTION, "s", "indicator.network-status");
+			root_item.set_attribute ("x-canonical-type", "s", "com.canonical.indicator.root");
 			root_menu.append_item (root_item);
 
 			var devices = client.get_devices ();

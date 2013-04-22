@@ -385,17 +385,29 @@ namespace Unity.Settings.Network
 
 		private void set_conn_status_wifi (uint8 strength)
 		{
-			if (strength < 10) {
-				conn_status.set_state (new Variant ("(sssb)", "", "nm-signal-25", "Network (wireless, 10%)", true));
-			} else if (strength < 30) {
-				conn_status.set_state (new Variant ("(sssb)", "", "nm-signal-25", "Network (wireless, 25%)", true));
-			} else if (strength < 50) {
-				conn_status.set_state (new Variant ("(sssb)", "", "nm-signal-50", "Network (wireless, 50%)", true));
-			} else if (strength < 70) {
-				conn_status.set_state (new Variant ("(sssb)", "", "nm-signal-75", "Network (wireless, 75%)", true));
+			bool secure = act_ap.get_wpa_flags() != 0;
+
+			string a11y_name;
+			if (secure) {
+				a11y_name = "Network (wireless, %d%, secure)".printf(strength);
 			} else {
-				conn_status.set_state (new Variant ("(sssb)", "", "nm-signal-100", "Network (wireless, 100%)", true));
+				a11y_name = "Network (wireless, %d%)".printf(strength);
 			}
+
+			string icon_name;
+			if (strength < 10) {
+				icon_name = secure ? "nm-signal-00-secure" : "nm-signal-00";
+			} else if (strength < 30) {
+				icon_name = secure ? "nm-signal-25-secure" : "nm-signal-25";
+			} else if (strength < 50) {
+				icon_name = secure ? "nm-signal-50-secure" : "nm-signal-50";
+			} else if (strength < 70) {
+				icon_name = secure ? "nm-signal-70-secure" : "nm-signal-70";
+			} else {
+				icon_name = secure ? "nm-signal-100-secure" : "nm-signal-100";
+			}
+
+			conn_status.set_state (new Variant ("(sssb)", "", icon_name, a11y_name, true));
 		}
 
 		private void set_wifi_device ()

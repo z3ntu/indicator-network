@@ -385,11 +385,13 @@ namespace Unity.Settings.Network
 
 		private void set_conn_status_wifi (uint8 strength)
 		{
-			if (strength < 64) {
+			if (strength < 10) {
+				conn_status.set_state (new Variant ("(sssb)", "", "nm-signal-25", "Network (wireless, 10%)", true));
+			} else if (strength < 30) {
 				conn_status.set_state (new Variant ("(sssb)", "", "nm-signal-25", "Network (wireless, 25%)", true));
-			} else if (strength < 128) {
+			} else if (strength < 50) {
 				conn_status.set_state (new Variant ("(sssb)", "", "nm-signal-50", "Network (wireless, 50%)", true));
-			} else if (strength < 192) {
+			} else if (strength < 70) {
 				conn_status.set_state (new Variant ("(sssb)", "", "nm-signal-75", "Network (wireless, 75%)", true));
 			} else {
 				conn_status.set_state (new Variant ("(sssb)", "", "nm-signal-100", "Network (wireless, 100%)", true));

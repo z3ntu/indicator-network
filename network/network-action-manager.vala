@@ -395,17 +395,23 @@ namespace Unity.Settings.Network
 				a11y_name = "Network (wireless, %d%)".printf(strength);
 			}
 
-			string icon_name;
 			if (strength > 70 || (last_wifi_strength == 100 && strength > 65)) {
-				icon_name = secure ? "nm-signal-100-secure" : "nm-signal-100";
+				last_wifi_strength = 100;
 			} else if (strength > 50 || (last_wifi_strength == 75 && strength > 45)) {
-				icon_name = secure ? "nm-signal-75-secure" : "nm-signal-75";
+				last_wifi_strength = 75;
 			} else if (strength > 30 || (last_wifi_strength == 50 && strength > 25)) {
-				icon_name = secure ? "nm-signal-50-secure" : "nm-signal-50";
+				last_wifi_strength = 50;
 			} else if (strength > 10 || (last_wifi_strength == 25 && strength > 5)) {
-				icon_name = secure ? "nm-signal-25-secure" : "nm-signal-25";
+				last_wifi_strength = 25;
 			} else {
-				icon_name = secure ? "nm-signal-00-secure" : "nm-signal-00";
+				last_wifi_strength = 0;
+			}
+
+			string icon_name;
+			if (secure) {
+				icon_name = "nm-signal-%d-secure".printf(last_wifi_strength);
+			} else {
+				icon_name = "nm-signal-%d".printf(last_wifi_strength);
 			}
 
 			conn_status.set_state (new Variant ("(sssb)", "", icon_name, a11y_name, true));

@@ -308,6 +308,7 @@ namespace Unity.Settings.Network
 		private SimpleAction             conn_status;
 		private NM.ActiveConnection?     act_conn = null;
 		private NM.AccessPoint?          act_ap   = null;
+		private int                      last_wifi_strength = 0;
 
 		public ActionManager (Application app, NM.Client client)
 		{
@@ -395,16 +396,16 @@ namespace Unity.Settings.Network
 			}
 
 			string icon_name;
-			if (strength < 10) {
-				icon_name = secure ? "nm-signal-00-secure" : "nm-signal-00";
-			} else if (strength < 30) {
-				icon_name = secure ? "nm-signal-25-secure" : "nm-signal-25";
-			} else if (strength < 50) {
-				icon_name = secure ? "nm-signal-50-secure" : "nm-signal-50";
-			} else if (strength < 70) {
-				icon_name = secure ? "nm-signal-70-secure" : "nm-signal-70";
-			} else {
+			if (strength > 70 || (last_wifi_strength == 100 && strength > 65)) {
 				icon_name = secure ? "nm-signal-100-secure" : "nm-signal-100";
+			} else if (strength > 50 || (last_wifi_strength == 75 && strength > 45)) {
+				icon_name = secure ? "nm-signal-75-secure" : "nm-signal-75";
+			} else if (strength > 30 || (last_wifi_strength == 50 && strength > 25)) {
+				icon_name = secure ? "nm-signal-50-secure" : "nm-signal-50";
+			} else if (strength > 10 || (last_wifi_strength == 25 && strength > 5)) {
+				icon_name = secure ? "nm-signal-25-secure" : "nm-signal-25";
+			} else {
+				icon_name = secure ? "nm-signal-00-secure" : "nm-signal-00";
 			}
 
 			conn_status.set_state (new Variant ("(sssb)", "", icon_name, a11y_name, true));

@@ -30,7 +30,7 @@
 #define UNITY_SETTINGS_SECRET_AGENT_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), UNITY_SETTINGS_TYPE_SECRET_AGENT, UnitySettingsSecretAgentClass))
 #define UNITY_SETTINGS_SECRET_AGENT_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), UNITY_SETTINGS_TYPE_SECRET_AGENT, UnitySettingsSecretAgentPrivate))
 
-#define AGENT_ID "com.canonical.settings.network.nm-agent"
+#define AGENT_ID "com.canonical.indicator.network.nm-agent"
 
 static gpointer unity_settings_secret_agent_parent_class = NULL;
 

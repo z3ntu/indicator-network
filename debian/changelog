@@ -10,6 +10,7 @@ indicator-network (0.2.8-0ubuntu1) UNRELEASED; urgency=low
     - Add python3-dbusmock to Build-Depends.
     - Add dbus-test-runner to Build-Depends.
     - Drop libpulse-dev from Build-Depends.
+    - Add indicators-client to Depends for indicator-network.
   * debian/rules:
     - Reorder targets.
     - Add DPKG_GENSYMBOLS_CHECK_LEVEL.

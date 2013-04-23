@@ -1,5 +1,6 @@
 indicator-network (0.2.8-0ubuntu1) UNRELEASED; urgency=low
 
+  * Automatic snapshot from revision 1 (bootstrap).
   * debian/copyright: update, fix license texts, we use (L)GPL-3, not "and
     later" versions.
   * debian/changelog: use the right version number for non-native package, name

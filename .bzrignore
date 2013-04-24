@@ -53,3 +53,4 @@ test/data/glib-2.0/schemas/gschemas.compiled
 data/com.canonical.settings.network.service
 data/com.canonical.settings.sound.service
 secret-agent/chewie-secret-agent
+data/indicator-network.conf

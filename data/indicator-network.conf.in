@@ -1,0 +1,7 @@
+description "Indicator Network Backend"
+
+start on indicators-loaded
+
+respawn
+
+exec @NETWORK_SERVICE@

@@ -28,7 +28,6 @@ Package: indicator-network
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         indicators-client,
 Description: Systems settings menu service - Network indicator
  The Indicator-network service is responsible for exporting the system settings
  menu through dbus.

@@ -22,8 +22,9 @@ using NM;
 
 namespace Unity.Settings.Network
 {
-	private const string APPLICATION_ID  = "com.canonical.settings.network";
-	private const string PHONE_MENU_PATH = "/com/canonical/settings/network/phone";
+	private const string APPLICATION_ID  = "com.canonical.indicator.network";
+	private const string PHONE_MENU_PATH = "/com/canonical/indicator/network/phone";
+	private const string DESKTOP_MENU_PATH = "/com/canonical/indicator/network/desktop";
 
 	internal class WifiMenu
 	{
@@ -300,6 +301,7 @@ namespace Unity.Settings.Network
 			{
 				var conn = Bus.get_sync (BusType.SESSION, null);
 				conn.export_menu_model (PHONE_MENU_PATH, root_menu);
+				conn.export_menu_model (DESKTOP_MENU_PATH, root_menu);
 			}
 			catch (GLib.IOError e)
 			{
@@ -318,8 +320,8 @@ namespace Unity.Settings.Network
 			am        = new ActionManager (this, client);
 
 			root_item = new MenuItem.submenu (null, gmenu as MenuModel);
-			root_item.set_attribute (GLib.Menu.ATTRIBUTE_ACTION, "s", "network-status");
-			root_item.set_attribute ("x-canonical-type", "s", "com.canonical.indicator.root.network");
+			root_item.set_attribute (GLib.Menu.ATTRIBUTE_ACTION, "s", "indicator.network-status");
+			root_item.set_attribute ("x-canonical-type", "s", "com.canonical.indicator.root");
 			root_menu.append_item (root_item);
 
 			var devices = client.get_devices ();

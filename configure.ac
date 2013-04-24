@@ -42,7 +42,7 @@ AC_SUBST(GLIB_LIBS)
 AC_SUBST(GLIB_CFLAGS)
 
 ###########################
-# Dependencies - Dbusmenu 
+# Dependencies - DBus
 ###########################
 
 DBUS_REQUIRED_VERSION=1.6
@@ -56,6 +56,13 @@ else
 fi
 
 AC_SUBST(DBUS_SERVICE_DIR)
+
+###############################
+# Dependencies - Indicator Dir
+###############################
+
+AC_ARG_WITH([indicator-dir], [AS_HELP_STRING([--with-indicator-dir=DIR], [Indicator directory [default=$prefix/share/unity/indicators]])], [], [with_indicator_dir=$prefix/share/unity/indicators])
+AC_SUBST([INDICATOR_DIR], [$with_indicator_dir])
 
 #################################
 # Dependencies - NetworkManager

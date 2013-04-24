@@ -353,8 +353,8 @@ namespace Unity.Settings.Network
 			 */
 
 			conn_status = new SimpleAction.stateful ("network-status",
-													 new VariantType ("(uuu)"),
-													 new Variant("(uuu)", 0,0,0));
+													 new VariantType ("(sssb)"),
+													 new Variant("(sssb)", "", "network-offline", "Network (none)", true));
 			app.add_action (conn_status);
 
 			client.notify["active-connections"].connect (active_connections_changed);
@@ -374,16 +374,29 @@ namespace Unity.Settings.Network
 						set_wifi_device ();
 						break;
 					case NM.DeviceType.ETHERNET:
-						conn_status.set_state (new Variant ("(uuu)", NM.DeviceType.ETHERNET, act_conn.state, 0));
+						conn_status.set_state (new Variant ("(sssb)", "", "network-wired", "Network (wired)", true));
 						break;
 					default:
-						conn_status.set_state (new Variant ("(uuu)", 0, 0, 0));
+						conn_status.set_state (new Variant ("(sssb)", "", "network-offline", "Network (none)", true));
 						break;
 				}
 			}
 			else
 			{
-				conn_status.set_state (new Variant ("(uuu)", 0, 0, 0));
+				conn_status.set_state (new Variant ("(sssb)", "", "network-offline", "Network (none)", true));
+			}
+		}
+
+		private void set_conn_status_wifi (uint8 strength)
+		{
+			if (strength < 64) {
+				conn_status.set_state (new Variant ("(sssb)", "", "nm-signal-25", "Network (wireless, 25%)", true));
+			} else if (strength < 128) {
+				conn_status.set_state (new Variant ("(sssb)", "", "nm-signal-50", "Network (wireless, 50%)", true));
+			} else if (strength < 192) {
+				conn_status.set_state (new Variant ("(sssb)", "", "nm-signal-75", "Network (wireless, 75%)", true));
+			} else {
+				conn_status.set_state (new Variant ("(sssb)", "", "nm-signal-100", "Network (wireless, 100%)", true));
 			}
 		}
 
@@ -402,7 +415,7 @@ namespace Unity.Settings.Network
 				}
 			}
 
-			conn_status.set_state (new Variant ("(uuu)", NM.DeviceType.WIFI, act_conn.state, strength));
+			set_conn_status_wifi(strength);
 		}
 
 		private void connection_state_changed (GLib.Object client, ParamSpec ps)
@@ -414,10 +427,13 @@ namespace Unity.Settings.Network
 					if (act_ap != null)
 						strength = act_ap.strength;
 
-					conn_status.set_state (new Variant ("(uuu)", get_device_type_from_connection (act_conn), act_conn.state, strength));
+					set_conn_status_wifi(strength);
+					break;
+				case NM.DeviceType.ETHERNET:
+					conn_status.set_state (new Variant ("(sssb)", "", "network-wired", "Network (wired)", true));
 					break;
 				default:
-					conn_status.set_state (new Variant ("(uuu)", get_device_type_from_connection (act_conn), act_conn.state, 0));
+					conn_status.set_state (new Variant ("(sssb)", "", "network-offline", "Network (none)", true));
 					break;
 			}
 		}
@@ -439,7 +455,7 @@ namespace Unity.Settings.Network
 			if (act_ap != null)
 				strength = act_ap.strength;
 
-			conn_status.set_state (new Variant ("(uuu)", NM.DeviceType.WIFI, act_conn.state, act_ap.strength));
+			set_conn_status_wifi(strength);
 		}
 
 		private void active_connections_changed (GLib.Object client, ParamSpec ps)

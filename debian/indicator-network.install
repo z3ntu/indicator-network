@@ -1,4 +1,0 @@
-usr/share/upstart/sessions/*
-usr/lib/*/indicator-network/*
-debian/indicator-network-crashdb.conf /etc/apport/crashdb.conf.d
-debian/source_indicator-network.py /usr/share/apport/package-hooks

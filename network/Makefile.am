@@ -17,13 +17,19 @@ indicator_network_menu_server_VALAFLAGS = --pkg libnm-glib
 
 indicator_network_menu_server_CFLAGS  = \
 			$(GLIB_CFLAGS) \
-			$(NM_CFLAGS)
+			$(NM_CFLAGS) \
+			$(COVERAGE_CFLAGS)
 indicator_network_menu_server_LDFLAGS   = \
 			$(GLIB_LIBS) \
-			$(NM_LIBS)
+			$(NM_LIBS) \
+			$(COVERAGE_LDFLAGS)
 
 indicator_network_menu_server_LDADD = \
 			libnetwork.la
 
-libnetwork_la_CFLAGS = $(indicator_network_menu_server_CFLAGS)
-libnetwork_la_LDFLAGS = $(indicator_network_menu_server_LDFLAGS)
+libnetwork_la_CFLAGS = \
+			$(indicator_network_menu_server_CFLAGS) \
+			$(COVERAGE_CFLAGS)
+libnetwork_la_LDFLAGS = \
+			$(indicator_network_menu_server_LDFLAGS) \
+			$(COVERAGE_LDFLAGS)

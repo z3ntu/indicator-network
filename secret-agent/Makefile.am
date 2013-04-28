@@ -9,8 +9,10 @@ indicator_secret_agent_SOURCES = \
 
 indicator_secret_agent_LDFLAGS = \
 	$(GTK_LIBS)           \
-	$(NM_LIBS)
+	$(NM_LIBS)            \
+	$(COVERAGE_LDFLAGS)
 
 indicator_secret_agent_CFLAGS = \
 	$(GTK_CFLAGS)        \
-	$(NM_CFLAGS)
+	$(NM_CFLAGS)         \
+	$(COVERAGE_CFLAGS)

@@ -14,6 +14,10 @@ override_dh_autoreconf:
 override_dh_install:
 	find $(CURDIR) -name \*.la -delete
 	find $(CURDIR) -name \*.a -delete
+	mkdir -p debian/indicator-network/etc/apport/crashdb.conf.d
+	cp debian/indicator-network-crashdb.conf debian/indicator-network/etc/apport/crashdb.conf.d
+	mkdir -p debian/indicator-network/usr/share/apport/package-hooks
+	cp debian/source_indicator-network.py debian/indicator-network/usr/share/apport/package-hooks
 	dh_install --list-missing
 
 override_dh_auto_test:

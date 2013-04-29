@@ -86,10 +86,10 @@ class TestNetworkMenu(dbusmock.DBusTestCase):
 
         bus = dbus.SessionBus ()
 
-        actions = bus.get_object ('com.canonical.settings.network',
-                                  '/com/canonical/settings/network')
-        phone   = bus.get_object ('com.canonical.settings.network',
-                                  '/com/canonical/settings/network/phone')
+        actions = bus.get_object ('com.canonical.indicator.network',
+                                  '/com/canonical/indicator/network')
+        phone   = bus.get_object ('com.canonical.indicator.network',
+                                  '/com/canonical/indicator/network/phone')
 
         actions_iface    = dbus.Interface(actions, dbus_interface='org.gtk.Actions')
         phone_menu_iface = dbus.Interface(phone,   dbus_interface='org.gtk.Menus')

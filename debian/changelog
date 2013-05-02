@@ -1,10 +1,10 @@
-indicator-network (0.5.0-0ubuntu1) UNRELEASED; urgency=low
+indicator-network (0.5.0-0ubuntu1) saucy; urgency=low
 
   [ Ken VanDine ]
   * Initial packaging
 
   [ Mathieu Trudel-Lapierre ]
-  * Automatic snapshot from revision 225 (bootstrap).
+  * Automatic snapshot from revision 243 (bootstrap).
   * debian/copyright: update, fix license texts, we use (L)GPL-3, not "and
     later" versions.
   * debian/changelog: use the right version number for non-native package, name
@@ -22,4 +22,4 @@ indicator-network (0.5.0-0ubuntu1) UNRELEASED; urgency=low
     - Clean *.la, *.a files.
     - Run tests within dbus-test-runner.
 
- -- Mathieu Trudel-Lapierre <mathieu-tl@ubuntu.com>  Mon, 08 Apr 2013 14:57:37 -0400
+ -- Mathieu Trudel-Lapierre <mathieu-tl@ubuntu.com>  Thu, 02 May 2013 16:01:57 -0700

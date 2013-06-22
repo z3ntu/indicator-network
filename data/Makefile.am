@@ -11,6 +11,6 @@ indicator-network.conf: indicator-network.conf.in Makefile
 	sed -e 's|@NETWORK_SERVICE[@]|$(pkglibdir)/indicator-network-menu-server|g' $< >$@
 
 indicatordir = $(INDICATOR_DIR)
-dist_indicator_DATA = network.indicator
+dist_indicator_DATA = com.canonical.indicator.network
 
 EXTRA_DIST += $(dist_indicator_DATA)

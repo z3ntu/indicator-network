@@ -1,9 +1,16 @@
-indicator-network (0.5.0-0ubuntu2) UNRELEASED; urgency=low
+indicator-network (0.5.0+13.10.20130703.1-0ubuntu1) saucy; urgency=low
 
+  [ Jeremy Bicha ]
   * debian/control:
     - Build with valac (>= 0.18) instead of vala-0.18 for easier transitions 
  
- -- Jeremy Bicha <jbicha@ubuntu.com>  Thu, 06 Jun 2013 11:53:16 -0400
+  [ Ted Gould ]
+  * Migrating to new libindicator format.
+
+  [ Ubuntu daily release ]
+  * Automatic snapshot from revision 246
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Wed, 03 Jul 2013 14:16:41 +0000
 
 indicator-network (0.5.0-0ubuntu1) saucy; urgency=low
 

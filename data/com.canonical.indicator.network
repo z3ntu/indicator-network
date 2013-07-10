@@ -1,0 +1,9 @@
+[Indicator Service]
+Name=indicator-network
+ObjectPath=/com/canonical/indicator/network
+
+[desktop]
+ObjectPath=/com/canonical/indicator/network/desktop
+
+[phone]
+ObjectPath=/com/canonical/indicator/network/phone

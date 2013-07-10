@@ -1,16 +1,16 @@
-dbusservicedir = $(DBUS_SERVICE_DIR)
-dbusservice_DATA = \
-	com.canonical.indicator.network.service
+upstartjobdir = $(datadir)/upstart/sessions/
+upstartjob_DATA = \
+	indicator-network.conf
 
 EXTRA_DIST = \
-	    com.canonical.indicator.network.service.in
+	    indicator-network.conf.in
 
-CLEANFILES = $(dbusservice_DATA)
+CLEANFILES = $(upstartjob_DATA)
 
-com.canonical.indicator.network.service: com.canonical.indicator.network.service.in Makefile
+indicator-network.conf: indicator-network.conf.in Makefile
 	sed -e 's|@NETWORK_SERVICE[@]|$(pkglibdir)/indicator-network-menu-server|g' $< >$@
 
 indicatordir = $(INDICATOR_DIR)
-dist_indicator_DATA = network.indicator
+dist_indicator_DATA = com.canonical.indicator.network
 
 EXTRA_DIST += $(dist_indicator_DATA)

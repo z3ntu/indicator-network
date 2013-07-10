@@ -1,0 +1,12 @@
+description "Indicator Network Backend"
+author "Ted Gould <ted@canonical.com>"
+
+start on indicators-loaded
+stop on desktop-end
+
+env G_MESSAGES_DEBUG=all
+export G_MESSAGES_DEBUG
+
+respawn
+
+exec @NETWORK_SERVICE@

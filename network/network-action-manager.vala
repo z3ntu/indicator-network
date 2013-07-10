@@ -172,6 +172,8 @@ namespace Unity.Settings.Network
 			if (app.lookup_action (ap.get_path ()) != null)
 				return;
 
+			GLib.debug("Adding new access point: " + ap.get_bssid() + " at " + ap.get_path());
+
 			//TODO: Add actions for each AP NM connection
 			var strength_action_id = ap.get_path () + "::strength";
 			ap.notify.connect (ap_strength_changed);
@@ -193,6 +195,8 @@ namespace Unity.Settings.Network
 
 		private void remove_ap (NM.AccessPoint ap)
 		{
+			GLib.debug("Removing access point: " + ap.get_bssid() + " at " + ap.get_path());
+
 			//TODO: Check if AP has connection action
 			app.remove_action (ap.get_path ());
 			app.remove_action (ap.get_path () + "::strength");

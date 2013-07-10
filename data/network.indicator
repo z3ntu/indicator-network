@@ -1,4 +1,0 @@
-[Indicator Service]
-Name=indicator-network
-BusName=com.canonical.indicator.network
-ObjectPath=/com/canonical/indicator/network

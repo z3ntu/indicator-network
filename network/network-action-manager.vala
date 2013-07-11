@@ -312,6 +312,7 @@ namespace Unity.Settings.Network
 		private SimpleAction             conn_status;
 		private NM.ActiveConnection?     act_conn = null;
 		private NM.AccessPoint?          act_ap   = null;
+		private int                      last_wifi_strength = 0;
 
 		public ActionManager (Application app, NM.Client client)
 		{
@@ -389,15 +390,35 @@ namespace Unity.Settings.Network
 
 		private void set_conn_status_wifi (uint8 strength)
 		{
-			if (strength < 64) {
-				conn_status.set_state (new Variant ("(sssb)", "", "nm-signal-25", "Network (wireless, 25%)", true));
-			} else if (strength < 128) {
-				conn_status.set_state (new Variant ("(sssb)", "", "nm-signal-50", "Network (wireless, 50%)", true));
-			} else if (strength < 192) {
-				conn_status.set_state (new Variant ("(sssb)", "", "nm-signal-75", "Network (wireless, 75%)", true));
+			bool secure = act_ap.get_wpa_flags() != 0;
+
+			string a11y_name;
+			if (secure) {
+				a11y_name = "Network (wireless, %d%, secure)".printf(strength);
 			} else {
-				conn_status.set_state (new Variant ("(sssb)", "", "nm-signal-100", "Network (wireless, 100%)", true));
+				a11y_name = "Network (wireless, %d%)".printf(strength);
 			}
+
+			if (strength > 70 || (last_wifi_strength == 100 && strength > 65)) {
+				last_wifi_strength = 100;
+			} else if (strength > 50 || (last_wifi_strength == 75 && strength > 45)) {
+				last_wifi_strength = 75;
+			} else if (strength > 30 || (last_wifi_strength == 50 && strength > 25)) {
+				last_wifi_strength = 50;
+			} else if (strength > 10 || (last_wifi_strength == 25 && strength > 5)) {
+				last_wifi_strength = 25;
+			} else {
+				last_wifi_strength = 0;
+			}
+
+			string icon_name;
+			if (secure) {
+				icon_name = "nm-signal-%d-secure".printf(last_wifi_strength);
+			} else {
+				icon_name = "nm-signal-%d".printf(last_wifi_strength);
+			}
+
+			conn_status.set_state (new Variant ("(sssb)", "", icon_name, a11y_name, true));
 		}
 
 		private void set_wifi_device ()

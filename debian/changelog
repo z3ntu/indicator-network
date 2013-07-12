@@ -1,3 +1,14 @@
+indicator-network (0.5.0+13.10.20130712-0ubuntu1) saucy; urgency=low
+
+  [ Ted Gould ]
+  * Change the name of the service to match others and make the icon
+    more robust.
+
+  [ Ubuntu daily release ]
+  * Automatic snapshot from revision 248
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Fri, 12 Jul 2013 02:03:10 +0000
+
 indicator-network (0.5.0+13.10.20130703.1-0ubuntu1) saucy; urgency=low
 
   [ Jeremy Bicha ]

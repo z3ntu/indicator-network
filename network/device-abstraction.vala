@@ -18,12 +18,11 @@
  *      Ted Gould <ted.gould@canonical.com>
  */
 
-using NM;
-
 namespace Unity.Settings.Network
 {
 
 	public class DeviceAbstraction : MenuModel {
+		NM.Client _client;
 		NM.Device _device;
 		string _namespace;
 		GLibLocal.ActionMuxer _muxer;
@@ -35,6 +34,16 @@ namespace Unity.Settings.Network
 			}
 			get {
 				return _device;
+			}
+		}
+
+		public NM.Client client {
+			construct {
+				_client = value;
+				return;
+			}
+			get {
+				return _client;
 			}
 		}
 

@@ -88,7 +88,7 @@ namespace Unity.Settings.Network
 			switch (device.get_device_type ())
 			{
 				case NM.DeviceType.WIFI:
-					return new DeviceAbstractionWifi(device as NM.DeviceWifi, this.muxer);
+					return new DeviceAbstractionWifi(this.client, device as NM.DeviceWifi, this.muxer);
 				default:
 					warning("Unsupported device type");
 					break;

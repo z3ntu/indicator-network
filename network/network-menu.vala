@@ -113,6 +113,7 @@ namespace Unity.Settings.Network
 			if (founddev == null) {
 				founddev = device2abstraction(device);
 				if (founddev != null) {
+					/* TODO: We really need to sort these.  For now it's fine. */
 					gmenu.append_section(null, founddev);
 				}
 

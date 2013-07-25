@@ -276,7 +276,7 @@ namespace Unity.Settings.Network
 	public class DeviceAbstractionWifi : DeviceAbstraction {
 		GLib.SimpleActionGroup wifiactions = new GLib.SimpleActionGroup();
 
-		DeviceAbstractionWifi (NM.DeviceWifi device, GLibLocal.ActionMuxer muxer) {
+		public DeviceAbstractionWifi (NM.DeviceWifi device, GLibLocal.ActionMuxer muxer) {
 			GLib.Object(
 				device: device,
 				namespace: device.get_iface(),

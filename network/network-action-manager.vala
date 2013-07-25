@@ -20,7 +20,7 @@
 
 using NM;
 
-namespace Unity.Settings.Network
+namespace Network
 {
 	internal class WifiActionManager
 	{

@@ -33,7 +33,6 @@ namespace Unity.Settings.Network
 		private Menu            gmenu;
 		private NM.Client       client;
 		private ActionManager   am;
-		private List<DeviceAbstraction> device_menus;
 		private GLibLocal.ActionMuxer muxer = new GLibLocal.ActionMuxer();
 
 		public NetworkMenu ()
@@ -102,7 +101,9 @@ namespace Unity.Settings.Network
 		{
 			DeviceAbstraction? founddev = null;
 
-			foreach (var dev in device_menus) {
+			for (int i = 0; i < (gmenu as MenuModel).get_n_items(); i++) {
+				var dev = (gmenu as MenuModel).get_item_link(i, Menu.LINK_SECTION) as DeviceAbstraction;
+
 				if (dev.device.get_path() == device.get_path()) {
 					founddev = dev;
 					break;
@@ -112,7 +113,7 @@ namespace Unity.Settings.Network
 			if (founddev == null) {
 				founddev = device2abstraction(device);
 				if (founddev != null) {
-					device_menus.append(founddev);
+					gmenu.append_section(null, founddev);
 				}
 
 			}
@@ -120,9 +121,11 @@ namespace Unity.Settings.Network
 
 		private void remove_device (NM.Device device)
 		{
-			foreach (var dev in device_menus) {
+			for (int i = 0; i < (gmenu as MenuModel).get_n_items(); i++) {
+				var dev = (gmenu as MenuModel).get_item_link(i, Menu.LINK_SECTION) as DeviceAbstraction;
+
 				if (dev.device.get_path() == device.get_path()) {
-					device_menus.remove(dev);
+					gmenu.remove(i);
 					break;
 				}
 			}

@@ -1,10 +1,9 @@
-bin_PROGRAMS = indicator-network-service
+pkglibexec_PROGRAMS = indicator-network-service
 noinst_LTLIBRARIES = libnetwork.la
 noinst_HEADERS     = libnetwork.h
 
 libnetwork_la_SOURCES = network-action-manager.vala network-menu.vala
 
-bindir = $(libdir)/$(PACKAGE_NAME)
 indicator_network_service_SOURCES = \
 	network-menu-service.vala    \
 	libnetwork.vapi

@@ -33,7 +33,7 @@ namespace Unity.Settings.Network
 		private Menu            gmenu;
 		private NM.Client       client;
 		private ActionManager   am;
-		private List<DeviceAbstraction*> device_menus;
+		private List<DeviceAbstraction> device_menus;
 		private GLibLocal.ActionMuxer muxer = new GLibLocal.ActionMuxer();
 
 		public NetworkMenu ()
@@ -100,93 +100,31 @@ namespace Unity.Settings.Network
 
 		private void add_device (NM.Device device)
 		{
-			device.state_changed.connect (device_state_changed);
-			switch (device.get_device_type ())
-			{
-				case NM.DeviceType.WIFI:
-					add_wifi_device ((NM.DeviceWifi)device);
+			DeviceAbstraction? founddev = null;
+
+			foreach (var dev in device_menus) {
+				if (dev.device.get_path() == device.get_path()) {
+					founddev = dev;
 					break;
+				}
+			}
+
+			if (founddev == null) {
+				founddev = device2abstraction(device);
+				if (founddev != null) {
+					device_menus.append(founddev);
+				}
+
 			}
 		}
 
 		private void remove_device (NM.Device device)
 		{
-			device.state_changed.disconnect (device_state_changed);
-			switch (device.get_device_type ())
-			{
-				case NM.DeviceType.WIFI:
-					remove_wifi_device ((NM.DeviceWifi)device);
-					break;
-			}
-		}
-
-		private void add_wifi_device (NM.DeviceWifi device)
-		{
-			for (int i = 0; i < gmenu.get_n_items (); i++)
-			{
-				string path;
-
-				if (!gmenu.get_item_attribute (i, "x-canonical-wifi-device-path", "s", out path))
-					continue;
-				if (path == device.get_path ())
-					return;
-			}
-
-			// device_menus.append (new WifiMenu (client, device, gmenu, this));
-		}
-
-		private void remove_wifi_device (NM.DeviceWifi device)
-		{
-			//TODO: Move this code to WifiMenu
-			if (device == null)
-				return;
-
-			for (int i = 0; i < gmenu.get_n_items (); i++)
-			{
-				string path;
-
-				if (!gmenu.get_item_attribute (i, "x-canonical-wifi-device-path", "s", out path))
-					continue;
-				if (path != device.get_path ())
-					continue;
-
-				gmenu.remove (i);
-				break;
-			}
-
-			for (uint i = 0; i < device_menus.length (); i++)
-			{
-				var wifimenu = device_menus.nth_data (i);
-				if (wifimenu         != null &&
-					wifimenu->device != null &&
-					wifimenu->device.get_path () == device.get_path ())
-				{
-					device_menus.remove (wifimenu);
-					delete wifimenu;
+			foreach (var dev in device_menus) {
+				if (dev.device.get_path() == device.get_path()) {
+					device_menus.remove(dev);
 					break;
 				}
-			}
-		}
-
-		private void device_state_changed (NM.Device  device,
-		                                   uint       new_state,
-		                                   uint       old_state,
-		                                   uint       reason)
-		{
-			var type = device.get_device_type ();
-
-			switch (new_state)
-			{
-				case NM.DeviceState.UNAVAILABLE:
-				case NM.DeviceState.UNKNOWN:
-				case NM.DeviceState.UNMANAGED:
-					if (type == NM.DeviceType.WIFI)
-						remove_wifi_device ((NM.DeviceWifi)device);
-					break;
-				default:
-					if (type == NM.DeviceType.WIFI)
-						add_wifi_device ((NM.DeviceWifi)device);
-					break;
 			}
 		}
 	}

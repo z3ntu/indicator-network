@@ -34,6 +34,7 @@ namespace Unity.Settings.Network
 		private NM.Client       client;
 		private ActionManager   am;
 		private List<DeviceAbstraction*> device_menus;
+		private GLibLocal.ActionMuxer muxer = new GLibLocal.ActionMuxer();
 
 		public NetworkMenu ()
 		{
@@ -81,6 +82,20 @@ namespace Unity.Settings.Network
 			{
 				add_device (devices.get (i));
 			}
+		}
+
+		private DeviceAbstraction? device2abstraction (NM.Device device)
+		{
+			switch (device.get_device_type ())
+			{
+				case NM.DeviceType.WIFI:
+					return new DeviceAbstractionWifi(device as NM.DeviceWifi, this.muxer);
+				default:
+					warning("Unsupported device type");
+					break;
+			}
+
+			return null;
 		}
 
 		private void add_device (NM.Device device)

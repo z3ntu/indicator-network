@@ -5,7 +5,7 @@ noinst_HEADERS     = libnetwork.h
 libnetwork_la_SOURCES = \
 	network-action-manager.vala \
 	network-menu.vala \
-	device-abstraction.vala \
+	device-base.vala \
 	device-wifi.vala \
 	action-muxer.c \
 	action-muxer.h \

@@ -18,10 +18,10 @@
  *      Ted Gould <ted.gould@canonical.com>
  */
 
-namespace Unity.Settings.Network
+namespace Network.Device
 {
 
-	public class DeviceAbstraction : MenuModel {
+	public class Base : MenuModel {
 		NM.Client _client;
 		NM.Device _device;
 		string _namespace;

@@ -20,7 +20,7 @@
 
 using NM;
 
-namespace Unity.Settings.Network
+namespace Network.Device
 {
 	internal class WifiMenu
 	{
@@ -273,10 +273,10 @@ namespace Unity.Settings.Network
 		}
 	}
 
-	public class DeviceAbstractionWifi : DeviceAbstraction {
+	public class Wifi : Base {
 		GLib.SimpleActionGroup wifiactions = new GLib.SimpleActionGroup();
 
-		public DeviceAbstractionWifi (NM.Client client, NM.DeviceWifi device, GLibLocal.ActionMuxer muxer) {
+		public Wifi (NM.Client client, NM.DeviceWifi device, GLibLocal.ActionMuxer muxer) {
 			GLib.Object(
 				client: client,
 				device: device,

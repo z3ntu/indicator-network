@@ -20,7 +20,7 @@
 
 using NM;
 
-namespace Unity.Settings.Network
+namespace Network
 {
 	private const string APPLICATION_ID  = "com.canonical.indicator.network";
 	private const string PHONE_MENU_PATH = "/com/canonical/indicator/network/phone";
@@ -83,12 +83,12 @@ namespace Unity.Settings.Network
 			}
 		}
 
-		private DeviceAbstraction? device2abstraction (NM.Device device)
+		private Device.Base? device2abstraction (NM.Device device)
 		{
 			switch (device.get_device_type ())
 			{
 				case NM.DeviceType.WIFI:
-					return new DeviceAbstractionWifi(this.client, device as NM.DeviceWifi, this.muxer);
+					return new Device.Wifi(this.client, device as NM.DeviceWifi, this.muxer);
 				default:
 					warning("Unsupported device type");
 					break;
@@ -99,10 +99,10 @@ namespace Unity.Settings.Network
 
 		private void add_device (NM.Device device)
 		{
-			DeviceAbstraction? founddev = null;
+			Device.Base? founddev = null;
 
 			for (int i = 0; i < (gmenu as MenuModel).get_n_items(); i++) {
-				var dev = (gmenu as MenuModel).get_item_link(i, Menu.LINK_SECTION) as DeviceAbstraction;
+				var dev = (gmenu as MenuModel).get_item_link(i, Menu.LINK_SECTION) as Device.Base;
 
 				if (dev.device.get_path() == device.get_path()) {
 					founddev = dev;
@@ -123,7 +123,7 @@ namespace Unity.Settings.Network
 		private void remove_device (NM.Device device)
 		{
 			for (int i = 0; i < (gmenu as MenuModel).get_n_items(); i++) {
-				var dev = (gmenu as MenuModel).get_item_link(i, Menu.LINK_SECTION) as DeviceAbstraction;
+				var dev = (gmenu as MenuModel).get_item_link(i, Menu.LINK_SECTION) as Device.Base;
 
 				if (dev.device.get_path() == device.get_path()) {
 					gmenu.remove(i);

@@ -26,6 +26,7 @@ namespace Unity.Settings.Network
 	public class DeviceAbstraction : MenuModel {
 		NM.Device _device;
 		string _namespace;
+		GLibLocal.ActionMuxer _muxer;
 
 		public NM.Device device {
 			construct {
@@ -44,6 +45,16 @@ namespace Unity.Settings.Network
 			}
 			get {
 				return _namespace;
+			}
+		}
+
+		public GLibLocal.ActionMuxer muxer {
+			construct {
+				_muxer = value;
+				return;
+			}
+			get {
+				return _muxer;
 			}
 		}
 

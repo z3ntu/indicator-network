@@ -71,35 +71,35 @@ namespace Network.Device
 		/***********************************
 		 * Passing on functions to our menu
 		 ***********************************/
-		new GLib.Variant get_item_attribute_value (int item_index, string attribute, GLib.VariantType? expected_type) {
+		public override GLib.Variant get_item_attribute_value (int item_index, string attribute, GLib.VariantType? expected_type) {
 			return (_menu as MenuModel).get_item_attribute_value(item_index, attribute, expected_type);
 		}
 
-		new void get_item_attributes (int item_index, GLib.HashTable<void*,void*> attributes) {
-			(_menu as MenuModel).get_item_attributes(item_index, attributes);
+		public override void get_item_attributes (int item_index, out GLib.HashTable<void*,void*> attributes) {
+			(_menu as MenuModel).get_item_attributes(item_index, out attributes);
 		}
 
-		new GLib.MenuModel get_item_link (int item_index, string link) {
+		public override GLib.MenuModel get_item_link (int item_index, string link) {
 			return (_menu as MenuModel).get_item_link(item_index, link);
 		}
 
-		new void get_item_links (int item_index, GLib.HashTable<void*,void*> links) {
-			(_menu as MenuModel).get_item_links(item_index, links);
+		public override void get_item_links (int item_index, out GLib.HashTable<void*,void*> links) {
+			(_menu as MenuModel).get_item_links(item_index, out links);
 		}
 
-		new int get_n_items () {
+		public override int get_n_items () {
 			return (_menu as MenuModel).get_n_items();
 		}
 
-		new bool is_mutable () {
+		public override bool is_mutable () {
 			return (_menu as MenuModel).is_mutable();
 		}
 
-		new GLib.MenuAttributeIter iterate_item_attributes (int item_index) {
+		public override GLib.MenuAttributeIter iterate_item_attributes (int item_index) {
 			return (_menu as MenuModel).iterate_item_attributes(item_index);
 		}
 
-		new GLib.MenuLinkIter iterate_item_links (int item_index) {
+		public override GLib.MenuLinkIter iterate_item_links (int item_index) {
 			return (_menu as MenuModel).iterate_item_links(item_index);
 		}
 

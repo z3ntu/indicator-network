@@ -28,15 +28,17 @@ namespace Network.Device
 		private  Menu        apsmenu;
 		private  MenuItem    device_item;
 		public   DeviceWifi  device;
-		private  Application app;
+		private  SimpleActionGroup actions;
 		private  NM.Client   client;
+		private  string      action_prefix;
 
-		public WifiMenu (NM.Client client, DeviceWifi device, Menu global_menu, Application app)
+		public WifiMenu (NM.Client client, DeviceWifi device, Menu global_menu, SimpleActionGroup actions, string action_prefix)
 		{
-			gmenu = global_menu;
-			this.app = app;
+			this.gmenu = global_menu;
+			this.actions = actions;
 			this.device = device;
 			this.client = client;
+			this.action_prefix = action_prefix;
 
 			apsmenu = new Menu ();
 			device_item = create_item_for_wifi_device ();
@@ -69,8 +71,8 @@ namespace Network.Device
 
 		private void bind_ap_item (AccessPoint ap, MenuItem item)
 		{
-			var strength_action_id = ap.get_path () + "::strength";
-			var activate_action_id = ap.get_path ();
+			var strength_action_id = "indicator." + action_prefix + "." + ap.get_path () + "::strength";
+			var activate_action_id = "indicator." + action_prefix + "." + ap.get_path ();
 
 			item.set_label     (Utils.ssid_to_utf8 (ap.get_ssid ()));
 			item.set_attribute ("type",                                "s", "x-canonical-system-settings");
@@ -264,9 +266,9 @@ namespace Network.Device
 			string activate_action_id;
 
 			if (apsmenu.get_item_attribute (index, "x-canonical-wifi-ap-strength-action", "s", out strength_action_id))
-				app.remove_action (strength_action_id);
+				actions.remove (strength_action_id.substring((long)("indicator." + action_prefix + ".").size(), -1));
 			if (apsmenu.get_item_attribute (index, "action", "s", out activate_action_id))
-				app.remove_action (activate_action_id);
+				actions.remove (activate_action_id.substring((long)("indicator." + action_prefix + ".").size(), -1));
 
 			apsmenu.remove (index);
 			//TODO: Check if removed dups need to be added

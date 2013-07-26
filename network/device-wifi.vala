@@ -277,16 +277,16 @@ namespace Network.Device
 
 	internal class WifiActionManager
 	{
-		private Application       app;
+		private SimpleActionGroup   actions;
 		private NM.Client         client;
 		public NM.RemoteSettings rs  = null;
 
 		public  NM.DeviceWifi     wifidev = null;
 
-		public WifiActionManager (Application app, NM.Client client, NM.DeviceWifi dev)
+		public WifiActionManager (SimpleActionGroup actions, NM.Client client, NM.DeviceWifi dev)
 		{
 			this.client  = client;
-			this.app     = app;
+			this.actions = actions;
 			this.wifidev = dev;
 
 			var busy_action_id = wifidev.get_path () + "::is-busy";
@@ -294,7 +294,7 @@ namespace Network.Device
 			var action = new SimpleAction.stateful (busy_action_id,
 			                                        VariantType.BOOLEAN,
 			                                        new Variant.boolean (is_busy));
-			app.add_action (action);
+			actions.insert (action);
 
 			rs = new NM.RemoteSettings (wifidev.get_connection ());
 			rs.connections_read.connect (bootstrap_actions);
@@ -334,7 +334,7 @@ namespace Network.Device
 			wifidev.state_changed.disconnect        (device_state_changed_cb);
 			rs.connections_read.disconnect          (bootstrap_actions);
 
-			app.remove_action (wifidev.get_path () + "::is-busy");
+			actions.remove (wifidev.get_path () + "::is-busy");
 		}
 
 		private void remove_device (NM.Client client, NM.Device device)
@@ -361,8 +361,10 @@ namespace Network.Device
 			for (uint i = 0; i < aps.length; i++)
 			{
 				var ap = aps.get(i);
-				app.change_action_state (ap.get_path(),
-				                         new Variant.boolean (false));
+				var action = actions.lookup(ap.get_path());
+				if (action != null) {
+					action.change_state(new Variant.boolean (false));
+				}
 			}
 		}
 
@@ -395,7 +397,7 @@ namespace Network.Device
 				if (ap == null)
 					continue;
 
-				if (app.lookup_action (ap.get_path ()) == null)
+				if (actions.lookup (ap.get_path ()) == null)
 				{
 					insert_ap (ap);
 					continue;
@@ -403,13 +405,17 @@ namespace Network.Device
 
 				if (ap.get_path () == active_ap)
 				{
-					app.change_action_state (ap.get_path(),
-				                             new Variant.boolean (true));
+					var action = actions.lookup(ap.get_path());
+					if (action != null) {
+						action.change_state(new Variant.boolean (true));
+					}
 				}
 				else
 				{
-					app.change_action_state (ap.get_path(),
-				                             new Variant.boolean (false));
+					var action = actions.lookup(ap.get_path());
+					if (action != null) {
+						action.change_state(new Variant.boolean (false));
+					}
 				}
 			}
 		}
@@ -422,7 +428,7 @@ namespace Network.Device
 			bool is_active = false;
 
 			/* If the ap is already included we skip this callback */
-			if (app.lookup_action (ap.get_path ()) != null)
+			if (actions.lookup (ap.get_path ()) != null)
 				return;
 
 			GLib.debug("Adding new access point: " + ap.get_bssid() + " at " + ap.get_path());
@@ -442,8 +448,8 @@ namespace Network.Device
 			activate.activate.connect (ap_activated);
 			activate.change_state.connect (ap_state_changed);
 
-			app.add_action (strength);
-			app.add_action (activate);
+			actions.insert (strength);
+			actions.insert (activate);
 		}
 
 		private void remove_ap (NM.AccessPoint ap)
@@ -451,8 +457,8 @@ namespace Network.Device
 			GLib.debug("Removing access point: " + ap.get_bssid() + " at " + ap.get_path());
 
 			//TODO: Check if AP has connection action
-			app.remove_action (ap.get_path ());
-			app.remove_action (ap.get_path () + "::strength");
+			actions.remove (ap.get_path ());
+			actions.remove (ap.get_path () + "::strength");
 		}
 
 		private void ap_activated (SimpleAction ac, Variant? val)
@@ -550,9 +556,10 @@ namespace Network.Device
 			if (prop == "strength")
 			{
 				AccessPoint ap = (AccessPoint)obj;
-				var action = ap.get_path() + "::strength";
-				if (app.has_action (action))
-					app.change_action_state (action, new Variant.byte(ap.get_strength ()));
+				var action_name = ap.get_path() + "::strength";
+				var action = actions.lookup(action_name);
+				if (action != null)
+					action.change_state (new Variant.byte(ap.get_strength ()));
 			}
 		}
 	}

@@ -20,7 +20,8 @@
 
 public static int main (string[] args)
 {
+	var mainloop = new MainLoop();
 	var menu = new Network.NetworkMenu ();
-	menu.hold ();
-	return menu.run (args);
+	mainloop.run ();
+	return 0;
 }

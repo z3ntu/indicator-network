@@ -25,8 +25,9 @@ namespace Network
 	private const string APPLICATION_ID  = "com.canonical.indicator.network";
 	private const string PHONE_MENU_PATH = "/com/canonical/indicator/network/phone";
 	private const string DESKTOP_MENU_PATH = "/com/canonical/indicator/network/desktop";
+	private const string ACTION_GROUP_PATH = "/com/canonical/indicator/network";
 
-	public class NetworkMenu : Application
+	public class NetworkMenu : GLib.Object
 	{
 		private Menu            root_menu;
 		private MenuItem        root_item;
@@ -37,9 +38,6 @@ namespace Network
 
 		public NetworkMenu ()
 		{
-			GLib.Object (application_id: APPLICATION_ID);
-			flags = ApplicationFlags.IS_SERVICE;
-
 			client    = new NM.Client();
 
 			bootstrap_menu ();
@@ -49,6 +47,7 @@ namespace Network
 			try
 			{
 				var conn = Bus.get_sync (BusType.SESSION, null);
+				conn.export_action_group (ACTION_GROUP_PATH, muxer as ActionGroup);
 				conn.export_menu_model (PHONE_MENU_PATH, root_menu);
 				conn.export_menu_model (DESKTOP_MENU_PATH, root_menu);
 			}
@@ -66,10 +65,10 @@ namespace Network
 		{
 			root_menu = new Menu ();
 			gmenu     = new Menu ();
-			am        = new ActionManager (this, client);
+			am        = new ActionManager (muxer, client);
 
 			root_item = new MenuItem.submenu (null, gmenu as MenuModel);
-			root_item.set_attribute (GLib.Menu.ATTRIBUTE_ACTION, "s", "indicator.network-status");
+			root_item.set_attribute (GLib.Menu.ATTRIBUTE_ACTION, "s", "indicator.global.network-status");
 			root_item.set_attribute ("x-canonical-type", "s", "com.canonical.indicator.root");
 			root_menu.append_item (root_item);
 

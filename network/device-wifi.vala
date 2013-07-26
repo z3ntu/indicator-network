@@ -75,7 +75,6 @@ namespace Network.Device
 			var activate_action_id = "indicator." + action_prefix + "." + ap.get_path ();
 
 			item.set_label     (Utils.ssid_to_utf8 (ap.get_ssid ()));
-			item.set_attribute ("type",                                "s", "x-canonical-system-settings");
 			item.set_attribute ("x-canonical-type",                    "s", "unity.widgets.systemsettings.tablet.accesspoint");
 			item.set_attribute ("x-canonical-wifi-ap-is-adhoc",        "b",  ap.get_mode ()  == NM.80211Mode.ADHOC);
 			item.set_attribute ("x-canonical-wifi-ap-is-secure",       "b",  ap.get_flags () == NM.80211ApFlags.PRIVACY);

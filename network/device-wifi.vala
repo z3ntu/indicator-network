@@ -276,7 +276,8 @@ namespace Network.Device
 	}
 
 	public class Wifi : Base {
-		GLib.SimpleActionGroup wifiactions = new GLib.SimpleActionGroup();
+		private WifiMenu wifimenu;
+		private GLib.SimpleActionGroup wifiactions = new GLib.SimpleActionGroup();
 
 		public Wifi (NM.Client client, NM.DeviceWifi device, GLibLocal.ActionMuxer muxer) {
 			GLib.Object(
@@ -287,6 +288,8 @@ namespace Network.Device
 			);
 
 			muxer.insert(namespace, wifiactions);
+
+			wifimenu = new WifiMenu(client, device, this._menu, wifiactions, this.namespace);
 		}
 
 

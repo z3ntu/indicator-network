@@ -26,7 +26,7 @@ namespace Network.Device
 		NM.Device _device;
 		string _namespace;
 		GLibLocal.ActionMuxer _muxer;
-		Menu _menu = new Menu();
+		protected Menu _menu = new Menu();
 
 		public NM.Device device {
 			construct {

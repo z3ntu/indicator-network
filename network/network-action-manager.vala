@@ -25,19 +25,27 @@ namespace Network
 
 	public class ActionManager
 	{
-		private Application              app;
+		private GLibLocal.ActionMuxer    muxer;
+		private SimpleActionGroup        actions = new SimpleActionGroup();
 		private NM.Client                client;
 		private SimpleAction             conn_status;
 		private NM.ActiveConnection?     act_conn = null;
 		private NM.AccessPoint?          act_ap   = null;
 		private int                      last_wifi_strength = 0;
 
-		public ActionManager (Application app, NM.Client client)
+		public ActionManager (GLibLocal.ActionMuxer muxer, NM.Client client)
 		{
 			this.client = client;
-			this.app    = app;
+			this.muxer  = muxer;
+
+			muxer.insert("global", actions);
 
 			add_network_status_action ();
+		}
+
+		~ActionManager ()
+		{
+			muxer.remove("global");
 		}
 
 		private void add_network_status_action ()
@@ -54,7 +62,7 @@ namespace Network
 			conn_status = new SimpleAction.stateful ("network-status",
 													 new VariantType ("(sssb)"),
 													 new Variant("(sssb)", "", "network-offline", "Network (none)", true));
-			app.add_action (conn_status);
+			actions.insert (conn_status);
 
 			client.notify["active-connections"].connect (active_connections_changed);
 			set_active_connection ();

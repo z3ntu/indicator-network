@@ -583,6 +583,10 @@ namespace Network.Device
 			wifiactionmanager = new WifiActionManager(wifiactions, client, device);
 		}
 
+		~Wifi ()
+		{
+			muxer.remove(namespace);
+		}
 
 
 

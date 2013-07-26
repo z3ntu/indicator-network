@@ -47,9 +47,12 @@ namespace Network
 			try
 			{
 				var conn = Bus.get_sync (BusType.SESSION, null);
+
 				conn.export_action_group (ACTION_GROUP_PATH, muxer as ActionGroup);
 				conn.export_menu_model (PHONE_MENU_PATH, root_menu);
 				conn.export_menu_model (DESKTOP_MENU_PATH, root_menu);
+
+				Bus.own_name_on_connection(conn, APPLICATION_ID, BusNameOwnerFlags.NONE, null, ((conn, name) => { error("Unable to get D-Bus bus name"); }));
 			}
 			catch (GLib.IOError e)
 			{

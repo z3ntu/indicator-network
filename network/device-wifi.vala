@@ -67,8 +67,8 @@ namespace Network.Device
 
 		private void bind_ap_item (AccessPoint ap, MenuItem item)
 		{
-			var strength_action_id = "indicator." + action_prefix + "." + ap.get_path () + "::strength";
-			var activate_action_id = "indicator." + action_prefix + "." + ap.get_path ();
+			var strength_action_id = action_prefix + ap.get_path () + "::strength";
+			var activate_action_id = action_prefix + ap.get_path ();
 
 			item.set_label     (Utils.ssid_to_utf8 (ap.get_ssid ()));
 			item.set_attribute ("x-canonical-type",                    "s", "unity.widgets.systemsettings.tablet.accesspoint");
@@ -104,9 +104,9 @@ namespace Network.Device
 
 		private MenuItem create_item_for_wifi_device ()
 		{
-			var device_item = new MenuItem ("Wi-Fi", "indicator." + action_prefix + ".device-enabled");
+			var device_item = new MenuItem ("Wi-Fi", action_prefix + "device-enabled");
 			device_item.set_attribute ("x-canonical-type"  ,           "s", "com.canonical.indicator.switch");
-			device_item.set_attribute ("x-canonical-busy-action",      "s", "indicator." + action_prefix + ".device-busy");
+			device_item.set_attribute ("x-canonical-busy-action",      "s", action_prefix + "device-busy");
 
 			return device_item;
 		}
@@ -254,9 +254,9 @@ namespace Network.Device
 			string activate_action_id;
 
 			if (apsmenu.get_item_attribute (index, "x-canonical-wifi-ap-strength-action", "s", out strength_action_id))
-				actions.remove (strength_action_id.substring((long)("indicator." + action_prefix + ".").size(), -1));
+				actions.remove (strength_action_id.substring((long)(action_prefix).size(), -1));
 			if (apsmenu.get_item_attribute (index, "action", "s", out activate_action_id))
-				actions.remove (activate_action_id.substring((long)("indicator." + action_prefix + ".").size(), -1));
+				actions.remove (activate_action_id.substring((long)(action_prefix).size(), -1));
 
 			apsmenu.remove (index);
 			//TODO: Check if removed dups need to be added
@@ -574,7 +574,7 @@ namespace Network.Device
 
 			muxer.insert(namespace, wifiactions);
 
-			wifimenu = new WifiMenu(client, device, this._menu, wifiactions, this.namespace);
+			wifimenu = new WifiMenu(client, device, this._menu, wifiactions, "indicator." + this.namespace + ".");
 			wifiactionmanager = new WifiActionManager(wifiactions, client, device);
 		}
 

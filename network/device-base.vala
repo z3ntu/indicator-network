@@ -28,6 +28,9 @@ namespace Network.Device
 		GLibLocal.ActionMuxer _muxer;
 		protected Menu _menu = new Menu();
 
+		/*****************************
+		 * Properties
+		 *****************************/
 		public NM.Device device {
 			construct {
 				_device = value;
@@ -66,6 +69,19 @@ namespace Network.Device
 			get {
 				return _muxer;
 			}
+		}
+
+		/*****************************
+		 * Functions
+		 *****************************/
+
+
+		public Base () {
+			_menu.items_changed.connect(menu_items_changed);
+		}
+
+		void menu_items_changed (int position, int removed, int added) {
+			(this as MenuModel).items_changed.emit(position, removed, added);
 		}
 
 		/***********************************

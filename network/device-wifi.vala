@@ -24,7 +24,6 @@ namespace Network.Device
 {
 	internal class WifiMenu
 	{
-		private  Menu        gmenu;
 		private  Menu        apsmenu;
 		private  MenuItem    device_item;
 		public   DeviceWifi  device;
@@ -34,17 +33,14 @@ namespace Network.Device
 
 		public WifiMenu (NM.Client client, DeviceWifi device, Menu global_menu, SimpleActionGroup actions, string action_prefix)
 		{
-			this.gmenu = global_menu;
+			this.apsmenu = global_menu;
 			this.actions = actions;
 			this.device = device;
 			this.client = client;
 			this.action_prefix = action_prefix;
 
-			apsmenu = new Menu ();
 			device_item = create_item_for_wifi_device ();
-
-			device_item.set_section (apsmenu);
-			gmenu.append_item (device_item);
+			this.apsmenu.append_item(device_item);
 
 			device.access_point_added.connect   (access_point_added_cb);
 			device.access_point_removed.connect (access_point_removed_cb);
@@ -108,16 +104,10 @@ namespace Network.Device
 
 		private MenuItem create_item_for_wifi_device ()
 		{
-			var busy_action_id = device.get_path () + "::is-busy";
-			var device_item = new MenuItem ("Select wireless network", null);
-			device_item.set_attribute ("type",                         "s", "x-canonical-system-settings");
-			device_item.set_attribute ("x-canonical-type"  ,           "s", "unity.widget.systemsettings.tablet.sectiontitle");
-			device_item.set_attribute ("x-canonical-children-display", "s", "inline");
-			device_item.set_attribute ("x-canonical-wifi-device-path", "s",  device.get_path ());
-			device_item.set_attribute ("x-canonical-busy-action",      "s",  busy_action_id);
-
-
-			//TODO: Submenu for active and previously used APs
+			var device_item = new MenuItem ("Wi-Fi", null);
+			device_item.set_action_and_target_value ("indicator." + action_prefix + ".device-enabled", null);
+			device_item.set_attribute ("x-canonical-type"  ,           "s", "com.canonical.indicator.switch");
+			device_item.set_attribute ("x-canonical-busy-action",      "s", "indicator." + action_prefix + ".device-busy");
 
 			return device_item;
 		}
@@ -143,7 +133,7 @@ namespace Network.Device
 			{
 				var item = new MenuItem (null, null);
 				bind_ap_item (ap, item);
-				apsmenu.prepend_item (item);
+				apsmenu.insert_item (1, item);
 				//TODO: Remove duplicates???
 				return;
 			}
@@ -288,12 +278,19 @@ namespace Network.Device
 			this.actions = actions;
 			this.wifidev = dev;
 
-			var busy_action_id = wifidev.get_path () + "::is-busy";
+			var busy_action_id = "device-busy";
 			var is_busy = device_is_busy (wifidev);
 			var action = new SimpleAction.stateful (busy_action_id,
 			                                        VariantType.BOOLEAN,
 			                                        new Variant.boolean (is_busy));
 			actions.insert (action);
+
+			var enabled_action_id = "device-enabled";
+			var is_enabled = client.wireless_get_enabled();
+			var enabled_action = new SimpleAction.stateful (enabled_action_id,
+			                                                VariantType.BOOLEAN,
+			                                                new Variant.boolean (is_enabled));
+			actions.insert (enabled_action);
 
 			rs = new NM.RemoteSettings (wifidev.get_connection ());
 			rs.connections_read.connect (bootstrap_actions);

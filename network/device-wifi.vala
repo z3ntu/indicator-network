@@ -104,8 +104,7 @@ namespace Network.Device
 
 		private MenuItem create_item_for_wifi_device ()
 		{
-			var device_item = new MenuItem ("Wi-Fi", null);
-			device_item.set_action_and_target_value ("indicator." + action_prefix + ".device-enabled", null);
+			var device_item = new MenuItem ("Wi-Fi", "indicator." + action_prefix + ".device-enabled");
 			device_item.set_attribute ("x-canonical-type"  ,           "s", "com.canonical.indicator.switch");
 			device_item.set_attribute ("x-canonical-busy-action",      "s", "indicator." + action_prefix + ".device-busy");
 

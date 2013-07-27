@@ -92,7 +92,7 @@ namespace Network
 				case NM.DeviceType.WIFI:
 					return new Device.Wifi(this.client, device as NM.DeviceWifi, this.muxer);
 				default:
-					warning("Unsupported device type");
+					warning("Unsupported device type: " + device.get_iface());
 					break;
 			}
 

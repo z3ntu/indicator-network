@@ -81,7 +81,7 @@ namespace Network.Device
 		}
 
 		void menu_items_changed (int position, int removed, int added) {
-			(this as MenuModel).items_changed.emit(position, removed, added);
+			(this as MenuModel).items_changed(position, removed, added);
 		}
 
 		/***********************************

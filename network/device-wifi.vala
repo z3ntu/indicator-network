@@ -459,7 +459,6 @@ namespace Network.Device
 			                                          null,
 			                                          new Variant.boolean (is_active));
 			activate.activate.connect (ap_activated);
-			activate.change_state.connect (ap_state_changed);
 
 			actions.insert (strength);
 			actions.insert (activate);
@@ -476,19 +475,24 @@ namespace Network.Device
 
 		private void ap_activated (SimpleAction ac, Variant? val)
 		{
-			if (val.get_boolean () == false         &&
+			if (ac.state.get_boolean () == true &&
 				wifidev.active_access_point != null &&
-				wifidev.active_access_point.get_path () == ac.get_name ())
+				wifidev.active_access_point.get_path () == ac.name)
 			{
 				wifidev.disconnect (null);
 				return;
 			}
 
 			if (wifidev.active_access_point != null &&
-				wifidev.active_access_point.get_path () == ac.get_name ())
+				wifidev.active_access_point.get_path () == ac.name)
 				return;
 
-			var ap = new NM.AccessPoint (wifidev.get_connection (), ac.name);
+			var ap = wifidev.get_access_point_by_path (ac.name);
+			if (ap == null) {
+				warning("Unable to access access point path: " + ac.name);
+				return;
+			}
+
 			var conns = rs.list_connections ();
 			if (conns == null)
 			{
@@ -511,51 +515,6 @@ namespace Network.Device
 			}
 
 			client.activate_connection (ap_conns.data, wifidev, ac.name, null);
-		}
-
-		private void ap_state_changed (SimpleAction ac, Variant? val)
-		{
-			string path = ac.get_name ();
-
-			if (wifidev.active_access_point != null &&
-				wifidev.active_access_point.get_path () != path &&
-				val.get_boolean ())
-			{
-				ap_activated (ac, val);
-				return;
-			}
-
-			if (wifidev.active_access_point != null &&
-				wifidev.active_access_point.get_path () == path &&
-				val.get_boolean () == false)
-			{
-				wifidev.disconnect(null);
-				return;
-			}
-
-			var aps = wifidev.get_access_points ();
-			if (aps == null)
-			{
-				ac.set_state (new Variant.boolean (false));
-				return;
-			}
-
-			for (uint i = 0; i < aps.length; i++)
-			{
-				var ap = aps.get(i);
-				if (ap == null)
-					continue;
-
-				if (ap.get_path () != path)
-					continue;
-
-				ac.set_state (val);
-
-				if (val.get_boolean ())
-					ap_activated (ac, val);
-
-				return;
-			}
 		}
 
 		private void add_and_activate_ap (string ap_path)

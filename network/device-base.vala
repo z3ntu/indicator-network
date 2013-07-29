@@ -75,8 +75,7 @@ namespace Network.Device
 		 * Functions
 		 *****************************/
 
-
-		public Base () {
+		construct {
 			_menu.items_changed.connect(menu_items_changed);
 		}
 

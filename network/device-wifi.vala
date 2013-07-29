@@ -280,14 +280,14 @@ namespace Network.Device
 			var busy_action_id = "device-busy";
 			var is_busy = device_is_busy (wifidev);
 			var action = new SimpleAction.stateful (busy_action_id,
-			                                        VariantType.BOOLEAN,
+			                                        null,
 			                                        new Variant.boolean (is_busy));
 			actions.insert (action);
 
 			var enabled_action_id = "device-enabled";
 			var is_enabled = client.wireless_get_enabled();
 			var enabled_action = new SimpleAction.stateful (enabled_action_id,
-			                                                VariantType.BOOLEAN,
+			                                                null,
 			                                                new Variant.boolean (is_enabled));
 			actions.insert (enabled_action);
 
@@ -435,10 +435,10 @@ namespace Network.Device
 				is_active = ap.get_path () == wifidev.active_access_point.get_path ();
 
 			var strength = new SimpleAction.stateful (strength_action_id,
-			                                          VariantType.BYTE,
+			                                          null,
 			                                          new Variant.byte (ap.get_strength ()));
 			var activate = new SimpleAction.stateful (ap.get_path (),
-			                                          VariantType.BOOLEAN,
+			                                          null,
 			                                          new Variant.boolean (is_active));
 			activate.activate.connect (ap_activated);
 			activate.change_state.connect (ap_state_changed);

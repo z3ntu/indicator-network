@@ -294,10 +294,17 @@ namespace Network.Device
 			enabled_action.activate.connect((param) => {
 				var nmstate = client.wireless_get_enabled();
 				nmstate = !nmstate;
-				enabled_action.set_state(new Variant.boolean(nmstate));
 
-				debug("Setting wireless to: " + (enabled_action.state.get_boolean() ? "True" : "False"));
-				client.wireless_set_enabled(enabled_action.state.get_boolean());
+				debug("Requesting wireless to: " + (nmstate ? "True" : "False"));
+				client.wireless_set_enabled(nmstate);
+			});
+
+			client.notify.connect((pspec) => {
+				if (pspec.name == "wireless-enabled") {
+					var wirelesssituation = client.wireless_get_enabled();
+					debug("Setting wireless to: " + (wirelesssituation ? "True" : "False"));
+					enabled_action.set_state(new Variant.boolean(wirelesssituation));
+				}
 			});
 
 			actions.insert (enabled_action);

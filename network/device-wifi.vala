@@ -267,6 +267,7 @@ namespace Network.Device
 	{
 		private SimpleActionGroup   actions;
 		private NM.Client         client;
+		private SimpleAction        enabled_action;
 		public NM.RemoteSettings rs  = null;
 
 		public  NM.DeviceWifi     wifidev = null;
@@ -286,9 +287,19 @@ namespace Network.Device
 
 			var enabled_action_id = "device-enabled";
 			var is_enabled = client.wireless_get_enabled();
-			var enabled_action = new SimpleAction.stateful (enabled_action_id,
-			                                                null,
-			                                                new Variant.boolean (is_enabled));
+			enabled_action = new SimpleAction.stateful (enabled_action_id,
+			                                            null,
+			                                            new Variant.boolean (is_enabled));
+
+			enabled_action.activate.connect((param) => {
+				var nmstate = client.wireless_get_enabled();
+				nmstate = !nmstate;
+				enabled_action.set_state(new Variant.boolean(nmstate));
+
+				debug("Setting wireless to: " + (enabled_action.state.get_boolean() ? "True" : "False"));
+				client.wireless_set_enabled(enabled_action.state.get_boolean());
+			});
+
 			actions.insert (enabled_action);
 
 			rs = new NM.RemoteSettings (wifidev.get_connection ());

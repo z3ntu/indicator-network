@@ -28,11 +28,11 @@ import time
 import functools
 
 ACTIVATED = 100
-AP_PREFIX = "wlan0./org/freedesktop/NetworkManager/AccessPoint/"
+AP_PREFIX = "/org/freedesktop/NetworkManager/AccessPoint/"
 
 def check_aps_actions(self, ret, aps):
     for ap in aps:
-        ap_action = AP_PREFIX + ap
+        ap_action = "wlan0." + AP_PREFIX + ap
         strength_action = ap_action + "::strength"
         self.assertTrue(ap_action in ret)
         self.assertTrue(strength_action in ret)
@@ -43,6 +43,7 @@ def check_aps_in_menu(self, ret, aps):
         a, b, items = group
         for item in items:
             if 'x-canonical-wifi-ap-dbus-path' in item:
+                print("Found AP item: %s" % (item['x-canonical-wifi-ap-dbus-path']))
                 ap_items.append(item)
 
     self.assertTrue(len(ap_items) > 0)

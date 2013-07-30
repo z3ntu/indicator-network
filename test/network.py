@@ -49,7 +49,7 @@ def check_aps_in_menu(self, ret, aps):
 
     for ap in aps:
         ap_path = AP_PREFIX + ap
-        items_map = map(lambda item: item['x-canonical-wifi-ap-dbus-path'] == ap_path, items)
+        items_map = map(lambda item: item['x-canonical-wifi-ap-dbus-path'] == ap_path, ap_items)
         has_ap = functools.reduce(lambda a, b: a or b, items_map)
         self.assertTrue (has_ap)
 

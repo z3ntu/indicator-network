@@ -28,7 +28,7 @@ import time
 import functools
 
 ACTIVATED = 100
-AP_PREFIX = "/org/freedesktop/NetworkManager/AccessPoint/"
+AP_PREFIX = "wlan0./org/freedesktop/NetworkManager/AccessPoint/"
 
 def check_aps_actions(self, ret, aps):
     for ap in aps:

@@ -140,6 +140,7 @@ namespace Network
 			founddev = phone.find_device(device.get_path());
 			if (founddev != null) return;
 
+			debug("Adding device: " + device.get_iface());
 			switch (device.get_device_type ())
 			{
 				case NM.DeviceType.WIFI:
@@ -160,6 +161,7 @@ namespace Network
 
 		private void remove_device (NM.Device device)
 		{
+			debug("Removing device: " + device.get_iface());
 			desktop.remove_device(device.get_path());
 			phone.remove_device(device.get_path());
 		}

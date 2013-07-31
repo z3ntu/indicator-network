@@ -32,7 +32,7 @@ AP_PREFIX = "/org/freedesktop/NetworkManager/AccessPoint/"
 
 def check_aps_actions(self, ret, aps):
     for ap in aps:
-        ap_action = AP_PREFIX + ap
+        ap_action = "wlan0." + AP_PREFIX + ap
         strength_action = ap_action + "::strength"
         self.assertTrue(ap_action in ret)
         self.assertTrue(strength_action in ret)
@@ -43,13 +43,14 @@ def check_aps_in_menu(self, ret, aps):
         a, b, items = group
         for item in items:
             if 'x-canonical-wifi-ap-dbus-path' in item:
+                print("Found AP item: %s" % (item['x-canonical-wifi-ap-dbus-path']))
                 ap_items.append(item)
 
     self.assertTrue(len(ap_items) > 0)
 
     for ap in aps:
         ap_path = AP_PREFIX + ap
-        items_map = map(lambda item: item['x-canonical-wifi-ap-dbus-path'] == ap_path, items)
+        items_map = map(lambda item: item['x-canonical-wifi-ap-dbus-path'] == ap_path, ap_items)
         has_ap = functools.reduce(lambda a, b: a or b, items_map)
         self.assertTrue (has_ap)
 
@@ -81,7 +82,7 @@ class TestNetworkMenu(dbusmock.DBusTestCase):
         self.dbusmock.AddAccessPoint (wifi1, 'mock_ap',
                 'myap', '00:23:f8:7e:12:ba', 0, 2425, 5400, 80, 0x400)
         
-        p = subprocess.Popen(['indicator-network-menu-server'])
+        p = subprocess.Popen(['indicator-network-service'])
         time.sleep (0.6)
 
         bus = dbus.SessionBus ()

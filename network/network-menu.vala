@@ -147,6 +147,11 @@ namespace Network
 					desktop.append_device(wifidev);
 					phone.append_device(wifidev);
 					break;
+				case NM.DeviceType.MODEM:
+					var mobiledev = new Device.Mobile(this.client, device as NM.DeviceModem, this.muxer);
+					desktop.append_device(mobiledev);
+					/* NOTE: Not on phone menu */
+					break;
 				default:
 					warning("Unsupported device type: " + device.get_iface());
 					break;

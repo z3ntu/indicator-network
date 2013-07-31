@@ -86,6 +86,8 @@ namespace Network
 	public class NetworkMenu : GLib.Object
 	{
 		private ProfileMenu     desktop;
+		private ProfileMenu     phone;
+
 		private NM.Client       client;
 		private ActionManager   am;
 		private GLibLocal.ActionMuxer muxer = new GLibLocal.ActionMuxer();
@@ -105,6 +107,7 @@ namespace Network
 				conn.export_action_group (ACTION_GROUP_PATH, muxer as ActionGroup);
 
 				desktop = new ProfileMenu(conn, DESKTOP_MENU_PATH);
+				phone = new ProfileMenu(conn, PHONE_MENU_PATH);
 
 				Bus.own_name_on_connection(conn, APPLICATION_ID, BusNameOwnerFlags.NONE, null, ((conn, name) => { error("Unable to get D-Bus bus name"); }));
 			}
@@ -127,36 +130,33 @@ namespace Network
 			}
 		}
 
-		private Device.Base? device2abstraction (NM.Device device)
+		private void add_device (NM.Device device)
 		{
+			Device.Base? founddev = null;
+			
+			founddev = desktop.find_device(device.get_path());
+			if (founddev != null) return;
+
+			founddev = phone.find_device(device.get_path());
+			if (founddev != null) return;
+
 			switch (device.get_device_type ())
 			{
 				case NM.DeviceType.WIFI:
-					return new Device.Wifi(this.client, device as NM.DeviceWifi, this.muxer);
+					var wifidev = new Device.Wifi(this.client, device as NM.DeviceWifi, this.muxer);
+					desktop.append_device(wifidev);
+					phone.append_device(wifidev);
+					break;
 				default:
 					warning("Unsupported device type: " + device.get_iface());
 					break;
-			}
-
-			return null;
-		}
-
-		private void add_device (NM.Device device)
-		{
-			Device.Base? founddev = desktop.find_device(device.get_path());
-
-			if (founddev == null) {
-				founddev = device2abstraction(device);
-				if (founddev != null) {
-					desktop.append_device(founddev);
-				}
-
 			}
 		}
 
 		private void remove_device (NM.Device device)
 		{
 			desktop.remove_device(device.get_path());
+			phone.remove_device(device.get_path());
 		}
 	}
 }

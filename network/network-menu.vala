@@ -27,20 +27,43 @@ namespace Network
 	private const string DESKTOP_MENU_PATH = "/com/canonical/indicator/network/desktop";
 	private const string ACTION_GROUP_PATH = "/com/canonical/indicator/network";
 
+	internal class ProfileMenu {
+		public Menu root_menu;
+		public MenuItem root_item;
+		public Menu shown_menu;
+
+		private GLib.DBusConnection conn;
+		private uint export_id;
+
+		public ProfileMenu (GLib.DBusConnection conn, string path) {
+			root_menu = new Menu();
+			shown_menu = new Menu();
+
+			root_item = new MenuItem.submenu (null, shown_menu as MenuModel);
+			root_item.set_attribute (GLib.Menu.ATTRIBUTE_ACTION, "s", "indicator.global.network-status");
+			root_item.set_attribute ("x-canonical-type", "s", "com.canonical.indicator.root");
+			root_menu.append_item (root_item);
+
+			export_id = conn.export_menu_model (path, root_menu);
+		}
+
+		~ProfileMenu () {
+			conn.unexport_menu_model(export_id);
+		}
+	}
+
 	public class NetworkMenu : GLib.Object
 	{
-		private Menu            root_menu;
-		private MenuItem        root_item;
-		private Menu            gmenu;
+		private ProfileMenu     desktop;
 		private NM.Client       client;
 		private ActionManager   am;
 		private GLibLocal.ActionMuxer muxer = new GLibLocal.ActionMuxer();
 
 		public NetworkMenu ()
 		{
-			client    = new NM.Client();
+			client = new NM.Client();
+			am = new ActionManager (muxer, client);
 
-			bootstrap_menu ();
 			client.device_added.connect   ((client, device) => { add_device (device); });
 			client.device_removed.connect ((client, device) => { remove_device (device); });
 
@@ -49,8 +72,8 @@ namespace Network
 				var conn = Bus.get_sync (BusType.SESSION, null);
 
 				conn.export_action_group (ACTION_GROUP_PATH, muxer as ActionGroup);
-				conn.export_menu_model (PHONE_MENU_PATH, root_menu);
-				conn.export_menu_model (DESKTOP_MENU_PATH, root_menu);
+
+				desktop = new ProfileMenu(conn, DESKTOP_MENU_PATH);
 
 				Bus.own_name_on_connection(conn, APPLICATION_ID, BusNameOwnerFlags.NONE, null, ((conn, name) => { error("Unable to get D-Bus bus name"); }));
 			}
@@ -62,18 +85,6 @@ namespace Network
 			{
 				return;
 			}
-		}
-
-		private void bootstrap_menu ()
-		{
-			root_menu = new Menu ();
-			gmenu     = new Menu ();
-			am        = new ActionManager (muxer, client);
-
-			root_item = new MenuItem.submenu (null, gmenu as MenuModel);
-			root_item.set_attribute (GLib.Menu.ATTRIBUTE_ACTION, "s", "indicator.global.network-status");
-			root_item.set_attribute ("x-canonical-type", "s", "com.canonical.indicator.root");
-			root_menu.append_item (root_item);
 
 			var devices = client.get_devices ();
 
@@ -103,8 +114,8 @@ namespace Network
 		{
 			Device.Base? founddev = null;
 
-			for (int i = 0; i < (gmenu as MenuModel).get_n_items(); i++) {
-				var dev = (gmenu as MenuModel).get_item_link(i, Menu.LINK_SECTION) as Device.Base;
+			for (int i = 0; i < (desktop.shown_menu as MenuModel).get_n_items(); i++) {
+				var dev = (desktop.shown_menu as MenuModel).get_item_link(i, Menu.LINK_SECTION) as Device.Base;
 
 				if (dev.device.get_path() == device.get_path()) {
 					founddev = dev;
@@ -116,7 +127,7 @@ namespace Network
 				founddev = device2abstraction(device);
 				if (founddev != null) {
 					/* TODO: We really need to sort these.  For now it's fine. */
-					gmenu.append_section(null, founddev);
+					desktop.shown_menu.append_section(null, founddev);
 				}
 
 			}
@@ -124,11 +135,11 @@ namespace Network
 
 		private void remove_device (NM.Device device)
 		{
-			for (int i = 0; i < (gmenu as MenuModel).get_n_items(); i++) {
-				var dev = (gmenu as MenuModel).get_item_link(i, Menu.LINK_SECTION) as Device.Base;
+			for (int i = 0; i < (desktop.shown_menu as MenuModel).get_n_items(); i++) {
+				var dev = (desktop.shown_menu as MenuModel).get_item_link(i, Menu.LINK_SECTION) as Device.Base;
 
 				if (dev.device.get_path() == device.get_path()) {
-					gmenu.remove(i);
+					desktop.shown_menu.remove(i);
 					break;
 				}
 			}

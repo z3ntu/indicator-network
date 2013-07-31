@@ -151,7 +151,8 @@ namespace Network
 				case NM.DeviceType.MODEM:
 					var mobiledev = new Device.Mobile(this.client, device as NM.DeviceModem, this.muxer);
 					desktop.append_device(mobiledev);
-					/* NOTE: Not on phone menu */
+					/* NOTE: Only on phone until settings lands */
+					phone.append_device(mobiledev);
 					break;
 				default:
 					warning("Unsupported device type: " + device.get_iface());

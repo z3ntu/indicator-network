@@ -50,6 +50,37 @@ namespace Network
 		~ProfileMenu () {
 			conn.unexport_menu_model(export_id);
 		}
+
+		public void remove_device (string path) {
+			for (int i = 0; i < (shown_menu as MenuModel).get_n_items(); i++) {
+				var dev = (shown_menu as MenuModel).get_item_link(i, Menu.LINK_SECTION) as Device.Base;
+
+				if (dev.device.get_path() == path) {
+					shown_menu.remove(i);
+					break;
+				}
+			}
+		}
+
+		public Device.Base? find_device (string path) {
+			Device.Base? founddev = null;
+
+			for (int i = 0; i < (shown_menu as MenuModel).get_n_items(); i++) {
+				var dev = (shown_menu as MenuModel).get_item_link(i, Menu.LINK_SECTION) as Device.Base;
+
+				if (dev.device.get_path() == path) {
+					founddev = dev;
+					break;
+				}
+			}
+
+			return founddev;
+		}
+
+		public void append_device (Device.Base device) {
+			/* TODO: We really need to sort these.  For now it's fine. */
+			shown_menu.append_section(null, device);
+		}
 	}
 
 	public class NetworkMenu : GLib.Object
@@ -112,22 +143,12 @@ namespace Network
 
 		private void add_device (NM.Device device)
 		{
-			Device.Base? founddev = null;
-
-			for (int i = 0; i < (desktop.shown_menu as MenuModel).get_n_items(); i++) {
-				var dev = (desktop.shown_menu as MenuModel).get_item_link(i, Menu.LINK_SECTION) as Device.Base;
-
-				if (dev.device.get_path() == device.get_path()) {
-					founddev = dev;
-					break;
-				}
-			}
+			Device.Base? founddev = desktop.find_device(device.get_path());
 
 			if (founddev == null) {
 				founddev = device2abstraction(device);
 				if (founddev != null) {
-					/* TODO: We really need to sort these.  For now it's fine. */
-					desktop.shown_menu.append_section(null, founddev);
+					desktop.append_device(founddev);
 				}
 
 			}
@@ -135,14 +156,7 @@ namespace Network
 
 		private void remove_device (NM.Device device)
 		{
-			for (int i = 0; i < (desktop.shown_menu as MenuModel).get_n_items(); i++) {
-				var dev = (desktop.shown_menu as MenuModel).get_item_link(i, Menu.LINK_SECTION) as Device.Base;
-
-				if (dev.device.get_path() == device.get_path()) {
-					desktop.shown_menu.remove(i);
-					break;
-				}
-			}
+			desktop.remove_device(device.get_path());
 		}
 	}
 }

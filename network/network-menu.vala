@@ -35,7 +35,7 @@ namespace Network
 		private GLib.DBusConnection conn;
 		private uint export_id;
 
-		public ProfileMenu (GLib.DBusConnection conn, string path) {
+		public ProfileMenu (GLib.DBusConnection conn, string path) throws GLib.Error {
 			root_menu = new Menu();
 			shown_menu = new Menu();
 

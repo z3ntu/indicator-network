@@ -48,16 +48,27 @@ namespace Network.Device
 
 			enabled_action.activate.connect((param) => {
 				if (enabled_action.state.get_boolean()) {
-					device.set_autoconnect(false);
 					device.disconnect(null);
 				} else {
-					device.set_autoconnect(true);
+					var conn = new NM.Connection();
+
+					var swired = new NM.SettingWired();
+					conn.add_setting(swired);
+
+					var sconn = new NM.SettingConnection();
+					sconn.id = "Auto Ethernet";
+					sconn.type = NM.SettingWired.SETTING_NAME;
+					sconn.autoconnect = true;
+					sconn.uuid = NM.Utils.uuid_generate();
+					conn.add_setting(sconn);
+
+					client.add_and_activate_connection(conn, this.device, "/", null);
 				}
 			});
 
 			device.state_changed.connect(device_state_changed);
 
-			enabled_item = new MenuItem("Ethernet", "indicator." + device.get_iface() + ".device-enabled");
+			enabled_item = new MenuItem("Wired", "indicator." + device.get_iface() + ".device-enabled");
 			enabled_item.set_attribute ("x-canonical-type"  ,           "s", "com.canonical.indicator.switch");
 			_menu.append_item(enabled_item);
 			/* TODO: Need busy action */

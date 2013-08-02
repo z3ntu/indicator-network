@@ -154,6 +154,11 @@ namespace Network
 					/* NOTE: Only on phone until settings lands */
 					phone.append_device(mobiledev);
 					break;
+				case NM.DeviceType.ETHERNET:
+					var ethdev = new Device.Ethernet(this.client, device as NM.DeviceEthernet, this.muxer);
+					desktop.append_device(ethdev);
+					phone.append_device(ethdev);
+					break;
 				default:
 					warning("Unsupported device type: " + device.get_iface());
 					break;

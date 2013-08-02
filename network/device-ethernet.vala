@@ -27,6 +27,8 @@ namespace Network.Device
 		private GLib.SimpleAction enabled_action;
 		private GLib.SimpleAction busy_action;
 		private GLib.MenuItem enabled_item;
+		private NM.ActiveConnection? active_connection = null;
+		private ulong active_connection_notify = 0;
 
 		public Ethernet (NM.Client client, NM.DeviceEthernet device, GLibLocal.ActionMuxer muxer) {
 			GLib.Object(
@@ -40,8 +42,6 @@ namespace Network.Device
 
 			enabled_action = new SimpleAction.stateful("device-enabled", null, new Variant.boolean(true));
 			busy_action = new SimpleAction.stateful("device-busy", null, new Variant.boolean(true));
-
-			device_state_changed(device, 0, device.get_state(), 0);
 
 			actions.insert(enabled_action);
 			actions.insert(busy_action);
@@ -66,7 +66,12 @@ namespace Network.Device
 				}
 			});
 
-			device.state_changed.connect(device_state_changed);
+			device.notify.connect((pspec) => {
+				if (pspec.name == "active-connection") {
+					active_connection_changed();
+				}
+			});
+			active_connection_changed();
 
 			enabled_item = new MenuItem("Wired", "indicator." + device.get_iface() + ".device-enabled");
 			enabled_item.set_attribute ("x-canonical-type"  ,           "s", "com.canonical.indicator.switch");
@@ -79,28 +84,45 @@ namespace Network.Device
 			muxer.remove(namespace);
 		}
 
-		private void device_state_changed (NM.Device device, uint old_state, uint new_state, uint reason) {
-			switch (new_state) {
-				case NM.DeviceState.ACTIVATED:
-					enabled_action.set_state(new Variant.boolean(true));
-					break;
-				default:
-					enabled_action.set_state(new Variant.boolean(false));
-					break;
+		private void active_connection_changed () {
+			if (active_connection != null) {
+				active_connection.disconnect(active_connection_notify);
 			}
 
+			active_connection = this.device.get_active_connection();
+
+			if (active_connection != null) {
+				active_connection_notify = active_connection.notify.connect((pspec) => {
+					if (pspec.name == "state") {
+						active_connection_state_changed(active_connection.state);
+					}
+				});
+
+				active_connection_state_changed(active_connection.state);
+			}
+		}
+
+		private void active_connection_state_changed (uint new_state) {
 			switch (new_state) {
-				case NM.DeviceState.PREPARE:
-				case NM.DeviceState.CONFIG:
-				case NM.DeviceState.NEED_AUTH:
-				case NM.DeviceState.IP_CONFIG:
-				case NM.DeviceState.IP_CHECK:
-				case NM.DeviceState.SECONDARIES:
-				case NM.DeviceState.DEACTIVATING:
+				case NM.ActiveConnectionState.ACTIVATING:
+					debug("Marking Ethernet as Activating");
 					busy_action.set_state(new Variant.boolean(true));
+					enabled_action.set_state(new Variant.boolean(true));
+					break;
+				case NM.ActiveConnectionState.ACTIVATED:
+					debug("Marking Ethernet as Active");
+					busy_action.set_state(new Variant.boolean(false));
+					enabled_action.set_state(new Variant.boolean(true));
+					break;
+				case NM.ActiveConnectionState.DEACTIVATING:
+					debug("Marking Ethernet as Deactivating");
+					busy_action.set_state(new Variant.boolean(true));
+					enabled_action.set_state(new Variant.boolean(false));
 					break;
 				default:
-					busy_action.set_state(new Variant.boolean(false));
+					debug("Marking Ethernet as Disabled");
+					enabled_action.set_state(new Variant.boolean(false));
+					enabled_action.set_state(new Variant.boolean(false));
 					break;
 			}
 		}

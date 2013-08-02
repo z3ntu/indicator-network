@@ -6,6 +6,7 @@ libnetwork_la_SOURCES = \
 	network-action-manager.vala \
 	network-menu.vala \
 	device-base.vala \
+	device-ethernet.vala \
 	device-mobile.vala \
 	device-wifi.vala \
 	action-muxer.c \

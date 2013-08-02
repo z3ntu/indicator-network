@@ -40,8 +40,8 @@ namespace Network.Device
 
 			muxer.insert(namespace, actions);
 
-			enabled_action = new SimpleAction.stateful("device-enabled", null, new Variant.boolean(true));
-			busy_action = new SimpleAction.stateful("device-busy", null, new Variant.boolean(true));
+			enabled_action = new SimpleAction.stateful("device-enabled", null, new Variant.boolean(false));
+			busy_action = new SimpleAction.stateful("device-busy", null, new Variant.boolean(false));
 
 			actions.insert(enabled_action);
 			actions.insert(busy_action);

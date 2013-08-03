@@ -44,6 +44,16 @@ namespace Network.Device
 			muxer.remove(namespace);
 		}
 
+		protected override void disable_device ()
+		{
+			device.disconnect(null);
+			client.wwan_set_enabled(false);
+		}
 
+		protected override void enable_device ()
+		{
+			client.wwan_set_enabled(true);
+			device.set_autoconnect(true);
+		}
 	}
 }

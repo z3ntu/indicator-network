@@ -517,5 +517,17 @@ namespace Network.Device
 			wifimenu = new WifiMenu(client, device, this._menu, actions, "indicator." + this.namespace + ".");
 			wifiactionmanager = new WifiActionManager(actions, client, device);
 		}
+
+		protected override void disable_device ()
+		{
+			device.disconnect(null);
+			client.wireless_set_enabled(false);
+		}
+
+		protected override void enable_device ()
+		{
+			client.wireless_set_enabled(true);
+			device.set_autoconnect(true);
+		}
 	}
 }

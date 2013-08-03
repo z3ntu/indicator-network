@@ -35,12 +35,6 @@ namespace Network.Device
 		private NM.ActiveConnection? active_connection = null;
 		private ulong active_connection_notify = 0;
 
-		protected virtual void enable_device ()
-		{
-			warning("Subclass doesn't have a way to enable the device");
-			return;
-		}
-
 		/*****************************
 		 * Properties
 		 *****************************/
@@ -98,7 +92,7 @@ namespace Network.Device
 
 			enabled_action.activate.connect((param) => {
 				if (enabled_action.state.get_boolean()) {
-					device.disconnect(null);
+					disable_device();
 				} else {
 					enable_device();
 				}
@@ -116,6 +110,18 @@ namespace Network.Device
 		~Base ()
 		{
 			muxer.remove(namespace);
+		}
+
+		protected virtual void enable_device ()
+		{
+			warning("Subclass doesn't have a way to enable the device");
+			return;
+		}
+
+		protected virtual void disable_device ()
+		{
+			device.disconnect(null);
+			return;
 		}
 
 		private void active_connection_changed () {

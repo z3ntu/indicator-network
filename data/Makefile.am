@@ -8,7 +8,7 @@ EXTRA_DIST = \
 CLEANFILES = $(upstartjob_DATA)
 
 indicator-network.conf: indicator-network.conf.in Makefile
-	sed -e 's|@NETWORK_SERVICE[@]|$(pkglibdir)/indicator-network-menu-server|g' $< >$@
+	sed -e 's|@NETWORK_SERVICE[@]|$(pkglibexecdir)/indicator-network-service|g' $< >$@
 
 indicatordir = $(INDICATOR_DIR)
 dist_indicator_DATA = com.canonical.indicator.network

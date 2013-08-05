@@ -21,6 +21,13 @@
 public static int main (string[] args)
 {
 	var mainloop = new MainLoop();
+
+	GLib.Unix.signal_add(GLib.ProcessSignal.TERM, () => {
+		debug("Recieved SIGTERM");
+		mainloop.quit();	
+		return false;
+	});
+
 	var menu = new Network.NetworkMenu ();
 	mainloop.run ();
 	return 0;

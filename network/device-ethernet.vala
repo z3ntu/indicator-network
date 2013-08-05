@@ -22,10 +22,10 @@ using NM;
 
 namespace Network.Device
 {
-	public class Mobile : Base {
+	public class Ethernet : Base {
 		private GLib.MenuItem enabled_item;
 
-		public Mobile (NM.Client client, NM.DeviceModem device, GLibLocal.ActionMuxer muxer) {
+		public Ethernet (NM.Client client, NM.DeviceEthernet device, GLibLocal.ActionMuxer muxer) {
 			GLib.Object(
 				client: client,
 				device: device,
@@ -33,27 +33,32 @@ namespace Network.Device
 				muxer: muxer
 			);
 
-			enabled_item = new MenuItem("Mobile", "indicator." + device.get_iface() + ".device-enabled");
+			enabled_item = new MenuItem("Wired", "indicator." + device.get_iface() + ".device-enabled");
 			enabled_item.set_attribute ("x-canonical-type"  ,           "s", "com.canonical.indicator.switch");
 			_menu.append_item(enabled_item);
 			/* TODO: Need busy action */
 		}
 
-		~Mobile ()
+		~Ethernet ()
 		{
 			muxer.remove(namespace);
 		}
 
-		protected override void disable_device ()
-		{
-			device.disconnect(null);
-			client.wwan_set_enabled(false);
-		}
-
 		protected override void enable_device ()
 		{
-			client.wwan_set_enabled(true);
-			device.set_autoconnect(true);
+			var conn = new NM.Connection();
+
+			var swired = new NM.SettingWired();
+			conn.add_setting(swired);
+
+			var sconn = new NM.SettingConnection();
+			sconn.id = "Auto Ethernet";
+			sconn.type = NM.SettingWired.SETTING_NAME;
+			sconn.autoconnect = true;
+			sconn.uuid = NM.Utils.uuid_generate();
+			conn.add_setting(sconn);
+
+			client.add_and_activate_connection(conn, this.device, "/", null);
 		}
 	}
 }

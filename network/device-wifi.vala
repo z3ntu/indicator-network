@@ -267,7 +267,6 @@ namespace Network.Device
 	{
 		private SimpleActionGroup   actions;
 		private NM.Client         client;
-		private SimpleAction        enabled_action;
 		public NM.RemoteSettings rs  = null;
 
 		public  NM.DeviceWifi     wifidev = null;
@@ -277,37 +276,6 @@ namespace Network.Device
 			this.client  = client;
 			this.actions = actions;
 			this.wifidev = dev;
-
-			var busy_action_id = "device-busy";
-			var is_busy = device_is_busy (wifidev);
-			var action = new SimpleAction.stateful (busy_action_id,
-			                                        null,
-			                                        new Variant.boolean (is_busy));
-			actions.insert (action);
-
-			var enabled_action_id = "device-enabled";
-			var is_enabled = client.wireless_get_enabled();
-			enabled_action = new SimpleAction.stateful (enabled_action_id,
-			                                            null,
-			                                            new Variant.boolean (is_enabled));
-
-			enabled_action.activate.connect((param) => {
-				var nmstate = client.wireless_get_enabled();
-				nmstate = !nmstate;
-
-				debug("Requesting wireless to: " + (nmstate ? "True" : "False"));
-				client.wireless_set_enabled(nmstate);
-			});
-
-			client.notify.connect((pspec) => {
-				if (pspec.name == "wireless-enabled") {
-					var wirelesssituation = client.wireless_get_enabled();
-					debug("Setting wireless to: " + (wirelesssituation ? "True" : "False"));
-					enabled_action.set_state(new Variant.boolean(wirelesssituation));
-				}
-			});
-
-			actions.insert (enabled_action);
 
 			rs = new NM.RemoteSettings (wifidev.get_connection ());
 			rs.connections_read.connect (bootstrap_actions);
@@ -342,8 +310,6 @@ namespace Network.Device
 
 			client.device_removed.disconnect (remove_device);
 			rs.connections_read.disconnect          (bootstrap_actions);
-
-			actions.remove (wifidev.get_path () + "::is-busy");
 		}
 
 		private void remove_device (NM.Client client, NM.Device device)
@@ -535,7 +501,6 @@ namespace Network.Device
 	public class Wifi : Base {
 		private WifiMenu wifimenu;
 		private WifiActionManager wifiactionmanager;
-		private GLib.SimpleActionGroup wifiactions = new GLib.SimpleActionGroup();
 
 		public Wifi (NM.Client client, NM.DeviceWifi device, GLibLocal.ActionMuxer muxer) {
 			GLib.Object(
@@ -545,19 +510,20 @@ namespace Network.Device
 				muxer: muxer
 			);
 
-			muxer.insert(namespace, wifiactions);
-
-			wifimenu = new WifiMenu(client, device, this._menu, wifiactions, "indicator." + this.namespace + ".");
-			wifiactionmanager = new WifiActionManager(wifiactions, client, device);
+			wifimenu = new WifiMenu(client, device, this._menu, actions, "indicator." + this.namespace + ".");
+			wifiactionmanager = new WifiActionManager(actions, client, device);
 		}
 
-		~Wifi ()
+		protected override void disable_device ()
 		{
-			muxer.remove(namespace);
+			device.disconnect(null);
+			client.wireless_set_enabled(false);
 		}
 
-
-
-
+		protected override void enable_device ()
+		{
+			client.wireless_set_enabled(true);
+			device.set_autoconnect(true);
+		}
 	}
 }

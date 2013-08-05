@@ -28,6 +28,13 @@ namespace Network.Device
 		GLibLocal.ActionMuxer _muxer;
 		protected Menu _menu = new Menu();
 
+		protected GLib.SimpleActionGroup actions = new GLib.SimpleActionGroup();
+		protected GLib.SimpleAction enabled_action = new SimpleAction.stateful("device-enabled", null, new Variant.boolean(false));
+		protected GLib.SimpleAction busy_action = new SimpleAction.stateful("device-busy", null, new Variant.boolean(false));
+
+		private NM.ActiveConnection? active_connection = null;
+		private ulong active_connection_notify = 0;
+
 		/*****************************
 		 * Properties
 		 *****************************/
@@ -77,6 +84,87 @@ namespace Network.Device
 
 		construct {
 			_menu.items_changed.connect(menu_items_changed);
+
+			actions.insert(enabled_action);
+			actions.insert(busy_action);
+
+			_muxer.insert(_namespace, actions);
+
+			enabled_action.activate.connect((param) => {
+				if (enabled_action.state.get_boolean()) {
+					disable_device();
+				} else {
+					enable_device();
+				}
+			});
+
+			device.notify.connect((pspec) => {
+				if (pspec.name == "active-connection") {
+					active_connection_changed();
+				}
+			});
+			active_connection_changed();
+
+		}
+
+		~Base ()
+		{
+			muxer.remove(namespace);
+		}
+
+		protected virtual void enable_device ()
+		{
+			warning("Subclass doesn't have a way to enable the device");
+			return;
+		}
+
+		protected virtual void disable_device ()
+		{
+			device.disconnect(null);
+			return;
+		}
+
+		private void active_connection_changed () {
+			if (active_connection != null) {
+				active_connection.disconnect(active_connection_notify);
+			}
+
+			active_connection = this.device.get_active_connection();
+
+			if (active_connection != null) {
+				active_connection_notify = active_connection.notify.connect((pspec) => {
+					if (pspec.name == "state") {
+						active_connection_state_changed(active_connection.state);
+					}
+				});
+
+				active_connection_state_changed(active_connection.state);
+			}
+		}
+
+		private void active_connection_state_changed (uint new_state) {
+			switch (new_state) {
+				case NM.ActiveConnectionState.ACTIVATING:
+					debug("Marking '" + device.get_iface() + "' as Activating");
+					busy_action.set_state(new Variant.boolean(true));
+					enabled_action.set_state(new Variant.boolean(true));
+					break;
+				case NM.ActiveConnectionState.ACTIVATED:
+					debug("Marking '" + device.get_iface() + "' as Active");
+					busy_action.set_state(new Variant.boolean(false));
+					enabled_action.set_state(new Variant.boolean(true));
+					break;
+				case NM.ActiveConnectionState.DEACTIVATING:
+					debug("Marking '" + device.get_iface() + "' as Deactivating");
+					busy_action.set_state(new Variant.boolean(true));
+					enabled_action.set_state(new Variant.boolean(false));
+					break;
+				default:
+					debug("Marking '" + device.get_iface() + "' as Disabled");
+					enabled_action.set_state(new Variant.boolean(false));
+					enabled_action.set_state(new Variant.boolean(false));
+					break;
+			}
 		}
 
 		void menu_items_changed (int position, int removed, int added) {

@@ -130,7 +130,14 @@ namespace Network
 		private void set_wifi_device ()
 		{
 			uint8 strength = 0;
-			var dev = act_conn.get_devices ().get(0) as NM.DeviceWifi;
+			NM.DeviceWifi? dev = null;
+
+			var devs = act_conn.get_devices();
+			if (devs != null)
+			{
+				dev = devs.get(0) as NM.DeviceWifi;
+			}
+			
 			if (dev != null)
 			{
 				dev.notify["active-access-point"].connect (active_access_point_changed);

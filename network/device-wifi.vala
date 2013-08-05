@@ -341,10 +341,6 @@ namespace Network.Device
 			remove_device (client, wifidev);
 
 			client.device_removed.disconnect (remove_device);
-			wifidev.access_point_added.disconnect   (access_point_added_cb);
-			wifidev.access_point_removed.disconnect (access_point_removed_cb);
-			wifidev.notify.disconnect               (active_access_point_changed);
-			wifidev.state_changed.disconnect        (device_state_changed_cb);
 			rs.connections_read.disconnect          (bootstrap_actions);
 
 			actions.remove (wifidev.get_path () + "::is-busy");

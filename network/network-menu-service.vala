@@ -20,7 +20,8 @@
 
 public static int main (string[] args)
 {
-	var menu = new Unity.Settings.Network.NetworkMenu ();
-	menu.hold ();
-	return menu.run (args);
+	var mainloop = new MainLoop();
+	var menu = new Network.NetworkMenu ();
+	mainloop.run ();
+	return 0;
 }

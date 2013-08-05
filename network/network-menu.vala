@@ -140,12 +140,19 @@ namespace Network
 			founddev = phone.find_device(device.get_path());
 			if (founddev != null) return;
 
+			debug("Adding device: " + device.get_iface());
 			switch (device.get_device_type ())
 			{
 				case NM.DeviceType.WIFI:
 					var wifidev = new Device.Wifi(this.client, device as NM.DeviceWifi, this.muxer);
 					desktop.append_device(wifidev);
 					phone.append_device(wifidev);
+					break;
+				case NM.DeviceType.MODEM:
+					var mobiledev = new Device.Mobile(this.client, device as NM.DeviceModem, this.muxer);
+					desktop.append_device(mobiledev);
+					/* NOTE: Only on phone until settings lands */
+					phone.append_device(mobiledev);
 					break;
 				default:
 					warning("Unsupported device type: " + device.get_iface());
@@ -155,6 +162,7 @@ namespace Network
 
 		private void remove_device (NM.Device device)
 		{
+			debug("Removing device: " + device.get_iface());
 			desktop.remove_device(device.get_path());
 			phone.remove_device(device.get_path());
 		}

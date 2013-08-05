@@ -77,9 +77,41 @@ namespace Network
 			return founddev;
 		}
 
+		/* Return a sorting value based on the type of networking that
+		   is in the current menu */
+		private uint dev2sort (Device.Base dev) {
+			if ((dev as Device.Ethernet) != null) {
+				return 0;
+			}
+			if ((dev as Device.Wifi) != null) {
+				return 1;
+			}
+			if ((dev as Device.Mobile) != null) {
+				return 2;
+			}
+
+			return 3;
+		}
+
+		/* Figures out where the device needs to go and inserts it in
+		   the proper location */
 		public void append_device (Device.Base device) {
-			/* TODO: We really need to sort these.  For now it's fine. */
-			shown_menu.append_section(null, device);
+			int i;
+			uint insort = dev2sort(device);
+			
+			for (i = 0; i < shown_menu.get_n_items(); i++) {
+				var imenu = shown_menu.get_item_link(i, Menu.LINK_SECTION) as Device.Base;
+				var isort = dev2sort(imenu);
+
+				if (isort > insort) {
+					shown_menu.insert_section(i, null, device);
+					break;
+				}
+			}
+
+			if (i == shown_menu.get_n_items()) {
+				shown_menu.append_section(null, device);
+			}
 		}
 	}
 

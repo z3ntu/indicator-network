@@ -161,7 +161,7 @@ namespace Network.Device
 					break;
 				default:
 					debug("Marking '" + device.get_iface() + "' as Disabled");
-					enabled_action.set_state(new Variant.boolean(false));
+					busy_action.set_state(new Variant.boolean(false));
 					enabled_action.set_state(new Variant.boolean(false));
 					break;
 			}

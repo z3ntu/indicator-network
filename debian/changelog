@@ -1,3 +1,19 @@
+indicator-network (0.5.0+13.10.20130806-0ubuntu1) saucy; urgency=low
+
+  [ Ted Gould ]
+  * Conflict with indicators-client-plugin-network.
+  * Adjusting binaries to match other indicators.
+  * Put WiFi menu code in it's own object to allow for growth.
+  * Add a SIGTERM handler.
+  * Split the profiles into separate menus.
+  * Add a mobile section to the menus.
+  * Add in Ethernet support.
+
+  [ Ubuntu daily release ]
+  * Automatic snapshot from revision 256
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Tue, 06 Aug 2013 02:02:24 +0000
+
 indicator-network (0.5.0+13.10.20130712-0ubuntu1) saucy; urgency=low
 
   [ Ted Gould ]

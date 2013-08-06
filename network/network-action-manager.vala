@@ -74,18 +74,22 @@ namespace Network
 			if (act_conn != null)
 			{
 				act_conn.notify["state"].connect (connection_state_changed);
-				var type = get_device_type_from_connection (act_conn);
-				switch (type)
+				var device = get_device_from_connection (act_conn);
+
+				if (device != null)
 				{
-					case NM.DeviceType.WIFI:
-						set_wifi_device ();
-						break;
-					case NM.DeviceType.ETHERNET:
-						conn_status.set_state (new Variant ("(sssb)", "", "network-wired", "Network (wired)", true));
-						break;
-					default:
-						conn_status.set_state (new Variant ("(sssb)", "", "network-offline", "Network (none)", true));
-						break;
+					switch (device.get_device_type ())
+					{
+						case NM.DeviceType.WIFI:
+							set_wifi_device ();
+							break;
+						case NM.DeviceType.ETHERNET:
+							conn_status.set_state (new Variant ("(sssb)", "", "network-wired", "Network (wired)", true));
+							break;
+						default:
+							conn_status.set_state (new Variant ("(sssb)", "", "network-offline", "Network (none)", true));
+							break;
+					}
 				}
 			}
 			else
@@ -132,12 +136,8 @@ namespace Network
 			uint8 strength = 0;
 			NM.DeviceWifi? dev = null;
 
-			var devs = act_conn.get_devices();
-			if (devs != null)
-			{
-				dev = devs.get(0) as NM.DeviceWifi;
-			}
-			
+			dev = get_device_from_connection (act_conn) as NM.DeviceWifi;
+
 			if (dev != null)
 			{
 				dev.notify["active-access-point"].connect (active_access_point_changed);
@@ -154,21 +154,25 @@ namespace Network
 
 		private void connection_state_changed (GLib.Object client, ParamSpec ps)
 		{
-			switch (get_device_type_from_connection (act_conn))
+			var device = get_device_from_connection (act_conn);
+			if (device != null)
 			{
-				case NM.DeviceType.WIFI:
-					uint8 strength = 0;
-					if (act_ap != null)
-						strength = act_ap.strength;
-
-					set_conn_status_wifi(strength);
-					break;
-				case NM.DeviceType.ETHERNET:
-					conn_status.set_state (new Variant ("(sssb)", "", "network-wired", "Network (wired)", true));
-					break;
-				default:
-					conn_status.set_state (new Variant ("(sssb)", "", "network-offline", "Network (none)", true));
-					break;
+				switch (device.get_device_type ())
+				{
+					case NM.DeviceType.WIFI:
+						uint8 strength = 0;
+						if (act_ap != null)
+							strength = act_ap.strength;
+	
+						set_conn_status_wifi(strength);
+						break;
+					case NM.DeviceType.ETHERNET:
+						conn_status.set_state (new Variant ("(sssb)", "", "network-wired", "Network (wired)", true));
+						break;
+					default:
+						conn_status.set_state (new Variant ("(sssb)", "", "network-offline", "Network (none)", true));
+						break;
+				}
 			}
 		}
 
@@ -199,23 +203,26 @@ namespace Network
 			{
 				act_conn.notify["state"].disconnect (connection_state_changed);
 
-				var type = get_device_type_from_connection (act_conn);
-				switch (type)
+				var device = get_device_from_connection (act_conn);
+				if (device != null)
 				{
-					case NM.DeviceType.WIFI:
-						var dev = act_conn.get_devices ().get(0) as NM.DeviceWifi;
-						if (dev != null)
-							dev.notify["active-access-point"].connect (active_access_point_changed);
+					switch (device.get_device_type ())
+					{
+						case NM.DeviceType.WIFI:
+							var dev = device as NM.DeviceWifi;
 
-						if (act_ap != null)
-						{
-							act_ap.notify["strength"].disconnect (active_connection_strength_changed);
-							act_ap = null;
-						}
-
-						break;
-					default:
-						break;
+							dev.notify["active-access-point"].disconnect (active_access_point_changed);
+	
+							if (act_ap != null)
+							{
+								act_ap.notify["strength"].disconnect (active_connection_strength_changed);
+								act_ap = null;
+							}
+	
+							break;
+						default:
+							break;
+					}
 				}
 			}
 
@@ -256,16 +263,16 @@ namespace Network
 			return null;
 		}
 
-		private NM.DeviceType get_device_type_from_connection (NM.ActiveConnection conn)
+		private NM.Device? get_device_from_connection (NM.ActiveConnection conn)
 		{
 			var devices = conn.get_devices ();
 
 			/* The list length should always == 1 */
 			if (devices.length == 1)
-				return devices.get (0).get_device_type ();
+				return devices.get (0);
 
 			warning ("Connection has a list of devices length different than 0");
-			return NM.DeviceType.UNKNOWN;
+			return null;
 		}
 	}
 

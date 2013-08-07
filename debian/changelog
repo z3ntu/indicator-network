@@ -1,3 +1,16 @@
+indicator-network (0.5.0+13.10.20130807-0ubuntu1) saucy; urgency=low
+
+  [ Mathieu Trudel-Lapierre ]
+  * Minor fixes: - Improve "symmetry" in connecting/disconnecting
+    signals for wifi devices and access points. - Small code
+    simplifications. - Properly set busy_action state for Disabled
+    states.
+
+  [ Ubuntu daily release ]
+  * Automatic snapshot from revision 258
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Wed, 07 Aug 2013 02:03:26 +0000
+
 indicator-network (0.5.0+13.10.20130806-0ubuntu1) saucy; urgency=low
 
   [ Ted Gould ]

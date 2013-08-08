@@ -98,6 +98,8 @@ namespace Network.Device
 				}
 			});
 
+			device.state_changed.connect (device_state_changed);
+
 			device.notify.connect((pspec) => {
 				if (pspec.name == "active-connection") {
 					active_connection_changed();
@@ -122,6 +124,36 @@ namespace Network.Device
 		{
 			device.disconnect(null);
 			return;
+		}
+
+		private void device_state_changed (NM.Device dev, uint old_state, uint new_state, uint reason) {
+			switch (new_state) {
+				case NM.DeviceState.PREPARE:
+				case NM.DeviceState.CONFIG:
+				case NM.DeviceState.NEED_AUTH:
+				case NM.DeviceState.IP_CONFIG:
+				case NM.DeviceState.IP_CHECK:
+				case NM.DeviceState.SECONDARIES:
+					debug("Marking '" + dev.get_iface() + "' as Activating");
+					busy_action.set_state(new Variant.boolean(true));
+					enabled_action.set_state(new Variant.boolean(true));
+					break;
+				case NM.DeviceState.ACTIVATED:
+					debug("Marking '" + dev.get_iface() + "' as Active");
+					busy_action.set_state(new Variant.boolean(false));
+					enabled_action.set_state(new Variant.boolean(true));
+					break;
+				case NM.DeviceState.DEACTIVATING:
+					debug("Marking '" + dev.get_iface() + "' as Deactivating");
+					busy_action.set_state(new Variant.boolean(true));
+					enabled_action.set_state(new Variant.boolean(false));
+					break;
+				default:
+					debug("Marking '" + dev.get_iface() + "' as Disabled");
+					busy_action.set_state(new Variant.boolean(false));
+					enabled_action.set_state(new Variant.boolean(false));
+					break;
+			}
 		}
 
 		private void active_connection_changed () {

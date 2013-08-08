@@ -1,3 +1,10 @@
+indicator-network (0.5.0+13.10.20130807-0ubuntu2) UNRELEASED; urgency=low
+
+  * Connect device state change signals to properly track device state with
+    the menu item switches.
+
+ -- Mathieu Trudel-Lapierre <mathieu-tl@ubuntu.com>  Wed, 07 Aug 2013 17:16:18 -0400
+
 indicator-network (0.5.0+13.10.20130807-0ubuntu1) saucy; urgency=low
 
   [ Mathieu Trudel-Lapierre ]

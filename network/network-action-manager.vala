@@ -25,13 +25,30 @@ namespace Network
 
 	public class ActionManager
 	{
+		/* Action Stuff */
 		private GLibLocal.ActionMuxer    muxer;
 		private SimpleActionGroup        actions = new SimpleActionGroup();
-		private NM.Client                client;
 		private SimpleAction             conn_status;
+
+		/* Network Manager Stuff */
+		private NM.Client                client;
+
+		/* Tracks the current data connection */
 		private NM.ActiveConnection?     act_conn = null;
+		private NM.Device?               act_dev  = null;
 		private NM.AccessPoint?          act_ap   = null;
+
+		/* Tracking a cell modem if there is one */
+		private NM.DeviceModem?          modemdev = null;
+		private bool                     airplane_mode = false;
+		private bool                     sim_error = false;
+		private bool                     sim_installed = false;
+		private string?                  current_protocol = null;
+
+		/* State tracking stuff */
 		private int                      last_wifi_strength = 0;
+
+		/* Cellular State */
 
 		public ActionManager (GLibLocal.ActionMuxer muxer, NM.Client client)
 		{
@@ -48,6 +65,150 @@ namespace Network
 			muxer.remove("global");
 		}
 
+		private Variant? icon_serialize (string icon_name)
+		{
+			try {
+				var icon = GLib.Icon.new_for_string(icon_name);
+				return icon.serialize();
+			} catch (Error e) {
+				warning("Unable to serialize icon '$icon_name' error: $(e.message)");
+				return null;
+			}
+		}
+
+		private Variant build_state ()
+		{
+			var params = new HashTable<string, Variant>(str_hash, str_equal);
+			bool multiicon = false;
+			var icons = new Array<Variant>();
+
+			/* If we have cellular data to report or if we need to show the
+			   captured connection information, we need more than one icon. */
+			if (modemdev != null) {
+				if (airplane_mode) {
+					var icon = icon_serialize("nm-airplane");
+					if (icon != null) {
+						icons.append_val(icon);
+						multiicon = true;
+					}
+				} else if (!sim_installed) {
+					params.insert("pre-label", new Variant.string("No SIM"));
+				} else if (sim_error) {
+					params.insert("pre-label", new Variant.string("SIM Error"));
+				} else {
+					/* TODO: Set icon based on strength */
+					var icon = icon_serialize("nm-device-wwan");
+					if (icon != null) {
+						icons.append_val(icon);
+						multiicon = true;
+					}
+					/* if (zero) { params.insert("pre-label", new Variant.string("No Signal")); }*/
+				}
+			}
+
+			/* Look for the first icon if we need it */
+			if (client.get_state() == NM.State.CONNECTED_LOCAL || client.get_state() == NM.State.CONNECTED_SITE) {
+				var icon = icon_serialize("nm-captured-portal");
+				if (icon != null) {
+					icons.append_val(icon);
+					multiicon = true;
+				}
+			}
+
+			string data_icon;
+			string a11ydesc;
+
+			data_icon_name(out data_icon, out a11ydesc);
+			/* We're doing icon always right now so we have a fallback before everyone
+			   supports multi-icon.  We shouldn't set both in the future. */
+			var icon = icon_serialize(data_icon);
+			if (icon != null) {
+				params.insert("icon", icon);
+				if (multiicon)
+					icons.append_val(icon);
+			}
+
+			params.insert("accessibility-description", new Variant.string(a11ydesc));
+
+			/* Turn the icons array into a variant in the param list */
+			if (multiicon && icons.length > 0) {
+				VariantBuilder builder = new VariantBuilder(VariantType.ARRAY);
+
+				for (int i = 0; i < icons.length; i++) {
+					builder.add_value(icons.index(i));
+				}
+
+				params.insert("icons", builder.end());
+			}
+
+			/* Convert to a Variant dictionary */
+			VariantBuilder final = new VariantBuilder(VariantType.DICTIONARY);
+
+			params.foreach((key, value) => {
+				final.add("{sv}", key, value);
+			});
+
+			return final.end();
+		}
+
+		private void data_icon_name (out string icon_name, out string a11ydesc)
+		{
+			if (act_dev == null) {
+				icon_name = "network-offline";
+				a11ydesc = "Network (none)";
+				return;
+			}
+
+			switch (act_dev.get_device_type ())
+			{
+				case NM.DeviceType.WIFI: {
+					uint8 strength = 0;
+					bool secure = false;
+
+					if (act_ap != null) {
+						strength = act_ap.strength;
+						secure = act_ap.get_wpa_flags() != 0;
+					}
+
+					if (secure) {
+						a11ydesc = "Network (wireless, %d%, secure)".printf(strength);
+					} else {
+						a11ydesc = "Network (wireless, %d%)".printf(strength);
+					}
+
+					if (strength > 70 || (last_wifi_strength == 100 && strength > 65)) {
+						last_wifi_strength = 100;
+					} else if (strength > 50 || (last_wifi_strength == 75 && strength > 45)) {
+						last_wifi_strength = 75;
+					} else if (strength > 30 || (last_wifi_strength == 50 && strength > 25)) {
+						last_wifi_strength = 50;
+					} else if (strength > 10 || (last_wifi_strength == 25 && strength > 5)) {
+						last_wifi_strength = 25;
+					} else {
+						last_wifi_strength = 0;
+					}
+
+					if (secure) {
+						icon_name = "nm-signal-%d-secure".printf(last_wifi_strength);
+					} else {
+						icon_name = "nm-signal-%d".printf(last_wifi_strength);
+					}
+
+					break;
+				}
+				case NM.DeviceType.ETHERNET:
+					icon_name = "network-wired";
+					a11ydesc = "Network (wired)";
+					break;
+				default:
+					icon_name = "network-offline";
+					a11ydesc = "Network (none)";
+					break;
+			}
+
+			return;
+		}
+
 		private void add_network_status_action ()
 		{
 			/* This is the action that represents the global status of the network.
@@ -58,125 +219,16 @@ namespace Network
 			 * - The third one is for the extended status. In the case of Wifi it represents
 			 *   signal strength.
 			 */
-
 			conn_status = new SimpleAction.stateful ("network-status",
-													 new VariantType ("(sssb)"),
-													 new Variant("(sssb)", "", "network-offline", "Network (none)", true));
+													 new VariantType ("a{sv}"),
+													 build_state());
 			actions.insert (conn_status);
 
 			client.notify["active-connections"].connect (active_connections_changed);
-			set_active_connection ();
+			active_connections_changed(null, null);
 		}
 
-		private void set_active_connection ()
-		{
-			act_conn = get_active_connection ();
-			if (act_conn != null)
-			{
-				act_conn.notify["state"].connect (connection_state_changed);
-				var device = get_device_from_connection (act_conn);
-
-				if (device != null)
-				{
-					switch (device.get_device_type ())
-					{
-						case NM.DeviceType.WIFI:
-							set_wifi_device ();
-							break;
-						case NM.DeviceType.ETHERNET:
-							conn_status.set_state (new Variant ("(sssb)", "", "network-wired", "Network (wired)", true));
-							break;
-						default:
-							conn_status.set_state (new Variant ("(sssb)", "", "network-offline", "Network (none)", true));
-							break;
-					}
-				}
-			}
-			else
-			{
-				conn_status.set_state (new Variant ("(sssb)", "", "network-offline", "Network (none)", true));
-			}
-		}
-
-		private void set_conn_status_wifi (uint8 strength)
-		{
-			bool secure = act_ap.get_wpa_flags() != 0;
-
-			string a11y_name;
-			if (secure) {
-				a11y_name = "Network (wireless, %d%, secure)".printf(strength);
-			} else {
-				a11y_name = "Network (wireless, %d%)".printf(strength);
-			}
-
-			if (strength > 70 || (last_wifi_strength == 100 && strength > 65)) {
-				last_wifi_strength = 100;
-			} else if (strength > 50 || (last_wifi_strength == 75 && strength > 45)) {
-				last_wifi_strength = 75;
-			} else if (strength > 30 || (last_wifi_strength == 50 && strength > 25)) {
-				last_wifi_strength = 50;
-			} else if (strength > 10 || (last_wifi_strength == 25 && strength > 5)) {
-				last_wifi_strength = 25;
-			} else {
-				last_wifi_strength = 0;
-			}
-
-			string icon_name;
-			if (secure) {
-				icon_name = "nm-signal-%d-secure".printf(last_wifi_strength);
-			} else {
-				icon_name = "nm-signal-%d".printf(last_wifi_strength);
-			}
-
-			conn_status.set_state (new Variant ("(sssb)", "", icon_name, a11y_name, true));
-		}
-
-		private void set_wifi_device ()
-		{
-			uint8 strength = 0;
-			NM.DeviceWifi? dev = null;
-
-			dev = get_device_from_connection (act_conn) as NM.DeviceWifi;
-
-			if (dev != null)
-			{
-				dev.notify["active-access-point"].connect (active_access_point_changed);
-				act_ap = dev.active_access_point;
-				if (act_ap != null)
-				{
-					act_ap.notify["strength"].connect (active_connection_strength_changed);
-					strength = act_ap.strength;
-				}
-			}
-
-			set_conn_status_wifi(strength);
-		}
-
-		private void connection_state_changed (GLib.Object client, ParamSpec ps)
-		{
-			var device = get_device_from_connection (act_conn);
-			if (device != null)
-			{
-				switch (device.get_device_type ())
-				{
-					case NM.DeviceType.WIFI:
-						uint8 strength = 0;
-						if (act_ap != null)
-							strength = act_ap.strength;
-	
-						set_conn_status_wifi(strength);
-						break;
-					case NM.DeviceType.ETHERNET:
-						conn_status.set_state (new Variant ("(sssb)", "", "network-wired", "Network (wired)", true));
-						break;
-					default:
-						conn_status.set_state (new Variant ("(sssb)", "", "network-offline", "Network (none)", true));
-						break;
-				}
-			}
-		}
-
-		private void active_access_point_changed (GLib.Object client, ParamSpec ps)
+		private void active_access_point_changed (GLib.Object? client, ParamSpec? ps)
 		{
 			if (act_ap != null)
 			{
@@ -184,32 +236,30 @@ namespace Network
 				act_ap = null;
 			}
 
-			set_wifi_device ();
+			act_ap = (act_dev as NM.DeviceWifi).get_active_access_point();
+			if (act_ap != null) {
+				act_ap.notify["strength"].connect (active_connection_strength_changed);
+			}
 		}
 
-		private void active_connection_strength_changed (GLib.Object client, ParamSpec ps)
+		private void active_connection_strength_changed (GLib.Object? client, ParamSpec? ps)
 		{
-			uint8 strength = 0;
-			if (act_ap != null)
-				strength = act_ap.strength;
-
-			set_conn_status_wifi(strength);
+			conn_status.set_state(build_state());
 		}
 
-		private void active_connections_changed (GLib.Object client, ParamSpec ps)
+		private void active_connections_changed (GLib.Object? client, ParamSpec? ps)
 		{
 			/* Remove previous active connection */
 			if (act_conn != null)
 			{
-				act_conn.notify["state"].disconnect (connection_state_changed);
+				act_conn.notify["state"].disconnect (active_connections_changed);
 
-				var device = get_device_from_connection (act_conn);
-				if (device != null)
+				if (act_dev != null)
 				{
-					switch (device.get_device_type ())
+					switch (act_dev.get_device_type ())
 					{
 						case NM.DeviceType.WIFI:
-							var dev = device as NM.DeviceWifi;
+							var dev = act_dev as NM.DeviceWifi;
 
 							dev.notify["active-access-point"].disconnect (active_access_point_changed);
 	
@@ -226,7 +276,18 @@ namespace Network
 				}
 			}
 
-			set_active_connection ();
+			act_conn = get_active_connection ();
+			if (act_conn != null) {
+				act_conn.notify["state"].connect (active_connections_changed);
+				act_dev = get_device_from_connection (act_conn);
+
+				if (act_dev != null && act_dev.get_device_type() == NM.DeviceType.WIFI) {
+					act_dev.notify["active-access-point"].connect (active_access_point_changed);
+					active_access_point_changed(null, null);
+				}
+			}
+
+			conn_status.set_state(build_state());
 		}
 
 		/* This function guesses the default connection in case

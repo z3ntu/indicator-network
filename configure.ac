@@ -143,6 +143,7 @@ AC_SUBST(COVERAGE_LDFLAGS)
 AC_OUTPUT([
 Makefile
 data/Makefile
+data/icons/Makefile
 network/Makefile
 secret-agent/Makefile
 test/Makefile

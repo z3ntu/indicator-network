@@ -253,6 +253,8 @@ namespace Network
 			if (act_conn != null)
 			{
 				act_conn.notify["state"].disconnect (active_connections_changed);
+				act_conn.notify["default"].disconnect (active_connections_changed);
+				act_conn.notify["default6"].disconnect (active_connections_changed);
 
 				if (act_dev != null)
 				{
@@ -273,13 +275,22 @@ namespace Network
 						default:
 							break;
 					}
+
+					act_dev = null;
 				}
+
+				act_conn = null;
 			}
 
 			act_conn = get_active_connection ();
 			if (act_conn != null) {
 				act_conn.notify["state"].connect (active_connections_changed);
+				act_conn.notify["default"].connect (active_connections_changed);
+				act_conn.notify["default6"].connect (active_connections_changed);
+
 				act_dev = get_device_from_connection (act_conn);
+
+				debug(@"Active connection changed to: $(act_dev.get_iface())");
 
 				if (act_dev != null && act_dev.get_device_type() == NM.DeviceType.WIFI) {
 					act_dev.notify["active-access-point"].connect (active_access_point_changed);

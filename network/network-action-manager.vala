@@ -60,7 +60,7 @@ namespace Network
 			 */
 
 			conn_status = new SimpleAction.stateful ("network-status",
-													 new VariantType ("(sssb)"),
+													 null,
 													 new Variant("(sssb)", "", "network-offline", "Network (none)", true));
 			actions.insert (conn_status);
 

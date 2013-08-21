@@ -1,3 +1,13 @@
+indicator-network (0.5.0+13.10.20130821-0ubuntu1) saucy; urgency=low
+
+  [ Ted Gould ]
+  * Set base action parameter_type to null.
+
+  [ Ubuntu daily release ]
+  * Automatic snapshot from revision 264
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Wed, 21 Aug 2013 06:07:03 +0000
+
 indicator-network (0.5.0+13.10.20130812.1-0ubuntu1) saucy; urgency=low
 
   [ Ted Gould ]

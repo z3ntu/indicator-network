@@ -58,11 +58,59 @@ namespace Network
 			muxer.insert("global", actions);
 
 			add_network_status_action ();
+
+			var devices = client.get_devices();
+			for (var i = 0; i < devices.length; i++) {
+				NM.DeviceModem? modemmaybe = devices[i] as NM.DeviceModem;
+
+				/* If it's not a modem, we can move on */
+				if (modemmaybe == null) {
+					continue;
+				}
+
+				/* We're only going to deal with oFono modems for now */
+				if ((modemmaybe.get_current_capabilities() & NM.DeviceModemCapabilities.OFONO) == 0) {
+					continue;
+				}
+
+				/* Check to see if the modem supports voice */
+				try {
+					oFono.Modem ofono_modem = Bus.get_proxy_sync (BusType.SYSTEM, "org.ofono", modemmaybe.get_iface());
+					var modem_properties = ofono_modem.get_properties();
+					var interfaces = modem_properties.lookup("Interfaces");
+					if (!variant_contains(interfaces, "org.ofono.VoiceCallManager")) {
+						continue;
+					}
+				} catch (Error e) {
+					warning(@"Unable to get oFono modem properties for '$(modemmaybe.get_iface())': $(e.message)");
+					continue;
+				}
+
+				debug("Got a modem");
+			}
 		}
 
 		~ActionManager ()
 		{
 			muxer.remove("global");
+		}
+
+		private bool variant_contains (Variant variant, string needle)
+		{
+			if (variant.is_of_type(VariantType.VARIANT))
+				return variant_contains(variant.get_variant(), needle);
+
+			if (!variant.is_container())
+				return false;
+
+			Variant item;
+			var iter = new VariantIter(variant);
+			for (item = iter.next_value(); item != null; item = iter.next_value()) {
+				if (item.get_string() == needle)
+					return true;
+			}
+
+			return false;
 		}
 
 		private Variant? icon_serialize (string icon_name)

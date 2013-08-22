@@ -163,7 +163,7 @@ namespace Network
 		{
 			switch (prop) {
 			case "Technology":
-				current_protocol = value.get_string();
+				current_protocol = ofono_tech_to_icon_name(value.get_string());
 				debug(@"Current Protocol: $(current_protocol)");
 				break;
 			case "Strength":
@@ -173,6 +173,25 @@ namespace Network
 			}
 
 			return;
+		}
+
+		private string? ofono_tech_to_icon_name (string tech)
+		{
+			switch (tech) {
+			case "gsm":
+				return "pre-edge";
+			case "edge":
+				return "edge";
+			case "umts":
+				return "3g";
+			case "hspa":
+				return "hspa";
+			case "lte":
+				return "lte";
+			}
+
+			warning(@"Technology type $tech that we don't understand.  Calling it 'pre-edge'");
+			return "pre-edge";
 		}
 
 		private bool variant_contains (Variant variant, string needle)

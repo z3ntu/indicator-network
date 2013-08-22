@@ -84,6 +84,7 @@ namespace Network
 
 			/* We're only going to deal with oFono modems for now */
 			if ((modemmaybe.get_current_capabilities() & NM.DeviceModemCapabilities.OFONO) == 0) {
+				debug(@"Modem $(device.get_iface()) doesn't have an OFONO capability");
 				return;
 			}
 

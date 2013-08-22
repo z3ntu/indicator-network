@@ -60,46 +60,8 @@ namespace Network
 			add_network_status_action ();
 
 			var devices = client.get_devices();
-			for (var i = 0; i < devices.length; i++) {
-				NM.DeviceModem? modemmaybe = devices[i] as NM.DeviceModem;
-
-				/* If it's not a modem, we can move on */
-				if (modemmaybe == null) {
-					continue;
-				}
-
-				/* We're only going to deal with oFono modems for now */
-				if ((modemmaybe.get_current_capabilities() & NM.DeviceModemCapabilities.OFONO) == 0) {
-					continue;
-				}
-
-				/* Check to see if the modem supports voice */
-				try {
-					oFono.Modem ofono_modem = Bus.get_proxy_sync (BusType.SYSTEM, "org.ofono", modemmaybe.get_iface());
-					var modem_properties = ofono_modem.get_properties();
-					var interfaces = modem_properties.lookup("Interfaces");
-
-					if (!variant_contains(interfaces, "org.ofono.VoiceCallManager")) {
-						debug(@"Modem '$(modemmaybe.get_iface())' doesn't have voice support");
-						continue;
-					}
-					if (!variant_contains(interfaces, "org.ofono.SimManager")) {
-						debug(@"Modem '$(modemmaybe.get_iface())' doesn't have SIM management support");
-						continue;
-					}
-					if (!variant_contains(interfaces, "org.ofono.NetworkRegistration")) {
-						debug(@"Modem '$(modemmaybe.get_iface())' doesn't have Network Registration support");
-						continue;
-					}
-				} catch (Error e) {
-					warning(@"Unable to get oFono modem properties for '$(modemmaybe.get_iface())': $(e.message)");
-					continue;
-				}
-
-				debug("Got a modem");
-				modemdev = modemmaybe;
-
-				break;
+			for (var i = 0; i < devices.length && modemdev == null; i++) {
+				device_added(devices[i]);
 			}
 		}
 
@@ -107,6 +69,50 @@ namespace Network
 		{
 			muxer.remove("global");
 		}
+
+		private void device_added (NM.Device device) {
+			debug(@"Action Manager Device Added: $(device.get_iface())");
+
+			NM.DeviceModem? modemmaybe = device as NM.DeviceModem;
+
+			/* If it's not a modem, we can move on */
+			if (modemmaybe == null) {
+				return;
+			}
+
+			/* We're only going to deal with oFono modems for now */
+			if ((modemmaybe.get_current_capabilities() & NM.DeviceModemCapabilities.OFONO) == 0) {
+				return;
+			}
+
+			/* Check to see if the modem supports voice */
+			try {
+				oFono.Modem ofono_modem = Bus.get_proxy_sync (BusType.SYSTEM, "org.ofono", modemmaybe.get_iface());
+				var modem_properties = ofono_modem.get_properties();
+				var interfaces = modem_properties.lookup("Interfaces");
+
+				if (!variant_contains(interfaces, "org.ofono.VoiceCallManager")) {
+					debug(@"Modem '$(modemmaybe.get_iface())' doesn't have voice support");
+					return;
+				}
+				if (!variant_contains(interfaces, "org.ofono.SimManager")) {
+					debug(@"Modem '$(modemmaybe.get_iface())' doesn't have SIM management support");
+					return;
+				}
+				if (!variant_contains(interfaces, "org.ofono.NetworkRegistration")) {
+					debug(@"Modem '$(modemmaybe.get_iface())' doesn't have Network Registration support");
+					return;
+				}
+			} catch (Error e) {
+				warning(@"Unable to get oFono modem properties for '$(modemmaybe.get_iface())': $(e.message)");
+				return;
+			}
+
+			debug("Got a modem");
+			modemdev = modemmaybe;
+
+			return;
+		} 
 
 		private bool variant_contains (Variant variant, string needle)
 		{

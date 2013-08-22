@@ -45,7 +45,9 @@ namespace Network
 		private bool                     airplane_mode = false;
 		private bool                     sim_error = false;
 		private bool                     sim_installed = false;
+		private bool                     sim_locked = false;
 		private string?                  current_protocol = null;
+		private int                      cell_strength = 0;
 
 		/* State tracking stuff */
 		private int                      last_wifi_strength = 0;
@@ -118,6 +120,7 @@ namespace Network
 			debug("Got a modem");
 			modemdev = modemmaybe;
 
+			/* Initialize the SIM Manager */
 			simmanager = Bus.get_proxy_sync (BusType.SYSTEM, "org.ofono", modemmaybe.get_iface());
 			simmanager.property_changed.connect(simmanager_property);
 			var simprops = simmanager.get_properties();
@@ -125,6 +128,7 @@ namespace Network
 				simmanager_property(k, v);
 			});
 
+			/* Initialize the Network Registration */
 			netreg = Bus.get_proxy_sync (BusType.SYSTEM, "org.ofono", modemmaybe.get_iface());
 			netreg.property_changed.connect(netreg_property);
 			var netregprops = netreg.get_properties();
@@ -135,14 +139,38 @@ namespace Network
 			return;
 		}
 
+		/* Properties from the SIM manager allow us to know the state of the SIM
+		   that we've got installed. */
 		private void simmanager_property (string prop, Variant value)
 		{
+			switch (prop) {
+			case "Present":
+				sim_installed = value.get_boolean();
+				debug(@"SIM Installed: $(sim_installed)");
+				break;
+			case "PinRequired":
+				sim_locked = (value.get_string() != "none");
+				debug(@"SIM Lock: $(sim_locked)");
+				break;
+			}
 
 			return;
 		}
 
+		/* Properties from the Network Registration which gives us the strength
+		   and how we're connecting to it. */
 		private void netreg_property (string prop, Variant value)
 		{
+			switch (prop) {
+			case "Technology":
+				current_protocol = value.get_string();
+				debug(@"Current Protocol: $(current_protocol)");
+				break;
+			case "Strength":
+				cell_strength = value.get_byte();
+				debug(@"Cell Strength: $(cell_strength)");
+				break;
+			}
 
 			return;
 		}

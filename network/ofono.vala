@@ -17,7 +17,7 @@ namespace oFono {
 		public signal void property_changed (string property, GLib.Variant value);
 	}
 
-	[DBus (name = "org.ofono.SIMManager") ]
+	[DBus (name = "org.ofono.SimManager") ]
 	public interface SIMManager : GLib.Object {
 		public abstract void set_property (string property, GLib.Variant value) throws IOError;
 		public abstract GLib.HashTable<string, GLib.Variant> get_properties () throws IOError;

@@ -87,12 +87,19 @@ namespace Network
 						debug(@"Modem '$(modemmaybe.get_iface())' doesn't have SIM management support");
 						continue;
 					}
+					if (!variant_contains(interfaces, "org.ofono.NetworkRegistration")) {
+						debug(@"Modem '$(modemmaybe.get_iface())' doesn't have Network Registration support");
+						continue;
+					}
 				} catch (Error e) {
 					warning(@"Unable to get oFono modem properties for '$(modemmaybe.get_iface())': $(e.message)");
 					continue;
 				}
 
 				debug("Got a modem");
+				modemdev = modemmaybe;
+
+				break;
 			}
 		}
 

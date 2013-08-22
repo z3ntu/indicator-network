@@ -57,14 +57,16 @@ namespace Network
 
 			muxer.insert("global", actions);
 
-			add_network_status_action ();
-
 			client.device_added.connect(device_added);
 
 			var devices = client.get_devices();
 			for (var i = 0; i < devices.length && modemdev == null; i++) {
 				device_added(devices[i]);
 			}
+
+			/* Make sure this is last as it'll set the state of the
+			   icon, so everything needs to be ready */
+			add_network_status_action ();
 		}
 
 		~ActionManager ()
@@ -85,7 +87,7 @@ namespace Network
 			/* We're only going to deal with oFono modems for now */
 			if ((modemmaybe.get_current_capabilities() & NM.DeviceModemCapabilities.OFONO) == 0) {
 				debug(@"Modem $(device.get_iface()) doesn't have an OFONO capability");
-				return;
+				/* return; TODO: Galaxy Nexus doesn't do this, so for testing we need to ignore it. */
 			}
 
 			/* Check to see if the modem supports voice */

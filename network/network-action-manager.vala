@@ -40,6 +40,8 @@ namespace Network
 
 		/* Tracking a cell modem if there is one */
 		private NM.DeviceModem?          modemdev = null;
+		private oFono.SIMManager?        simmanager = null;
+		private oFono.NetworkRegistration? netreg = null;
 		private bool                     airplane_mode = false;
 		private bool                     sim_error = false;
 		private bool                     sim_installed = false;
@@ -116,8 +118,11 @@ namespace Network
 			debug("Got a modem");
 			modemdev = modemmaybe;
 
+			simmanager = Bus.get_proxy_sync (BusType.SYSTEM, "org.ofono", modemmaybe.get_iface());
+			netreg = Bus.get_proxy_sync (BusType.SYSTEM, "org.ofono", modemmaybe.get_iface());
+
 			return;
-		} 
+		}
 
 		private bool variant_contains (Variant variant, string needle)
 		{

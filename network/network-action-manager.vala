@@ -120,21 +120,28 @@ namespace Network
 			debug("Got a modem");
 			modemdev = modemmaybe;
 
-			/* Initialize the SIM Manager */
-			simmanager = Bus.get_proxy_sync (BusType.SYSTEM, "org.ofono", modemmaybe.get_iface());
-			simmanager.property_changed.connect(simmanager_property);
-			var simprops = simmanager.get_properties();
-			simprops.foreach((k, v) => {
-				simmanager_property(k, v);
-			});
+			try {
+				/* Initialize the SIM Manager */
+				simmanager = Bus.get_proxy_sync (BusType.SYSTEM, "org.ofono", modemmaybe.get_iface());
+				simmanager.property_changed.connect(simmanager_property);
+				var simprops = simmanager.get_properties();
+				simprops.foreach((k, v) => {
+					simmanager_property(k, v);
+				});
 
-			/* Initialize the Network Registration */
-			netreg = Bus.get_proxy_sync (BusType.SYSTEM, "org.ofono", modemmaybe.get_iface());
-			netreg.property_changed.connect(netreg_property);
-			var netregprops = netreg.get_properties();
-			netregprops.foreach((k, v) => {
-				netreg_property(k, v);
-			});
+				/* Initialize the Network Registration */
+				netreg = Bus.get_proxy_sync (BusType.SYSTEM, "org.ofono", modemmaybe.get_iface());
+				netreg.property_changed.connect(netreg_property);
+				var netregprops = netreg.get_properties();
+				netregprops.foreach((k, v) => {
+					netreg_property(k, v);
+				});
+			} catch (Error e) {
+				warning(@"Unable to get oFono information from $(modemdev.get_iface()): $(e.message)");
+				simmanager = null;
+				netreg = null;
+				modemdev = null;
+			}
 
 			return;
 		}

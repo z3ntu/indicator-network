@@ -119,7 +119,30 @@ namespace Network
 			modemdev = modemmaybe;
 
 			simmanager = Bus.get_proxy_sync (BusType.SYSTEM, "org.ofono", modemmaybe.get_iface());
+			simmanager.property_changed.connect(simmanager_property);
+			var simprops = simmanager.get_properties();
+			simprops.foreach((k, v) => {
+				simmanager_property(k, v);
+			});
+
 			netreg = Bus.get_proxy_sync (BusType.SYSTEM, "org.ofono", modemmaybe.get_iface());
+			netreg.property_changed.connect(netreg_property);
+			var netregprops = netreg.get_properties();
+			netregprops.foreach((k, v) => {
+				netreg_property(k, v);
+			});
+
+			return;
+		}
+
+		private void simmanager_property (string prop, Variant value)
+		{
+
+			return;
+		}
+
+		private void netreg_property (string prop, Variant value)
+		{
 
 			return;
 		}

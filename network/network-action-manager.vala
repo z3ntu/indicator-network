@@ -59,6 +59,8 @@ namespace Network
 
 			add_network_status_action ();
 
+			client.device_added.connect(device_added);
+
 			var devices = client.get_devices();
 			for (var i = 0; i < devices.length && modemdev == null; i++) {
 				device_added(devices[i]);

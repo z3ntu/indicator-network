@@ -62,6 +62,7 @@ namespace Network
 			muxer.insert("global", actions);
 
 			client.device_added.connect(device_added);
+			client.device_removed.connect(device_removed);
 
 			var devices = client.get_devices();
 			for (var i = 0; i < devices.length && modemdev == null; i++) {
@@ -142,6 +143,39 @@ namespace Network
 				netreg = null;
 				modemdev = null;
 			}
+
+			return;
+		}
+
+		private void device_removed (NM.Device device)
+		{
+			bool changed = false;
+
+			/* The voice modem got killed, bugger */
+			if (device.get_iface() == modemdev.get_iface()) {
+				changed = true;
+
+				/* Clear the old modemdevice */
+				modemdev = null;
+				simmanager = null;
+				netreg = null;
+				current_protocol = null;
+
+				/* Look through the current devices to see if we can find a new modem */
+				var devices = client.get_devices();
+				for (var i = 0; i < devices.length && modemdev == null; i++) {
+					device_added(devices[i]);
+				}
+			}
+
+			/* Oh, they went for the data!  Jerks!  This is a civil rights violation! */
+			if (device.get_iface() == act_dev.get_iface()) {
+				active_connections_changed(null, null);
+				/* NOTE: Note setting changed because ^ does it already */
+			}
+
+			if (changed && conn_status != null)
+				conn_status.set_state(build_state());
 
 			return;
 		}

@@ -46,6 +46,7 @@ namespace Network
 		private bool                     sim_error = false;
 		private bool                     sim_installed = false;
 		private bool                     sim_locked = false;
+		private bool                     roaming = false;
 		private string?                  current_protocol = null;
 		private int                      cell_strength = 0;
 		private int                      last_cell_strength = 0;
@@ -232,6 +233,13 @@ namespace Network
 				debug(@"Cell Strength: $(cell_strength)");
 				break;
 			}
+			case "Status": {
+				var old = roaming;
+				roaming = (value.get_string() == "roaming");
+				changed = (old != roaming);
+				debug(@"Roaming Status: $(roaming)");
+				break;
+			}
 			}
 
 			if (changed && conn_status != null)
@@ -342,8 +350,8 @@ namespace Network
 			}
 
 			/* Look for the first icon if we need it */
-			if (client.get_state() == NM.State.CONNECTED_LOCAL || client.get_state() == NM.State.CONNECTED_SITE) {
-				var icon = icon_serialize("nm-captured-portal");
+			if (roaming) {
+				var icon = icon_serialize("network-roaming");
 				if (icon != null) {
 					icons.append_val(icon);
 					multiicon = true;

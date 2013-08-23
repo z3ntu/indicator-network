@@ -50,6 +50,7 @@ namespace Network
 		private string?                  current_protocol = null;
 		private int                      cell_strength = 0;
 		private int                      last_cell_strength = 0;
+		private oFono.Modem[]            watched_modems;
 
 		/* State tracking stuff */
 		private int                      last_wifi_strength = 0;
@@ -101,6 +102,14 @@ namespace Network
 			/* Check to see if the modem supports voice */
 			try {
 				oFono.Modem ofono_modem = Bus.get_proxy_sync (BusType.SYSTEM, "org.ofono", modemmaybe.get_iface());
+
+				watched_modems += ofono_modem;
+				ofono_modem.property_changed.connect((prop, value) => {
+					if (prop == "Interfaces") {
+						device_added(modemmaybe);
+					}
+				});
+
 				var modem_properties = ofono_modem.get_properties();
 				var interfaces = modem_properties.lookup("Interfaces");
 

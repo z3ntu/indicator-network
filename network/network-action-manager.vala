@@ -28,7 +28,7 @@ namespace Network
 		/* Action Stuff */
 		private GLibLocal.ActionMuxer    muxer;
 		private SimpleActionGroup        actions = new SimpleActionGroup();
-		private SimpleAction             conn_status;
+		private SimpleAction?            conn_status = null;
 
 		/* Network Manager Stuff */
 		private NM.Client                client;
@@ -150,16 +150,27 @@ namespace Network
 		   that we've got installed. */
 		private void simmanager_property (string prop, Variant value)
 		{
+			bool changed = false;
+
 			switch (prop) {
-			case "Present":
+			case "Present": {
+				var old = sim_installed;
 				sim_installed = value.get_boolean();
+				changed = (old != sim_installed);
 				debug(@"SIM Installed: $(sim_installed)");
 				break;
-			case "PinRequired":
+			}
+			case "PinRequired": {
+				var old = sim_locked;
 				sim_locked = (value.get_string() != "none");
+				changed = (old != sim_locked);
 				debug(@"SIM Lock: $(sim_locked)");
 				break;
 			}
+			}
+
+			if (changed && conn_status != null)
+				conn_status.set_state(build_state());
 
 			return;
 		}
@@ -168,16 +179,27 @@ namespace Network
 		   and how we're connecting to it. */
 		private void netreg_property (string prop, Variant value)
 		{
+			bool changed = false;
+
 			switch (prop) {
-			case "Technology":
+			case "Technology": {
+				var old = current_protocol;
 				current_protocol = ofono_tech_to_icon_name(value.get_string());
+				changed = (old != current_protocol);
 				debug(@"Current Protocol: $(current_protocol)");
 				break;
-			case "Strength":
+			}
+			case "Strength": {
+				var old = cell_strength;
 				cell_strength = value.get_byte();
+				changed = (old != cell_strength);
 				debug(@"Cell Strength: $(cell_strength)");
 				break;
 			}
+			}
+
+			if (changed && conn_status != null)
+				conn_status.set_state(build_state());
 
 			return;
 		}

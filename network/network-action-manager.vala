@@ -598,6 +598,9 @@ namespace Network
 		{
 			var devices = conn.get_devices ();
 
+			if (devices == null)
+				return null;
+
 			/* The list length should always == 1 */
 			if (devices.length == 1)
 				return devices.get (0);

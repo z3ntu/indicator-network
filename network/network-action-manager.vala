@@ -48,6 +48,7 @@ namespace Network
 		private bool                     sim_locked = false;
 		private string?                  current_protocol = null;
 		private int                      cell_strength = 0;
+		private int                      last_cell_strength = 0;
 
 		/* State tracking stuff */
 		private int                      last_wifi_strength = 0;
@@ -226,6 +227,7 @@ namespace Network
 			case "Strength": {
 				var old = cell_strength;
 				cell_strength = value.get_byte();
+				strength_icon(ref last_cell_strength, cell_strength);
 				changed = (old != cell_strength);
 				debug(@"Cell Strength: $(cell_strength)");
 				break;
@@ -300,7 +302,7 @@ namespace Network
 			   captured connection information, we need more than one icon. */
 			if (modemdev != null) {
 				if (airplane_mode) {
-					var icon = icon_serialize("nm-airplane");
+					var icon = icon_serialize("network-airplane");
 					if (icon != null) {
 						icons.append_val(icon);
 						multiicon = true;
@@ -310,13 +312,32 @@ namespace Network
 				} else if (sim_error) {
 					params.insert("pre-label", new Variant.string("SIM Error"));
 				} else {
-					/* TODO: Set icon based on strength */
-					var icon = icon_serialize("nm-device-wwan");
-					if (icon != null) {
-						icons.append_val(icon);
-						multiicon = true;
+					if (cell_strength == 0) {
+						/* Note, looking to the cell strength here, as it's unmodified or
+						   parsed for consistency.  We want to know things are really dead. */
+						params.insert("pre-label", new Variant.string("No Signal"));
+					} else {
+						string icon_name = "gsm-3g-none";
+						switch (last_cell_strength) {
+						case 100:
+							icon_name = "gsm-3g-full";
+							break;
+						case 75:
+							icon_name = "gsm-3g-high";
+							break;
+						case 50:
+							icon_name = "gsm-3g-medium";
+							break;
+						case 25:
+							icon_name = "gsm-3g-low";
+							break;
+						}
+						var icon = icon_serialize(icon_name);
+						if (icon != null) {
+							icons.append_val(icon);
+							multiicon = true;
+						}
 					}
-					/* if (zero) { params.insert("pre-label", new Variant.string("No Signal")); }*/
 				}
 			}
 

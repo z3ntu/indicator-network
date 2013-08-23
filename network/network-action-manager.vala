@@ -104,7 +104,7 @@ namespace Network
 				var interfaces = modem_properties.lookup("Interfaces");
 
 				if (!variant_contains(interfaces, "org.ofono.VoiceCallManager")) {
-					debug(@"Modem '$(modemmaybe.get_iface())' doesn't have voice support");
+					debug(@"Modem '$(modemmaybe.get_iface())' doesn't have voice support only: $(interfaces.print(false))");
 					return;
 				}
 				if (!variant_contains(interfaces, "org.ofono.SimManager")) {

@@ -479,7 +479,7 @@ namespace Network
 			 *   signal strength.
 			 */
 			conn_status = new SimpleAction.stateful ("network-status",
-													 new VariantType ("a{sv}"),
+													 null,
 													 build_state());
 			actions.insert (conn_status);
 

@@ -1,9 +1,33 @@
-indicator-network (0.5.0+13.10.20130807-0ubuntu2) UNRELEASED; urgency=low
+indicator-network (0.5.0+13.10.20130821-0ubuntu1) saucy; urgency=low
 
+  [ Ted Gould ]
+  * Set base action parameter_type to null.
+
+  [ Ubuntu daily release ]
+  * Automatic snapshot from revision 264
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Wed, 21 Aug 2013 06:07:03 +0000
+
+indicator-network (0.5.0+13.10.20130812.1-0ubuntu1) saucy; urgency=low
+
+  [ Ted Gould ]
+  * Add position to the config file.
+
+  [ Ubuntu daily release ]
+  * Automatic snapshot from revision 262
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Mon, 12 Aug 2013 06:06:41 +0000
+
+indicator-network (0.5.0+13.10.20130809-0ubuntu1) saucy; urgency=low
+
+  [ Mathieu Trudel-Lapierre ]
   * Connect device state change signals to properly track device state with
     the menu item switches.
 
- -- Mathieu Trudel-Lapierre <mathieu-tl@ubuntu.com>  Wed, 07 Aug 2013 17:16:18 -0400
+  [ Ubuntu daily release ]
+  * Automatic snapshot from revision 260
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Fri, 09 Aug 2013 02:02:48 +0000
 
 indicator-network (0.5.0+13.10.20130807-0ubuntu1) saucy; urgency=low
 

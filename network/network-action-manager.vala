@@ -368,7 +368,7 @@ namespace Network
 		private void data_icon_name (out string icon_name, out string a11ydesc)
 		{
 			if (act_dev == null) {
-				icon_name = "network-offline";
+				icon_name = "nm-no-connection";
 				a11ydesc = "Network (none)";
 				return;
 			}
@@ -415,7 +415,7 @@ namespace Network
 					a11ydesc = "Network (wired)";
 					break;
 				default:
-					icon_name = "network-offline";
+					icon_name = "nm-no-connection";
 					a11ydesc = "Network (none)";
 					break;
 			}

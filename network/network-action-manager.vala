@@ -414,6 +414,15 @@ namespace Network
 					icon_name = "network-wired";
 					a11ydesc = "Network (wired)";
 					break;
+				case NM.DeviceType.MODEM:
+					if (current_protocol != null) {
+						icon_name = "network-cellular-" + current_protocol;
+						a11ydesc = @"Network (cellular, $current_protocol)";
+					} else {
+						icon_name = "network-cellular-pre-edge";
+						a11ydesc = "Network (cellular)";
+					}
+					break;
 				default:
 					icon_name = "nm-no-connection";
 					a11ydesc = "Network (none)";

@@ -106,8 +106,7 @@ namespace Network
 
 				if (!variant_contains(interfaces, "org.ofono.VoiceCallManager")) {
 					debug(@"Modem '$(modemmaybe.get_iface())' doesn't have voice support only: $(interfaces.print(false))");
-					debug("Not erroring for now");
-					/* return; */
+					return;
 				}
 				if (!variant_contains(interfaces, "org.ofono.SimManager")) {
 					debug(@"Modem '$(modemmaybe.get_iface())' doesn't have SIM management support only: $(interfaces.print(false))");

@@ -1,3 +1,13 @@
+indicator-network (0.5.0+13.10.20130823.1-0ubuntu1) saucy; urgency=low
+
+  [ Ted Gould ]
+  * Track oFono modems to see if they get the required interfaces later.
+
+  [ Ubuntu daily release ]
+  * Automatic snapshot from revision 268
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Fri, 23 Aug 2013 22:07:05 +0000
+
 indicator-network (0.5.0+13.10.20130823-0ubuntu1) saucy; urgency=low
 
   [ Ted Gould ]

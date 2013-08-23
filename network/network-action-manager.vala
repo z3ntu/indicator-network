@@ -390,17 +390,7 @@ namespace Network
 						a11ydesc = "Network (wireless, %d%)".printf(strength);
 					}
 
-					if (strength > 70 || (last_wifi_strength == 100 && strength > 65)) {
-						last_wifi_strength = 100;
-					} else if (strength > 50 || (last_wifi_strength == 75 && strength > 45)) {
-						last_wifi_strength = 75;
-					} else if (strength > 30 || (last_wifi_strength == 50 && strength > 25)) {
-						last_wifi_strength = 50;
-					} else if (strength > 10 || (last_wifi_strength == 25 && strength > 5)) {
-						last_wifi_strength = 25;
-					} else {
-						last_wifi_strength = 0;
-					}
+					strength_icon(ref last_wifi_strength, strength);
 
 					if (secure) {
 						icon_name = "nm-signal-%d-secure".printf(last_wifi_strength);
@@ -431,6 +421,22 @@ namespace Network
 
 			return;
 		}
+
+		private static void strength_icon (ref int last_strength, int strength)
+		{
+			if (strength > 70 || (last_strength == 100 && strength > 65)) {
+				last_strength = 100;
+			} else if (strength > 50 || (last_strength == 75 && strength > 45)) {
+				last_strength = 75;
+			} else if (strength > 30 || (last_strength == 50 && strength > 25)) {
+				last_strength = 50;
+			} else if (strength > 10 || (last_strength == 25 && strength > 5)) {
+				last_strength = 25;
+			} else {
+				last_strength = 0;
+			}
+		}
+
 
 		private void add_network_status_action ()
 		{

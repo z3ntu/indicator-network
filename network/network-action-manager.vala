@@ -372,6 +372,7 @@ namespace Network
 			}
 
 			params.insert("accessibility-description", new Variant.string(a11ydesc));
+			params.insert("visible", new Variant.boolean(true));
 
 			/* Turn the icons array into a variant in the param list */
 			if (multiicon && icons.length > 0) {

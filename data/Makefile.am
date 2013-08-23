@@ -1,3 +1,5 @@
+SUBDIRS = icons
+
 upstartjobdir = $(datadir)/upstart/sessions/
 upstartjob_DATA = \
 	indicator-network.conf

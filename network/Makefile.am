@@ -3,6 +3,7 @@ noinst_LTLIBRARIES = libnetwork.la
 noinst_HEADERS     = libnetwork.h
 
 libnetwork_la_SOURCES = \
+	ofono.vala \
 	network-action-manager.vala \
 	network-menu.vala \
 	device-base.vala \

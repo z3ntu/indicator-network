@@ -50,6 +50,7 @@ namespace Network
 		private string?                  current_protocol = null;
 		private int                      cell_strength = 0;
 		private int                      last_cell_strength = 0;
+		private oFono.Modem[]            watched_modems;
 
 		/* State tracking stuff */
 		private int                      last_wifi_strength = 0;
@@ -94,25 +95,34 @@ namespace Network
 			/* We're only going to deal with oFono modems for now */
 			if ((modemmaybe.get_current_capabilities() & NM.DeviceModemCapabilities.OFONO) == 0) {
 				debug(@"Modem $(device.get_iface()) doesn't have an OFONO capability");
+				debug("Not erroring for now");
 				/* return; TODO: Galaxy Nexus doesn't do this, so for testing we need to ignore it. */
 			}
 
 			/* Check to see if the modem supports voice */
 			try {
 				oFono.Modem ofono_modem = Bus.get_proxy_sync (BusType.SYSTEM, "org.ofono", modemmaybe.get_iface());
+
+				watched_modems += ofono_modem;
+				ofono_modem.property_changed.connect((prop, value) => {
+					if (prop == "Interfaces") {
+						device_added(modemmaybe);
+					}
+				});
+
 				var modem_properties = ofono_modem.get_properties();
 				var interfaces = modem_properties.lookup("Interfaces");
 
 				if (!variant_contains(interfaces, "org.ofono.VoiceCallManager")) {
-					debug(@"Modem '$(modemmaybe.get_iface())' doesn't have voice support");
+					debug(@"Modem '$(modemmaybe.get_iface())' doesn't have voice support only: $(interfaces.print(false))");
 					return;
 				}
 				if (!variant_contains(interfaces, "org.ofono.SimManager")) {
-					debug(@"Modem '$(modemmaybe.get_iface())' doesn't have SIM management support");
+					debug(@"Modem '$(modemmaybe.get_iface())' doesn't have SIM management support only: $(interfaces.print(false))");
 					return;
 				}
 				if (!variant_contains(interfaces, "org.ofono.NetworkRegistration")) {
-					debug(@"Modem '$(modemmaybe.get_iface())' doesn't have Network Registration support");
+					debug(@"Modem '$(modemmaybe.get_iface())' doesn't have Network Registration support only: $(interfaces.print(false))");
 					return;
 				}
 			} catch (Error e) {
@@ -597,6 +607,9 @@ namespace Network
 		private NM.Device? get_device_from_connection (NM.ActiveConnection conn)
 		{
 			var devices = conn.get_devices ();
+
+			if (devices == null)
+				return null;
 
 			/* The list length should always == 1 */
 			if (devices.length == 1)

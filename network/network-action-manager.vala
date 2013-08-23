@@ -215,6 +215,10 @@ namespace Network
 				return "3g";
 			case "hspa":
 				return "hspa";
+			/* TODO: oFono can't tell us about hspa+ yet
+			case "hspa+":
+				return "hspa-plus";
+			*/
 			case "lte":
 				return "lte";
 			}

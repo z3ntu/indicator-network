@@ -1,3 +1,13 @@
+indicator-network (0.5.0+13.10.20130823-0ubuntu1) saucy; urgency=low
+
+  [ Ted Gould ]
+  * Handle cellular connections in the panel icon.
+
+  [ Ubuntu daily release ]
+  * Automatic snapshot from revision 266
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Fri, 23 Aug 2013 18:07:36 +0000
+
 indicator-network (0.5.0+13.10.20130821-0ubuntu1) saucy; urgency=low
 
   [ Ted Gould ]

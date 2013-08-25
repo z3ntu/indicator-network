@@ -336,14 +336,14 @@ namespace Network
 						multiicon = true;
 					}
 				} else if (!sim_installed) {
-					params.insert("pre-label", new Variant.string("No SIM"));
+					params.insert("pre-label", new Variant.string(_("No SIM")));
 				} else if (sim_error) {
-					params.insert("pre-label", new Variant.string("SIM Error"));
+					params.insert("pre-label", new Variant.string(_("SIM Error")));
 				} else {
 					if (cell_strength == 0) {
 						/* Note, looking to the cell strength here, as it's unmodified or
 						   parsed for consistency.  We want to know things are really dead. */
-						params.insert("pre-label", new Variant.string("No Signal"));
+						params.insert("pre-label", new Variant.string(_("No Signal")));
 					} else {
 						string icon_name = "gsm-3g-none";
 						switch (last_cell_strength) {
@@ -435,9 +435,9 @@ namespace Network
 					}
 
 					if (secure) {
-						a11ydesc = "Network (wireless, %d%, secure)".printf(strength);
+						a11ydesc = _("Network (wireless, %d%%, secure)").printf(strength);
 					} else {
-						a11ydesc = "Network (wireless, %d%)".printf(strength);
+						a11ydesc = _("Network (wireless, %d%%)").printf(strength);
 					}
 
 					strength_icon(ref last_wifi_strength, strength);
@@ -452,20 +452,20 @@ namespace Network
 				}
 				case NM.DeviceType.ETHERNET:
 					icon_name = "network-wired";
-					a11ydesc = "Network (wired)";
+					a11ydesc = _("Network (wired)");
 					break;
 				case NM.DeviceType.MODEM:
 					if (current_protocol != null) {
 						icon_name = "network-cellular-" + current_protocol;
-						a11ydesc = @"Network (cellular, $current_protocol)";
+						a11ydesc = _("Network (cellular, %s)").printf(current_protocol);
 					} else {
 						icon_name = "network-cellular-pre-edge";
-						a11ydesc = "Network (cellular)";
+						a11ydesc = _("Network (cellular)");
 					}
 					break;
 				default:
 					icon_name = "nm-no-connection";
-					a11ydesc = "Network (none)";
+					a11ydesc = _("Network (none)");
 					break;
 			}
 

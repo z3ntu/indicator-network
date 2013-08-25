@@ -33,7 +33,7 @@ namespace Network.Device
 				muxer: muxer
 			);
 
-			enabled_item = new MenuItem("Wired", "indicator." + device.get_iface() + ".device-enabled");
+			enabled_item = new MenuItem(_("Wired"), "indicator." + device.get_iface() + ".device-enabled");
 			enabled_item.set_attribute ("x-canonical-type"  ,           "s", "com.canonical.indicator.switch");
 			_menu.append_item(enabled_item);
 			/* TODO: Need busy action */

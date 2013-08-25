@@ -1,8 +1,8 @@
-./network/device-wifi.vala
-./network/device-base.vala
-./network/network-menu-service.vala
-./network/device-ethernet.vala
-./network/network-action-manager.vala
-./network/network-menu.vala
-./network/device-mobile.vala
-./network/ofono.vala
+network/device-wifi.vala
+network/device-base.vala
+network/network-menu-service.vala
+network/device-ethernet.vala
+network/network-action-manager.vala
+network/network-menu.vala
+network/device-mobile.vala
+network/ofono.vala

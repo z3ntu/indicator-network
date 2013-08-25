@@ -43,7 +43,7 @@ namespace Network.Device
 			device_item = create_item_for_wifi_device ();
 			this.apsmenu.append_item(device_item);
 
-			settings_item = new MenuItem("Wi-Fi settings…", "indicator.global.settings::wifi");
+			settings_item = new MenuItem(_("Wi-Fi settings…"), "indicator.global.settings::wifi");
 			this.apsmenu.append_item(settings_item);
 
 			device.access_point_added.connect   (access_point_added_cb);
@@ -108,7 +108,7 @@ namespace Network.Device
 
 		private MenuItem create_item_for_wifi_device ()
 		{
-			var device_item = new MenuItem ("Wi-Fi", action_prefix + "device-enabled");
+			var device_item = new MenuItem (_("Wi-Fi"), action_prefix + "device-enabled");
 			device_item.set_attribute ("x-canonical-type"  ,           "s", "com.canonical.indicator.switch");
 			device_item.set_attribute ("x-canonical-busy-action",      "s", action_prefix + "device-busy");
 

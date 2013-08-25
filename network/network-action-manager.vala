@@ -168,6 +168,9 @@ namespace Network
 		{
 			bool changed = false;
 
+			/* Remove the proxy if we have one, ignore the error if not */
+			watched_modems.remove(device.get_iface());
+
 			/* The voice modem got killed, bugger */
 			if (device.get_iface() == modemdev.get_iface()) {
 				changed = true;

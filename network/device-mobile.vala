@@ -24,6 +24,7 @@ namespace Network.Device
 {
 	public class Mobile : Base {
 		private GLib.MenuItem enabled_item;
+		private GLib.MenuItem settings_item;
 
 		public Mobile (NM.Client client, NM.DeviceModem device, GLibLocal.ActionMuxer muxer) {
 			GLib.Object(
@@ -33,10 +34,13 @@ namespace Network.Device
 				muxer: muxer
 			);
 
-			enabled_item = new MenuItem("Mobile", "indicator." + device.get_iface() + ".device-enabled");
+			enabled_item = new MenuItem("Cellular", "indicator." + device.get_iface() + ".device-enabled");
 			enabled_item.set_attribute ("x-canonical-type"  ,           "s", "com.canonical.indicator.switch");
 			_menu.append_item(enabled_item);
 			/* TODO: Need busy action */
+
+			settings_item = new MenuItem("Cellular settings…", "global.settings::cellular");
+			_menu.append_item(settings_item);
 		}
 
 		~Mobile ()

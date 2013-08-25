@@ -39,7 +39,7 @@ namespace Network.Device
 			_menu.append_item(enabled_item);
 			/* TODO: Need busy action */
 
-			settings_item = new MenuItem("Cellular settings…", "global.settings::cellular");
+			settings_item = new MenuItem("Cellular settings…", "indicator.global.settings::cellular");
 			_menu.append_item(settings_item);
 		}
 

@@ -18,8 +18,16 @@
  *      Alberto Ruiz <alberto.ruiz@canonical.com>
  */
 
+using Config;
+
 public static int main (string[] args)
 {
+	// set up i18n
+	Intl.bind_textdomain_codeset (Config.GETTEXT_PACKAGE, "UTF-8");
+	Intl.setlocale (LocaleCategory.ALL, "");
+	Intl.bindtextdomain (Config.GETTEXT_PACKAGE, Config.GNOMELOCALEDIR);
+	Intl.textdomain (Config.GETTEXT_PACKAGE);
+
 	var mainloop = new MainLoop();
 
 	GLib.Unix.signal_add(GLib.ProcessSignal.TERM, () => {

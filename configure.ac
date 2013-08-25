@@ -145,6 +145,5 @@ Makefile
 data/Makefile
 data/icons/Makefile
 network/Makefile
-secret-agent/Makefile
 test/Makefile
 ])

@@ -137,6 +137,35 @@ AC_SUBST(COVERAGE_CFLAGS)
 AC_SUBST(COVERAGE_CXXFLAGS)
 AC_SUBST(COVERAGE_LDFLAGS)
 
+##############################
+# Custom Junk
+##############################
+
+AC_DEFUN([AC_DEFINE_PATH], [
+        test "x$prefix" = xNONE && prefix="$ac_default_prefix"
+        test "x$exec_prefix" = xNONE && exec_prefix='${prefix}'
+        ac_define_path=`eval echo [$]$2`
+        ac_define_path=`eval echo [$]ac_define_path`
+        $1="$ac_define_path"
+        AC_SUBST($1)
+        ifelse($3, ,
+                AC_DEFINE_UNQUOTED($1, "$ac_define_path"),
+                AC_DEFINE_UNQUOTED($1, "$ac_define_path", $3))
+])
+
+###########################
+# Internationalization
+###########################
+
+IT_PROG_INTLTOOL([0.41.0])
+
+GETTEXT_PACKAGE=indicator-network
+AC_SUBST(GETTEXT_PACKAGE)
+AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE, "$GETTEXT_PACKAGE", [Name of the default get text domain])
+AC_DEFINE_PATH(GNOMELOCALEDIR, "${datadir}/locale", [locale directory])
+
+AM_GLIB_GNU_GETTEXT
+
 ###########################
 # Files
 ###########################
@@ -148,4 +177,5 @@ data/icons/Makefile
 network/Makefile
 secret-agent/Makefile
 test/Makefile
+po/Makefile.in
 ])

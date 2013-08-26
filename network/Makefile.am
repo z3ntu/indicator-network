@@ -16,6 +16,7 @@ libnetwork_la_SOURCES = \
 	action-muxer.vapi
 
 indicator_network_service_SOURCES = \
+	config.vapi \
 	network-menu-service.vala    \
 	libnetwork.vapi \
 	action-muxer.vapi
@@ -27,6 +28,8 @@ libnetwork_la_VALAFLAGS = --pkg libnm-glib --library=libnetwork --vapi=libnetwor
 indicator_network_service_VALAFLAGS = --pkg libnm-glib
 
 indicator_network_service_CFLAGS  = \
+            -DGETTEXT_PACKAGE=\"$(GETTEXT_PACKAGE)\" \
+            -DLOCALE_DIR=\"$(datadir)/locale\" \
 			$(GLIB_CFLAGS) \
 			$(NM_CFLAGS) \
 			$(COVERAGE_CFLAGS)
@@ -39,6 +42,8 @@ indicator_network_service_LDADD = \
 			libnetwork.la
 
 libnetwork_la_CFLAGS = \
+            -DGETTEXT_PACKAGE=\"$(GETTEXT_PACKAGE)\" \
+            -DLOCALE_DIR=\"$(datadir)/locale\" \
 			$(indicator_network_service_CFLAGS) \
 			$(COVERAGE_CFLAGS)
 libnetwork_la_LDFLAGS = \

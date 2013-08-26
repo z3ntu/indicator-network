@@ -4,6 +4,7 @@ noinst_HEADERS     = libnetwork.h
 
 libnetwork_la_SOURCES = \
 	ofono.vala \
+	url-dispatcher.vapi \
 	network-action-manager.vala \
 	network-menu.vala \
 	device-base.vala \

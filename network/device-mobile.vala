@@ -35,12 +35,12 @@ namespace Network.Device
 			);
 
 			if (show_enable) {
-				enabled_item = new MenuItem("Cellular", "indicator." + device.get_iface() + ".device-enabled");
+				enabled_item = new MenuItem(_("Cellular"), "indicator." + device.get_iface() + ".device-enabled");
 				enabled_item.set_attribute ("x-canonical-type"  ,           "s", "com.canonical.indicator.switch");
 				_menu.append_item(enabled_item);
 			}
 
-			settings_item = new MenuItem("Cellular settings…", "indicator.global.settings::cellular");
+			settings_item = new MenuItem(_("Cellular settings…"), "indicator.global.settings::cellular");
 			_menu.append_item(settings_item);
 		}
 

@@ -182,6 +182,10 @@ namespace Network
 					var wifidev = new Device.Wifi(this.client, device as NM.DeviceWifi, this.muxer);
 					desktop.append_device(wifidev);
 					phone.append_device(wifidev);
+
+					var wifisettingsdev = new Device.Wifi(this.client, device as NM.DeviceWifi, this.muxer);
+					phone_wifi_settings.append_device(wifisettingsdev);
+
 					break;
 				case NM.DeviceType.MODEM:
 					var mobiledesktopdev = new Device.Mobile(this.client, device as NM.DeviceModem, this.muxer, true);

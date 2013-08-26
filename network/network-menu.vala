@@ -24,6 +24,7 @@ namespace Network
 {
 	private const string APPLICATION_ID  = "com.canonical.indicator.network";
 	private const string PHONE_MENU_PATH = "/com/canonical/indicator/network/phone";
+	private const string PHONE_WIFI_SETTINGS_MENU_PATH = "/com/canonical/indicator/network/phone_wifi_settings";
 	private const string DESKTOP_MENU_PATH = "/com/canonical/indicator/network/desktop";
 	private const string ACTION_GROUP_PATH = "/com/canonical/indicator/network";
 
@@ -119,6 +120,7 @@ namespace Network
 	{
 		private ProfileMenu     desktop;
 		private ProfileMenu     phone;
+		private ProfileMenu     phone_wifi_settings;
 
 		private NM.Client       client;
 		private ActionManager   am;
@@ -140,6 +142,7 @@ namespace Network
 
 				desktop = new ProfileMenu(conn, DESKTOP_MENU_PATH);
 				phone = new ProfileMenu(conn, PHONE_MENU_PATH);
+				phone_wifi_settings = new ProfileMenu(conn, PHONE_WIFI_SETTINGS_MENU_PATH);
 
 				Bus.own_name_on_connection(conn, APPLICATION_ID, BusNameOwnerFlags.NONE, null, ((conn, name) => { error("Unable to get D-Bus bus name"); }));
 			}

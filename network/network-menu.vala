@@ -29,16 +29,21 @@ namespace Network
 	private const string ACTION_GROUP_PATH = "/com/canonical/indicator/network";
 
 	internal class ProfileMenu {
-		public Menu root_menu;
+		public Menu root_menu = new Menu();
 		public MenuItem root_item;
-		public Menu shown_menu;
+		public Menu shown_menu = new Menu();
+
+		private Menu settings_pre_section = new Menu();
+		private Menu settings_post_section = new Menu();
+		private Menu device_section = new Menu();
 
 		private GLib.DBusConnection conn;
 		private uint export_id;
 
 		public ProfileMenu (GLib.DBusConnection conn, string path) throws GLib.Error {
-			root_menu = new Menu();
-			shown_menu = new Menu();
+			shown_menu.append_section(null, settings_pre_section);
+			shown_menu.append_section(null, device_section);
+			shown_menu.append_section(null, settings_post_section);
 
 			root_item = new MenuItem.submenu (null, shown_menu as MenuModel);
 			root_item.set_attribute (GLib.Menu.ATTRIBUTE_ACTION, "s", "indicator.global.network-status");
@@ -53,11 +58,11 @@ namespace Network
 		}
 
 		public void remove_device (string path) {
-			for (int i = 0; i < (shown_menu as MenuModel).get_n_items(); i++) {
-				var dev = (shown_menu as MenuModel).get_item_link(i, Menu.LINK_SECTION) as Device.Base;
+			for (int i = 0; i < (device_section as MenuModel).get_n_items(); i++) {
+				var dev = (device_section as MenuModel).get_item_link(i, Menu.LINK_SECTION) as Device.Base;
 
 				if (dev.device.get_path() == path) {
-					shown_menu.remove(i);
+					device_section.remove(i);
 					break;
 				}
 			}
@@ -66,8 +71,8 @@ namespace Network
 		public Device.Base? find_device (string path) {
 			Device.Base? founddev = null;
 
-			for (int i = 0; i < (shown_menu as MenuModel).get_n_items(); i++) {
-				var dev = (shown_menu as MenuModel).get_item_link(i, Menu.LINK_SECTION) as Device.Base;
+			for (int i = 0; i < (device_section as MenuModel).get_n_items(); i++) {
+				var dev = (device_section as MenuModel).get_item_link(i, Menu.LINK_SECTION) as Device.Base;
 
 				if (dev == null) {
 					continue;
@@ -102,53 +107,42 @@ namespace Network
 		   the proper location */
 		public void append_device (Device.Base device) {
 			/* Handle the empty case right away, no reason to mess up code later on */
-			if (shown_menu.get_n_items() == 0) {
-				shown_menu.append_section(null, device);
+			if (device_section.get_n_items() == 0) {
+				device_section.append_section(null, device);
 				return;
 			}
 
 			int i;
-			int last_device = 0;
 			uint insort = dev2sort(device);
 			
-			for (i = 0; i < shown_menu.get_n_items(); i++) {
-				var imenu = shown_menu.get_item_link(i, Menu.LINK_SECTION) as Device.Base;
+			for (i = 0; i < device_section.get_n_items(); i++) {
+				var imenu = device_section.get_item_link(i, Menu.LINK_SECTION) as Device.Base;
 
 				if (imenu == null) {
 					continue;
 				}
 
-				last_device = i;
-
 				var isort = dev2sort(imenu);
 
 				if (isort > insort) {
-					shown_menu.insert_section(i, null, device);
+					device_section.insert_section(i, null, device);
 					break;
 				}
 			}
 
-			if (i == shown_menu.get_n_items()) {
-				shown_menu.insert_section(last_device + 1, null, device);
+			if (i == device_section.get_n_items()) {
+				device_section.append_section(null, device);
 			}
 		}
 
 		/* A settings section to put before all the devices */
 		public void set_pre_settings (MenuModel settings) {
-			if (shown_menu.get_n_items() != 0 && ((shown_menu.get_item_link(0, Menu.LINK_SECTION) as Device.Base) != null)) {
-				warning("The first item is not a Device, which means you probably called set_pre_settings twice.  Don't do that.");
-			}
-
-			shown_menu.insert_section(0, null, settings);
+			settings_pre_section.append_section(null, settings);
 		}
 
 		/* A settings section to put after all the devices */
 		public void set_post_settings (MenuModel settings) {
-			if (shown_menu.get_n_items() != 0 && ((shown_menu.get_item_link((shown_menu.get_n_items() - 1), Menu.LINK_SECTION) as Device.Base) != null)) {
-				warning("The last item is not a Device, which means you probably called set_post_settings twice.  Don't do that.");
-			}
-
-			shown_menu.append_section(null, settings);
+			settings_post_section.append_section(null, settings);
 		}
 	}
 

@@ -187,6 +187,12 @@ namespace Network
 				return;
 			}
 
+			/* Put an airplane mode setting at the top of the desktop and phone
+			   menus */
+			var airplane = new Network.Settings.Airplane(muxer);
+			desktop.set_pre_settings(airplane);
+			phone.set_pre_settings(airplane);
+
 			var devices = client.get_devices ();
 
 			if (devices == null)

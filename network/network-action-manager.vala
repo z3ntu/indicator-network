@@ -75,6 +75,16 @@ namespace Network
 			/* Make sure this is last as it'll set the state of the
 			   icon, so everything needs to be ready */
 			add_network_status_action ();
+
+			var settings_action = new SimpleAction("settings", VariantType.STRING);
+			settings_action.activate.connect((value) => {
+				URLDispatcher.send("settings://system/" + value.get_string(), (url, success) => {
+					if (!success) {
+						warning(@"Unable to activate settings URL: $url");
+					}
+				});
+			});
+			actions.insert(settings_action);
 		}
 
 		~ActionManager ()

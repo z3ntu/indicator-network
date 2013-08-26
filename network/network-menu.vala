@@ -184,10 +184,10 @@ namespace Network
 					phone.append_device(wifidev);
 					break;
 				case NM.DeviceType.MODEM:
-					var mobiledev = new Device.Mobile(this.client, device as NM.DeviceModem, this.muxer);
-					desktop.append_device(mobiledev);
-					/* NOTE: Only on phone until settings lands */
-					phone.append_device(mobiledev);
+					var mobiledesktopdev = new Device.Mobile(this.client, device as NM.DeviceModem, this.muxer, true);
+					desktop.append_device(mobiledesktopdev);
+					var mobilephonedev = new Device.Mobile(this.client, device as NM.DeviceModem, this.muxer, false);
+					phone.append_device(mobilephonedev);
 					break;
 				case NM.DeviceType.ETHERNET:
 					var ethdev = new Device.Ethernet(this.client, device as NM.DeviceEthernet, this.muxer);

@@ -33,18 +33,13 @@ namespace Network
 		public MenuItem root_item;
 		public Menu shown_menu = new Menu();
 
-		private Menu settings_pre_section = new Menu();
-		private Menu settings_post_section = new Menu();
-		private Menu device_section = new Menu();
+		private MenuModel? pre_settings = null;
+		private MenuModel? post_settings = null;
 
 		private GLib.DBusConnection conn;
 		private uint export_id;
 
 		public ProfileMenu (GLib.DBusConnection conn, string path) throws GLib.Error {
-			shown_menu.append_section(null, settings_pre_section);
-			shown_menu.append_section(null, device_section);
-			shown_menu.append_section(null, settings_post_section);
-
 			root_item = new MenuItem.submenu (null, shown_menu as MenuModel);
 			root_item.set_attribute (GLib.Menu.ATTRIBUTE_ACTION, "s", "indicator.global.network-status");
 			root_item.set_attribute ("x-canonical-type", "s", "com.canonical.indicator.root");
@@ -58,11 +53,15 @@ namespace Network
 		}
 
 		public void remove_device (string path) {
-			for (int i = 0; i < (device_section as MenuModel).get_n_items(); i++) {
-				var dev = (device_section as MenuModel).get_item_link(i, Menu.LINK_SECTION) as Device.Base;
+			for (int i = 0; i < (shown_menu as MenuModel).get_n_items(); i++) {
+				var dev = (shown_menu as MenuModel).get_item_link(i, Menu.LINK_SECTION) as Device.Base;
+
+				if (dev == null) {
+					continue;
+				}
 
 				if (dev.device.get_path() == path) {
-					device_section.remove(i);
+					shown_menu.remove(i);
 					break;
 				}
 			}
@@ -71,8 +70,8 @@ namespace Network
 		public Device.Base? find_device (string path) {
 			Device.Base? founddev = null;
 
-			for (int i = 0; i < (device_section as MenuModel).get_n_items(); i++) {
-				var dev = (device_section as MenuModel).get_item_link(i, Menu.LINK_SECTION) as Device.Base;
+			for (int i = 0; i < (shown_menu as MenuModel).get_n_items(); i++) {
+				var dev = (shown_menu as MenuModel).get_item_link(i, Menu.LINK_SECTION) as Device.Base;
 
 				if (dev == null) {
 					continue;
@@ -107,16 +106,17 @@ namespace Network
 		   the proper location */
 		public void append_device (Device.Base device) {
 			/* Handle the empty case right away, no reason to mess up code later on */
-			if (device_section.get_n_items() == 0) {
-				device_section.append_section(null, device);
+			if (shown_menu.get_n_items() == 0) {
+				shown_menu.append_section(null, device);
 				return;
 			}
 
 			int i;
 			uint insort = dev2sort(device);
 			
-			for (i = 0; i < device_section.get_n_items(); i++) {
-				var imenu = device_section.get_item_link(i, Menu.LINK_SECTION) as Device.Base;
+			for (i = (pre_settings == null ? 0 : 1);
+					i < shown_menu.get_n_items(); i++) {
+				var imenu = shown_menu.get_item_link(i, Menu.LINK_SECTION) as Device.Base;
 
 				if (imenu == null) {
 					continue;
@@ -125,24 +125,40 @@ namespace Network
 				var isort = dev2sort(imenu);
 
 				if (isort > insort) {
-					device_section.insert_section(i, null, device);
+					shown_menu.insert_section(i, null, device);
 					break;
 				}
 			}
 
-			if (i == device_section.get_n_items()) {
-				device_section.append_section(null, device);
+			if (i == shown_menu.get_n_items()) {
+				if (post_settings == null) {
+					shown_menu.append_section(null, device);
+				} else {
+					shown_menu.insert_section(shown_menu.get_n_items() - 1, null, device);
+				}
 			}
 		}
 
 		/* A settings section to put before all the devices */
 		public void set_pre_settings (MenuModel settings) {
-			settings_pre_section.append_section(null, settings);
+			if (pre_settings != null) {
+				warning("Already have a pre-setting menus, can't have two!");
+				return;
+			}
+
+			pre_settings = settings;
+			shown_menu.insert_section(0, null, settings);
 		}
 
 		/* A settings section to put after all the devices */
 		public void set_post_settings (MenuModel settings) {
-			settings_post_section.append_section(null, settings);
+			if (post_settings != null) {
+				warning("Already have a post-setting menus, can't have two!");
+				return;
+			}
+
+			post_settings = settings;
+			shown_menu.append_section(null, settings);
 		}
 	}
 

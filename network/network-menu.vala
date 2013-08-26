@@ -197,6 +197,10 @@ namespace Network
 			desktop.set_pre_settings(airplane);
 			phone.set_pre_settings(airplane);
 
+			/* Add some items at the end of the settings menu */
+			var wifisettings = new Network.Settings.Wifi(muxer);
+			phone_wifi_settings.set_post_settings(wifisettings);
+
 			var devices = client.get_devices ();
 
 			if (devices == null)

@@ -13,7 +13,8 @@ libnetwork_la_SOURCES = \
 	device-wifi.vala \
 	action-muxer.c \
 	action-muxer.h \
-	action-muxer.vapi
+	action-muxer.vapi \
+	settings-wifi.vala
 
 indicator_network_service_SOURCES = \
 	config.vapi \

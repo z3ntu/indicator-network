@@ -69,6 +69,10 @@ namespace Network
 			for (int i = 0; i < (shown_menu as MenuModel).get_n_items(); i++) {
 				var dev = (shown_menu as MenuModel).get_item_link(i, Menu.LINK_SECTION) as Device.Base;
 
+				if (dev == null) {
+					continue;
+				}
+
 				if (dev.device.get_path() == path) {
 					founddev = dev;
 					break;

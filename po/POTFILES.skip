@@ -6,3 +6,6 @@ network/network-action-manager.c
 network/network-menu.c
 network/device-mobile.c
 network/ofono.c
+network/settings-base.c
+network/settings-airplane.c
+network/settings-wifi.c

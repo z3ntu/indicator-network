@@ -14,6 +14,7 @@ libnetwork_la_SOURCES = \
 	action-muxer.c \
 	action-muxer.h \
 	action-muxer.vapi \
+	settings-airplane.vala \
 	settings-base.vala \
 	settings-wifi.vala
 

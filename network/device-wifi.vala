@@ -26,6 +26,7 @@ namespace Network.Device
 	{
 		private  Menu        apsmenu;
 		private  MenuItem    device_item;
+		private  MenuItem    settings_item;
 		public   DeviceWifi  device;
 		private  SimpleActionGroup actions;
 		private  NM.Client   client;
@@ -41,6 +42,9 @@ namespace Network.Device
 
 			device_item = create_item_for_wifi_device ();
 			this.apsmenu.append_item(device_item);
+
+			settings_item = new MenuItem("Wi-Fi settings…", "indicator.global.settings::wifi");
+			this.apsmenu.append_item(settings_item);
 
 			device.access_point_added.connect   (access_point_added_cb);
 			device.access_point_removed.connect (access_point_removed_cb);
@@ -174,7 +178,8 @@ namespace Network.Device
 			//Find the right spot for the AP
 			var item = new MenuItem (null, null);
 			bind_ap_item (ap, item);
-			for (int i = 1; i < apsmenu.get_n_items(); i++)
+			/* We need to start at 1 and end at -1 to avoid the toggle and the settings */
+			for (int i = 1; i < apsmenu.get_n_items() - 1; i++)
 			{
 				string path;
 
@@ -198,8 +203,9 @@ namespace Network.Device
 					return;
 				}
 			}
-			//AP is last in the menu
-			apsmenu.append_item (item);
+
+			//AP is last in the menu (avoid the settings item)
+			apsmenu.insert_item (apsmenu.get_n_items() - 1, item);
 		}
 
 		private void set_active_ap (AccessPoint? ap)

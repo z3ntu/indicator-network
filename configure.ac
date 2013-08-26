@@ -37,7 +37,8 @@ AC_ARG_WITH([localenabled],
 
 GLIB_REQUIRED_VERSION=2.26
 PKG_CHECK_MODULES(GLIB, glib-2.0 >= $GLIB_REQUIRED_VERSION
-                        gio-2.0 >= $GLIB_REQUIRED_VERSION)
+                        gio-2.0 >= $GLIB_REQUIRED_VERSION
+                        url-dispatcher-1)
 AC_SUBST(GLIB_LIBS)
 AC_SUBST(GLIB_CFLAGS)
 

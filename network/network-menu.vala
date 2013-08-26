@@ -97,11 +97,25 @@ namespace Network
 		/* Figures out where the device needs to go and inserts it in
 		   the proper location */
 		public void append_device (Device.Base device) {
+			/* Handle the empty case right away, no reason to mess up code later on */
+			if (shown_menu.get_n_items() == 0) {
+				shown_menu.append_section(null, device);
+				return;
+			}
+
 			int i;
+			int last_device = 0;
 			uint insort = dev2sort(device);
 			
 			for (i = 0; i < shown_menu.get_n_items(); i++) {
 				var imenu = shown_menu.get_item_link(i, Menu.LINK_SECTION) as Device.Base;
+
+				if (imenu == null) {
+					continue;
+				}
+
+				last_device = i;
+
 				var isort = dev2sort(imenu);
 
 				if (isort > insort) {
@@ -111,8 +125,26 @@ namespace Network
 			}
 
 			if (i == shown_menu.get_n_items()) {
-				shown_menu.append_section(null, device);
+				shown_menu.insert_section(last_device + 1, null, device);
 			}
+		}
+
+		/* A settings section to put before all the devices */
+		public void set_pre_settings (MenuModel settings) {
+			if (shown_menu.get_n_items() != 0 && ((shown_menu.get_item_link(0, Menu.LINK_SECTION) as Device.Base) != null)) {
+				warning("The first item is not a Device, which means you probably called set_pre_settings twice.  Don't do that.");
+			}
+
+			shown_menu.insert_section(0, null, settings);
+		}
+
+		/* A settings section to put after all the devices */
+		public void set_post_settings (MenuModel settings) {
+			if (shown_menu.get_n_items() != 0 && ((shown_menu.get_item_link((shown_menu.get_n_items() - 1), Menu.LINK_SECTION) as Device.Base) != null)) {
+				warning("The last item is not a Device, which means you probably called set_post_settings twice.  Don't do that.");
+			}
+
+			shown_menu.append_section(null, settings);
 		}
 	}
 

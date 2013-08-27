@@ -3,19 +3,24 @@ Section: gnome
 Priority: optional
 Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
 XSBC-Original-Maintainer: Ken VanDine <ken.vandine@canonical.com>
-Build-Depends: debhelper (>= 9.0.0),
-               cmake,
-               gnome-common,
-               pkg-config,
+Build-Depends: cmake,
                dbus,
+               debhelper (>= 9.0.0),
+               gnome-common,
+               google-mock (>= 1.6.0+svn437),
+               libglib2.0-dev,
                libnm-glib-dev (>= 0.9),
                libnm-util-dev (>= 0.9),
-               libglib2.0-dev,
+               libqmenumodel-dev,
+               libqtdbusmock1-dev,
+               libqtdbustest1-dev,
                liburl-dispatcher1-dev,
-               valac (>= 0.18),
-               python3,
+               network-manager-dev,
+               pkg-config,
                python3-dbusmock,
-               dbus-test-runner,
+               qtbase5-dev,
+               valac (>= 0.18),
+               valgrind,
 Standards-Version: 3.9.3
 # If you aren't a member of ~indicator-applet-developers but need to upload
 # packaging changes, just go ahead. ~indicator-applet-developers will notice
@@ -26,10 +31,10 @@ Homepage: https://launchpad.net/indicator-network
 
 Package: indicator-network
 Architecture: any
-Depends: ${shlibs:Depends},
-         ${misc:Depends},
-Conflicts: indicators-client-plugin-network,
-           chewie,
+Depends: ${misc:Depends},
+         ${shlibs:Depends},
+Conflicts: chewie,
+           indicators-client-plugin-network,
 Description: Systems settings menu service - Network indicator
  The Indicator-network service is responsible for exporting the system settings
  menu through dbus.

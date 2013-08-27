@@ -1,3 +1,16 @@
+indicator-network (0.5.0+13.10.20130827.3-0ubuntu1) saucy; urgency=low
+
+  [ Ted Gould ]
+  * Put oFono proxies in a HashTable to better track usage.
+  * Adds settings items for cellular and Wifi.
+  * Add in gettext and make user visible strings translatable.
+  * Drop GTK build dep and old secret agent code.
+
+  [ Ubuntu daily release ]
+  * Automatic snapshot from revision 273
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Tue, 27 Aug 2013 14:10:33 +0000
+
 indicator-network (0.5.0+13.10.20130823.1-0ubuntu1) saucy; urgency=low
 
   [ Ted Gould ]

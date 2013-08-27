@@ -17,6 +17,7 @@ add_definitions(-DNETWORK_SERVICE_BIN="${CMAKE_BINARY_DIR}/network/indicator-net
 
 set(
 	UNIT_TESTS_SRC
+	TestIndicatorNetworkService.cpp
 	TestSecretAgent.cpp
 	main.cpp
 )

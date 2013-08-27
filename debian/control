@@ -6,7 +6,6 @@ XSBC-Original-Maintainer: Ken VanDine <ken.vandine@canonical.com>
 Build-Depends: cmake,
                dbus,
                debhelper (>= 9.0.0),
-               gnome-common,
                google-mock (>= 1.6.0+svn437),
                libglib2.0-dev,
                libnm-glib-dev (>= 0.9),

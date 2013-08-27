@@ -2,7 +2,7 @@
 add_subdirectory(icons)
 
 ###########################
-# Indicator service
+# Indicator-network service
 ###########################
 
 set(
@@ -17,7 +17,7 @@ install(
 )
 
 ###########################
-# Upstart job
+# Indicator-network upstart job
 ###########################
 
 set(
@@ -36,3 +36,18 @@ install (
   DESTINATION "${CMAKE_INSTALL_DATADIR}/upstart/sessions/"
 )
 
+###########################
+# Secret agent upstart job
+###########################
+
+configure_file (
+	indicator-secret-agent.conf.in
+	indicator-secret-agent.conf
+	@ONLY
+)
+
+install (
+	FILES ${CMAKE_CURRENT_BINARY_DIR}/indicator-secret-agent.conf
+	DESTINATION ${CMAKE_INSTALL_PREFIX}/share/upstart/sessions
+)
+	

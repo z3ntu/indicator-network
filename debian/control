@@ -4,7 +4,7 @@ Priority: optional
 Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
 XSBC-Original-Maintainer: Ken VanDine <ken.vandine@canonical.com>
 Build-Depends: debhelper (>= 9.0.0),
-               dh-autoreconf,
+               cmake,
                gnome-common,
                pkg-config,
                dbus,

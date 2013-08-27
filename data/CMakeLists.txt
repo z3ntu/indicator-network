@@ -20,6 +20,11 @@ install(
 # Upstart job
 ###########################
 
+set(
+  NETWORK_SERVICE
+  "${CMAKE_INSTALL_FULL_LIBEXECDIR}/indicator-network/indicator-network-service"
+)
+
 configure_file (
   indicator-network.conf.in
   indicator-network.conf

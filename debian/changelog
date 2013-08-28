@@ -1,3 +1,15 @@
+indicator-network (0.5.0+13.10.20130828.2-0ubuntu1) saucy; urgency=low
+
+  [ Pete Woods ]
+  * Re-write build scripts in preparation for merging the secret agent
+    codebase and tests.
+  * Move the secret agent code over into this package.
+
+  [ Ubuntu daily release ]
+  * Automatic snapshot from revision 276
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Wed, 28 Aug 2013 10:09:20 +0000
+
 indicator-network (0.5.0+13.10.20130827.3-0ubuntu1) saucy; urgency=low
 
   [ Ted Gould ]

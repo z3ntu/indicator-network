@@ -1,3 +1,13 @@
+indicator-network (0.5.0+13.10.20130829-0ubuntu1) saucy; urgency=low
+
+  [ Ted Gould ]
+  * Disable secret agent (for now). (LP: #1218385)
+
+  [ Ubuntu daily release ]
+  * Automatic snapshot from revision 278
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Thu, 29 Aug 2013 18:07:29 +0000
+
 indicator-network (0.5.0+13.10.20130828.2-0ubuntu1) saucy; urgency=low
 
   [ Pete Woods ]

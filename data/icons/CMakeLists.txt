@@ -1,6 +1,16 @@
 
 install(
   FILES
+    gsm-3g-full-secure.svg
+    gsm-3g-full.svg
+    gsm-3g-high-secure.svg
+    gsm-3g-high.svg
+    gsm-3g-low-secure.svg
+    gsm-3g-low.svg
+    gsm-3g-medium-secure.svg
+    gsm-3g-medium.svg
+    gsm-3g-none-secure.svg
+    gsm-3g-none.svg
     network-airplane.svg
     network-cellular-3g.svg
     network-cellular-edge.svg

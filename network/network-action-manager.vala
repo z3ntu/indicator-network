@@ -52,6 +52,8 @@ namespace Network
 		private int                      last_cell_strength = 0;
 		private HashTable<string, oFono.Modem> watched_modems = new HashTable<string, oFono.Modem>(str_hash, str_equal);
 
+		public signal void sim_lock_changed (bool value);
+
 		/* State tracking stuff */
 		private int                      last_wifi_strength = 0;
 
@@ -92,6 +94,11 @@ namespace Network
 			muxer.remove("global");
 		}
 
+		public bool get_sim_locked()
+		{
+			return sim_locked;
+		}
+
 		private void device_added (NM.Device device) {
 			debug(@"Action Manager Device Added: $(device.get_iface())");
 
@@ -112,7 +119,7 @@ namespace Network
 			/* Check to see if the modem supports voice */
 			try {
 				oFono.Modem? ofono_modem = watched_modems.lookup(modemmaybe.get_iface());
-				
+
 				if (ofono_modem == null) {
 					ofono_modem = Bus.get_proxy_sync (BusType.SYSTEM, "org.ofono", modemmaybe.get_iface());
 
@@ -216,6 +223,8 @@ namespace Network
 		{
 			bool changed = false;
 
+			debug(@"simmanager_property: $(prop)");
+
 			switch (prop) {
 			case "Present": {
 				var old = sim_installed;
@@ -226,8 +235,11 @@ namespace Network
 			}
 			case "PinRequired": {
 				var old = sim_locked;
-				sim_locked = (value.get_string() != "none");
-				changed = (old != sim_locked);
+				sim_locked = true;//(value.get_string() != "none");
+				if (old != sim_locked) {
+					sim_lock_changed(sim_locked);
+					changed = true;
+				}
 				debug(@"SIM Lock: $(sim_locked)");
 				break;
 			}
@@ -551,13 +563,13 @@ namespace Network
 							var dev = act_dev as NM.DeviceWifi;
 
 							dev.notify["active-access-point"].disconnect (active_access_point_changed);
-	
+
 							if (act_ap != null)
 							{
 								act_ap.notify["strength"].disconnect (active_connection_strength_changed);
 								act_ap = null;
 							}
-	
+
 							break;
 						default:
 							break;

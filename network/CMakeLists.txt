@@ -13,6 +13,7 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 vala_init(libnetwork
   PACKAGES
     libnm-glib
+    libnotify
   CUSTOM_VAPIS
     "${CMAKE_CURRENT_SOURCE_DIR}/action-muxer.vapi"
     "${CMAKE_CURRENT_SOURCE_DIR}/url-dispatcher.vapi"
@@ -96,6 +97,7 @@ target_link_libraries(
   network
   ${GLIB_LIBRARIES}
   ${NM_LIBRARIES}
+  ${NOTIFY_LIBRARIES}
 )
 
 ###########################
@@ -105,6 +107,7 @@ target_link_libraries(
 vala_init(network-service
   PACKAGES
     libnm-glib
+    libnotify
     libnetwork
   DEPENDS
     "${CMAKE_CURRENT_BINARY_DIR}/libnetwork.vapi"

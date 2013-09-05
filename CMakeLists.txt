@@ -15,7 +15,7 @@ include(Coverage)
 include(UseVala)
 
 # Workaround for libexecdir on debian
-if (EXISTS "/etc/debian_version") 
+if (EXISTS "/etc/debian_version")
   set(CMAKE_INSTALL_LIBEXECDIR ${CMAKE_INSTALL_LIBDIR})
   set(CMAKE_INSTALL_FULL_LIBEXECDIR "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBEXECDIR}")
 endif()
@@ -40,6 +40,12 @@ pkg_check_modules(
 )
 include_directories(${NM_INCLUDE_DIRS})
 
+set(NOTIFY_REQUIRED_VERSION 0.7.5)
+pkg_check_modules(
+  NOTIFY REQUIRED
+  libnotify>=${NOTIFY_REQUIRED_VERSION}
+)
+include_directories(${NOTIFY_INCLUDE_DIRS})
 
 find_package(Qt5Core REQUIRED)
 include_directories(${Qt5Core_INCLUDE_DIRS})

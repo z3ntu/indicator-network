@@ -20,6 +20,24 @@ qt5_add_dbus_interface(
 	AgentManagerInterface
 )
 
+set_source_files_properties(
+	"${DATA_DIR}/org.freedesktop.Notifications.xml"
+	PROPERTIES
+	INCLUDE "DBusTypes.h"
+)
+
+qt5_add_dbus_interface(
+	INDICATOR_SECRET_AGENT_SOURCES
+	"${DATA_DIR}/org.freedesktop.Notifications.xml"
+	NotificationsInterface
+)
+
+qt5_add_dbus_interface(
+	INDICATOR_SECRET_AGENT_SOURCES
+	"${DATA_DIR}/com.canonical.snapdecisions.feedback.xml"
+	FeedbackInterface
+)
+
 add_library(
 	indicator-secret-agent
 	STATIC

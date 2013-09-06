@@ -22,6 +22,7 @@
 #include <SecretAgentInterface.h>
 #include <NetworkManager.h>
 
+#include <QSignalSpy>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
@@ -37,6 +38,16 @@ protected:
 	TestSecretAgentCommon() :
 			dbusMock(dbusTestRunner) {
 
+		dbusMock.registerCustomMock("org.freedesktop.Notifications",
+				"/org/freedesktop/Notifications",
+				OrgFreedesktopNotificationsInterface::staticInterfaceName(),
+				QDBusConnection::SessionBus);
+
+		dbusMock.registerCustomMock("com.canonical.snapdecisions.feedback",
+				"/com/canonical/snapdecisions/feedback",
+				ComCanonicalSnapdecisionsFeedbackInterface::staticInterfaceName(),
+				QDBusConnection::SessionBus);
+
 		dbusMock.registerNetworkManager();
 		dbusTestRunner.startServices();
 
@@ -45,10 +56,22 @@ protected:
 		secretAgent.waitForReadyRead();
 		agentBus = secretAgent.readAll().trimmed();
 
-		interface.reset(
+		agentInterface.reset(
 				new OrgFreedesktopNetworkManagerSecretAgentInterface(agentBus,
 						NM_DBUS_PATH_SECRET_AGENT,
 						dbusTestRunner.systemConnection()));
+
+		notificationsInterface.reset(
+				new OrgFreedesktopDBusMockInterface(
+						"org.freedesktop.Notifications",
+						"/org/freedesktop/Notifications",
+						dbusTestRunner.sessionConnection()));
+
+		feedbackInterface.reset(
+				new OrgFreedesktopDBusMockInterface(
+						"com.canonical.snapdecisions.feedback",
+						"/com/canonical/snapdecisions/feedback",
+						dbusTestRunner.sessionConnection()));
 	}
 
 	virtual ~TestSecretAgentCommon() {
@@ -61,9 +84,13 @@ protected:
 		wirelessSecurity[SecretAgent::WIRELESS_SECURITY_KEY_MGMT] =
 				keyManagement;
 
+		QVariantMap conn;
+		conn[SecretAgent::CONNECTION_ID] = "the ssid";
+
 		QVariantDictMap connection;
 		connection[SecretAgent::WIRELESS_SECURITY_SETTING_NAME] =
 				wirelessSecurity;
+		connection[SecretAgent::CONNECTION_SETTING_NAME] = conn;
 
 		return connection;
 	}
@@ -76,9 +103,13 @@ protected:
 				keyManagement;
 		wirelessSecurity[keyName] = password;
 
+		QVariantMap conn;
+		conn[SecretAgent::CONNECTION_ID] = "the ssid";
+
 		QVariantDictMap connection;
 		connection[SecretAgent::WIRELESS_SECURITY_SETTING_NAME] =
 				wirelessSecurity;
+		connection[SecretAgent::CONNECTION_SETTING_NAME] = conn;
 
 		return connection;
 	}
@@ -91,7 +122,11 @@ protected:
 
 	QString agentBus;
 
-	QScopedPointer<OrgFreedesktopNetworkManagerSecretAgentInterface> interface;
+	QScopedPointer<OrgFreedesktopNetworkManagerSecretAgentInterface> agentInterface;
+
+	QScopedPointer<OrgFreedesktopDBusMockInterface> notificationsInterface;
+
+	QScopedPointer<OrgFreedesktopDBusMockInterface> feedbackInterface;
 };
 
 struct TestSecretAgentParams {
@@ -107,15 +142,42 @@ class TestSecretAgentGetSecrets: public TestSecretAgentCommon,
 };
 
 TEST_P(TestSecretAgentGetSecrets, ProvidesPasswordForWpaPsk) {
-	QVariantDictMap reply(
-			interface->GetSecrets(connection(GetParam().keyManagement),
+	notificationsInterface->AddMethod(
+			OrgFreedesktopNotificationsInterface::staticInterfaceName(),
+			"Notify", "susssasa{sv}i", "u", "ret = 1").waitForFinished();
+
+	feedbackInterface->AddMethod(
+			ComCanonicalSnapdecisionsFeedbackInterface::staticInterfaceName(),
+			"collect", "u", "as", "ret = ['password', 'hard-coded-password']").waitForFinished();
+
+	QDBusPendingReply<QVariantDictMap> reply(
+			agentInterface->GetSecrets(connection(GetParam().keyManagement),
 					QDBusObjectPath("/connection/foo"),
 					SecretAgent::WIRELESS_SECURITY_SETTING_NAME, QStringList(),
 					5));
 
+	QSignalSpy notificationSpy(notificationsInterface.data(),
+			SIGNAL(MethodCalled(const QString &, const QVariantList &)));
+	notificationSpy.wait();
+
+	ASSERT_EQ(1, notificationSpy.size());
+	const QVariantList &call(notificationSpy.at(0));
+	ASSERT_EQ("Notify", call.at(0));
+
+	const QVariantList &args(call.at(1).toList());
+	ASSERT_EQ(8, args.size());
+	EXPECT_EQ("indicator-network", args.at(0));
+	EXPECT_EQ("Connect to \"the ssid\"", args.at(3).toString().toStdString());
+
+	notificationsInterface->EmitSignal(
+			OrgFreedesktopNotificationsInterface::staticInterfaceName(),
+			"ActionInvoked", "us", QVariantList() << 1 << "connect_id");
+
+	QVariantDictMap result(reply);
+
 	EXPECT_EQ(
 			expected(GetParam().keyManagement, GetParam().passwordKey,
-					GetParam().password), reply);
+					GetParam().password), result);
 }
 
 INSTANTIATE_TEST_CASE_P(WpaPsk, TestSecretAgentGetSecrets,
@@ -137,7 +199,8 @@ class TestSecretAgent: public TestSecretAgentCommon, public Test {
 
 TEST_F(TestSecretAgent, GetSecretsWithNone) {
 	QDBusPendingReply<QVariantDictMap> reply(
-			interface->GetSecrets(connection(SecretAgent::KEY_MGMT_WPA_PSK),
+			agentInterface->GetSecrets(
+					connection(SecretAgent::KEY_MGMT_WPA_PSK),
 					QDBusObjectPath("/connection/foo"),
 					SecretAgent::WIRELESS_SECURITY_SETTING_NAME, QStringList(),
 					0));
@@ -150,17 +213,17 @@ TEST_F(TestSecretAgent, GetSecretsWithNone) {
 }
 
 TEST_F(TestSecretAgent, CancelGetSecrets) {
-	interface->CancelGetSecrets(QDBusObjectPath("/connection/foo"),
+	agentInterface->CancelGetSecrets(QDBusObjectPath("/connection/foo"),
 			SecretAgent::WIRELESS_SECURITY_SETTING_NAME).waitForFinished();
 }
 
 TEST_F(TestSecretAgent, SaveSecrets) {
-	interface->SaveSecrets(QVariantDictMap(),
+	agentInterface->SaveSecrets(QVariantDictMap(),
 			QDBusObjectPath("/connection/foo")).waitForFinished();
 }
 
 TEST_F(TestSecretAgent, DeleteSecrets) {
-	interface->DeleteSecrets(QVariantDictMap(),
+	agentInterface->DeleteSecrets(QVariantDictMap(),
 			QDBusObjectPath("/connection/foo")).waitForFinished();
 }
 

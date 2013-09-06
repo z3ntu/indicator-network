@@ -16,8 +16,9 @@
  * Author: Pete Woods <pete.woods@canonical.com>
  */
 
-#include "SecretRequest.h"
-#include "SecretAgent.h"
+#include <SecretRequest.h>
+#include <SecretAgent.h>
+#include <Localisation.h>
 
 SecretRequest::SecretRequest(unsigned int requestId, SecretAgent &secretAgent,
 		const QVariantDictMap &connection,
@@ -28,15 +29,43 @@ SecretRequest::SecretRequest(unsigned int requestId, SecretAgent &secretAgent,
 				connection), m_connectionPath(connectionPath), m_settingName(
 				settingName), m_hints(hints), m_flags(flags), m_message(message) {
 
-	QTimer::singleShot(0, this, SLOT(FinishRequest()));
+	connect(&m_secretAgent.notifications(),
+			SIGNAL(ActionInvoked(uint, const QString &)), this,
+			SLOT(actionInvoked(uint, const QString &)));
+
+	Hints notificationHints;
+	notificationHints["x-canonical-snap-decisions"] = QDBusVariant(true);
+	notificationHints["x-canonical-private-button-tint"] = QDBusVariant(true);
+	notificationHints["x-canonical-private-system-dialog"] = QDBusVariant(
+			"wifi-auth");
+
+	const QVariantMap &conn = connection[SecretAgent::CONNECTION_SETTING_NAME];
+
+	QString ssid(_("Connect to \"%1\""));
+	m_notificationId = m_secretAgent.notifications().Notify("indicator-network",
+			0, "totem", ssid.arg(conn[SecretAgent::CONNECTION_ID].toString()),
+			"dummy",
+			QStringList() << "connect_id" << _("Connect") << "cancel_id"
+					<< _("Cancel"), notificationHints, 0);
 }
 
 SecretRequest::~SecretRequest() {
 }
 
-void SecretRequest::FinishRequest() {
-	//FIXME: Hard-coded - use system dialogue call to populate it
-	QString key("hard-coded-password");
+void SecretRequest::actionInvoked(uint id, const QString &actionKey) {
+	// Ignore other requests' notifications
+	if (id != m_notificationId) {
+		return;
+	}
+
+	QString key("");
+
+	if (actionKey == "connect_id") {
+		QStringList result(m_secretAgent.feedback().collect(m_notificationId));
+		if (result.size() == 2) {
+			key = result.at(1);
+		}
+	}
 
 	auto wirelessSecurity = m_connection.find(m_settingName);
 	QString keyMgmt(

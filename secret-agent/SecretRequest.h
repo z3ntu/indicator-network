@@ -41,7 +41,7 @@ public:
 	virtual ~SecretRequest();
 
 public Q_SLOTS:
-	void FinishRequest();
+	void actionInvoked(uint id, const QString &actionKey);
 
 public:
 	unsigned int requestId() const;
@@ -52,6 +52,8 @@ public:
 
 protected:
 	const unsigned int m_requestId;
+
+	unsigned int m_notificationId;
 
 	SecretAgent &m_secretAgent;
 
@@ -66,6 +68,8 @@ protected:
 	uint m_flags;
 
 	QDBusMessage m_message;
+
+	QTimer m_timer;
 };
 
 #endif /* SECRETREQUEST_H_ */

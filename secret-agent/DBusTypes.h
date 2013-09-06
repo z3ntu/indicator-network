@@ -25,12 +25,17 @@
 typedef QMap<QString, QVariantMap> QVariantDictMap;
 Q_DECLARE_METATYPE(QVariantDictMap)
 
+typedef QMap<QString, QDBusVariant> Hints;
+Q_DECLARE_METATYPE(Hints)
+
 class DBusTypes {
 public:
 	static void registerMetaTypes() {
 		qRegisterMetaType<QVariantDictMap>("QVariantDictMap");
-
 		qDBusRegisterMetaType<QVariantDictMap>();
+
+		qRegisterMetaType<Hints>("Hints");
+		qDBusRegisterMetaType<Hints>();
 	}
 };
 

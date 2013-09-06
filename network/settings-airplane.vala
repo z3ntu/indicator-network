@@ -30,7 +30,7 @@ namespace Network.Settings
 			var enabled = new SimpleAction.stateful("enabled", null, new Variant.boolean(false));
 			enabled.activate.connect((value) => {
 				try {
-					GLib.Process.spawn_command_line_async("notify-send \"Airplane Mode does not have backend support currently.  Please turn of the radios individually.\"");
+					GLib.Process.spawn_command_line_async("notify-send \"Airplane Mode does not have backend support currently.  Please turn off the radios individually.\"");
 				} catch (Error e) {
 					warning(@"Unable to send notification: $(e.message)");
 				}

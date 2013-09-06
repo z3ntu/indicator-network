@@ -21,7 +21,7 @@
 
 #include <QScopedPointer>
 #include <QDBusConnection>
-#include <QtDBus>
+#include <QDBusContext>
 #include <QMap>
 
 #include <DBusTypes.h>

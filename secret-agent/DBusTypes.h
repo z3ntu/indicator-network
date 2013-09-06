@@ -19,7 +19,7 @@
 #ifndef DBUSTYPES_H_
 #define DBUSTYPES_H_
 
-#include <QtDBus>
+#include <QDBusMetaType>
 #include <QMap>
 
 typedef QMap<QString, QVariantMap> QVariantDictMap;

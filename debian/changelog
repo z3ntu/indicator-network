@@ -1,3 +1,38 @@
+indicator-network (0.5.0+13.10.20130829-0ubuntu1) saucy; urgency=low
+
+  [ Ted Gould ]
+  * Disable secret agent (for now). (LP: #1218385)
+
+  [ Ubuntu daily release ]
+  * Automatic snapshot from revision 278
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Thu, 29 Aug 2013 18:07:29 +0000
+
+indicator-network (0.5.0+13.10.20130828.2-0ubuntu1) saucy; urgency=low
+
+  [ Pete Woods ]
+  * Re-write build scripts in preparation for merging the secret agent
+    codebase and tests.
+  * Move the secret agent code over into this package.
+
+  [ Ubuntu daily release ]
+  * Automatic snapshot from revision 276
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Wed, 28 Aug 2013 10:09:20 +0000
+
+indicator-network (0.5.0+13.10.20130827.3-0ubuntu1) saucy; urgency=low
+
+  [ Ted Gould ]
+  * Put oFono proxies in a HashTable to better track usage.
+  * Adds settings items for cellular and Wifi.
+  * Add in gettext and make user visible strings translatable.
+  * Drop GTK build dep and old secret agent code.
+
+  [ Ubuntu daily release ]
+  * Automatic snapshot from revision 273
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Tue, 27 Aug 2013 14:10:33 +0000
+
 indicator-network (0.5.0+13.10.20130823.1-0ubuntu1) saucy; urgency=low
 
   [ Ted Gould ]

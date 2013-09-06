@@ -50,7 +50,7 @@ namespace Network
 		private string?                  current_protocol = null;
 		private int                      cell_strength = 0;
 		private int                      last_cell_strength = 0;
-		private oFono.Modem[]            watched_modems;
+		private HashTable<string, oFono.Modem> watched_modems = new HashTable<string, oFono.Modem>(str_hash, str_equal);
 
 		/* State tracking stuff */
 		private int                      last_wifi_strength = 0;
@@ -111,14 +111,19 @@ namespace Network
 
 			/* Check to see if the modem supports voice */
 			try {
-				oFono.Modem ofono_modem = Bus.get_proxy_sync (BusType.SYSTEM, "org.ofono", modemmaybe.get_iface());
+				oFono.Modem? ofono_modem = watched_modems.lookup(modemmaybe.get_iface());
+				
+				if (ofono_modem == null) {
+					ofono_modem = Bus.get_proxy_sync (BusType.SYSTEM, "org.ofono", modemmaybe.get_iface());
 
-				watched_modems += ofono_modem;
-				ofono_modem.property_changed.connect((prop, value) => {
-					if (prop == "Interfaces") {
-						device_added(modemmaybe);
-					}
-				});
+					ofono_modem.property_changed.connect((prop, value) => {
+						if (prop == "Interfaces") {
+							device_added(modemmaybe);
+						}
+					});
+
+					watched_modems.insert(modemmaybe.get_iface(), ofono_modem);
+				}
 
 				var modem_properties = ofono_modem.get_properties();
 				var interfaces = modem_properties.lookup("Interfaces");
@@ -172,6 +177,9 @@ namespace Network
 		private void device_removed (NM.Device device)
 		{
 			bool changed = false;
+
+			/* Remove the proxy if we have one, ignore the error if not */
+			watched_modems.remove(device.get_iface());
 
 			/* The voice modem got killed, bugger */
 			if (device.get_iface() == modemdev.get_iface()) {

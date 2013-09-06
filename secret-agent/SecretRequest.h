@@ -21,7 +21,8 @@
 
 #include <DBusTypes.h>
 
-#include <QtDBus>
+#include <QDBusMessage>
+#include <QDBusObjectPath>
 #include <QSharedPointer>
 
 class SecretRequest;
@@ -68,8 +69,6 @@ protected:
 	uint m_flags;
 
 	QDBusMessage m_message;
-
-	QTimer m_timer;
 };
 
 #endif /* SECRETREQUEST_H_ */

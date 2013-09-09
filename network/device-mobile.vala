@@ -27,16 +27,29 @@ namespace Network.Device
 		private GLib.MenuItem enabled_item;
 		private GLib.MenuItem settings_item;
 		private GLib.MenuItem unlock_sim_item;
+		private GLib.DBusConnection conn;
+
 		private SimpleAction? unlock_action = null;
 		private Notification? sim_notification = null;
 
-		public Mobile (NM.Client client, NM.DeviceModem device, GLibLocal.ActionMuxer muxer, bool show_enable) {
+		private Menu? unlock_menu = null;
+		private uint unlock_menu_export_id = 0;
+		private SimpleActionGroup? unlock_actions = null;
+		private uint unlock_actions_export_id = 0;
+		private string curren_pin = "";
+
+		private const string APPLICATION_ID  = "com.canonical.indicator.network";
+		private const string SIM_UNLOCK_MENU_PATH = "/com/canonical/indicator/network/unlocksim";
+		private const string SIM_UNLOCK_ACTION_PATH = "/com/canonical/indicator/network/unlocksim";
+
+		public Mobile (NM.Client client, NM.DeviceModem device, GLibLocal.ActionMuxer muxer, bool show_enable, GLib.DBusConnection conn) {
 			GLib.Object(
 				client: client,
 				device: device,
 				namespace: device.get_iface(),
 				muxer: muxer
 			);
+			this.conn = conn;
 
 			if (show_enable) {
 				enabled_item = new MenuItem(_("Cellular"), "indicator." + device.get_iface() + ".device-enabled");
@@ -55,6 +68,11 @@ namespace Network.Device
 		~Mobile ()
 		{
 			muxer.remove(namespace);
+
+			if (unlock_menu_export_id != 0)
+				conn.unexport_menu_model(unlock_menu_export_id);
+			if (unlock_menu_export_id != 0)
+				conn.unexport_menu_model(unlock_actions_export_id);
 		}
 
 		public void sim_lock_updated (bool sim_locked)
@@ -100,44 +118,79 @@ namespace Network.Device
 			if (sim_notification != null) {
 				return;
 			}
+			curren_pin = "";
 
-			sim_notification = new Notification("Unlock pin", "dummy", "totem");
+			// notification
+			sim_notification = new Notification("Unlock SIM", "", "totem");
 			sim_notification.add_action ("cancel_id", _("Cancel"), cancel_callback);
 			sim_notification.add_action ("ok_id", _("OK"), ok_callback);
 			sim_notification.set_hint_string ("x-canonical-snap-decisions", "true");
-			sim_notification.set_hint_string ("x-canonical-private-button-tint", "true");
-			sim_notification.set_hint_string ("x-canonical-private-system-dialog", "sim-unlock");
+
+			warning(@"conn unique_name $(conn.get_unique_name())");
+
+			sim_notification.set_hint_string ("x-canonical-dbus-name", APPLICATION_ID);
+			sim_notification.set_hint_string ("x-canonical-actions-path", SIM_UNLOCK_ACTION_PATH);
+			sim_notification.set_hint_string ("x-canonical-menu-path", SIM_UNLOCK_MENU_PATH);
+
+			// menu
+			unlock_menu = new Menu ();
+			var pin_unlock = new MenuItem ("", "notifications." + namespace + ".simunlock");
+			pin_unlock.set_attribute ("x-canonical-type", "s", "com.canonical.snapdecision.pinlock");
+			unlock_menu.append_item (pin_unlock);
+
+			// actions
+			unlock_actions = new SimpleActionGroup();
+			var action = new SimpleAction.stateful(namespace + ".simunlock", null, new Variant.string(""));
+			action.change_state.connect (simpin_changed);
+			unlock_actions.insert (action);
 
 			try {
+				unlock_menu_export_id = conn.export_menu_model (SIM_UNLOCK_MENU_PATH, unlock_menu);
+				unlock_actions_export_id = conn.export_action_group (SIM_UNLOCK_ACTION_PATH, unlock_actions as ActionGroup);
+
 				if (unlock_action != null) {
-					unlock_action.set_enabled(false);
+					unlock_action.set_enabled (false);
 				}
-				sim_notification.closed.connect(notification_closed);
+				sim_notification.closed.connect (notification_closed);
 				sim_notification.show ();
 
 			} catch (Error e) {
-				warning("Unable to unlock sim: $(e.message)");
+				warning(@"Unable to unlock sim: $(e.message)");
 				return;
 			}
 		}
 
 		private void cancel_callback (Notification notification, string action)
 		{
-			warning(@"Cancel: SIM Unlock");
+			warning("Cancel: SIM Unlock");
 		}
 
 		private void ok_callback (Notification notification, string action)
 		{
-			warning(@"OK: SIM Unlock");
+			warning("OK: SIM Unlock");
 		}
 
 		private void notification_closed ()
 		{
-			warning(@"Done with notification");
+			warning("Done with notification");
 			if (unlock_action != null) {
 				unlock_action.set_enabled(true);
 			}
 			sim_notification = null;
+
+			conn.unexport_menu_model(unlock_menu_export_id);
+			unlock_menu_export_id = 0;
+			unlock_menu = null;
+
+			conn.unexport_menu_model(unlock_actions_export_id);
+			unlock_actions_export_id = 0;
+			unlock_actions = null;
+		}
+
+		private void simpin_changed (SimpleAction ac, Variant? val)
+		{
+			warning("SIM Pin Changed");
+			curren_pin = val.get_string();
 		}
 	}
 }

@@ -123,6 +123,7 @@ namespace Network
 		private NM.Client       client;
 		private ActionManager   am;
 		private GLibLocal.ActionMuxer muxer = new GLibLocal.ActionMuxer();
+		private GLib.DBusConnection conn;
 
 		public NetworkMenu ()
 		{
@@ -134,7 +135,7 @@ namespace Network
 
 			try
 			{
-				var conn = Bus.get_sync (BusType.SESSION, null);
+				conn = Bus.get_sync (BusType.SESSION, null);
 
 				conn.export_action_group (ACTION_GROUP_PATH, muxer as ActionGroup);
 
@@ -181,9 +182,9 @@ namespace Network
 					phone.append_device(wifidev);
 					break;
 				case NM.DeviceType.MODEM:
-					var mobiledesktopdev = new Device.Mobile(this.client, device as NM.DeviceModem, this.muxer, true);
+					var mobiledesktopdev = new Device.Mobile(this.client, device as NM.DeviceModem, this.muxer, true, conn);
 					desktop.append_device(mobiledesktopdev);
-					var mobilephonedev = new Device.Mobile(this.client, device as NM.DeviceModem, this.muxer, false);
+					var mobilephonedev = new Device.Mobile(this.client, device as NM.DeviceModem, this.muxer, false, conn);
 					phone.append_device(mobilephonedev);
 
 					am.sim_lock_changed.connect(mobiledesktopdev.sim_lock_updated);

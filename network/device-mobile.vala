@@ -128,9 +128,15 @@ namespace Network.Device
 
 			warning(@"conn unique_name $(conn.get_unique_name())");
 
-			sim_notification.set_hint_string ("x-canonical-dbus-name", APPLICATION_ID);
-			sim_notification.set_hint_string ("x-canonical-actions-path", SIM_UNLOCK_ACTION_PATH);
-			sim_notification.set_hint_string ("x-canonical-menu-path", SIM_UNLOCK_MENU_PATH);
+			VariantBuilder menu_model_actions = new VariantBuilder (new VariantType ("a{sv}") );
+			menu_model_actions.add ("{sv}", "notifications", new Variant.string (SIM_UNLOCK_ACTION_PATH));
+
+			VariantBuilder menu_model_paths = new VariantBuilder (new VariantType ("a{sv}") );
+			menu_model_paths.add ("{sv}", "busName", new Variant.string (APPLICATION_ID));
+			menu_model_paths.add ("{sv}", "menuPath", new Variant.string (SIM_UNLOCK_MENU_PATH));
+			menu_model_paths.add ("{sv}", "actions", menu_model_actions.end ());
+
+			sim_notification.set_hint ("x-canonical-private-menu-model", menu_model_paths.end ());
 
 			// menu
 			unlock_menu = new Menu ();

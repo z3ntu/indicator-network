@@ -52,8 +52,6 @@ namespace Network
 		private int                      last_cell_strength = 0;
 		private HashTable<string, oFono.Modem> watched_modems = new HashTable<string, oFono.Modem>(str_hash, str_equal);
 
-		public signal void sim_lock_changed (bool value);
-
 		/* State tracking stuff */
 		private int                      last_wifi_strength = 0;
 
@@ -135,15 +133,15 @@ namespace Network
 				var modem_properties = ofono_modem.get_properties();
 				var interfaces = modem_properties.lookup("Interfaces");
 
-				if (!variant_contains(interfaces, "org.ofono.VoiceCallManager")) {
+				if (!Utils.variant_contains(interfaces, "org.ofono.VoiceCallManager")) {
 					debug(@"Modem '$(modemmaybe.get_iface())' doesn't have voice support only: $(interfaces.print(false))");
 					return;
 				}
-				if (!variant_contains(interfaces, "org.ofono.SimManager")) {
+				if (!Utils.variant_contains(interfaces, "org.ofono.SimManager")) {
 					debug(@"Modem '$(modemmaybe.get_iface())' doesn't have SIM management support only: $(interfaces.print(false))");
 					return;
 				}
-				if (!variant_contains(interfaces, "org.ofono.NetworkRegistration")) {
+				if (!Utils.variant_contains(interfaces, "org.ofono.NetworkRegistration")) {
 					debug(@"Modem '$(modemmaybe.get_iface())' doesn't have Network Registration support only: $(interfaces.print(false))");
 					return;
 				}
@@ -235,11 +233,8 @@ namespace Network
 			}
 			case "PinRequired": {
 				var old = sim_locked;
-				sim_locked = true;//(value.get_string() != "none");
-				if (old != sim_locked) {
-					sim_lock_changed(sim_locked);
-					changed = true;
-				}
+				sim_locked = (value.get_string() != "none");
+				changed = (old != sim_locked);
 				debug(@"SIM Lock: $(sim_locked)");
 				break;
 			}
@@ -309,24 +304,6 @@ namespace Network
 
 			warning(@"Technology type $tech that we don't understand.  Calling it 'pre-edge'");
 			return "pre-edge";
-		}
-
-		private bool variant_contains (Variant variant, string needle)
-		{
-			if (variant.is_of_type(VariantType.VARIANT))
-				return variant_contains(variant.get_variant(), needle);
-
-			if (!variant.is_container())
-				return false;
-
-			Variant item;
-			var iter = new VariantIter(variant);
-			for (item = iter.next_value(); item != null; item = iter.next_value()) {
-				if (item.get_string() == needle)
-					return true;
-			}
-
-			return false;
 		}
 
 		private Variant? icon_serialize (string icon_name)

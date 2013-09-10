@@ -24,9 +24,14 @@ vala_add(libnetwork
 )
 
 vala_add(libnetwork
+  utils.vala
+)
+
+vala_add(libnetwork
   network-action-manager.vala
   DEPENDS
     ofono
+    utils
 )
 
 vala_add(libnetwork
@@ -53,6 +58,8 @@ vala_add(libnetwork
   device-mobile.vala
   DEPENDS
     device-base
+    ofono
+    utils
 )
 
 vala_add(libnetwork

@@ -186,13 +186,6 @@ namespace Network
 					desktop.append_device(mobiledesktopdev);
 					var mobilephonedev = new Device.Mobile(this.client, device as NM.DeviceModem, this.muxer, false, conn);
 					phone.append_device(mobilephonedev);
-
-					am.sim_lock_changed.connect(mobiledesktopdev.sim_lock_updated);
-					mobiledesktopdev.sim_lock_updated(am.get_sim_locked());
-
-					am.sim_lock_changed.connect(mobilephonedev.sim_lock_updated);
-					mobilephonedev.sim_lock_updated(am.get_sim_locked());
-
 					break;
 				case NM.DeviceType.ETHERNET:
 					var ethdev = new Device.Ethernet(this.client, device as NM.DeviceEthernet, this.muxer);

@@ -243,11 +243,11 @@ namespace Network
 			switch (device.get_device_type ())
 			{
 				case NM.DeviceType.WIFI:
-					var wifidev = new Device.Wifi(this.client, device as NM.DeviceWifi, this.muxer);
+					var wifidev = new Device.Wifi(this.client, device as NM.DeviceWifi, this.muxer, true);
 					desktop.append_device(wifidev);
 					phone.append_device(wifidev);
 
-					var wifisettingsdev = new Device.Wifi(this.client, device as NM.DeviceWifi, this.muxer);
+					var wifisettingsdev = new Device.Wifi(this.client, device as NM.DeviceWifi, this.muxer, false);
 					phone_wifi_settings.append_device(wifisettingsdev);
 
 					break;

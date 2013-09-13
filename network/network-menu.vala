@@ -39,13 +39,21 @@ namespace Network
 		private GLib.DBusConnection conn;
 		private uint export_id;
 
-		public ProfileMenu (GLib.DBusConnection conn, string path) throws GLib.Error {
-			root_item = new MenuItem.submenu (null, shown_menu as MenuModel);
-			root_item.set_attribute (GLib.Menu.ATTRIBUTE_ACTION, "s", "indicator.global.network-status");
-			root_item.set_attribute ("x-canonical-type", "s", "com.canonical.indicator.root");
-			root_menu.append_item (root_item);
+		public ProfileMenu (GLib.DBusConnection conn, string path, bool has_root) throws GLib.Error {
+			Menu exported_menu;
 
-			export_id = conn.export_menu_model (path, root_menu);
+			if (has_root) {
+				root_item = new MenuItem.submenu (null, shown_menu as MenuModel);
+				root_item.set_attribute (GLib.Menu.ATTRIBUTE_ACTION, "s", "indicator.global.network-status");
+				root_item.set_attribute ("x-canonical-type", "s", "com.canonical.indicator.root");
+				root_menu.append_item (root_item);
+
+				exported_menu = root_menu;
+			} else {
+				exported_menu = shown_menu;
+			}
+
+			export_id = conn.export_menu_model (path, exported_menu);
 		}
 
 		~ProfileMenu () {
@@ -186,9 +194,9 @@ namespace Network
 
 				conn.export_action_group (ACTION_GROUP_PATH, muxer as ActionGroup);
 
-				desktop = new ProfileMenu(conn, DESKTOP_MENU_PATH);
-				phone = new ProfileMenu(conn, PHONE_MENU_PATH);
-				phone_wifi_settings = new ProfileMenu(conn, PHONE_WIFI_SETTINGS_MENU_PATH);
+				desktop = new ProfileMenu(conn, DESKTOP_MENU_PATH, true);
+				phone = new ProfileMenu(conn, PHONE_MENU_PATH, true);
+				phone_wifi_settings = new ProfileMenu(conn, PHONE_WIFI_SETTINGS_MENU_PATH, false);
 
 				Bus.own_name_on_connection(conn, APPLICATION_ID, BusNameOwnerFlags.NONE, null, ((conn, name) => { error("Unable to get D-Bus bus name"); }));
 			}

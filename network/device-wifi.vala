@@ -32,7 +32,7 @@ namespace Network.Device
 		private  NM.Client   client;
 		private  string      action_prefix;
 
-		public WifiMenu (NM.Client client, DeviceWifi device, Menu global_menu, SimpleActionGroup actions, string action_prefix)
+		public WifiMenu (NM.Client client, DeviceWifi device, Menu global_menu, SimpleActionGroup actions, string action_prefix, bool show_settings)
 		{
 			this.apsmenu = global_menu;
 			this.actions = actions;
@@ -43,8 +43,10 @@ namespace Network.Device
 			device_item = create_item_for_wifi_device ();
 			this.apsmenu.append_item(device_item);
 
-			settings_item = new MenuItem(_("Wi-Fi settings…"), "indicator.global.settings::wifi");
-			this.apsmenu.append_item(settings_item);
+			if (show_settings) {
+				settings_item = new MenuItem(_("Wi-Fi settings…"), "indicator.global.settings::wifi");
+				this.apsmenu.append_item(settings_item);
+			}
 
 			device.access_point_added.connect   (access_point_added_cb);
 			device.access_point_removed.connect (access_point_removed_cb);
@@ -508,7 +510,7 @@ namespace Network.Device
 		private WifiMenu wifimenu;
 		private WifiActionManager wifiactionmanager;
 
-		public Wifi (NM.Client client, NM.DeviceWifi device, GLibLocal.ActionMuxer muxer) {
+		public Wifi (NM.Client client, NM.DeviceWifi device, GLibLocal.ActionMuxer muxer, bool show_settings) {
 			GLib.Object(
 				client: client,
 				device: device,
@@ -516,7 +518,7 @@ namespace Network.Device
 				muxer: muxer
 			);
 
-			wifimenu = new WifiMenu(client, device, this._menu, actions, "indicator." + this.namespace + ".");
+			wifimenu = new WifiMenu(client, device, this._menu, actions, "indicator." + this.namespace + ".", false);
 			wifiactionmanager = new WifiActionManager(actions, client, device);
 		}
 

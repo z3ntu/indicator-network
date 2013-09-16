@@ -31,20 +31,24 @@ namespace Network.Device
 		private  SimpleActionGroup actions;
 		private  NM.Client   client;
 		private  string      action_prefix;
+		private  bool        show_settings;
 
-		public WifiMenu (NM.Client client, DeviceWifi device, Menu global_menu, SimpleActionGroup actions, string action_prefix)
+		public WifiMenu (NM.Client client, DeviceWifi device, Menu global_menu, SimpleActionGroup actions, string action_prefix, bool show_settings)
 		{
 			this.apsmenu = global_menu;
 			this.actions = actions;
 			this.device = device;
 			this.client = client;
 			this.action_prefix = action_prefix;
+			this.show_settings = show_settings;
 
 			device_item = create_item_for_wifi_device ();
 			this.apsmenu.append_item(device_item);
 
-			settings_item = new MenuItem(_("Wi-Fi settings…"), "indicator.global.settings::wifi");
-			this.apsmenu.append_item(settings_item);
+			if (show_settings) {
+				settings_item = new MenuItem(_("Wi-Fi settings…"), "indicator.global.settings::wifi");
+				this.apsmenu.append_item(settings_item);
+			}
 
 			device.access_point_added.connect   (access_point_added_cb);
 			device.access_point_removed.connect (access_point_removed_cb);
@@ -205,7 +209,11 @@ namespace Network.Device
 			}
 
 			//AP is last in the menu (avoid the settings item)
-			apsmenu.insert_item (apsmenu.get_n_items() - 1, item);
+			if (show_settings) {
+				apsmenu.insert_item (apsmenu.get_n_items() - 1, item);
+			} else {
+				apsmenu.append_item (item);
+			}
 		}
 
 		private void set_active_ap (AccessPoint? ap)
@@ -508,7 +516,7 @@ namespace Network.Device
 		private WifiMenu wifimenu;
 		private WifiActionManager wifiactionmanager;
 
-		public Wifi (NM.Client client, NM.DeviceWifi device, GLibLocal.ActionMuxer muxer) {
+		public Wifi (NM.Client client, NM.DeviceWifi device, GLibLocal.ActionMuxer muxer, bool show_settings) {
 			GLib.Object(
 				client: client,
 				device: device,
@@ -516,7 +524,7 @@ namespace Network.Device
 				muxer: muxer
 			);
 
-			wifimenu = new WifiMenu(client, device, this._menu, actions, "indicator." + this.namespace + ".");
+			wifimenu = new WifiMenu(client, device, this._menu, actions, "indicator." + this.namespace + ".", false);
 			wifiactionmanager = new WifiActionManager(actions, client, device);
 		}
 

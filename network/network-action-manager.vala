@@ -399,6 +399,7 @@ namespace Network
 					icons.append_val(icon);
 			}
 
+			params.insert("title", new Variant.string(_("Network")));
 			params.insert("accessibility-desc", new Variant.string(a11ydesc));
 			params.insert("visible", new Variant.boolean(true));
 

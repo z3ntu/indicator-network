@@ -50,4 +50,9 @@ install (
 	FILES ${CMAKE_CURRENT_BINARY_DIR}/indicator-secret-agent.conf
 	DESTINATION ${CMAKE_INSTALL_PREFIX}/share/upstart/sessions
 )
-	
+
+###########################
+# GSettings
+###########################
+
+add_schema ("com.canonical.indicator.network.gschema.xml")

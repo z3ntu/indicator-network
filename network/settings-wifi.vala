@@ -21,22 +21,26 @@
 namespace Network.Settings
 {
 	public class Wifi : Base {
+		private GLib.Settings settings;
+
 		public Wifi (GLibLocal.ActionMuxer muxer) {
 			GLib.Object(
 				namespace: "wifi-settings",
 				muxer: muxer
 			);
 
-			var joinact = new SimpleAction.stateful("auto-join", null, new Variant.boolean(true));
+			settings = new GLib.Settings ("com.canonical.indicator.network");
+
+			var joinact = settings.create_action("auto-join-previous");
 			actions.add_action(joinact);
 
-			var promptact = new SimpleAction.stateful("prompt", null, new Variant.boolean(true));
+			var promptact = settings.create_action("prompt-on-new-wifi-ap");
 			actions.add_action(promptact);
 
-			var joinitem = new MenuItem(_("Auto-join previous networks"), "indicator.wifi-settings.auto-join");
+			var joinitem = new MenuItem(_("Auto-join previous networks"), "indicator.wifi-settings.auto-join-previous");
 			_menu.append_item(joinitem);
 
-			var promptitem = new MenuItem(_("Prompt when not connected"), "indicator.wifi-settings.prompt");
+			var promptitem = new MenuItem(_("Prompt when not connected"), "indicator.wifi-settings.prompt-on-new-wifi-ap");
 			_menu.append_item(promptitem);
 
 			var captionitem = new MenuItem(_("Lists available wi-fi networks, if any, when you're using cellular data."), null);

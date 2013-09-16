@@ -92,11 +92,6 @@ namespace Network
 			muxer.remove("global");
 		}
 
-		public bool get_sim_locked()
-		{
-			return sim_locked;
-		}
-
 		private void device_added (NM.Device device) {
 			debug(@"Action Manager Device Added: $(device.get_iface())");
 

@@ -32,7 +32,7 @@ namespace Network.Device
 
 		private MenuItem         device_item;
 		private MenuItem         settings_item;
-		private MenuItem         unlock_sim_item;
+		private MenuItem?        unlock_sim_item = null;
 
 		public MobileMenu (NM.Client client, DeviceModem device, Menu global_menu, string action_prefix, bool show_enable, MobileSimManager mobilesimmanager)
 		{
@@ -91,6 +91,8 @@ namespace Network.Device
 			if (pin_required) {
 				unlock_sim_item = new MenuItem(_("Unlock SIM…"), action_name);
 				apsmenu.insert_item (0, unlock_sim_item);
+			} else {
+				unlock_sim_item = null;
 			}
 		}
 	}

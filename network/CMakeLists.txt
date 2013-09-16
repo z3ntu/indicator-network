@@ -42,6 +42,14 @@ vala_add(libnetwork
     device-mobile
     device-wifi
     network-action-manager
+    mobile-sim-manager
+)
+
+vala_add(libnetwork
+  mobile-sim-manager.vala
+  DEPENDS
+    ofono
+    utils
 )
 
 vala_add(libnetwork
@@ -58,8 +66,7 @@ vala_add(libnetwork
   device-mobile.vala
   DEPENDS
     device-base
-    ofono
-    utils
+    mobile-sim-manager
 )
 
 vala_add(libnetwork

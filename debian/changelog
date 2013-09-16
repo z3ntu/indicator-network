@@ -1,3 +1,14 @@
+indicator-network (0.5.0+13.10.20130913-0ubuntu1) saucy; urgency=low
+
+  [ Ted Gould ]
+  * Adding in temporary gsm icons as well.
+  * Adding title to the base action state. (LP: #1223635)
+
+  [ Ubuntu daily release ]
+  * Automatic snapshot from revision 281
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Fri, 13 Sep 2013 15:16:35 +0000
+
 indicator-network (0.5.0+13.10.20130829-0ubuntu1) saucy; urgency=low
 
   [ Ted Gould ]

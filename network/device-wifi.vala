@@ -31,6 +31,7 @@ namespace Network.Device
 		private  SimpleActionGroup actions;
 		private  NM.Client   client;
 		private  string      action_prefix;
+		private  bool        show_settings;
 
 		public WifiMenu (NM.Client client, DeviceWifi device, Menu global_menu, SimpleActionGroup actions, string action_prefix, bool show_settings)
 		{
@@ -39,6 +40,7 @@ namespace Network.Device
 			this.device = device;
 			this.client = client;
 			this.action_prefix = action_prefix;
+			this.show_settings = show_settings;
 
 			device_item = create_item_for_wifi_device ();
 			this.apsmenu.append_item(device_item);
@@ -207,7 +209,11 @@ namespace Network.Device
 			}
 
 			//AP is last in the menu (avoid the settings item)
-			apsmenu.insert_item (apsmenu.get_n_items() - 1, item);
+			if (show_settings) {
+				apsmenu.insert_item (apsmenu.get_n_items() - 1, item);
+			} else {
+				apsmenu.append_item (item);
+			}
 		}
 
 		private void set_active_ap (AccessPoint? ap)

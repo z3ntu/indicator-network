@@ -221,8 +221,6 @@ namespace Network
 		{
 			bool changed = false;
 
-			debug(@"simmanager_property: $(prop)");
-
 			switch (prop) {
 			case "Present": {
 				var old = sim_installed;

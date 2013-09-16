@@ -1,7 +1,7 @@
 [Indicator Service]
 Name=indicator-network
 ObjectPath=/com/canonical/indicator/network
-Position=69
+Position=80
 
 [desktop]
 ObjectPath=/com/canonical/indicator/network/desktop

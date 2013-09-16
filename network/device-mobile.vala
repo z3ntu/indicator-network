@@ -24,15 +24,15 @@ namespace Network.Device
 {
 	internal class MobileMenu
 	{
-		private NM.Client   		 client;
-		private NM.DeviceModem	 device;
-		private Menu        		 apsmenu;
-		private string      		 action_prefix;
+		private NM.Client        client;
+		private NM.DeviceModem   device;
+		private Menu             apsmenu;
+		private string           action_prefix;
 		private MobileSimManager mobilesimmanager;
 
-		private MenuItem    		 device_item;
-		private MenuItem    		 settings_item;
-		private MenuItem    		 unlock_sim_item;
+		private MenuItem         device_item;
+		private MenuItem         settings_item;
+		private MenuItem         unlock_sim_item;
 
 		public MobileMenu (NM.Client client, DeviceModem device, Menu global_menu, string action_prefix, bool show_enable, MobileSimManager mobilesimmanager)
 		{
@@ -97,12 +97,11 @@ namespace Network.Device
 
 	internal class MobileActionManager
 	{
-		private SimpleActionGroup   actions;
-		private NM.Client         	client;
-		private NM.DeviceModem			device;
-		private MobileSimManager 		mobilesimmanager;
-
-		private SimpleAction        unlock_action;
+		private SimpleActionGroup actions;
+		private NM.Client         client;
+		private NM.DeviceModem    device;
+		private MobileSimManager  mobilesimmanager;
+		private SimpleAction      unlock_action;
 
 		public MobileActionManager (SimpleActionGroup actions, NM.Client client, NM.DeviceModem device, MobileSimManager mobilesimmanager)
 		{
@@ -132,9 +131,9 @@ namespace Network.Device
 	}
 
 	public class Mobile : Base {
-		private MobileMenu mobilemenu;
+		private MobileMenu          mobilemenu;
 		private MobileActionManager mobileactionmanager;
-		private MobileSimManager mobilesimmanager;
+		private MobileSimManager    mobilesimmanager;
 
 		public Mobile (NM.Client client, NM.DeviceModem device, GLibLocal.ActionMuxer muxer, bool show_enable, GLib.DBusConnection conn) {
 			GLib.Object(

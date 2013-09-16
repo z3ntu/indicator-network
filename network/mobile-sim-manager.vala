@@ -26,23 +26,37 @@ namespace Network
   public class MobileSimManager : GLib.Object
   {
     public bool sim_installed { get; private set; default = false; }
-    public bool pin_required { get { return required_pin != "none" && required_pin != ""; } }
+    public bool pin_required  { get { return required_pin != "none" && required_pin != ""; } }
     public bool pin_unlocking { get; private set; default = false; }
 
-    private NM.Client             client;
-    private NM.DeviceModem        device;
-    private GLib.DBusConnection   conn;
-    private string                namespace;
-    private oFono.SIMManager?     simmanager = null;
-    private oFono.Modem?          ofono_modem = null;
-    private HashTable<string, uchar> retries = new HashTable<string, uchar>(str_hash, str_equal);
+    private NM.Client                  client;
+    private NM.DeviceModem             device;
+    private GLib.DBusConnection        conn;
+    private string                     namespace;
+    private oFono.SIMManager?          simmanager = null;
+    private oFono.Modem?               ofono_modem = null;
+    private HashTable<string, uchar>   retries = new HashTable<string, uchar>(str_hash, str_equal);
+    private List<CurrentNotification?> notifications = new List<CurrentNotification?> ();
+
+    // Sim Unlocking
+    private string _required_pin = "none";
+    private string  last_required_pin = "";
+    private string  puk_code = "";
+    private string  old_pin = "";
+    private string  new_pin = "";
+    private int     export_id = 0;
+
+    private const string APPLICATION_ID  = "com.canonical.indicator.network";
+    private const string SIM_UNLOCK_MENU_PATH = "/com/canonical/indicator/network/unlocksim";
+    private const string SIM_UNLOCK_ACTION_PATH = "/com/canonical/indicator/network/unlocksim";
+    private const string OFONO_ERROR_FAILED = "org.ofono.Error.Failed";
 
     struct CurrentNotification {
-      public int id;
-      public Notification? notification;
-      public uint unlock_menu_export_id;
-      public uint unlock_actions_export_id;
-      public Menu? unlock_menu;
+      public int                id;
+      public Notification?      notification;
+      public uint               unlock_menu_export_id;
+      public uint               unlock_actions_export_id;
+      public Menu?              unlock_menu;
       public SimpleActionGroup? unlock_actions;
 
       public CurrentNotification() {
@@ -54,26 +68,11 @@ namespace Network
         this.unlock_actions = null;
       }
     }
-    private List<CurrentNotification?> notifications = new List<CurrentNotification?> ();
 
     private string required_pin {
       get { return _required_pin; }
       set { if (_required_pin != value) { _required_pin = value; notify_property("pin-required"); } }
     }
-
-    // Sim Unlocking
-    private string _required_pin = "none";
-    private string _last_required_pin = "";
-    private string _puk_code = "";
-    private string _old_pin = "";
-    private string _new_pin = "";
-    private int export_id = 0;
-
-    private const string APPLICATION_ID  = "com.canonical.indicator.network";
-    private const string SIM_UNLOCK_MENU_PATH = "/com/canonical/indicator/network/unlocksim";
-    private const string SIM_UNLOCK_ACTION_PATH = "/com/canonical/indicator/network/unlocksim";
-
-    private const string OFONO_ERROR_FAILED = "org.ofono.Error.Failed";
 
     delegate void PinCancelCallback ();
     delegate void PinEnteredCallback (string pin);
@@ -100,7 +99,7 @@ namespace Network
                         required_pin == "puk" ? 8 : 4,
                         pin_unlock_entered)) {
         debug(@"SIM Unlock: $required_pin");
-        _last_required_pin = required_pin;
+        last_required_pin = required_pin;
         pin_unlocking = true;
         debug(@"PIN LOCKING: $pin_unlocking");
         return true;
@@ -309,14 +308,14 @@ namespace Network
 
     private void pin_unlock_entered (string pin)
     {
-      if (required_pin == _last_required_pin) {
+      if (required_pin == last_required_pin) {
         bool retry = false;
         if (required_pin == "puk") {
             // if it's a puk, we need to reset the pin.
             close_all_notifications(true);
             if (send_unlock(_("Enter new PIN code"), null, 4, pin_reset_new_entered)) {
               debug("SIM pin request. Sent new pin request");
-              _puk_code = pin;
+              puk_code = pin;
             } else {
               warning("SIM pin request. New pin notification failed");
             }
@@ -333,7 +332,7 @@ namespace Network
           close_all_notifications(true);
         }
       } else {
-        warning(@"Required pin type changed. old=$(_last_required_pin), new=$(required_pin)");
+        warning(@"Required pin type changed. old=$(last_required_pin), new=$(required_pin)");
         close_all_notifications(true);
       }
     }
@@ -344,7 +343,7 @@ namespace Network
 
       if (send_unlock(_("Please confirm PIN code"), null, 4, pin_reset_confirm_entered)) {
         debug("SIM reset pin request. Sent confirm pin request");
-        _new_pin = pin;
+        new_pin = pin;
       } else {
         warning("SIM reset pin request. Confirm pin notification failed");
         clear_stored_data();
@@ -353,8 +352,8 @@ namespace Network
 
     private void pin_reset_confirm_entered (string pin)
     {
-      if (_new_pin == pin) {
-        if (reset_pin("puk", _puk_code, pin)) {
+      if (new_pin == pin) {
+        if (reset_pin("puk", puk_code, pin)) {
           debug("SIM reset pin request. Done.");
           close_all_notifications(true);
         } else {
@@ -375,7 +374,7 @@ namespace Network
 
       if (send_unlock(_("Please enter new SIM PIN"), "pin", 4, pin_change_new_entered)) {
         debug("SIM change pin request. Sent new pin request");
-        _old_pin = pin;
+        old_pin = pin;
       } else {
         warning("SIM change pin request. New pin notification failed");
         clear_stored_data();
@@ -388,7 +387,7 @@ namespace Network
 
       if (send_unlock(_("Please confirm PIN code"), null, 4, pin_change_confirm_entered)) {
         debug("SIM change pin request. Sent confirm pin request");
-        _new_pin = pin;
+        new_pin = pin;
       } else {
         warning("SIM change pin request. Confirm pin notification failed");
         clear_stored_data();
@@ -397,8 +396,8 @@ namespace Network
 
     private void pin_change_confirm_entered (string pin)
     {
-      if (_new_pin == pin) {
-        if (change_pin("pin", _old_pin, _new_pin)) {
+      if (new_pin == pin) {
+        if (change_pin("pin", old_pin, new_pin)) {
           debug("SIM change pin request. Done.");
           close_all_notifications(true);
         } else {
@@ -496,9 +495,9 @@ namespace Network
 
     private void clear_stored_data()
     {
-      _new_pin = "";
-      _old_pin = "";
-      _puk_code = "";
+      new_pin = "";
+      old_pin = "";
+      puk_code = "";
     }
 
     private void clear_notification (CurrentNotification? notification)

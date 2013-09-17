@@ -4,6 +4,7 @@ set(
 	SecretAgent.cpp
 	SecretAgentAdaptor.cpp
 	SecretRequest.cpp
+	gtk/PasswordMenu.cpp
 )
 
 qt5_add_dbus_adaptor(
@@ -32,12 +33,6 @@ qt5_add_dbus_interface(
 	NotificationsInterface
 )
 
-qt5_add_dbus_interface(
-	INDICATOR_SECRET_AGENT_SOURCES
-	"${DATA_DIR}/com.canonical.snapdecisions.feedback.xml"
-	FeedbackInterface
-)
-
 add_library(
 	indicator-secret-agent
 	STATIC
@@ -48,6 +43,11 @@ qt5_use_modules(
 	indicator-secret-agent
 	Core
 	DBus
+)
+
+target_link_libraries(
+	indicator-secret-agent
+	${GIO_LIBRARIES}
 )
 
 add_executable(

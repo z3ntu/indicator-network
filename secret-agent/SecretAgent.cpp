@@ -46,12 +46,9 @@ SecretAgent::SecretAgent(const QDBusConnection &systemConnection,
 		const QDBusConnection &sessionConnection, QObject *parent) :
 		QObject(parent), m_adaptor(new SecretAgentAdaptor(this)), m_systemConnection(
 				systemConnection), m_sessionConnection(sessionConnection), m_agentManager(
-				NM_DBUS_SERVICE, NM_DBUS_PATH_AGENT_MANAGER,
-				m_systemConnection), m_notifications(
+		NM_DBUS_SERVICE, NM_DBUS_PATH_AGENT_MANAGER, m_systemConnection), m_notifications(
 				"org.freedesktop.Notifications",
-				"/org/freedesktop/Notifications", m_sessionConnection), m_feedback(
-				"com.canonical.snapdecisions.feedback",
-				"/com/canonical/snapdecisions/feedback", m_sessionConnection), m_requestCounter(
+				"/org/freedesktop/Notifications", m_sessionConnection), m_requestCounter(
 				0) {
 	if (!m_systemConnection.registerObject(NM_DBUS_PATH_SECRET_AGENT, this)) {
 		throw logic_error(
@@ -147,8 +144,4 @@ void SecretAgent::SaveSecrets(const QVariantDictMap &connection,
 
 org::freedesktop::Notifications & SecretAgent::notifications() {
 	return m_notifications;
-}
-
-com::canonical::snapdecisions::feedback & SecretAgent::feedback() {
-	return m_feedback;
 }

@@ -13,6 +13,7 @@ find_package(PkgConfig REQUIRED)
 include(GNUInstallDirs)
 include(Coverage)
 include(UseVala)
+include(UseGSettings)
 
 # Workaround for libexecdir on debian
 if (EXISTS "/etc/debian_version") 

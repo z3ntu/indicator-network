@@ -27,24 +27,48 @@ SecretRequest::SecretRequest(unsigned int requestId, SecretAgent &secretAgent,
 		QObject *parent) :
 		QObject(parent), m_requestId(requestId), m_secretAgent(secretAgent), m_connection(
 				connection), m_connectionPath(connectionPath), m_settingName(
-				settingName), m_hints(hints), m_flags(flags), m_message(message) {
+				settingName), m_hints(hints), m_flags(flags), m_message(
+				message), m_menu(requestId) {
 
 	connect(&m_secretAgent.notifications(),
-			SIGNAL(ActionInvoked(uint, const QString &)), this,
-			SLOT(actionInvoked(uint, const QString &)));
+	SIGNAL(ActionInvoked(uint, const QString &)), this,
+	SLOT(actionInvoked(uint, const QString &)));
 
-	Hints notificationHints;
-	notificationHints["x-canonical-snap-decisions"] = QDBusVariant(true);
-	notificationHints["x-canonical-private-button-tint"] = QDBusVariant(true);
-	notificationHints["x-canonical-private-system-dialog"] = QDBusVariant(
-			"wifi-auth");
+	// indicate to the notification-daemon, that we want to use snap-decisions
+	QVariantMap notificationHints;
+	notificationHints["x-canonical-snap-decisions"] = "true";
+	notificationHints["x-canonical-ext-snap-decisions"] = "true";
+	notificationHints["x-canonical-private-button-tint"] = "true";
 
-	const QVariantMap &conn = connection[SecretAgent::CONNECTION_SETTING_NAME];
+	QVariantMap menuModelActions;
+	menuModelActions["notifications"] = m_menu.actionPath();
 
-	QString ssid(_("Connect to \"%1\""));
+	QVariantMap menuModelPaths;
+	menuModelPaths["busName"] = m_menu.busName();
+	menuModelPaths["menuPath"] = m_menu.menuPath();
+	menuModelPaths["actions"] = menuModelActions;
+
+	notificationHints["x-canonical-private-menu-model"] = menuModelPaths;
+
+	const QVariantMap &conn = m_connection[SecretAgent::CONNECTION_SETTING_NAME];
+
+	auto wirelessSecurity = m_connection.find(m_settingName);
+	QString keyMgmt(
+			wirelessSecurity->value(SecretAgent::WIRELESS_SECURITY_KEY_MGMT).toString());
+
+	QString title(_("Connect to \"%1\""));
+
+	QString subject;
+	if (keyMgmt == SecretAgent::KEY_MGMT_WPA_NONE
+			|| keyMgmt == SecretAgent::KEY_MGMT_WPA_PSK) {
+		subject = _("WPA");
+	} else if (keyMgmt == SecretAgent::KEY_MGMT_NONE) {
+		subject = _("WEP");
+	}
+
 	m_notificationId = m_secretAgent.notifications().Notify("indicator-network",
-			0, "totem", ssid.arg(conn[SecretAgent::CONNECTION_ID].toString()),
-			"dummy",
+			0, "wifi-full-secure",
+			title.arg(conn[SecretAgent::CONNECTION_ID].toString()), subject,
 			QStringList() << "connect_id" << _("Connect") << "cancel_id"
 					<< _("Cancel"), notificationHints, 0);
 }
@@ -61,10 +85,7 @@ void SecretRequest::actionInvoked(uint id, const QString &actionKey) {
 	QString key("");
 
 	if (actionKey == "connect_id") {
-		QStringList result(m_secretAgent.feedback().collect(m_notificationId));
-		if (result.size() == 2) {
-			key = result.at(1);
-		}
+		key = m_menu.password();
 	}
 
 	auto wirelessSecurity = m_connection.find(m_settingName);

@@ -28,7 +28,6 @@
 #include <SecretRequest.h>
 #include <AgentManagerInterface.h>
 #include <NotificationsInterface.h>
-#include <FeedbackInterface.h>
 
 class SecretAgentAdaptor;
 
@@ -73,8 +72,6 @@ public Q_SLOTS:
 
 	org::freedesktop::Notifications & notifications();
 
-	com::canonical::snapdecisions::feedback & feedback();
-
 protected:
 	QScopedPointer<SecretAgentAdaptor> m_adaptor;
 
@@ -85,8 +82,6 @@ protected:
 	org::freedesktop::NetworkManager::AgentManager m_agentManager;
 
 	org::freedesktop::Notifications m_notifications;
-
-	com::canonical::snapdecisions::feedback m_feedback;
 
 	QMap<unsigned long long, SecretRequestPtr> m_requests;
 

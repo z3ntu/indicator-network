@@ -34,7 +34,7 @@
       <arg name="body" type="s" direction="in"/>
       <arg name="actions" type="as" direction="in"/>
       <arg name="hints" type="a{sv}" direction="in"/>
-      <annotation name="org.qtproject.QtDBus.QtTypeName.In6" value="Hints"/>
+      <annotation name="org.qtproject.QtDBus.QtTypeName.In6" value="QVariantMap"/>
       <arg name="expire_timeout" type="i" direction="in"/>
     </method>
     <method name="onDataChanged">

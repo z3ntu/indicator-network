@@ -16,12 +16,13 @@
  * Author: Pete Woods <pete.woods@canonical.com>
  */
 
-#include <libqtdbustest/DBusTestRunner.h>
-#include <libqtdbusmock/DBusMock.h>
 #include <SecretAgent.h>
 #include <SecretAgentInterface.h>
 #include <NetworkManager.h>
 
+#include <libqtdbustest/DBusTestRunner.h>
+#include <libqtdbusmock/DBusMock.h>
+#include <qmenumodel/unitymenumodel.h>
 #include <QSignalSpy>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
@@ -43,11 +44,6 @@ protected:
 				OrgFreedesktopNotificationsInterface::staticInterfaceName(),
 				QDBusConnection::SessionBus);
 
-		dbusMock.registerCustomMock("com.canonical.snapdecisions.feedback",
-				"/com/canonical/snapdecisions/feedback",
-				ComCanonicalSnapdecisionsFeedbackInterface::staticInterfaceName(),
-				QDBusConnection::SessionBus);
-
 		dbusMock.registerNetworkManager();
 		dbusTestRunner.startServices();
 
@@ -58,19 +54,12 @@ protected:
 
 		agentInterface.reset(
 				new OrgFreedesktopNetworkManagerSecretAgentInterface(agentBus,
-						NM_DBUS_PATH_SECRET_AGENT,
-						dbusTestRunner.systemConnection()));
+				NM_DBUS_PATH_SECRET_AGENT, dbusTestRunner.systemConnection()));
 
 		notificationsInterface.reset(
 				new OrgFreedesktopDBusMockInterface(
 						"org.freedesktop.Notifications",
 						"/org/freedesktop/Notifications",
-						dbusTestRunner.sessionConnection()));
-
-		feedbackInterface.reset(
-				new OrgFreedesktopDBusMockInterface(
-						"com.canonical.snapdecisions.feedback",
-						"/com/canonical/snapdecisions/feedback",
 						dbusTestRunner.sessionConnection()));
 	}
 
@@ -125,8 +114,6 @@ protected:
 	QScopedPointer<OrgFreedesktopNetworkManagerSecretAgentInterface> agentInterface;
 
 	QScopedPointer<OrgFreedesktopDBusMockInterface> notificationsInterface;
-
-	QScopedPointer<OrgFreedesktopDBusMockInterface> feedbackInterface;
 };
 
 struct TestSecretAgentParams {
@@ -141,14 +128,36 @@ class TestSecretAgentGetSecrets: public TestSecretAgentCommon,
 		public TestWithParam<TestSecretAgentParams> {
 };
 
+static void transform(QVariantMap &map);
+
+static void transform(QVariant &variant) {
+	if (variant.canConvert<QDBusArgument>()) {
+		QDBusArgument value(variant.value<QDBusArgument>());
+		if (value.currentType() == QDBusArgument::MapType) {
+			QVariantMap map;
+			value >> map;
+			transform(map);
+			variant = map;
+		}
+	}
+}
+
+static void transform(QVariantMap &map) {
+	for (auto it(map.begin()); it != map.end(); ++it) {
+		transform(*it);
+	}
+}
+
+static void transform(QVariantList &list) {
+	for (auto it(list.begin()); it != list.end(); ++it) {
+		transform(*it);
+	}
+}
+
 TEST_P(TestSecretAgentGetSecrets, ProvidesPasswordForWpaPsk) {
 	notificationsInterface->AddMethod(
 			OrgFreedesktopNotificationsInterface::staticInterfaceName(),
 			"Notify", "susssasa{sv}i", "u", "ret = 1").waitForFinished();
-
-	feedbackInterface->AddMethod(
-			ComCanonicalSnapdecisionsFeedbackInterface::staticInterfaceName(),
-			"collect", "u", "as", "ret = ['password', 'hard-coded-password']").waitForFinished();
 
 	QDBusPendingReply<QVariantDictMap> reply(
 			agentInterface->GetSecrets(connection(GetParam().keyManagement),
@@ -157,17 +166,45 @@ TEST_P(TestSecretAgentGetSecrets, ProvidesPasswordForWpaPsk) {
 					5));
 
 	QSignalSpy notificationSpy(notificationsInterface.data(),
-			SIGNAL(MethodCalled(const QString &, const QVariantList &)));
+	SIGNAL(MethodCalled(const QString &, const QVariantList &)));
 	notificationSpy.wait();
 
 	ASSERT_EQ(1, notificationSpy.size());
 	const QVariantList &call(notificationSpy.at(0));
 	ASSERT_EQ("Notify", call.at(0));
 
-	const QVariantList &args(call.at(1).toList());
+	QVariantList args(call.at(1).toList());
+	transform(args);
+
 	ASSERT_EQ(8, args.size());
 	EXPECT_EQ("indicator-network", args.at(0));
 	EXPECT_EQ("Connect to \"the ssid\"", args.at(3).toString().toStdString());
+
+	QVariantMap hints(args.at(6).toMap());
+	QVariantMap menuInfo(hints["x-canonical-private-menu-model"].toMap());
+
+	QString busName(menuInfo["busName"].toString());
+	QString menuPath(menuInfo["menuPath"].toString());
+	QVariantMap actions(menuInfo["actions"].toMap());
+
+	{
+		UnityMenuModel menuModel;
+
+		QSignalSpy menuSpy(&menuModel,
+		SIGNAL(rowsInserted(const QModelIndex&, int, int)));
+
+		menuModel.setBusName(busName.toUtf8());
+		menuModel.setMenuObjectPath(menuPath.toUtf8());
+		menuModel.setActions(actions);
+
+		menuSpy.wait();
+
+		menuModel.changeState(0, "hard-coded-password");
+	}
+
+	// Dirty sleep to delay clicking the connect button.
+	// This will surely come back to bite us.
+	QTestEventLoop::instance().enterLoopMSecs(50);
 
 	notificationsInterface->EmitSignal(
 			OrgFreedesktopNotificationsInterface::staticInterfaceName(),

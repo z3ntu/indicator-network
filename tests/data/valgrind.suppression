@@ -27,6 +27,32 @@
 }
 
 ###############################
+# UnityModelModel
+###############################
+
+{
+   Temporarily work around leak in UnityMenuModel
+   Memcheck:Leak
+   ...
+   fun:g_sequence_new
+   fun:_ZN21UnityMenuModelPrivateC1EP14UnityMenuModel
+}
+
+###############################
+# DBus
+###############################
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Param
+   epoll_ctl(event)
+   fun:epoll_ctl
+   obj:/bin/dbus-daemon
+   ...
+   fun:(below main)
+}
+
+###############################
 # GObject rules
 ###############################
 

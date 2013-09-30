@@ -32,6 +32,7 @@ Package: indicator-network
 Architecture: any
 Depends: ${misc:Depends},
          ${shlibs:Depends},
+         python3-xdg, # For apport hook
 Conflicts: chewie,
            indicators-client-plugin-network,
 Description: Systems settings menu service - Network indicator

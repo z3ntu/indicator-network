@@ -200,11 +200,14 @@ TEST_P(TestSecretAgentGetSecrets, ProvidesPasswordForWpaPsk) {
 		menuSpy.wait();
 
 		menuModel.changeState(0, "hard-coded-password");
-	}
 
-	// Dirty sleep to delay clicking the connect button.
-	// This will surely come back to bite us.
-	QTestEventLoop::instance().enterLoopMSecs(50);
+		// It seems like UnityMenuModel or the GLib
+		// DBus connection needs some grace time to
+		// finish dispatching.
+		// FIXME: There must be a better way of handling
+		// this.
+		QTestEventLoop::instance().enterLoopMSecs(50);
+	}
 
 	notificationsInterface->EmitSignal(
 			OrgFreedesktopNotificationsInterface::staticInterfaceName(),

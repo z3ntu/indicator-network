@@ -33,7 +33,7 @@ Architecture: any
 Depends: ${misc:Depends},
          ${shlibs:Depends},
 # For apport hook
-         python3-xdg,# For apport hook
+         python3-xdg,
 Conflicts: chewie,
            indicators-client-plugin-network,
 Description: Systems settings menu service - Network indicator

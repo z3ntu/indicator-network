@@ -20,6 +20,7 @@
 #include <gio/gio.h>
 
 #include <QString>
+#include <QDebug>
 
 static const QString PASSWORD_ACTION_PATH("/action/%1");
 static const QString PASSWORD_MENU_PATH("/menu/%1");
@@ -43,6 +44,9 @@ public:
 
 	void passwordChanged(GVariant *variant) {
 		m_password = QString::fromUtf8(g_variant_get_string(variant, 0));
+		if (qEnvironmentVariableIsSet("SECRET_AGENT_DEBUG_PASSWORD")) {
+			qDebug() << "Password received";
+		}
 	}
 
 	GDBusConnection *m_connection;
@@ -72,8 +76,7 @@ PasswordMenu::PasswordMenu(unsigned int requestId) :
 	// menu
 	GMenu *menu(g_menu_new());
 
-	GMenuItem *passwordItem(
-			g_menu_item_new("", "notifications.password"));
+	GMenuItem *passwordItem(g_menu_item_new("", "notifications.password"));
 	g_menu_item_set_attribute_value(passwordItem, "x-canonical-type",
 			g_variant_new_string("com.canonical.snapdecision.textfield"));
 	g_menu_item_set_attribute_value(passwordItem, "x-echo-mode-password",

@@ -78,7 +78,7 @@ namespace Network
 
 			var settings_action = new SimpleAction("settings", VariantType.STRING);
 			settings_action.activate.connect((value) => {
-				URLDispatcher.send("settings://system/" + value.get_string(), (url, success) => {
+				URLDispatcher.send("settings:///system/" + value.get_string(), (url, success) => {
 					if (!success) {
 						warning(@"Unable to activate settings URL: $url");
 					}

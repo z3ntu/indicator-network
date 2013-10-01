@@ -27,18 +27,6 @@
 }
 
 ###############################
-# UnityModelModel
-###############################
-
-{
-   Temporarily work around leak in UnityMenuModel
-   Memcheck:Leak
-   ...
-   fun:g_sequence_new
-   fun:_ZN21UnityMenuModelPrivateC1EP14UnityMenuModel
-}
-
-###############################
 # DBus
 ###############################
 

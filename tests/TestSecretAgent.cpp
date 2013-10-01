@@ -47,6 +47,10 @@ protected:
 		dbusMock.registerNetworkManager();
 		dbusTestRunner.startServices();
 
+		QProcessEnvironment env(QProcessEnvironment::systemEnvironment());
+		env.insert("SECRET_AGENT_DEBUG_PASSWORD", "1");
+		secretAgent.setProcessEnvironment(env);
+		secretAgent.setProcessChannelMode(QProcess::MergedChannels);
 		secretAgent.start(SECRET_AGENT_BIN, QStringList() << "--print-address");
 		secretAgent.waitForStarted();
 		secretAgent.waitForReadyRead();
@@ -204,9 +208,8 @@ TEST_P(TestSecretAgentGetSecrets, ProvidesPasswordForWpaPsk) {
 		// It seems like UnityMenuModel or the GLib
 		// DBus connection needs some grace time to
 		// finish dispatching.
-		// FIXME: There must be a better way of handling
-		// this.
-		QTestEventLoop::instance().enterLoopMSecs(50);
+		secretAgent.waitForReadyRead();
+		ASSERT_EQ("Password received", secretAgent.readAll().trimmed());
 	}
 
 	notificationsInterface->EmitSignal(

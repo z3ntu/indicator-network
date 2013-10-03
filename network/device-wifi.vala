@@ -524,7 +524,7 @@ namespace Network.Device
 				muxer: muxer
 			);
 
-			wifimenu = new WifiMenu(client, device, this._menu, actions, "indicator." + this.namespace + ".", false);
+			wifimenu = new WifiMenu(client, device, this._menu, actions, "indicator." + this.namespace + ".", show_settings);
 			wifiactionmanager = new WifiActionManager(actions, client, device);
 		}
 

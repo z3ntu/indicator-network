@@ -211,9 +211,13 @@ namespace Network
 
 			/* Put an airplane mode setting at the top of the desktop and phone
 			   menus */
-			var airplane = new Network.Settings.Airplane(muxer);
-			desktop.set_pre_settings(airplane);
-			phone.set_pre_settings(airplane);
+			/* Airplane mode is disabled for Phone 1.0 as there's no backend.
+			   commenting out to be reenabled after 1.0 ships */
+			if (false) {
+				var airplane = new Network.Settings.Airplane(muxer);
+				desktop.set_pre_settings(airplane);
+				phone.set_pre_settings(airplane);
+			}
 
 			/* Add some items at the end of the settings menu */
 			var wifisettings = new Network.Settings.Wifi(muxer);

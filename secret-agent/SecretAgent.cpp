@@ -27,8 +27,11 @@
 using namespace std;
 using namespace org::freedesktop::NetworkManager;
 
+const QString SecretAgent::CONNECTION_SETTING_NAME("connection");
 const QString SecretAgent::WIRELESS_SECURITY_SETTING_NAME(
 		"802-11-wireless-security");
+
+const QString SecretAgent::CONNECTION_ID("id");
 
 const QString SecretAgent::WIRELESS_SECURITY_PSK("psk");
 const QString SecretAgent::WIRELESS_SECURITY_WEP_KEY0("wep-key0");
@@ -39,11 +42,15 @@ const QString SecretAgent::KEY_MGMT_WPA_NONE("wpa-none");
 const QString SecretAgent::KEY_MGMT_WPA_PSK("wpa-psk");
 const QString SecretAgent::KEY_MGMT_NONE("none");
 
-SecretAgent::SecretAgent(const QDBusConnection &connection, QObject *parent) :
-		QObject(parent), m_adaptor(new SecretAgentAdaptor(this)), m_connection(
-				connection), m_agentManager(NM_DBUS_SERVICE,
-				NM_DBUS_PATH_AGENT_MANAGER, m_connection), m_requestCounter(0) {
-	if (!m_connection.registerObject(NM_DBUS_PATH_SECRET_AGENT, this)) {
+SecretAgent::SecretAgent(const QDBusConnection &systemConnection,
+		const QDBusConnection &sessionConnection, QObject *parent) :
+		QObject(parent), m_adaptor(new SecretAgentAdaptor(this)), m_systemConnection(
+				systemConnection), m_sessionConnection(sessionConnection), m_agentManager(
+		NM_DBUS_SERVICE, NM_DBUS_PATH_AGENT_MANAGER, m_systemConnection), m_notifications(
+				"org.freedesktop.Notifications",
+				"/org/freedesktop/Notifications", m_sessionConnection), m_requestCounter(
+				0) {
+	if (!m_systemConnection.registerObject(NM_DBUS_PATH_SECRET_AGENT, this)) {
 		throw logic_error(
 				_("Unable to register user secret agent object on DBus"));
 	}
@@ -53,7 +60,7 @@ SecretAgent::SecretAgent(const QDBusConnection &connection, QObject *parent) :
 
 SecretAgent::~SecretAgent() {
 	m_agentManager.Unregister().waitForFinished();
-	m_connection.unregisterObject(NM_DBUS_PATH_SECRET_AGENT);
+	m_systemConnection.unregisterObject(NM_DBUS_PATH_SECRET_AGENT);
 }
 
 /**
@@ -101,7 +108,7 @@ QVariantDictMap SecretAgent::GetSecrets(const QVariantDictMap &connection,
 	setDelayedReply(true);
 
 	if (flags == 0) {
-		m_connection.send(
+		m_systemConnection.send(
 				message().createErrorReply(QDBusError::InternalError,
 						"No password found for this connection."));
 	} else {
@@ -117,7 +124,7 @@ QVariantDictMap SecretAgent::GetSecrets(const QVariantDictMap &connection,
 }
 
 void SecretAgent::FinishGetSecrets(SecretRequest &request) {
-	m_connection.send(
+	m_systemConnection.send(
 			request.message().createReply(
 					QVariant::fromValue(request.connection())));
 	m_requests.remove(request.requestId());
@@ -133,4 +140,8 @@ void SecretAgent::DeleteSecrets(const QVariantDictMap &connection,
 
 void SecretAgent::SaveSecrets(const QVariantDictMap &connection,
 		const QDBusObjectPath &connectionPath) {
+}
+
+org::freedesktop::Notifications & SecretAgent::notifications() {
+	return m_notifications;
 }

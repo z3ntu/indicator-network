@@ -1,3 +1,10 @@
+indicator-network (0.5.1) UNRELEASED; urgency=low
+
+  * Add network manager secret agent.
+    * Interfaces with unity8's extended snap decisions.
+
+ -- Pete Woods <pete.woods@canonical.com>  Thu, 03 Oct 2013 13:53:39 +0100
+
 indicator-network (0.5.0+13.10.20130918-0ubuntu1) saucy; urgency=low
 
   [ Ted Gould ]

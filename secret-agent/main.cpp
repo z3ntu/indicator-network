@@ -43,7 +43,8 @@ int main(int argc, char *argv[]) {
 	signal(SIGINT, &exitQt);
 	signal(SIGTERM, &exitQt);
 
-	SecretAgent secretAgent(QDBusConnection::systemBus());
+	SecretAgent secretAgent(QDBusConnection::systemBus(),
+			QDBusConnection::sessionBus());
 
 	if (argc == 2 && QString("--print-address") == argv[1]) {
 		cout << QDBusConnection::systemBus().baseService().toStdString()

@@ -37,7 +37,6 @@ SecretRequest::SecretRequest(unsigned int requestId, SecretAgent &secretAgent,
 	// indicate to the notification-daemon, that we want to use snap-decisions
 	QVariantMap notificationHints;
 	notificationHints["x-canonical-snap-decisions"] = "true";
-	notificationHints["x-canonical-ext-snap-decisions"] = "true";
 	notificationHints["x-canonical-private-button-tint"] = "true";
 
 	QVariantMap menuModelActions;

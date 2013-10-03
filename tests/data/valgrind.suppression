@@ -27,6 +27,20 @@
 }
 
 ###############################
+# DBus
+###############################
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Param
+   epoll_ctl(event)
+   fun:epoll_ctl
+   obj:/bin/dbus-daemon
+   ...
+   fun:(below main)
+}
+
+###############################
 # GObject rules
 ###############################
 

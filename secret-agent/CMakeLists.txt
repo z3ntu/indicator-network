@@ -4,6 +4,7 @@ set(
 	SecretAgent.cpp
 	SecretAgentAdaptor.cpp
 	SecretRequest.cpp
+	gtk/PasswordMenu.cpp
 )
 
 qt5_add_dbus_adaptor(
@@ -20,6 +21,18 @@ qt5_add_dbus_interface(
 	AgentManagerInterface
 )
 
+set_source_files_properties(
+	"${DATA_DIR}/org.freedesktop.Notifications.xml"
+	PROPERTIES
+	INCLUDE "DBusTypes.h"
+)
+
+qt5_add_dbus_interface(
+	INDICATOR_SECRET_AGENT_SOURCES
+	"${DATA_DIR}/org.freedesktop.Notifications.xml"
+	NotificationsInterface
+)
+
 add_library(
 	indicator-secret-agent
 	STATIC
@@ -30,6 +43,11 @@ qt5_use_modules(
 	indicator-secret-agent
 	Core
 	DBus
+)
+
+target_link_libraries(
+	indicator-secret-agent
+	${GIO_LIBRARIES}
 )
 
 add_executable(

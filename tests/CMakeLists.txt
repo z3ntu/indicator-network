@@ -51,6 +51,7 @@ target_link_libraries(
 	indicator-secret-agent
 	${QTDBUSMOCK_LIBRARIES}
 	${QTDBUSTEST_LIBRARIES}
+	${QMENUMODEL_LIBRARIES}
 	${GTEST_LIBRARIES}
 	${GMOCK_LIBRARIES}
 )

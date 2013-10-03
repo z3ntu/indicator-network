@@ -16,21 +16,30 @@
  * Author: Pete Woods <pete.woods@canonical.com>
  */
 
-#ifndef DBUSTYPES_H_
-#define DBUSTYPES_H_
+#ifndef PASSWORDMENU_H_
+#define PASSWORDMENU_H_
 
-#include <QDBusMetaType>
-#include <QMap>
+#include <QString>
+#include <QScopedPointer>
 
-typedef QMap<QString, QVariantMap> QVariantDictMap;
-Q_DECLARE_METATYPE(QVariantDictMap)
+class PasswordMenuPriv;
 
-class DBusTypes {
+class PasswordMenu {
 public:
-	static void registerMetaTypes() {
-		qRegisterMetaType<QVariantDictMap>("QVariantDictMap");
-		qDBusRegisterMetaType<QVariantDictMap>();
-	}
+	PasswordMenu(unsigned int requestId);
+
+	virtual ~PasswordMenu();
+
+	const QString & busName() const;
+
+	const QString & password() const;
+
+	const QString & actionPath() const;
+
+	const QString & menuPath() const;
+
+protected:
+	QScopedPointer<PasswordMenuPriv> p;
 };
 
-#endif /* DBUSTYPES_H_ */
+#endif /* PASSWORDMENU_H_ */

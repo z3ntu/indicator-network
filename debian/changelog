@@ -1,3 +1,18 @@
+indicator-network (0.5.1+13.10.20131005-0ubuntu1) saucy; urgency=low
+
+  * Revert the revert!  Return to contents of 0.5.1+13.10.20131004-0ubuntu1 as
+    unity8 is now fixed.
+
+ -- Loïc Minier <loic.minier@ubuntu.com>  Sat, 05 Oct 2013 11:42:12 +0200
+
+indicator-network (0.5.1+13.10.20131004.1-0ubuntu1) saucy; urgency=low
+
+  * Revert 0.5.1+13.10.20131004-0ubuntu1; return to
+    0.5.0+13.10.20130918-0ubuntu1 as we're reverting unity8 and this required
+    the new unity8.
+
+ -- Loïc Minier <loic.minier@ubuntu.com>  Fri, 04 Oct 2013 21:16:17 +0200
+
 indicator-network (0.5.1+13.10.20131004-0ubuntu1) saucy; urgency=low
 
   [ Pete Woods ]

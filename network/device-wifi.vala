@@ -32,6 +32,7 @@ namespace Network.Device
 		private  NM.Client   client;
 		private  string      action_prefix;
 		private  bool        show_settings;
+		private  HashTable<string, NM.AccessPoint> aps = new HashTable<string, NM.AccessPoint>(str_hash, str_equal);
 
 		public WifiMenu (NM.Client client, DeviceWifi device, Menu global_menu, SimpleActionGroup actions, string action_prefix, bool show_settings)
 		{

@@ -62,7 +62,7 @@ namespace Network.Device
 
 			for (uint i = 0; i<aps.length; i++)
 			{
-				insert_ap (aps.get (i));
+				access_point_added_cb (device, aps.get (i));
 			}
 		}
 
@@ -90,14 +90,26 @@ namespace Network.Device
 			item.set_attribute ("action", "s",  activate_action_id);
 		}
 
-		private void access_point_added_cb (NM.DeviceWifi device, GLib.Object ap)
+		private void access_point_added_cb (NM.DeviceWifi device, GLib.Object user_data)
 		{
-			insert_ap ((AccessPoint)ap);
+			AccessPoint ap = (AccessPoint)user_data;
+			string ap_path = ap.get_path();
+
+			if (aps.lookup(ap_path) == null) {
+				aps.insert(ap_path, ap);
+				insert_ap (ap);
+			}
 		}
 
-		private void access_point_removed_cb (NM.DeviceWifi device, GLib.Object ap)
+		private void access_point_removed_cb (NM.DeviceWifi device, GLib.Object user_data)
 		{
-			remove_ap ((AccessPoint)ap);
+			AccessPoint ap = (AccessPoint)user_data;
+			string ap_path = ap.get_path();
+
+			if (aps.lookup(ap_path) == null) {
+				aps.remove(ap_path);
+				remove_ap (ap);
+			}
 		}
 
 		private void active_access_point_changed (GLib.Object obj, ParamSpec pspec)

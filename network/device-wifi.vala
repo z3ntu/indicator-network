@@ -155,7 +155,7 @@ namespace Network.Device
 
 
 			//Remove duplicate SSID
-			for (int i = 1; i < apsmenu.get_n_items(); i++)
+			for (int i = 0; i < apsmenu.get_n_items(); i++)
 			{
 				string path;
 
@@ -182,8 +182,7 @@ namespace Network.Device
 			//Find the right spot for the AP
 			var item = new MenuItem (null, null);
 			bind_ap_item (ap, item);
-			/* We need to start at 1 and end at -1 to avoid the toggle and the settings */
-			for (int i = 1; i < apsmenu.get_n_items() - 1; i++)
+			for (int i = 0; i < apsmenu.get_n_items(); i++)
 			{
 				string path;
 

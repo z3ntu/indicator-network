@@ -68,6 +68,11 @@ namespace Network.Device
 
 		~WifiMenu ()
 		{
+			/* Make sure to clean up! */
+			foreach (var ap in aps.get_values()) {
+				access_point_removed_cb(this.device, ap);
+			}
+
 			device.access_point_added.disconnect   (access_point_added_cb);
 			device.access_point_removed.disconnect (access_point_removed_cb);
 			device.notify.disconnect               (active_access_point_changed);

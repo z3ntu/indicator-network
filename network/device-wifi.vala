@@ -102,7 +102,7 @@ namespace Network.Device
 
 			if (aps.lookup(ap_path) == null) {
 				aps.insert(ap_path, ap);
-				insert_ap (ap);
+				insert_ap_item (ap);
 			}
 		}
 
@@ -113,7 +113,7 @@ namespace Network.Device
 
 			if (aps.lookup(ap_path) == null) {
 				aps.remove(ap_path);
-				remove_ap (ap);
+				remove_ap_item (ap);
 			}
 		}
 
@@ -144,7 +144,7 @@ namespace Network.Device
 		 * - Previously used APs are ordered by signal strength
 		 * - Unused APs are ordered by signal strength
 		 */
-		private void insert_ap (AccessPoint ap)
+		private void insert_ap_item (AccessPoint ap)
 		{
 			var rs = new NM.RemoteSettings (null);
 			SList <NM.Connection>? dev_conns = null;
@@ -262,7 +262,7 @@ namespace Network.Device
 			return ap_conns.length () > 0;
 		}
 
-		private void remove_ap (AccessPoint ap)
+		private void remove_ap_item (AccessPoint ap)
 		{
 			for (int i = 1; i < apsmenu.get_n_items(); i++)
 			{

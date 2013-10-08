@@ -23,5 +23,8 @@
 gboolean
 util_wrapper_is_empty_ssid (GByteArray * bytes)
 {
+	if (bytes == NULL)
+		return TRUE;
+
 	return nm_utils_is_empty_ssid(bytes->data, bytes->len);
 }

@@ -164,6 +164,9 @@ namespace Network.Device
 			if (ap == null)
 				return;
 
+			if (UtilWrapper.is_empty_ssid(ap.get_ssid ()))
+				return;
+
 			label = Utils.ssid_to_utf8(ap.get_ssid ());
 			if (label == null || label[0] == '\0')
 				return;

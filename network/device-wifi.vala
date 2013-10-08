@@ -95,6 +95,13 @@ namespace Network.Device
 			item.set_attribute ("action", "s",  activate_action_id);
 		}
 
+		private void access_point_ssid_cb (GLib.Object obj, GLib.ParamSpec pspec)
+		{
+			AccessPoint ap = (AccessPoint)obj;
+			remove_ap_item(ap);
+			insert_ap_item(ap);
+		}
+
 		private void access_point_added_cb (NM.DeviceWifi device, GLib.Object user_data)
 		{
 			AccessPoint ap = (AccessPoint)user_data;
@@ -103,6 +110,8 @@ namespace Network.Device
 			if (aps.lookup(ap_path) == null) {
 				aps.insert(ap_path, ap);
 				insert_ap_item (ap);
+
+				ap.notify["ssid"].connect(access_point_ssid_cb);
 			}
 		}
 
@@ -112,6 +121,7 @@ namespace Network.Device
 			string ap_path = ap.get_path();
 
 			if (aps.lookup(ap_path) == null) {
+				ap.notify["ssid"].disconnect(access_point_ssid_cb);
 				aps.remove(ap_path);
 				remove_ap_item (ap);
 			}

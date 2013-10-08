@@ -18,6 +18,7 @@
  */
 
 #include <glib.h>
+#include <NetworkManager/nm-utils.h>
 
 gboolean
 util_wrapper_is_empty_ssid (GByteArray * bytes)

@@ -159,8 +159,13 @@ namespace Network.Device
 			var rs = new NM.RemoteSettings (null);
 			SList <NM.Connection>? dev_conns = null;
 			bool has_connection = false;
+			string label;
 
 			if (ap == null)
+				return;
+
+			label = Utils.ssid_to_utf8(ap.get_ssid ());
+			if (label == null || label[0] == '\0')
 				return;
 
 			//If it is the active access point it always goes first

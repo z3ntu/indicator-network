@@ -515,6 +515,7 @@ namespace Network.Device
 	public class Wifi : Base {
 		private WifiMenu wifimenu;
 		private WifiActionManager wifiactionmanager;
+		private GLib.Settings settings;
 
 		public Wifi (NM.Client client, NM.DeviceWifi device, GLibLocal.ActionMuxer muxer, bool show_settings) {
 			GLib.Object(
@@ -523,6 +524,9 @@ namespace Network.Device
 				namespace: device.get_iface(),
 				muxer: muxer
 			);
+
+			settings = new GLib.Settings ("com.canonical.indicator.network");
+			device.set_autoconnect(settings.get_boolean("auto-join-previous"));
 
 			wifimenu = new WifiMenu(client, device, this._menu, actions, "indicator." + this.namespace + ".", show_settings);
 			wifiactionmanager = new WifiActionManager(actions, client, device);

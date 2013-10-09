@@ -541,7 +541,7 @@ namespace Network.Device
 		protected override void enable_device ()
 		{
 			client.wireless_set_enabled(true);
-			device.set_autoconnect(true);
+			device.set_autoconnect(settings.get_boolean("auto-join-previous"));
 		}
 	}
 }

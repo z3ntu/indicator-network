@@ -24,27 +24,36 @@ namespace Network
 {
 	private const string APPLICATION_ID  = "com.canonical.indicator.network";
 	private const string PHONE_MENU_PATH = "/com/canonical/indicator/network/phone";
+	private const string PHONE_WIFI_SETTINGS_MENU_PATH = "/com/canonical/indicator/network/phone_wifi_settings";
 	private const string DESKTOP_MENU_PATH = "/com/canonical/indicator/network/desktop";
 	private const string ACTION_GROUP_PATH = "/com/canonical/indicator/network";
 
 	internal class ProfileMenu {
-		public Menu root_menu;
+		public Menu root_menu = new Menu();
 		public MenuItem root_item;
-		public Menu shown_menu;
+		public Menu shown_menu = new Menu();
+
+		private MenuModel? pre_settings = null;
+		private MenuModel? post_settings = null;
 
 		private GLib.DBusConnection conn;
 		private uint export_id;
 
-		public ProfileMenu (GLib.DBusConnection conn, string path) throws GLib.Error {
-			root_menu = new Menu();
-			shown_menu = new Menu();
+		public ProfileMenu (GLib.DBusConnection conn, string path, bool has_root) throws GLib.Error {
+			Menu exported_menu;
 
-			root_item = new MenuItem.submenu (null, shown_menu as MenuModel);
-			root_item.set_attribute (GLib.Menu.ATTRIBUTE_ACTION, "s", "indicator.global.network-status");
-			root_item.set_attribute ("x-canonical-type", "s", "com.canonical.indicator.root");
-			root_menu.append_item (root_item);
+			if (has_root) {
+				root_item = new MenuItem.submenu (null, shown_menu as MenuModel);
+				root_item.set_attribute (GLib.Menu.ATTRIBUTE_ACTION, "s", "indicator.global.network-status");
+				root_item.set_attribute ("x-canonical-type", "s", "com.canonical.indicator.root");
+				root_menu.append_item (root_item);
 
-			export_id = conn.export_menu_model (path, root_menu);
+				exported_menu = root_menu;
+			} else {
+				exported_menu = shown_menu;
+			}
+
+			export_id = conn.export_menu_model (path, exported_menu);
 		}
 
 		~ProfileMenu () {
@@ -54,6 +63,10 @@ namespace Network
 		public void remove_device (string path) {
 			for (int i = 0; i < (shown_menu as MenuModel).get_n_items(); i++) {
 				var dev = (shown_menu as MenuModel).get_item_link(i, Menu.LINK_SECTION) as Device.Base;
+
+				if (dev == null) {
+					continue;
+				}
 
 				if (dev.device.get_path() == path) {
 					shown_menu.remove(i);
@@ -67,6 +80,10 @@ namespace Network
 
 			for (int i = 0; i < (shown_menu as MenuModel).get_n_items(); i++) {
 				var dev = (shown_menu as MenuModel).get_item_link(i, Menu.LINK_SECTION) as Device.Base;
+
+				if (dev == null) {
+					continue;
+				}
 
 				if (dev.device.get_path() == path) {
 					founddev = dev;
@@ -96,11 +113,23 @@ namespace Network
 		/* Figures out where the device needs to go and inserts it in
 		   the proper location */
 		public void append_device (Device.Base device) {
+			/* Handle the empty case right away, no reason to mess up code later on */
+			if (shown_menu.get_n_items() == 0) {
+				shown_menu.append_section(null, device);
+				return;
+			}
+
 			int i;
 			uint insort = dev2sort(device);
-
-			for (i = 0; i < shown_menu.get_n_items(); i++) {
+			
+			for (i = (pre_settings == null ? 0 : 1);
+					i < shown_menu.get_n_items(); i++) {
 				var imenu = shown_menu.get_item_link(i, Menu.LINK_SECTION) as Device.Base;
+
+				if (imenu == null) {
+					continue;
+				}
+
 				var isort = dev2sort(imenu);
 
 				if (isort > insort) {
@@ -110,8 +139,34 @@ namespace Network
 			}
 
 			if (i == shown_menu.get_n_items()) {
-				shown_menu.append_section(null, device);
+				if (post_settings == null) {
+					shown_menu.append_section(null, device);
+				} else {
+					shown_menu.insert_section(shown_menu.get_n_items() - 1, null, device);
+				}
 			}
+		}
+
+		/* A settings section to put before all the devices */
+		public void set_pre_settings (MenuModel settings) {
+			if (pre_settings != null) {
+				warning("Already have a pre-setting menus, can't have two!");
+				return;
+			}
+
+			pre_settings = settings;
+			shown_menu.insert_section(0, null, settings);
+		}
+
+		/* A settings section to put after all the devices */
+		public void set_post_settings (MenuModel settings) {
+			if (post_settings != null) {
+				warning("Already have a post-setting menus, can't have two!");
+				return;
+			}
+
+			post_settings = settings;
+			shown_menu.append_section(null, settings);
 		}
 	}
 
@@ -119,6 +174,7 @@ namespace Network
 	{
 		private ProfileMenu     desktop;
 		private ProfileMenu     phone;
+		private ProfileMenu     phone_wifi_settings;
 
 		private NM.Client       client;
 		private ActionManager   am;
@@ -139,8 +195,9 @@ namespace Network
 
 				conn.export_action_group (ACTION_GROUP_PATH, muxer as ActionGroup);
 
-				desktop = new ProfileMenu(conn, DESKTOP_MENU_PATH);
-				phone = new ProfileMenu(conn, PHONE_MENU_PATH);
+				desktop = new ProfileMenu(conn, DESKTOP_MENU_PATH, true);
+				phone = new ProfileMenu(conn, PHONE_MENU_PATH, true);
+				phone_wifi_settings = new ProfileMenu(conn, PHONE_WIFI_SETTINGS_MENU_PATH, false);
 
 				Bus.own_name_on_connection(conn, APPLICATION_ID, BusNameOwnerFlags.NONE, null, ((conn, name) => { error("Unable to get D-Bus bus name"); }));
 			}
@@ -152,6 +209,20 @@ namespace Network
 			{
 				return;
 			}
+
+			/* Put an airplane mode setting at the top of the desktop and phone
+			   menus */
+			/* Airplane mode is disabled for Phone 1.0 as there's no backend.
+			   commenting out to be reenabled after 1.0 ships */
+			if (false) {
+				var airplane = new Network.Settings.Airplane(muxer);
+				desktop.set_pre_settings(airplane);
+				phone.set_pre_settings(airplane);
+			}
+
+			/* Add some items at the end of the settings menu */
+			var wifisettings = new Network.Settings.Wifi(muxer);
+			phone_wifi_settings.set_post_settings(wifisettings);
 
 			var devices = client.get_devices ();
 
@@ -177,9 +248,13 @@ namespace Network
 			switch (device.get_device_type ())
 			{
 				case NM.DeviceType.WIFI:
-					var wifidev = new Device.Wifi(this.client, device as NM.DeviceWifi, this.muxer);
+					var wifidev = new Device.Wifi(this.client, device as NM.DeviceWifi, this.muxer, true);
 					desktop.append_device(wifidev);
 					phone.append_device(wifidev);
+
+					var wifisettingsdev = new Device.Wifi(this.client, device as NM.DeviceWifi, this.muxer, false);
+					phone_wifi_settings.append_device(wifisettingsdev);
+
 					break;
 				case NM.DeviceType.MODEM:
 					var mobiledesktopdev = new Device.Mobile(this.client, device as NM.DeviceModem, this.muxer, true, conn);

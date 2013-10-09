@@ -33,6 +33,9 @@ Package: indicator-network
 Architecture: any
 Depends: ${misc:Depends},
          ${shlibs:Depends},
+# For apport hook
+         python3-xdg,
+         unity8 (>= 7.82),
 Conflicts: chewie,
            indicators-client-plugin-network,
 Description: Systems settings menu service - Network indicator

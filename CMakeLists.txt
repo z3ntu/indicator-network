@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 2.8.9)
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" "${CMAKE_MODULE_PATH}")
 
 set(PACKAGE ${CMAKE_PROJECT_NAME})
-set(GETTEXT_PACKAGE ${CMAKE_PROJECT_NAME})
+set(GETTEXT_PACKAGE indicator-network)
 set(LOCALE_DIR "${CMAKE_INSTALL_FULL_DATADIR}/locale")
 
 add_definitions( -DGETTEXT_PACKAGE="${GETTEXT_PACKAGE}" )
@@ -13,6 +13,7 @@ find_package(PkgConfig REQUIRED)
 include(GNUInstallDirs)
 include(Coverage)
 include(UseVala)
+include(UseGSettings)
 
 # Workaround for libexecdir on debian
 if (EXISTS "/etc/debian_version")
@@ -67,6 +68,9 @@ include_directories(${QTDBUSMOCK_INCLUDE_DIRS})
 
 pkg_check_modules(QMENUMODEL REQUIRED qmenumodel REQUIRED)
 include_directories(${QMENUMODEL_INCLUDE_DIRS})
+
+pkg_check_modules(GIO REQUIRED gio-2.0>=${GLIB_REQUIRED_VERSION})
+include_directories(${GIO_INCLUDE_DIRS})
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)

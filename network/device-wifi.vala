@@ -451,6 +451,8 @@ namespace Network.Device
 
 		private void ap_activated (SimpleAction ac, Variant? val)
 		{
+			/* If we're the selected access point, and we get clicked, then the user
+			   is trying to disconnect from that AP */
 			if (ac.state.get_boolean () == true &&
 				wifidev.active_access_point != null &&
 				wifidev.active_access_point.get_path () == ac.name)
@@ -459,6 +461,7 @@ namespace Network.Device
 				return;
 			}
 
+			/* If we're the active access point, we should just stay that way */
 			if (wifidev.active_access_point != null &&
 				wifidev.active_access_point.get_path () == ac.name)
 				return;
@@ -469,6 +472,24 @@ namespace Network.Device
 				return;
 			}
 
+			/* First we'll go ahead and mark all the other APs as inactive in the
+			   UI, it'll take a bit for NM to disconnect and reconnect to the other
+			   one which is confusing for users. */
+			foreach (var action_name in actions.list_actions()) {
+				if (action_name == ac.name)
+					continue;
+				if (!Variant.is_object_path(action_name))
+					continue;
+
+				var actionap = wifidev.get_access_point_by_path(action_name);
+				if (actionap == null)
+					continue;
+
+				var action = actions.lookup_action(action_name);
+				action.change_state(new Variant.boolean(false));
+			}
+
+			/* Now setup the connection and start connecting with this AP */
 			var conns = rs.list_connections ();
 			if (conns == null)
 			{
@@ -491,6 +512,7 @@ namespace Network.Device
 			}
 
 			client.activate_connection (ap_conns.data, wifidev, ac.name, null);
+			return;
 		}
 
 		private void add_and_activate_ap (string ap_path)

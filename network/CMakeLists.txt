@@ -16,6 +16,7 @@ vala_init(libnetwork
   CUSTOM_VAPIS
     "${CMAKE_CURRENT_SOURCE_DIR}/action-muxer.vapi"
     "${CMAKE_CURRENT_SOURCE_DIR}/url-dispatcher.vapi"
+    "${CMAKE_CURRENT_SOURCE_DIR}/util-wrapper.vapi"
 )
 
 vala_add(libnetwork
@@ -103,6 +104,7 @@ set(
   ${LIBNETWORK_VALA_SOURCES}
   ${LIBNETWORK_VALA_C}
   action-muxer.c
+  util-wrapper.c
 )
 
 add_library(
@@ -130,6 +132,7 @@ vala_init(network-service
   CUSTOM_VAPIS
     "${CMAKE_CURRENT_SOURCE_DIR}/config.vapi"
     "${CMAKE_CURRENT_SOURCE_DIR}/action-muxer.vapi"
+    "${CMAKE_CURRENT_SOURCE_DIR}/util-wrapper.vapi"
   OPTIONS
     --vapidir=.
 )

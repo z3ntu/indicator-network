@@ -199,7 +199,7 @@ namespace Network
 
       // create and show the notification
       var notification = new Notification(title, body, "");
-      notification.set_hint_string ("x-canonical-ext-snap-decisions", "true");
+      notification.set_hint_string ("x-canonical-snap-decisions", "true");
       notification.set_hint ("x-canonical-private-menu-model", menu_model_paths.end ());
 
       CurrentNotification new_notification = CurrentNotification() {

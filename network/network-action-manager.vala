@@ -78,7 +78,7 @@ namespace Network
 
 			var settings_action = new SimpleAction("settings", VariantType.STRING);
 			settings_action.activate.connect((value) => {
-				URLDispatcher.send("settings://system/" + value.get_string(), (url, success) => {
+				URLDispatcher.send("settings:///system/" + value.get_string(), (url, success) => {
 					if (!success) {
 						warning(@"Unable to activate settings URL: $url");
 					}
@@ -381,6 +381,7 @@ namespace Network
 					icons.append_val(icon);
 			}
 
+			params.insert("title", new Variant.string(_("Network")));
 			params.insert("accessibility-desc", new Variant.string(a11ydesc));
 			params.insert("visible", new Variant.boolean(true));
 

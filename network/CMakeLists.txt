@@ -41,6 +41,9 @@ vala_add(libnetwork
     device-ethernet
     device-mobile
     device-wifi
+    settings-base
+    settings-wifi
+    settings-airplane
     network-action-manager
     mobile-sim-manager
 )
@@ -73,6 +76,22 @@ vala_add(libnetwork
   device-wifi.vala
   DEPENDS
     device-base
+)
+
+vala_add(libnetwork
+  settings-base.vala
+)
+
+vala_add(libnetwork
+  settings-airplane.vala
+  DEPENDS
+    settings-base
+)
+
+vala_add(libnetwork
+  settings-wifi.vala
+  DEPENDS
+    settings-base
 )
 
 vala_finish(libnetwork

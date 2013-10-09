@@ -41,7 +41,8 @@ namespace Network.Settings
 			_menu.append_item(joinitem);
 
 			var promptitem = new MenuItem(_("Prompt when not connected"), "indicator.wifi-settings.prompt-on-new-wifi-ap");
-			_menu.append_item(promptitem);
+			/* Commented out for Phone V1 that doesn't have this feature */
+			/* _menu.append_item(promptitem); */
 
 			var captionitem = new MenuItem(_("Lists available wi-fi networks, if any, when you're using cellular data."), null);
 			_menu.append_item(captionitem);

@@ -526,6 +526,11 @@ namespace Network.Device
 			);
 
 			settings = new GLib.Settings ("com.canonical.indicator.network");
+			settings.changed["auto-join-previous"].connect((k) => {
+				if (client.wireless_get_enabled()) {
+					device.set_autoconnect(settings.get_boolean("auto-join-previous"));
+				}
+			});
 			device.set_autoconnect(settings.get_boolean("auto-join-previous"));
 
 			wifimenu = new WifiMenu(client, device, this._menu, actions, "indicator." + this.namespace + ".", show_settings);

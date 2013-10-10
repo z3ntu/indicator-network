@@ -263,7 +263,7 @@ namespace Network
 				cell_strength = value.get_byte();
 				strength_icon(ref last_cell_strength, cell_strength);
 				changed = (old != cell_strength);
-				debug(@"Cell Strength: $(cell_strength)");
+				/* debug(@"Cell Strength: $(cell_strength)"); */
 				break;
 			}
 			case "Status": {

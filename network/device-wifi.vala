@@ -309,6 +309,7 @@ namespace Network.Device
 			this.client  = client;
 			this.actions = actions;
 			this.wifidev = dev;
+			this.rs = new NM.RemoteSettings (null);
 
 			/* This object should be disposed by ActionManager on device removal
 			 * but we still disconnect signals if that signal is emmited before

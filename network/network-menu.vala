@@ -179,6 +179,7 @@ namespace Network
 		private NM.Client       client;
 		private ActionManager   am;
 		private GLibLocal.ActionMuxer muxer = new GLibLocal.ActionMuxer();
+		private GLib.DBusConnection conn;
 
 		public NetworkMenu ()
 		{
@@ -190,7 +191,7 @@ namespace Network
 
 			try
 			{
-				var conn = Bus.get_sync (BusType.SESSION, null);
+				conn = Bus.get_sync (BusType.SESSION, null);
 
 				conn.export_action_group (ACTION_GROUP_PATH, muxer as ActionGroup);
 
@@ -236,7 +237,7 @@ namespace Network
 		private void add_device (NM.Device device)
 		{
 			Device.Base? founddev = null;
-			
+
 			founddev = desktop.find_device(device.get_path());
 			if (founddev != null) return;
 
@@ -256,9 +257,9 @@ namespace Network
 
 					break;
 				case NM.DeviceType.MODEM:
-					var mobiledesktopdev = new Device.Mobile(this.client, device as NM.DeviceModem, this.muxer, true);
+					var mobiledesktopdev = new Device.Mobile(this.client, device as NM.DeviceModem, this.muxer, true, conn);
 					desktop.append_device(mobiledesktopdev);
-					var mobilephonedev = new Device.Mobile(this.client, device as NM.DeviceModem, this.muxer, false);
+					var mobilephonedev = new Device.Mobile(this.client, device as NM.DeviceModem, this.muxer, false, conn);
 					phone.append_device(mobilephonedev);
 					break;
 				case NM.DeviceType.ETHERNET:

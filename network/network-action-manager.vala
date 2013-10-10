@@ -112,7 +112,7 @@ namespace Network
 			/* Check to see if the modem supports voice */
 			try {
 				oFono.Modem? ofono_modem = watched_modems.lookup(modemmaybe.get_iface());
-				
+
 				if (ofono_modem == null) {
 					ofono_modem = Bus.get_proxy_sync (BusType.SYSTEM, "org.ofono", modemmaybe.get_iface());
 
@@ -128,15 +128,20 @@ namespace Network
 				var modem_properties = ofono_modem.get_properties();
 				var interfaces = modem_properties.lookup("Interfaces");
 
-				if (!variant_contains(interfaces, "org.ofono.VoiceCallManager")) {
+				if (interfaces == null) {
+					debug(@"Modem '$(modemmaybe.get_iface())' doesn't have voice support, no interfaces");
+					return;
+				}
+
+				if (!Utils.variant_contains(interfaces, "org.ofono.VoiceCallManager")) {
 					debug(@"Modem '$(modemmaybe.get_iface())' doesn't have voice support only: $(interfaces.print(false))");
 					return;
 				}
-				if (!variant_contains(interfaces, "org.ofono.SimManager")) {
+				if (!Utils.variant_contains(interfaces, "org.ofono.SimManager")) {
 					debug(@"Modem '$(modemmaybe.get_iface())' doesn't have SIM management support only: $(interfaces.print(false))");
 					return;
 				}
-				if (!variant_contains(interfaces, "org.ofono.NetworkRegistration")) {
+				if (!Utils.variant_contains(interfaces, "org.ofono.NetworkRegistration")) {
 					debug(@"Modem '$(modemmaybe.get_iface())' doesn't have Network Registration support only: $(interfaces.print(false))");
 					return;
 				}
@@ -297,24 +302,6 @@ namespace Network
 
 			warning(@"Technology type $tech that we don't understand.  Calling it 'pre-edge'");
 			return "pre-edge";
-		}
-
-		private bool variant_contains (Variant variant, string needle)
-		{
-			if (variant.is_of_type(VariantType.VARIANT))
-				return variant_contains(variant.get_variant(), needle);
-
-			if (!variant.is_container())
-				return false;
-
-			Variant item;
-			var iter = new VariantIter(variant);
-			for (item = iter.next_value(); item != null; item = iter.next_value()) {
-				if (item.get_string() == needle)
-					return true;
-			}
-
-			return false;
 		}
 
 		private Variant? icon_serialize (string icon_name)
@@ -552,13 +539,13 @@ namespace Network
 							var dev = act_dev as NM.DeviceWifi;
 
 							dev.notify["active-access-point"].disconnect (active_access_point_changed);
-	
+
 							if (act_ap != null)
 							{
 								act_ap.notify["strength"].disconnect (active_connection_strength_changed);
 								act_ap = null;
 							}
-	
+
 							break;
 						default:
 							break;
@@ -572,15 +559,25 @@ namespace Network
 
 			act_conn = get_active_connection ();
 			if (act_conn != null) {
+				act_dev = get_device_from_connection (act_conn);
+			}
+
+			/* If the connection doesn't have a device yet, let's not switch
+			   to looking at it */
+			if (act_dev == null) {
+				act_conn = null;
+			}
+
+			/* If we have a device, we have a connection, let's make this our
+			   active connection */
+			if (act_dev != null) {
 				act_conn.notify["state"].connect (active_connections_changed);
 				act_conn.notify["default"].connect (active_connections_changed);
 				act_conn.notify["default6"].connect (active_connections_changed);
 
-				act_dev = get_device_from_connection (act_conn);
-
 				debug(@"Active connection changed to: $(act_dev.get_iface())");
 
-				if (act_dev != null && act_dev.get_device_type() == NM.DeviceType.WIFI) {
+				if (act_dev.get_device_type() == NM.DeviceType.WIFI) {
 					act_dev.notify["active-access-point"].connect (active_access_point_changed);
 					active_access_point_changed(null, null);
 				}

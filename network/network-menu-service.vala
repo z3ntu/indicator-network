@@ -19,6 +19,7 @@
  */
 
 using Config;
+using Notify;
 
 public static int main (string[] args)
 {
@@ -32,10 +33,10 @@ public static int main (string[] args)
 
 	GLib.Unix.signal_add(GLib.ProcessSignal.TERM, () => {
 		debug("Recieved SIGTERM");
-		mainloop.quit();	
+		mainloop.quit();
 		return false;
 	});
-
+	Notify.init("indicator-network");
 	var menu = new Network.NetworkMenu ();
 	mainloop.run ();
 	return 0;

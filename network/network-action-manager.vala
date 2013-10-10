@@ -577,15 +577,25 @@ namespace Network
 
 			act_conn = get_active_connection ();
 			if (act_conn != null) {
+				act_dev = get_device_from_connection (act_conn);
+			}
+
+			/* If the connection doesn't have a device yet, let's not switch
+			   to looking at it */
+			if (act_dev == null) {
+				act_conn = null;
+			}
+
+			/* If we have a device, we have a connection, let's make this our
+			   active connection */
+			if (act_dev != null) {
 				act_conn.notify["state"].connect (active_connections_changed);
 				act_conn.notify["default"].connect (active_connections_changed);
 				act_conn.notify["default6"].connect (active_connections_changed);
 
-				act_dev = get_device_from_connection (act_conn);
-
 				debug(@"Active connection changed to: $(act_dev.get_iface())");
 
-				if (act_dev != null && act_dev.get_device_type() == NM.DeviceType.WIFI) {
+				if (act_dev.get_device_type() == NM.DeviceType.WIFI) {
 					act_dev.notify["active-access-point"].connect (active_access_point_changed);
 					active_access_point_changed(null, null);
 				}

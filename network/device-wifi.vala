@@ -326,13 +326,6 @@ namespace Network.Device
 			this.actions = actions;
 			this.wifidev = dev;
 
-			rs = new NM.RemoteSettings (wifidev.get_connection ());
-			rs.connections_read.connect (bootstrap_actions);
-		}
-
-
-		private  void bootstrap_actions ()
-		{
 			/* This object should be disposed by ActionManager on device removal
 			 * but we still disconnect signals if that signal is emmited before
 			 * this object was disposed
@@ -346,11 +339,9 @@ namespace Network.Device
 
 
 			var aps = wifidev.get_access_points ();
-			if (aps == null)
-				return;
-
-			for (int i = 0; i < aps.length; i++)
-				insert_ap (aps.get(i));
+			if (aps != null)
+				for (int i = 0; i < aps.length; i++)
+					insert_ap (aps.get(i));
 		}
 
 		~WifiActionManager ()
@@ -358,7 +349,6 @@ namespace Network.Device
 			remove_device (client, wifidev);
 
 			client.device_removed.disconnect (remove_device);
-			rs.connections_read.disconnect          (bootstrap_actions);
 		}
 
 		private void remove_device (NM.Client client, NM.Device device)

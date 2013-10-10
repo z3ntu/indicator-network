@@ -210,7 +210,7 @@ namespace Network.Device
 					if (i_ap.get_strength () >= ap.get_strength ())
 						return;
 
-					remove_item (i, i_ap);
+					apsmenu.remove (i);
 					continue;
 				}
 			}
@@ -264,7 +264,7 @@ namespace Network.Device
 					continue;
 				if (path != ap.get_path ())
 					continue;
-				remove_item (i, ap);
+				apsmenu.remove (i);
 				var item = new MenuItem (null, null);
 				bind_ap_item (ap, item);
 				apsmenu.append_item (item);
@@ -291,24 +291,10 @@ namespace Network.Device
 
 				if (path == ap.get_path ())
 				{
-					remove_item (i, ap);
+					apsmenu.remove (i);
 					return;
 				}
 			}
-		}
-
-		private void remove_item (int index, AccessPoint ap)
-		{
-			string strength_action_id;
-			string activate_action_id;
-
-			if (apsmenu.get_item_attribute (index, "x-canonical-wifi-ap-strength-action", "s", out strength_action_id))
-				actions.remove (strength_action_id.substring((long)(action_prefix).size(), -1));
-			if (apsmenu.get_item_attribute (index, "action", "s", out activate_action_id))
-				actions.remove (activate_action_id.substring((long)(action_prefix).size(), -1));
-
-			apsmenu.remove (index);
-			//TODO: Check if removed dups need to be added
 		}
 	}
 
@@ -336,7 +322,6 @@ namespace Network.Device
 			wifidev.access_point_removed.connect (access_point_removed_cb);
 			wifidev.notify.connect               (active_access_point_changed);
 			wifidev.state_changed.connect        (device_state_changed_cb);
-
 
 			var aps = wifidev.get_access_points ();
 			if (aps != null)

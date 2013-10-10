@@ -112,7 +112,7 @@ namespace Network
 			/* Check to see if the modem supports voice */
 			try {
 				oFono.Modem? ofono_modem = watched_modems.lookup(modemmaybe.get_iface());
-				
+
 				if (ofono_modem == null) {
 					ofono_modem = Bus.get_proxy_sync (BusType.SYSTEM, "org.ofono", modemmaybe.get_iface());
 
@@ -133,15 +133,15 @@ namespace Network
 					return;
 				}
 
-				if (!variant_contains(interfaces, "org.ofono.VoiceCallManager")) {
+				if (!Utils.variant_contains(interfaces, "org.ofono.VoiceCallManager")) {
 					debug(@"Modem '$(modemmaybe.get_iface())' doesn't have voice support only: $(interfaces.print(false))");
 					return;
 				}
-				if (!variant_contains(interfaces, "org.ofono.SimManager")) {
+				if (!Utils.variant_contains(interfaces, "org.ofono.SimManager")) {
 					debug(@"Modem '$(modemmaybe.get_iface())' doesn't have SIM management support only: $(interfaces.print(false))");
 					return;
 				}
-				if (!variant_contains(interfaces, "org.ofono.NetworkRegistration")) {
+				if (!Utils.variant_contains(interfaces, "org.ofono.NetworkRegistration")) {
 					debug(@"Modem '$(modemmaybe.get_iface())' doesn't have Network Registration support only: $(interfaces.print(false))");
 					return;
 				}
@@ -302,24 +302,6 @@ namespace Network
 
 			warning(@"Technology type $tech that we don't understand.  Calling it 'pre-edge'");
 			return "pre-edge";
-		}
-
-		private bool variant_contains (Variant variant, string needle)
-		{
-			if (variant.is_of_type(VariantType.VARIANT))
-				return variant_contains(variant.get_variant(), needle);
-
-			if (!variant.is_container())
-				return false;
-
-			Variant item;
-			var iter = new VariantIter(variant);
-			for (item = iter.next_value(); item != null; item = iter.next_value()) {
-				if (item.get_string() == needle)
-					return true;
-			}
-
-			return false;
 		}
 
 		private Variant? icon_serialize (string icon_name)
@@ -557,13 +539,13 @@ namespace Network
 							var dev = act_dev as NM.DeviceWifi;
 
 							dev.notify["active-access-point"].disconnect (active_access_point_changed);
-	
+
 							if (act_ap != null)
 							{
 								act_ap.notify["strength"].disconnect (active_connection_strength_changed);
 								act_ap = null;
 							}
-	
+
 							break;
 						default:
 							break;

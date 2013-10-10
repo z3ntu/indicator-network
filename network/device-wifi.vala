@@ -535,6 +535,7 @@ namespace Network.Device
 	public class Wifi : Base {
 		private WifiMenu wifimenu;
 		private WifiActionManager wifiactionmanager;
+		private GLib.Settings settings;
 
 		public Wifi (NM.Client client, NM.DeviceWifi device, GLibLocal.ActionMuxer muxer, bool show_settings) {
 			GLib.Object(
@@ -543,6 +544,14 @@ namespace Network.Device
 				namespace: device.get_iface(),
 				muxer: muxer
 			);
+
+			settings = new GLib.Settings ("com.canonical.indicator.network");
+			settings.changed["auto-join-previous"].connect((k) => {
+				if (client.wireless_get_enabled()) {
+					device.set_autoconnect(settings.get_boolean("auto-join-previous"));
+				}
+			});
+			device.set_autoconnect(settings.get_boolean("auto-join-previous"));
 
 			wifimenu = new WifiMenu(client, device, this._menu, "indicator." + this.namespace + ".", show_settings);
 			wifiactionmanager = new WifiActionManager(actions, client, device);
@@ -557,7 +566,7 @@ namespace Network.Device
 		protected override void enable_device ()
 		{
 			client.wireless_set_enabled(true);
-			device.set_autoconnect(true);
+			device.set_autoconnect(settings.get_boolean("auto-join-previous"));
 		}
 	}
 }

@@ -28,16 +28,14 @@ namespace Network.Device
 		private  MenuItem    device_item;
 		private  MenuItem    settings_item;
 		public   DeviceWifi  device;
-		private  SimpleActionGroup actions;
 		private  NM.Client   client;
 		private  string      action_prefix;
 		private  bool        show_settings;
 		private  HashTable<string, NM.AccessPoint> aps = new HashTable<string, NM.AccessPoint>(str_hash, str_equal);
 
-		public WifiMenu (NM.Client client, DeviceWifi device, Menu global_menu, SimpleActionGroup actions, string action_prefix, bool show_settings)
+		public WifiMenu (NM.Client client, DeviceWifi device, Menu global_menu, string action_prefix, bool show_settings)
 		{
 			this.apsmenu = global_menu;
-			this.actions = actions;
 			this.device = device;
 			this.client = client;
 			this.action_prefix = action_prefix;
@@ -556,7 +554,7 @@ namespace Network.Device
 				muxer: muxer
 			);
 
-			wifimenu = new WifiMenu(client, device, this._menu, actions, "indicator." + this.namespace + ".", show_settings);
+			wifimenu = new WifiMenu(client, device, this._menu, "indicator." + this.namespace + ".", show_settings);
 			wifiactionmanager = new WifiActionManager(actions, client, device);
 		}
 

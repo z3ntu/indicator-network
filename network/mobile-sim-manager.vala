@@ -252,6 +252,11 @@ namespace Network
         var modem_properties = ofono_modem.get_properties();
         var interfaces = modem_properties.lookup("Interfaces");
 
+        if (interfaces == null) {
+          debug(@"Modem '$(device.get_iface())' doesn't have voice support, no interfaces");
+          return;
+        }
+
         if (!Utils.variant_contains(interfaces, "org.ofono.SimManager")) {
           debug(@"Modem '$(device.get_iface())' doesn't have SIM management support only: $(interfaces.print(false))");
           return;

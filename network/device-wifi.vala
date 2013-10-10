@@ -318,7 +318,7 @@ namespace Network.Device
 
 			wifidev.access_point_added.connect   (access_point_added_cb);
 			wifidev.access_point_removed.connect (access_point_removed_cb);
-			wifidev.notify.connect               (active_access_point_changed);
+			wifidev.notify["active-access-point"].connect (active_access_point_changed);
 			wifidev.state_changed.connect        (device_state_changed_cb);
 
 			var aps = wifidev.get_access_points ();
@@ -338,7 +338,7 @@ namespace Network.Device
 		{
 			wifidev.access_point_added.disconnect (access_point_added_cb);
 			wifidev.access_point_removed.disconnect (access_point_removed_cb);
-			wifidev.notify.disconnect (active_access_point_changed);
+			wifidev.notify["active-access-point"].disconnect (active_access_point_changed);
 			wifidev.state_changed.disconnect (device_state_changed_cb);
 		}
 
@@ -378,8 +378,6 @@ namespace Network.Device
 		private void active_access_point_changed (GLib.Object obj, ParamSpec pspec)
 		{
 			string? active_ap = null;
-			if (pspec.get_name () != "active-access-point")
-				return;
 
 			var aps = wifidev.get_access_points ();
 			if (aps == null)

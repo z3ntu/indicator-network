@@ -580,6 +580,14 @@ namespace Network
 				act_dev = get_device_from_connection (act_conn);
 			}
 
+			/* If the connection doesn't have a device yet, let's not switch
+			   to looking at it */
+			if (act_dev == null) {
+				act_conn = null;
+			}
+
+			/* If we have a device, we have a connection, let's make this our
+			   active connection */
 			if (act_dev != null) {
 				act_conn.notify["state"].connect (active_connections_changed);
 				act_conn.notify["default"].connect (active_connections_changed);
@@ -591,8 +599,6 @@ namespace Network
 					act_dev.notify["active-access-point"].connect (active_access_point_changed);
 					active_access_point_changed(null, null);
 				}
-			} else {
-				act_conn = null;
 			}
 
 			conn_status.set_state(build_state());

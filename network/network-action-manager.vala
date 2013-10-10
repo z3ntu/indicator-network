@@ -128,6 +128,11 @@ namespace Network
 				var modem_properties = ofono_modem.get_properties();
 				var interfaces = modem_properties.lookup("Interfaces");
 
+				if (interfaces == null) {
+					debug(@"Modem '$(modemmaybe.get_iface())' doesn't have voice support, no interfaces");
+					return;
+				}
+
 				if (!variant_contains(interfaces, "org.ofono.VoiceCallManager")) {
 					debug(@"Modem '$(modemmaybe.get_iface())' doesn't have voice support only: $(interfaces.print(false))");
 					return;

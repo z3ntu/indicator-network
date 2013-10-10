@@ -32,6 +32,7 @@ namespace Network.Device
 		private  NM.Client   client;
 		private  string      action_prefix;
 		private  bool        show_settings;
+		private  HashTable<string, NM.AccessPoint> aps = new HashTable<string, NM.AccessPoint>(str_hash, str_equal);
 
 		public WifiMenu (NM.Client client, DeviceWifi device, Menu global_menu, SimpleActionGroup actions, string action_prefix, bool show_settings)
 		{
@@ -61,12 +62,17 @@ namespace Network.Device
 
 			for (uint i = 0; i<aps.length; i++)
 			{
-				insert_ap (aps.get (i));
+				access_point_added_cb (device, aps.get (i));
 			}
 		}
 
 		~WifiMenu ()
 		{
+			/* Make sure to clean up! */
+			foreach (var ap in aps.get_values()) {
+				access_point_removed_cb(this.device, ap);
+			}
+
 			device.access_point_added.disconnect   (access_point_added_cb);
 			device.access_point_removed.disconnect (access_point_removed_cb);
 			device.notify.disconnect               (active_access_point_changed);
@@ -89,14 +95,36 @@ namespace Network.Device
 			item.set_attribute ("action", "s",  activate_action_id);
 		}
 
-		private void access_point_added_cb (NM.DeviceWifi device, GLib.Object ap)
+		private void access_point_ssid_cb (GLib.Object obj, GLib.ParamSpec pspec)
 		{
-			insert_ap ((AccessPoint)ap);
+			AccessPoint ap = (AccessPoint)obj;
+			remove_ap_item(ap);
+			insert_ap_item(ap);
 		}
 
-		private void access_point_removed_cb (NM.DeviceWifi device, GLib.Object ap)
+		private void access_point_added_cb (NM.DeviceWifi device, GLib.Object user_data)
 		{
-			remove_ap ((AccessPoint)ap);
+			AccessPoint ap = (AccessPoint)user_data;
+			string ap_path = ap.get_path();
+
+			if (aps.lookup(ap_path) == null) {
+				aps.insert(ap_path, ap);
+				insert_ap_item (ap);
+
+				ap.notify["ssid"].connect(access_point_ssid_cb);
+			}
+		}
+
+		private void access_point_removed_cb (NM.DeviceWifi device, GLib.Object user_data)
+		{
+			AccessPoint ap = (AccessPoint)user_data;
+			string ap_path = ap.get_path();
+
+			if (aps.lookup(ap_path) == null) {
+				ap.notify["ssid"].disconnect(access_point_ssid_cb);
+				aps.remove(ap_path);
+				remove_ap_item (ap);
+			}
 		}
 
 		private void active_access_point_changed (GLib.Object obj, ParamSpec pspec)
@@ -126,13 +154,21 @@ namespace Network.Device
 		 * - Previously used APs are ordered by signal strength
 		 * - Unused APs are ordered by signal strength
 		 */
-		private void insert_ap (AccessPoint ap)
+		private void insert_ap_item (AccessPoint ap)
 		{
 			var rs = new NM.RemoteSettings (null);
 			SList <NM.Connection>? dev_conns = null;
 			bool has_connection = false;
+			string label;
 
 			if (ap == null)
+				return;
+
+			if (UtilWrapper.is_empty_ssid(ap.get_ssid ()))
+				return;
+
+			label = Utils.ssid_to_utf8(ap.get_ssid ());
+			if (label == null || label[0] == '\0')
 				return;
 
 			//If it is the active access point it always goes first
@@ -155,7 +191,7 @@ namespace Network.Device
 
 
 			//Remove duplicate SSID
-			for (int i = 1; i < apsmenu.get_n_items(); i++)
+			for (int i = 0; i < apsmenu.get_n_items(); i++)
 			{
 				string path;
 
@@ -182,8 +218,7 @@ namespace Network.Device
 			//Find the right spot for the AP
 			var item = new MenuItem (null, null);
 			bind_ap_item (ap, item);
-			/* We need to start at 1 and end at -1 to avoid the toggle and the settings */
-			for (int i = 1; i < apsmenu.get_n_items() - 1; i++)
+			for (int i = 0; i < apsmenu.get_n_items(); i++)
 			{
 				string path;
 
@@ -245,7 +280,7 @@ namespace Network.Device
 			return ap_conns.length () > 0;
 		}
 
-		private void remove_ap (AccessPoint ap)
+		private void remove_ap_item (AccessPoint ap)
 		{
 			for (int i = 1; i < apsmenu.get_n_items(); i++)
 			{
@@ -451,6 +486,8 @@ namespace Network.Device
 
 		private void ap_activated (SimpleAction ac, Variant? val)
 		{
+			/* If we're the selected access point, and we get clicked, then the user
+			   is trying to disconnect from that AP */
 			if (ac.state.get_boolean () == true &&
 				wifidev.active_access_point != null &&
 				wifidev.active_access_point.get_path () == ac.name)
@@ -459,6 +496,7 @@ namespace Network.Device
 				return;
 			}
 
+			/* If we're the active access point, we should just stay that way */
 			if (wifidev.active_access_point != null &&
 				wifidev.active_access_point.get_path () == ac.name)
 				return;
@@ -469,6 +507,24 @@ namespace Network.Device
 				return;
 			}
 
+			/* First we'll go ahead and mark all the other APs as inactive in the
+			   UI, it'll take a bit for NM to disconnect and reconnect to the other
+			   one which is confusing for users. */
+			foreach (var action_name in actions.list_actions()) {
+				if (action_name == ac.name)
+					continue;
+				if (!Variant.is_object_path(action_name))
+					continue;
+
+				var actionap = wifidev.get_access_point_by_path(action_name);
+				if (actionap == null)
+					continue;
+
+				var action = actions.lookup_action(action_name);
+				action.change_state(new Variant.boolean(false));
+			}
+
+			/* Now setup the connection and start connecting with this AP */
 			var conns = rs.list_connections ();
 			if (conns == null)
 			{
@@ -491,6 +547,7 @@ namespace Network.Device
 			}
 
 			client.activate_connection (ap_conns.data, wifidev, ac.name, null);
+			return;
 		}
 
 		private void add_and_activate_ap (string ap_path)

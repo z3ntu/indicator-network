@@ -398,20 +398,11 @@ namespace Network.Device
 					continue;
 				}
 
-				if (ap.get_path () == active_ap)
-				{
-					var action = actions.lookup(ap.get_path());
-					if (action != null) {
-						action.change_state(new Variant.boolean (true));
-					}
-				}
-				else
-				{
-					var action = actions.lookup(ap.get_path());
-					if (action != null) {
-						action.change_state(new Variant.boolean (false));
-					}
-				}
+				var action = actions.lookup(ap.get_path());
+				if (action == null)
+					continue;
+
+				action.change_state(new Variant.boolean (ap.get_path() == active_ap));
 			}
 		}
 

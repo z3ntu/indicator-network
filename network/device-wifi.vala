@@ -118,7 +118,7 @@ namespace Network.Device
 			AccessPoint ap = (AccessPoint)user_data;
 			string ap_path = ap.get_path();
 
-			if (aps.lookup(ap_path) == null) {
+			if (aps.lookup(ap_path) != null) {
 				ap.notify["ssid"].disconnect(access_point_ssid_cb);
 				aps.remove(ap_path);
 				remove_ap_item (ap);

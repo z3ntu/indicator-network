@@ -13,6 +13,7 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 vala_init(libnetwork
   PACKAGES
     libnm-glib
+    libnotify
   CUSTOM_VAPIS
     "${CMAKE_CURRENT_SOURCE_DIR}/action-muxer.vapi"
     "${CMAKE_CURRENT_SOURCE_DIR}/url-dispatcher.vapi"
@@ -24,9 +25,14 @@ vala_add(libnetwork
 )
 
 vala_add(libnetwork
+  utils.vala
+)
+
+vala_add(libnetwork
   network-action-manager.vala
   DEPENDS
     ofono
+    utils
 )
 
 vala_add(libnetwork
@@ -40,6 +46,14 @@ vala_add(libnetwork
     settings-wifi
     settings-airplane
     network-action-manager
+    mobile-sim-manager
+)
+
+vala_add(libnetwork
+  mobile-sim-manager.vala
+  DEPENDS
+    ofono
+    utils
 )
 
 vala_add(libnetwork
@@ -56,6 +70,7 @@ vala_add(libnetwork
   device-mobile.vala
   DEPENDS
     device-base
+    mobile-sim-manager
 )
 
 vala_add(libnetwork
@@ -117,6 +132,7 @@ target_link_libraries(
   network
   ${GLIB_LIBRARIES}
   ${NM_LIBRARIES}
+  ${NOTIFY_LIBRARIES}
 )
 
 ###########################
@@ -126,6 +142,7 @@ target_link_libraries(
 vala_init(network-service
   PACKAGES
     libnm-glib
+    libnotify
     libnetwork
   DEPENDS
     "${CMAKE_CURRENT_BINARY_DIR}/libnetwork.vapi"

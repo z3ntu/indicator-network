@@ -1,3 +1,25 @@
+indicator-network (0.5.1+13.10.20131011-0ubuntu1) saucy; urgency=low
+
+  [ Ted Gould ]
+  * Ensure APs with SSIDs we don't want to show aren't shown. (LP:
+    #1231532, #1088956)
+  * Check to make sure we don't get zero interfaces back. (LP: #1232651)
+  * Force the UI of other APs to be disabled when starting a new
+    connection. (LP: #1233194)
+  * Only select active connection once it has a device.
+  * Stop AP actions from being removed by the menu object.
+  * Don't output cell strength to log files. (LP: #1228083)
+  * Removing settings items for network prompting.
+  * Listen to auto-reconnect setting. (LP: #1236747)
+
+  [ Nick Dedekind ]
+  * SIM pin/puk unload menu & dialog notification.
+
+  [ Ubuntu daily release ]
+  * Automatic snapshot from revision 302
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Fri, 11 Oct 2013 04:28:09 +0000
+
 indicator-network (0.5.1+13.10.20131005-0ubuntu1) saucy; urgency=low
 
   * Revert the revert!  Return to contents of 0.5.1+13.10.20131004-0ubuntu1 as

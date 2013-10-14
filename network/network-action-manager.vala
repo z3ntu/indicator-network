@@ -325,7 +325,7 @@ namespace Network
 			   captured connection information, we need more than one icon. */
 			if (modemdev != null) {
 				if (airplane_mode) {
-					var icon = icon_serialize("network-airplane");
+					var icon = icon_serialize("airplane-mode");
 					if (icon != null) {
 						icons.append_val(icon);
 						multiicon = true;

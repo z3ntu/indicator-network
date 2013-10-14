@@ -20,7 +20,7 @@
 #define SECRETREQUEST_H_
 
 #include <DBusTypes.h>
-#include <gtk/PasswordMenu.h>
+#include <PasswordMenu.h>
 
 #include <QDBusMessage>
 #include <QDBusObjectPath>

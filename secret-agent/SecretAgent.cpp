@@ -116,7 +116,7 @@ QVariantDictMap SecretAgent::GetSecrets(const QVariantDictMap &connection,
 			m_request = NULL;
 		}
 
-		m_request = new SecretRequest(5, *this, connection,
+		m_request = new SecretRequest(*this, connection,
 						connectionPath, settingName, hints, flags, message());
 	}
 

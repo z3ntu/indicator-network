@@ -20,15 +20,15 @@
 #include <SecretAgent.h>
 #include <Localisation.h>
 
-SecretRequest::SecretRequest(unsigned int requestId, SecretAgent &secretAgent,
+SecretRequest::SecretRequest(SecretAgent &secretAgent,
 		const QVariantDictMap &connection,
 		const QDBusObjectPath &connectionPath, const QString &settingName,
 		const QStringList &hints, uint flags, const QDBusMessage &message,
 		QObject *parent) :
-		QObject(parent), m_requestId(requestId), m_secretAgent(secretAgent), m_connection(
+		QObject(parent), m_secretAgent(secretAgent), m_connection(
 				connection), m_connectionPath(connectionPath), m_settingName(
 				settingName), m_hints(hints), m_flags(flags), m_message(
-				message), m_menu(requestId) {
+				message), m_menu() {
 
 	connect(&m_secretAgent.notifications(),
 	SIGNAL(ActionInvoked(uint, const QString &)), this,
@@ -99,10 +99,6 @@ void SecretRequest::actionInvoked(uint id, const QString &actionKey) {
 	}
 
 	m_secretAgent.FinishGetSecrets(*this);
-}
-
-unsigned int SecretRequest::requestId() const {
-	return m_requestId;
 }
 
 const QVariantDictMap & SecretRequest::connection() const {

@@ -34,6 +34,8 @@ SecretRequest::SecretRequest(SecretAgent &secretAgent,
 	SIGNAL(ActionInvoked(uint, const QString &)), this,
 	SLOT(actionInvoked(uint, const QString &)));
 
+	connect(&m_secretAgent.notifications(), SIGNAL(NotificationClosed(uint)), this, SLOT(notificationClose(uint)));
+
 	// indicate to the notification-daemon, that we want to use snap-decisions
 	QVariantMap notificationHints;
 	notificationHints["x-canonical-snap-decisions"] = "true";
@@ -80,6 +82,7 @@ SecretRequest::~SecretRequest() {
 	}
 }
 
+/* Called when the user submits a password */
 void SecretRequest::actionInvoked(uint id, const QString &actionKey) {
 	// Ignore other requests' notifications
 	if (id != m_notificationId) {
@@ -103,6 +106,18 @@ void SecretRequest::actionInvoked(uint id, const QString &actionKey) {
 	} else if (keyMgmt == SecretAgent::KEY_MGMT_NONE) {
 		wirelessSecurity->insert(SecretAgent::WIRELESS_SECURITY_WEP_KEY0, key);
 	}
+
+	m_secretAgent.FinishGetSecrets(*this);
+}
+
+/* Called when the user closes the dialog */
+void SecretRequest::notificationClosed(uint id) {
+	// Ignore other requests' notifications
+	if (id != m_notificationId) {
+		return;
+	}
+
+	m_notificationId = 0;
 
 	m_secretAgent.FinishGetSecrets(*this);
 }

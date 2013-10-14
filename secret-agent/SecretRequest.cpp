@@ -73,6 +73,11 @@ SecretRequest::SecretRequest(SecretAgent &secretAgent,
 }
 
 SecretRequest::~SecretRequest() {
+	/* Close the notification if it's open */
+	if (m_notificationId != 0) {
+		m_secretAgent.notifications().CloseNotification(m_notificationId).waitForFinished();
+		m_notificationId = 0;
+	}
 }
 
 void SecretRequest::actionInvoked(uint id, const QString &actionKey) {
@@ -81,6 +86,7 @@ void SecretRequest::actionInvoked(uint id, const QString &actionKey) {
 		return;
 	}
 
+	m_notificationId = 0;
 	QString key("");
 
 	if (actionKey == "connect_id") {

@@ -24,12 +24,9 @@
 
 #include <QDBusMessage>
 #include <QDBusObjectPath>
-#include <QSharedPointer>
 
 class SecretRequest;
 class SecretAgent;
-
-typedef QSharedPointer<SecretRequest> SecretRequestPtr;
 
 class SecretRequest: public QObject {
 Q_OBJECT

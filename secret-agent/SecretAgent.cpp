@@ -48,8 +48,7 @@ SecretAgent::SecretAgent(const QDBusConnection &systemConnection,
 				systemConnection), m_sessionConnection(sessionConnection), m_agentManager(
 		NM_DBUS_SERVICE, NM_DBUS_PATH_AGENT_MANAGER, m_systemConnection), m_notifications(
 				"org.freedesktop.Notifications",
-				"/org/freedesktop/Notifications", m_sessionConnection), m_requestCounter(
-				0) {
+				"/org/freedesktop/Notifications", m_sessionConnection), m_request(NULL) {
 	if (!m_systemConnection.registerObject(NM_DBUS_PATH_SECRET_AGENT, this)) {
 		throw logic_error(
 				_("Unable to register user secret agent object on DBus"));
@@ -112,12 +111,13 @@ QVariantDictMap SecretAgent::GetSecrets(const QVariantDictMap &connection,
 				message().createErrorReply(QDBusError::InternalError,
 						"No password found for this connection."));
 	} else {
-		SecretRequestPtr request(
-				new SecretRequest(m_requestCounter, *this, connection,
-						connectionPath, settingName, hints, flags, message()));
-		m_requests.insert(m_requestCounter, request);
+		if (m_request != NULL) {
+			delete m_request;
+			m_request = NULL;
+		}
 
-		++m_requestCounter;
+		m_request = new SecretRequest(5, *this, connection,
+						connectionPath, settingName, hints, flags, message());
 	}
 
 	return QVariantDictMap();
@@ -127,7 +127,9 @@ void SecretAgent::FinishGetSecrets(SecretRequest &request) {
 	m_systemConnection.send(
 			request.message().createReply(
 					QVariant::fromValue(request.connection())));
-	m_requests.remove(request.requestId());
+
+	delete m_request;
+	m_request = NULL;
 }
 
 void SecretAgent::CancelGetSecrets(const QDBusObjectPath &connectionPath,

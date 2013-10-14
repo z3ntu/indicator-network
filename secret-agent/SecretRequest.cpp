@@ -34,7 +34,7 @@ SecretRequest::SecretRequest(SecretAgent &secretAgent,
 	SIGNAL(ActionInvoked(uint, const QString &)), this,
 	SLOT(actionInvoked(uint, const QString &)));
 
-	connect(&m_secretAgent.notifications(), SIGNAL(NotificationClosed(uint)), this, SLOT(notificationClose(uint)));
+	connect(&m_secretAgent.notifications(), SIGNAL(NotificationClosed(uint, uint)), this, SLOT(notificationClose(uint, uint)));
 
 	// indicate to the notification-daemon, that we want to use snap-decisions
 	QVariantMap notificationHints;
@@ -113,7 +113,7 @@ void SecretRequest::actionInvoked(uint id, const QString &actionKey) {
 }
 
 /* Called when the user closes the dialog */
-void SecretRequest::notificationClosed(uint id) {
+void SecretRequest::notificationClosed(uint id, uint reason) {
 	// Ignore other requests' notifications
 	if (id != m_notificationId) {
 		return;

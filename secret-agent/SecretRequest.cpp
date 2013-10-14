@@ -34,7 +34,7 @@ SecretRequest::SecretRequest(SecretAgent &secretAgent,
 	SIGNAL(ActionInvoked(uint, const QString &)), this,
 	SLOT(actionInvoked(uint, const QString &)));
 
-	connect(&m_secretAgent.notifications(), SIGNAL(NotificationClosed(uint, uint)), this, SLOT(notificationClose(uint, uint)));
+	connect(&m_secretAgent.notifications(), SIGNAL(NotificationClosed(uint, uint)), this, SLOT(notificationClosed(uint, uint)));
 
 	// indicate to the notification-daemon, that we want to use snap-decisions
 	QVariantMap notificationHints;

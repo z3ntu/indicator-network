@@ -41,7 +41,7 @@ public:
 
 public Q_SLOTS:
 	void actionInvoked(uint id, const QString &actionKey);
-	void notificationClosed(uint id);
+	void notificationClosed(uint id, uint reason);
 
 public:
 	const QVariantDictMap & connection() const;

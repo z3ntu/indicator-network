@@ -123,10 +123,16 @@ QVariantDictMap SecretAgent::GetSecrets(const QVariantDictMap &connection,
 	return QVariantDictMap();
 }
 
-void SecretAgent::FinishGetSecrets(SecretRequest &request) {
-	m_systemConnection.send(
-			request.message().createReply(
-					QVariant::fromValue(request.connection())));
+void SecretAgent::FinishGetSecrets(SecretRequest &request, bool error) {
+	if (error) {
+		m_systemConnection.send(
+				request.message().createErrorReply(QDBusError::InternalError,
+						"No password found for this connection."));
+	} else {
+		m_systemConnection.send(
+				request.message().createReply(
+						QVariant::fromValue(request.connection())));
+	}
 
 	delete m_request;
 	m_request = NULL;

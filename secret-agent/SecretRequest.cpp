@@ -107,7 +107,7 @@ void SecretRequest::actionInvoked(uint id, const QString &actionKey) {
 		wirelessSecurity->insert(SecretAgent::WIRELESS_SECURITY_WEP_KEY0, key);
 	}
 
-	m_secretAgent.FinishGetSecrets(*this);
+	m_secretAgent.FinishGetSecrets(*this, false);
 }
 
 /* Called when the user closes the dialog */
@@ -119,7 +119,7 @@ void SecretRequest::notificationClosed(uint id) {
 
 	m_notificationId = 0;
 
-	m_secretAgent.FinishGetSecrets(*this);
+	m_secretAgent.FinishGetSecrets(*this, true);
 }
 
 const QVariantDictMap & SecretRequest::connection() const {

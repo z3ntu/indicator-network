@@ -59,7 +59,7 @@ public Q_SLOTS:
 			const QDBusObjectPath &connectionPath, const QString &settingName,
 			const QStringList &hints, uint flags);
 
-	void FinishGetSecrets(SecretRequest &request);
+	void FinishGetSecrets(SecretRequest &request, bool error);
 
 	void CancelGetSecrets(const QDBusObjectPath &connectionPath,
 			const QString &settingName);

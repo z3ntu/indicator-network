@@ -65,13 +65,12 @@ public:
 
 };
 
-PasswordMenu::PasswordMenu(unsigned int requestId) :
+PasswordMenu::PasswordMenu() :
 		p(new PasswordMenuPriv()) {
+	int exportrev;
+
 	p->m_busName = QString::fromUtf8(
 			g_dbus_connection_get_unique_name(p->m_connection));
-
-	p->m_actionPath = PASSWORD_ACTION_PATH.arg(requestId);
-	p->m_menuPath = PASSWORD_MENU_PATH.arg(requestId);
 
 	// menu
 	GMenu *menu(g_menu_new());
@@ -96,13 +95,31 @@ PasswordMenu::PasswordMenu(unsigned int requestId) :
 
 	g_action_map_add_action(G_ACTION_MAP(actions), passwordAction);
 
-	p->m_exportedActionGroupId = g_dbus_connection_export_action_group(
-			p->m_connection, p->m_actionPath.toUtf8().data(), actions, NULL);
+	/* Export the actions group.  If we can't get a name, keep trying to
+	   use increasing numbers.  There is possible races on fast import/exports.
+	   They're rare, but worth protecting against. */
+	exportrev = 0;
+	do {
+		exportrev++;
+		p->m_actionPath = PASSWORD_ACTION_PATH.arg(exportrev);
+		p->m_exportedActionGroupId = g_dbus_connection_export_action_group(
+				p->m_connection, p->m_actionPath.toUtf8().data(), actions, NULL);
+	} while (p->m_exportedActionGroupId == 0 && exportrev < 128);
 
-	p->m_exportedMenuModelId = g_dbus_connection_export_menu_model(
-			p->m_connection, p->m_menuPath.toUtf8().data(),
-			G_MENU_MODEL(menu), NULL);
+	/* Export the menu.  If we can't get a name, keep trying to
+	   use increasing numbers.  There is possible races on fast import/exports.
+	   They're rare, but worth protecting against. */
+	exportrev = 0;
+	do {
+		exportrev++;
+		p->m_menuPath = PASSWORD_MENU_PATH.arg(exportrev);
+		p->m_exportedMenuModelId = g_dbus_connection_export_menu_model(
+				p->m_connection, p->m_menuPath.toUtf8().data(),
+				G_MENU_MODEL(menu), NULL);
+	} while (p->m_exportedMenuModelId == 0 && exportrev < 128);
 
+	/* Unref the objects as a reference is maintained by the fact that they're
+	   exported onto the bus. */
 	g_object_unref(menu);
 	g_object_unref(passwordItem);
 

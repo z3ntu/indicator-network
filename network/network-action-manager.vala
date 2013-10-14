@@ -366,7 +366,7 @@ namespace Network
 
 			/* Look for the first icon if we need it */
 			if (roaming) {
-				var icon = icon_serialize("network-roaming");
+				var icon = icon_serialize("network-cellular-roaming");
 				if (icon != null) {
 					icons.append_val(icon);
 					multiicon = true;

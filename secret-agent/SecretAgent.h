@@ -83,10 +83,7 @@ protected:
 
 	org::freedesktop::Notifications m_notifications;
 
-	QMap<unsigned long long, SecretRequestPtr> m_requests;
-
-	unsigned long long m_requestCounter;
-
+	SecretRequest * m_request;
 };
 
 #endif /* SECRETAGENT_H_ */

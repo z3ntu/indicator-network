@@ -92,11 +92,14 @@ void SecretRequest::actionInvoked(uint id, const QString &actionKey) {
 	}
 
 	m_notificationId = 0;
-	QString key("");
 
-	if (actionKey == "connect_id") {
-		key = m_menu.password();
+	if (actionKey != "connect_id") {
+		m_secretAgent.FinishGetSecrets(*this, true);
+		return;
 	}
+
+	QString key("");
+	key = m_menu.password();
 
 	auto wirelessSecurity = m_connection.find(m_settingName);
 	QString keyMgmt(

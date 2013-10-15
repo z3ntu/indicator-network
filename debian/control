@@ -33,6 +33,7 @@ Package: indicator-network
 Architecture: any
 Depends: ${misc:Depends},
          ${shlibs:Depends},
+         ubuntu-mobile-icons (>= 13.04+13.10.20131014),
 # For apport hook
          python3-xdg,
          unity8 (>= 7.82),

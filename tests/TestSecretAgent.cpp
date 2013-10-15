@@ -182,7 +182,7 @@ TEST_P(TestSecretAgentGetSecrets, ProvidesPasswordForWpaPsk) {
 
 	ASSERT_EQ(8, args.size());
 	EXPECT_EQ("indicator-network", args.at(0));
-	EXPECT_EQ("Connect to \"the ssid\"", args.at(3).toString().toStdString());
+	EXPECT_EQ("Connect to “the ssid”", args.at(3).toString().toStdString());
 
 	QVariantMap hints(args.at(6).toMap());
 	QVariantMap menuInfo(hints["x-canonical-private-menu-model"].toMap());

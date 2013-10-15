@@ -55,7 +55,7 @@ SecretRequest::SecretRequest(unsigned int requestId, SecretAgent &secretAgent,
 	QString keyMgmt(
 			wirelessSecurity->value(SecretAgent::WIRELESS_SECURITY_KEY_MGMT).toString());
 
-	QString title(_("Connect to \"%1\""));
+	QString title(_("Connect to “%1”"));
 
 	QString subject;
 	if (keyMgmt == SecretAgent::KEY_MGMT_WPA_NONE

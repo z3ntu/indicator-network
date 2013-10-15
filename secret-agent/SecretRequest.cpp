@@ -120,8 +120,6 @@ void SecretRequest::notificationClosed(uint id, uint reason) {
 	}
 
 	m_notificationId = 0;
-
-	m_secretAgent.FinishGetSecrets(*this, true);
 }
 
 const QVariantDictMap & SecretRequest::connection() const {

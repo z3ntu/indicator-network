@@ -555,6 +555,12 @@ namespace Network.Device
 
 			wifimenu = new WifiMenu(client, device, this._menu, "indicator." + this.namespace + ".", show_settings);
 			wifiactionmanager = new WifiActionManager(actions, client, device);
+
+			client.notify["wireless-enabled"].connect((s, p) => {
+				var wireless_enabled = false;
+				s.get("wireless-enabled", out wireless_enabled);
+				enabled_action.set_state(new Variant.boolean(wireless_enabled));
+			});
 		}
 
 		protected override void disable_device ()

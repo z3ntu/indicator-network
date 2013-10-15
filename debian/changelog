@@ -1,3 +1,17 @@
+indicator-network (0.5.1+13.10.20131015.2-0ubuntu1) saucy; urgency=low
+
+  [ Ted Gould ]
+  * Remove final temporary icons. (LP: #1220418)
+
+  [ Antti Kaijanmäki ]
+  * Listen wireless-enabled signal. (LP: #1220332)
+  * Fix root icon when connected to WPA2-only or WEP AP. (LP: #1237357)
+
+  [ Ubuntu daily release ]
+  * Automatic snapshot from revision 306
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Tue, 15 Oct 2013 18:39:34 +0000
+
 indicator-network (0.5.1+13.10.20131011-0ubuntu1) saucy; urgency=low
 
   [ Ted Gould ]

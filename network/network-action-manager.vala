@@ -427,7 +427,7 @@ namespace Network
 
 					if (act_ap != null) {
 						strength = act_ap.strength;
-						secure = act_ap.get_wpa_flags() != 0;
+						secure = ((act_ap.get_flags() & NM.80211ApFlags.PRIVACY) != 0);
 					}
 
 					if (secure) {

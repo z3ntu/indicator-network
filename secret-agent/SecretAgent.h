@@ -59,7 +59,7 @@ public Q_SLOTS:
 			const QDBusObjectPath &connectionPath, const QString &settingName,
 			const QStringList &hints, uint flags);
 
-	void FinishGetSecrets(SecretRequest &request);
+	void FinishGetSecrets(SecretRequest &request, bool error);
 
 	void CancelGetSecrets(const QDBusObjectPath &connectionPath,
 			const QString &settingName);
@@ -83,10 +83,7 @@ protected:
 
 	org::freedesktop::Notifications m_notifications;
 
-	QMap<unsigned long long, SecretRequestPtr> m_requests;
-
-	unsigned long long m_requestCounter;
-
+	SecretRequest * m_request;
 };
 
 #endif /* SECRETAGENT_H_ */

@@ -20,21 +20,18 @@
 #define SECRETREQUEST_H_
 
 #include <DBusTypes.h>
-#include <gtk/PasswordMenu.h>
+#include <PasswordMenu.h>
 
 #include <QDBusMessage>
 #include <QDBusObjectPath>
-#include <QSharedPointer>
 
 class SecretRequest;
 class SecretAgent;
 
-typedef QSharedPointer<SecretRequest> SecretRequestPtr;
-
 class SecretRequest: public QObject {
 Q_OBJECT
 public:
-	explicit SecretRequest(unsigned int requestId, SecretAgent &secretAgent,
+	explicit SecretRequest(SecretAgent &secretAgent,
 			const QVariantDictMap &connection,
 			const QDBusObjectPath &connectionPath, const QString &settingName,
 			const QStringList &hints, uint flags, const QDBusMessage &reply,
@@ -44,17 +41,14 @@ public:
 
 public Q_SLOTS:
 	void actionInvoked(uint id, const QString &actionKey);
+	void notificationClosed(uint id, uint reason);
 
 public:
-	unsigned int requestId() const;
-
 	const QVariantDictMap & connection() const;
 
 	const QDBusMessage & message() const;
 
 protected:
-	const unsigned int m_requestId;
-
 	unsigned int m_notificationId;
 
 	SecretAgent &m_secretAgent;

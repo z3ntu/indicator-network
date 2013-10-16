@@ -4,7 +4,7 @@ set(
 	SecretAgent.cpp
 	SecretAgentAdaptor.cpp
 	SecretRequest.cpp
-	gtk/PasswordMenu.cpp
+	PasswordMenu.cpp
 )
 
 qt5_add_dbus_adaptor(

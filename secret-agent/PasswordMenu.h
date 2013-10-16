@@ -26,7 +26,7 @@ class PasswordMenuPriv;
 
 class PasswordMenu {
 public:
-	PasswordMenu(unsigned int requestId);
+	PasswordMenu();
 
 	virtual ~PasswordMenu();
 

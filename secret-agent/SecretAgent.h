@@ -19,6 +19,8 @@
 #ifndef SECRETAGENT_H_
 #define SECRETAGENT_H_
 
+#include <memory>
+
 #include <QScopedPointer>
 #include <QDBusConnection>
 #include <QDBusContext>
@@ -83,7 +85,7 @@ protected:
 
 	org::freedesktop::Notifications m_notifications;
 
-	SecretRequest * m_request;
+	std::shared_ptr<SecretRequest> m_request;
 };
 
 #endif /* SECRETAGENT_H_ */

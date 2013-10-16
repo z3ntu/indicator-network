@@ -140,8 +140,10 @@ void SecretAgent::FinishGetSecrets(SecretRequest &request, bool error) {
 
 void SecretAgent::CancelGetSecrets(const QDBusObjectPath &connectionPath,
 		const QString &settingName) {
-	delete m_request;
-	m_request = NULL;
+	if (m_request != NULL) {
+		delete m_request;
+		m_request = NULL;
+	}
 }
 
 void SecretAgent::DeleteSecrets(const QVariantDictMap &connection,

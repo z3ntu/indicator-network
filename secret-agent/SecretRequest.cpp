@@ -79,8 +79,6 @@ SecretRequest::~SecretRequest() {
 	if (m_notificationId != 0) {
 		m_secretAgent.notifications().CloseNotification(m_notificationId).waitForFinished();
 		m_notificationId = 0;
-
-		m_secretAgent.FinishGetSecrets(*this, true);
 	}
 }
 
@@ -120,6 +118,8 @@ void SecretRequest::notificationClosed(uint id, uint reason) {
 	}
 
 	m_notificationId = 0;
+
+	m_secretAgent.FinishGetSecrets(*this, true);
 }
 
 const QVariantDictMap & SecretRequest::connection() const {

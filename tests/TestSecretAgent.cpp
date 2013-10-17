@@ -255,9 +255,82 @@ TEST_F(TestSecretAgent, GetSecretsWithNone) {
 			reply.error().message());
 }
 
+/* Tests that if we request secrets and then cancel the request
+   that we close the notification */
 TEST_F(TestSecretAgent, CancelGetSecrets) {
+	notificationsInterface->AddMethod(
+			OrgFreedesktopNotificationsInterface::staticInterfaceName(),
+			"Notify", "susssasa{sv}i", "u", "ret = 1").waitForFinished();
+	notificationsInterface->AddMethod(
+			OrgFreedesktopNotificationsInterface::staticInterfaceName(),
+			"CloseNotification", "u", "", "").waitForFinished();
+
+	agentInterface->GetSecrets(
+			connection(SecretAgent::KEY_MGMT_WPA_PSK),
+			QDBusObjectPath("/connection/foo"),
+			SecretAgent::WIRELESS_SECURITY_SETTING_NAME, QStringList(),
+			5);
+
+	QSignalSpy notificationSpy(notificationsInterface.data(), SIGNAL(MethodCalled(const QString &, const QVariantList &)));
+	notificationSpy.wait();
+
+	ASSERT_EQ(1, notificationSpy.size());
+	const QVariantList &call(notificationSpy.at(0));
+	ASSERT_EQ("Notify", call.at(0));
+
+	notificationSpy.clear();
+
 	agentInterface->CancelGetSecrets(QDBusObjectPath("/connection/foo"),
-			SecretAgent::WIRELESS_SECURITY_SETTING_NAME).waitForFinished();
+			SecretAgent::WIRELESS_SECURITY_SETTING_NAME);
+
+	notificationSpy.wait();
+
+	ASSERT_EQ(1, notificationSpy.size());
+	const QVariantList &closecall(notificationSpy.at(0));
+	ASSERT_EQ("CloseNotification", closecall.at(0));
+}
+
+/* Ensures that if we request secrets twice we close the notification
+   for the first request */
+TEST_F(TestSecretAgent, MultiSecrets) {
+	notificationsInterface->AddMethod(
+			OrgFreedesktopNotificationsInterface::staticInterfaceName(),
+			"Notify", "susssasa{sv}i", "u", "ret = 1").waitForFinished();
+	notificationsInterface->AddMethod(
+			OrgFreedesktopNotificationsInterface::staticInterfaceName(),
+			"CloseNotification", "u", "", "").waitForFinished();
+
+	QSignalSpy notificationSpy(notificationsInterface.data(), SIGNAL(MethodCalled(const QString &, const QVariantList &)));
+
+	agentInterface->GetSecrets(
+			connection(SecretAgent::KEY_MGMT_WPA_PSK),
+			QDBusObjectPath("/connection/foo"),
+			SecretAgent::WIRELESS_SECURITY_SETTING_NAME, QStringList(),
+			5);
+
+	notificationSpy.wait();
+
+	ASSERT_EQ(1, notificationSpy.size());
+	const QVariantList &call(notificationSpy.at(0));
+	ASSERT_EQ("Notify", call.at(0));
+
+	notificationSpy.clear();
+
+	agentInterface->GetSecrets(
+			connection(SecretAgent::KEY_MGMT_WPA_PSK),
+			QDBusObjectPath("/connection/foo2"),
+			SecretAgent::WIRELESS_SECURITY_SETTING_NAME, QStringList(),
+			5);
+
+	notificationSpy.wait();
+	notificationSpy.wait();
+
+	ASSERT_EQ(2, notificationSpy.size());
+	const QVariantList &closecall(notificationSpy.at(1));
+	ASSERT_EQ("CloseNotification", closecall.at(0));
+
+	const QVariantList &newnotify(notificationSpy.at(0));
+	ASSERT_EQ("Notify", newnotify.at(0));
 }
 
 TEST_F(TestSecretAgent, SaveSecrets) {

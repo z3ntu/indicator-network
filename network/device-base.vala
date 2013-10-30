@@ -210,7 +210,7 @@ namespace Network.Device
 			return (_menu as MenuModel).get_item_attribute_value(item_index, attribute, expected_type);
 		}
 
-		public override void get_item_attributes (int item_index, out GLib.HashTable<void*,void*> attributes) {
+		public override void get_item_attributes (int item_index, [CCode (type = "GHashTable**")] out GLib.HashTable<string,GLib.Variant>? attributes) {
 			(_menu as MenuModel).get_item_attributes(item_index, out attributes);
 		}
 
@@ -218,7 +218,7 @@ namespace Network.Device
 			return (_menu as MenuModel).get_item_link(item_index, link);
 		}
 
-		public override void get_item_links (int item_index, out GLib.HashTable<void*,void*> links) {
+		public override void get_item_links (int item_index, [CCode (type = "GHashTable**")] out GLib.HashTable<string,GLib.MenuModel>? links) {
 			(_menu as MenuModel).get_item_links(item_index, out links);
 		}
 

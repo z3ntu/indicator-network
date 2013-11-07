@@ -240,14 +240,14 @@ namespace Network
     {
       try {
         if (ofono_modem == null) {
-          ofono_modem = Bus.get_proxy_sync (BusType.SYSTEM, "org.ofono", device.get_iface());
-        }
+          ofono_modem = Bus.get_proxy_sync (BusType.SYSTEM, "org.ofono", device.get_iface(), DBusProxyFlags.DO_NOT_AUTO_START);
 
-        ofono_modem.property_changed.connect((prop, value) => {
-          if (prop == "Interfaces") {
-            create_ofono_sim_manager();
-          }
-        });
+          ofono_modem.property_changed.connect((prop, value) => {
+            if (prop == "Interfaces") {
+              create_ofono_sim_manager();
+            }
+          });
+        }
 
         var modem_properties = ofono_modem.get_properties();
         var interfaces = modem_properties.lookup("Interfaces");
@@ -268,7 +268,7 @@ namespace Network
 
       try {
         /* Initialize the SIM Manager */
-        simmanager = Bus.get_proxy_sync (BusType.SYSTEM, "org.ofono", device.get_iface());
+        simmanager = Bus.get_proxy_sync (BusType.SYSTEM, "org.ofono", device.get_iface(), DBusProxyFlags.DO_NOT_AUTO_START);
         simmanager.property_changed.connect(simmanager_property);
         var simprops = simmanager.get_properties();
         simprops.foreach((k, v) => {

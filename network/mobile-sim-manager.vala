@@ -241,13 +241,13 @@ namespace Network
       try {
         if (ofono_modem == null) {
           ofono_modem = Bus.get_proxy_sync (BusType.SYSTEM, "org.ofono", device.get_iface());
-        }
 
-        ofono_modem.property_changed.connect((prop, value) => {
-          if (prop == "Interfaces") {
-            create_ofono_sim_manager();
-          }
-        });
+          ofono_modem.property_changed.connect((prop, value) => {
+            if (prop == "Interfaces") {
+              create_ofono_sim_manager();
+            }
+          });
+        }
 
         var modem_properties = ofono_modem.get_properties();
         var interfaces = modem_properties.lookup("Interfaces");

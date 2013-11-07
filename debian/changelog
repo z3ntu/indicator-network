@@ -1,3 +1,28 @@
+indicator-network (0.5.1+14.04.20131107-0ubuntu1) trusty; urgency=low
+
+  [ Ken VanDine ]
+  * Updated argument types in override functions for changes in vala-
+    0.22 . (LP: #1244522)
+
+  [ Ted Gould ]
+  * Use proper quotes in user facing strings.
+  * Make it so we have a single notification in flight at a time. (LP:
+    #1236763)
+  * When cancel is hit return as a no password to Network Manager. (LP:
+    #1236386)
+  * Use a shared pointer to make it more Java like and some tests for
+    closing notifications.
+  * Adding a phone_greeter profile.
+
+  [ Lars Uebernickel ]
+  * Don't try to DBus-activate ofono (lp;1248880) Ofono doesn't ship
+    with a service file and is managed by upstart anyway. (LP: #1248880)
+
+  [ Ubuntu daily release ]
+  * Automatic snapshot from revision 314
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Thu, 07 Nov 2013 12:31:39 +0000
+
 indicator-network (0.5.1+13.10.20131015.2-0ubuntu1) saucy; urgency=low
 
   [ Ted Gould ]

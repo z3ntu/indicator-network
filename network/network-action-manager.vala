@@ -114,7 +114,7 @@ namespace Network
 				oFono.Modem? ofono_modem = watched_modems.lookup(modemmaybe.get_iface());
 
 				if (ofono_modem == null) {
-					ofono_modem = Bus.get_proxy_sync (BusType.SYSTEM, "org.ofono", modemmaybe.get_iface());
+					ofono_modem = Bus.get_proxy_sync (BusType.SYSTEM, "org.ofono", modemmaybe.get_iface(), DBusProxyFlags.DO_NOT_AUTO_START);
 
 					ofono_modem.property_changed.connect((prop, value) => {
 						if (prop == "Interfaces") {
@@ -155,7 +155,7 @@ namespace Network
 
 			try {
 				/* Initialize the SIM Manager */
-				simmanager = Bus.get_proxy_sync (BusType.SYSTEM, "org.ofono", modemmaybe.get_iface());
+				simmanager = Bus.get_proxy_sync (BusType.SYSTEM, "org.ofono", modemmaybe.get_iface(), DBusProxyFlags.DO_NOT_AUTO_START);
 				simmanager.property_changed.connect(simmanager_property);
 				var simprops = simmanager.get_properties();
 				simprops.foreach((k, v) => {
@@ -163,7 +163,7 @@ namespace Network
 				});
 
 				/* Initialize the Network Registration */
-				netreg = Bus.get_proxy_sync (BusType.SYSTEM, "org.ofono", modemmaybe.get_iface());
+				netreg = Bus.get_proxy_sync (BusType.SYSTEM, "org.ofono", modemmaybe.get_iface(), DBusProxyFlags.DO_NOT_AUTO_START);
 				netreg.property_changed.connect(netreg_property);
 				var netregprops = netreg.get_properties();
 				netregprops.foreach((k, v) => {

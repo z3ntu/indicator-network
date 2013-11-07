@@ -75,7 +75,7 @@ include_directories(${GIO_INCLUDE_DIRS})
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-find_package(Vala 0.18)
+find_package(Vala 0.22)
 
 find_package(GObjectIntrospection 0.9.12)
 

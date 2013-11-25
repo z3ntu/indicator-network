@@ -1,3 +1,13 @@
+indicator-network (0.5.1+14.04.20131125-0ubuntu1) trusty; urgency=low
+
+  [ Lars Uebernickel ]
+  * Bump vala dependency to 0.22.
+
+  [ Ubuntu daily release ]
+  * Automatic snapshot from revision 316
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Mon, 25 Nov 2013 03:56:34 +0000
+
 indicator-network (0.5.1+14.04.20131107-0ubuntu1) trusty; urgency=low
 
   [ Ken VanDine ]

@@ -4,4 +4,5 @@ Name=Indicator Network
 Exec=@NETWORK_SERVICE@
 StartupNotify=false
 Terminal=false
-OnlyShowIn=Unity;
+OnlyShowIn=Unity;GNOME;
+AutostartCondition=GNOME3 unless-session gnome

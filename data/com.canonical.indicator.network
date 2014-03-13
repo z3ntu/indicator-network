@@ -6,12 +6,32 @@ Position=60
 [desktop]
 ObjectPath=/com/canonical/indicator/network/desktop
 
+[desktop_greeter]
+ObjectPath=/com/canonical/indicator/network/desktop_greeter
+
+[desktop_wifi_settings]
+ObjectPath=/com/canonical/indicator/network/desktop_wifi_settings
+
+
+[tablet]
+ObjectPath=/com/canonical/indicator/network/tablet
+
+[tablet_greeter]
+ObjectPath=/com/canonical/indicator/network/tablet_greeter
+
+[tablet_wifi_settings]
+ObjectPath=/com/canonical/indicator/network/tablet_wifi_settings
+
+
 [phone]
 ObjectPath=/com/canonical/indicator/network/phone
+
+[phone_greeter]
+ObjectPath=/com/canonical/indicator/network/phone_greeter
 
 [phone_wifi_settings]
 ObjectPath=/com/canonical/indicator/network/phone_wifi_settings
 
-[phone_greeter]
-ObjectPath=/com/canonical/indicator/network/phone
 
+[ubiquity]
+ObjectPath=/com/canonical/indicator/network/ubiquity

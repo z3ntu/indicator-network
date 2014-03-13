@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Canonical Ltd.
+ * Copyright (C) 2014 Canonical, Ltd.
  *
  * This program is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 3, as published
@@ -14,7 +14,18 @@
  * with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  * Authors:
- *     Ted Gould <ted@canonical.com>
+ *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-gboolean util_wrapper_is_empty_ssid (GByteArray * bytes);
+#ifndef MENU_MODEL_H
+#define MENU_MODEL_H
+
+class MenuModel
+{
+public:
+    typedef std::shared_ptr<MenuModel> Ptr;
+
+    virtual operator GMenuModel*() = 0;
+};
+
+#endif

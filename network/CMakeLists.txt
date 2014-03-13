@@ -1,191 +1,48 @@
+set(NETWORK_SERVICE_SOURCES
+    indicator-network-service.cpp
+    service.h
+    indicator-menu.h
+    wifi-link-item.h
+    wifi-settings.h
+    wired-link.h
+    wwan-link-item.h
 
-add_definitions(
-  -w
+    menuitems/item.h
+    menuitems/access-point-item.h
+    menuitems/switch-item.h
+    menuitems/text-item.h
+
+    menumodel-cpp/action.h
+    menumodel-cpp/action-group.h
+    menumodel-cpp/action-group-exporter.h
+    menumodel-cpp/action-group-merger.h
+    menumodel-cpp/menu.h
+    menumodel-cpp/menu-exporter.h
+    menumodel-cpp/menu-item.h
+    menumodel-cpp/menu-merger.h
+    menumodel-cpp/menu-model.h
+    menumodel-cpp/util.h
+    menumodel-cpp/variant.h
 )
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-include_directories(${CMAKE_CURRENT_BINARY_DIR})
-
-###########################
-# libnetwork
-###########################
-
-vala_init(libnetwork
-  PACKAGES
-    libnm-glib
-    libnotify
-  CUSTOM_VAPIS
-    "${CMAKE_CURRENT_SOURCE_DIR}/action-muxer.vapi"
-    "${CMAKE_CURRENT_SOURCE_DIR}/url-dispatcher.vapi"
-    "${CMAKE_CURRENT_SOURCE_DIR}/util-wrapper.vapi"
-)
-
-vala_add(libnetwork
-  ofono.vala
-)
-
-vala_add(libnetwork
-  utils.vala
-)
-
-vala_add(libnetwork
-  network-action-manager.vala
-  DEPENDS
-    ofono
-    utils
-)
-
-vala_add(libnetwork
-  network-menu.vala
-  DEPENDS
-    device-base
-    device-ethernet
-    device-mobile
-    device-wifi
-    settings-base
-    settings-wifi
-    settings-airplane
-    network-action-manager
-    mobile-sim-manager
-)
-
-vala_add(libnetwork
-  mobile-sim-manager.vala
-  DEPENDS
-    ofono
-    utils
-)
-
-vala_add(libnetwork
-  device-base.vala
-)
-
-vala_add(libnetwork
-  device-ethernet.vala
-  DEPENDS
-    device-base
-)
-
-vala_add(libnetwork
-  device-mobile.vala
-  DEPENDS
-    device-base
-    mobile-sim-manager
-)
-
-vala_add(libnetwork
-  device-wifi.vala
-  DEPENDS
-    device-base
-)
-
-vala_add(libnetwork
-  settings-base.vala
-)
-
-vala_add(libnetwork
-  settings-airplane.vala
-  DEPENDS
-    settings-base
-)
-
-vala_add(libnetwork
-  settings-wifi.vala
-  DEPENDS
-    settings-base
-)
-
-vala_finish(libnetwork
-  SOURCES
-    LIBNETWORK_VALA_SOURCES
-  OUTPUTS
-    LIBNETWORK_VALA_C
-  GENERATE_HEADER
-    libnetwork.h
-  GENERATE_VAPI
-    libnetwork.vapi
-  GENERATE_SYMBOLS
-    libnetwork.def
-)
-
-set_source_files_properties(
-  ${LIBNETWORK_VALA_SOURCES}
-  PROPERTIES
-  HEADER_FILE_ONLY TRUE
-)
-
-set(
-  LIBNETWORK_SOURCES
-  ${LIBNETWORK_VALA_SOURCES}
-  ${LIBNETWORK_VALA_C}
-  action-muxer.c
-  util-wrapper.c
-)
-
-add_library(
-  network
-  STATIC
-  ${LIBNETWORK_SOURCES}
-)
-
-target_link_libraries(
-  network
-  ${GLIB_LIBRARIES}
-  ${NM_LIBRARIES}
-  ${NOTIFY_LIBRARIES}
-)
-
-###########################
-# network service
-###########################
-
-vala_init(network-service
-  PACKAGES
-    libnm-glib
-    libnotify
-    libnetwork
-  DEPENDS
-    "${CMAKE_CURRENT_BINARY_DIR}/libnetwork.vapi"
-  CUSTOM_VAPIS
-    "${CMAKE_CURRENT_SOURCE_DIR}/config.vapi"
-    "${CMAKE_CURRENT_SOURCE_DIR}/action-muxer.vapi"
-    "${CMAKE_CURRENT_SOURCE_DIR}/util-wrapper.vapi"
-  OPTIONS
-    --vapidir=.
-)
-
-vala_add(network-service
-  network-menu-service.vala
-)
-
-vala_finish(network-service
-  SOURCES
-    NETWORK_SERVICE_VALA_SOURCES
-  OUTPUTS
-    NETWORK_SERVICE_VALA_C
-)
-
-set_source_files_properties(
-  ${NETWORK_SERVICE_VALA_SOURCES}
-  PROPERTIES
-  HEADER_FILE_ONLY TRUE
-)
-
-set(
-  NETWORK_SERVICE_SOURCES
-  ${NETWORK_SERVICE_VALA_SOURCES}
-  ${NETWORK_SERVICE_VALA_C}
-)
+#include_directories(include)
 
 add_executable(
   indicator-network-service
   ${NETWORK_SERVICE_SOURCES}
 )
-
 target_link_libraries(
-  indicator-network-service
-  network
+    indicator-network-service
+    ${CONNECTIVITY_CPP_LIBRARIES}
+    ${GLIB_LIBRARIES}
+    ${GIO_LIBRARIES}
+    ${NOTIFY_LIBRARIES}
 )
+
+#target_link_libraries(
+#  indicator-network-service
+#  network
+#)
 
 ###########################
 # Installation

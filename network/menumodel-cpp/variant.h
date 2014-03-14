@@ -32,36 +32,6 @@
 class Variant;
 
 template<typename T>
-struct TypeMapper
-{
-    constexpr inline static const GVariantType *type();
-};
-
-template<>
-struct TypeMapper<bool>
-{
-    constexpr inline static const GVariantType * type() { return G_VARIANT_TYPE_BOOLEAN; }
-};
-
-template<>
-struct TypeMapper<std::string>
-{
-    constexpr inline static const GVariantType * type() { return G_VARIANT_TYPE_STRING; }
-};
-
-template<>
-struct TypeMapper<std::uint8_t>
-{
-    constexpr inline static const GVariantType * type() { return G_VARIANT_TYPE_BYTE; }
-};
-
-template<>
-struct TypeMapper<std::map<std::string, Variant>>
-{
-    constexpr inline static const GVariantType * type() { return G_VARIANT_TYPE_VARDICT; }
-};
-
-template<typename T>
 struct Codec
 {
     static GVariant *encode_argument(const T& arg);

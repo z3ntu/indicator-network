@@ -241,20 +241,6 @@ public:
         }
     }
 
-
-    /// @todo make a variadict function out of this.
-    ///       and make it use locations %1, %2, etc.
-    std::string stringPrintf(const std::string &format, ...)
-    {
-        int bufsize = 256;
-        char buf[bufsize];
-        va_list arglist;
-        va_start(arglist, format);
-        vsnprintf(buf, bufsize, format.c_str(), arglist);
-        va_end(arglist);
-        return std::string(buf);
-    }
-
     void updateIcon()
     {
         if (!m_activeAccessPoint) {
@@ -268,11 +254,14 @@ public:
         int strength = m_activeAccessPoint->strength().get();
         bool secured = m_activeAccessPoint->secured();
 
+        gchar *a11ydesc = nullptr;
         if (secured) {
-            m_a11ydesc = stringPrintf(_("Network (wireless, %d%%, secure)"), strength);
+            a11ydesc = g_strdup_printf(_("Network (wireless, %d%%, secure)"), strength);
         } else {
-            m_a11ydesc = stringPrintf(_("Network (wireless, %d%%)"), strength);
+            a11ydesc = g_strdup_printf(_("Network (wireless, %d%%)"), strength);
         }
+        m_a11ydesc = {a11ydesc};
+        g_free(a11ydesc);
 
         int iconStrength;
         if (strength >= 75)
@@ -284,10 +273,14 @@ public:
         else
             iconStrength = 0;
 
-        if (secured)
-            m_icon = stringPrintf("nm-signal-%d-secure", iconStrength);
-        else
-            m_icon = stringPrintf("nm-signal-%d", iconStrength);
+        gchar *icon = nullptr;
+        if (secured) {
+            m_icon = g_strdup_printf("nm-signal-%d-secure", iconStrength);
+        } else {
+            m_icon = g_strdup_printf("nm-signal-%d", iconStrength);
+        }
+        m_icon = {icon};
+        g_free(icon);
     }
 
     virtual MenuItem::Ptr

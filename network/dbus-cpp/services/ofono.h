@@ -1,0 +1,1311 @@
+/*
+ * Copyright © 2014 Canonical Ltd.
+ *
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Authors: Antti Kaijanmäki <antti.kaijanmaki@canonical.com
+ */
+#ifndef DBUS_CPP_SERVICES_OFONO_H
+#define DBUS_CPP_SERVICES_OFONO_H
+
+#include <core/dbus/bus.h>
+#include <core/dbus/object.h>
+#include <core/dbus/property.h>
+#include <core/dbus/service.h>
+#include <core/dbus/types/object_path.h>
+#include <core/dbus/types/struct.h>
+#include <core/dbus/types/stl/map.h>
+#include <core/dbus/types/stl/string.h>
+#include <core/dbus/types/stl/tuple.h>
+#include <core/dbus/types/stl/vector.h>
+
+#include <ofono/dbus.h>
+
+namespace org
+{
+namespace ofono
+{
+
+struct Interface
+{
+    struct NetworkRegistration
+    {
+        static const std::string& name()
+        {
+            static const std::string s{"org.ofono.NetworkRegistration"};
+            return s;
+        }
+
+        struct Method
+        {
+            struct GetProperties
+            {
+//                static const std::string& name()
+//                {
+//                    static const std::string s{"GetProperties"};
+//                    return s;
+//                }
+
+//                typedef NetworkRegistration Interface;
+//                typedef std::map<std::string, core::dbus::types::Variant<>> ValueType;
+
+//                static std::chrono::milliseconds default_timeout()
+//                {
+//                    return std::chrono::seconds{1};
+//                }
+            };
+        };
+
+        struct Property
+        {
+            struct Status {
+//                string Status [readonly]
+
+//                        The current registration status of a modem.
+
+//                        The possible values are:
+//                                "unregistered"  Not registered to any network
+//                                "registered"    Registered to home network
+//                                "searching"     Not registered, but searching
+//                                "denied"        Registration has been denied
+//                                "unknown"       Status is unknown
+//                                "roaming"       Registered, but roaming
+
+            };
+
+            struct Technology
+            {
+//                string Technology [readonly, optional]
+//                        Contains the technology of the current network.
+//                        The possible values are: "gsm", "edge", "umts", "hspa",
+//                                                        "lte"
+            };
+
+//            struct Technology
+//            {
+//                static const char* gsm() { return "gsm"; }
+//                static const char* edge() { return "edge"; }
+//                static const char* umts() { return "umts"; }
+//                static const char* hspa() { return "hspa"; }
+//                static const char* lte() { return "lte"; }
+
+//                static const std::string& name()
+//                {
+//                    static const std::string s{"Technology"};
+//                    return s;
+//                }
+
+//                typedef NetworkRegistration Interface;
+//                typedef std::string ValueType;
+//                static const bool readable = true;
+//                static const bool writable = false;
+//            };
+
+            struct Strength
+            {                
+                //                byte Strength [readonly, optional]
+
+                //                        Contains the current signal strength as a percentage
+                //                        between 0-100 percent.
+
+            };
+
+            struct Name
+            {
+                //                string Name [readonly]
+
+                //                        Contains the current operator name, suitable for
+                //                        display on the idle screen or an empty string if
+                //                        not registered to a network.
+
+            };
+        };
+
+        struct Signal
+        {
+
+            struct PropertyChanged {};
+        };
+
+        typedef std::shared_ptr<NetworkRegistration> Ptr;
+        NetworkRegistration(const std::shared_ptr<core::dbus::Object>& object)
+            : object(object)
+//              properties{}
+        {
+            std::cout << __PRETTY_FUNCTION__ << std::endl;
+
+//            auto result = object->invoke_method_synchronously<GetProperties, GetProperties::ValueType>();
+//            if (result.is_error())
+//                throw std::runtime_error(result.error().print());
+
+//            properties = result.value();
+
+
+            status.set(Status::unknown);
+            strength.set(-1);
+            technology.set(Technology::notAvailable);
+        }
+
+        ~NetworkRegistration()
+        {
+            std::cout << __PRETTY_FUNCTION__ << std::endl;
+        }
+
+
+        enum class Status
+        {
+            unregistered,
+            registered,
+            searching,
+            denied,
+            unknown,
+            roaming
+        };
+
+        Status
+        str2status(std::string str)
+        {
+            if (str == "unregistered")
+                return Status::unregistered;
+            if (str == "registered")
+                return Status::registered;
+            if (str == "searching")
+                return Status::searching;
+            if (str == "denied")
+                return Status::denied;
+            if (str == "unknown")
+                return Status::unknown;
+            if (str == "roaming")
+                return Status::roaming;
+
+            throw std::runtime_error(std::string(__PRETTY_FUNCTION__) + ": Unknown status '" + str + "'");
+        }
+
+        enum class Technology
+        {
+            notAvailable,
+            gsm,
+            edge,
+            umts,
+            hspa,
+            lte
+        };
+
+        Technology
+        str2technology(std::string str)
+        {
+            if (str == "")
+                return Technology::notAvailable;
+            if (str == "gsm")
+                return Technology::gsm;
+            if (str == "edge")
+                return Technology::edge;
+            if (str == "umts")
+                return Technology::umts;
+            if (str == "hspa")
+                return Technology::hspa;
+            if (str == "lte")
+                return Technology::lte;
+
+            throw std::runtime_error(std::string(__PRETTY_FUNCTION__) + ": Unknown techonology '" + str + "'");
+        }
+
+        template<typename Property>
+        typename Property::ValueType get(
+                const typename Property::ValueType& default_value = typename Property::ValueType{}) const
+        {
+//            try
+//            {
+//                core::dbus::types::Any value = properties.at(Property::name()).get();
+//                typename Property::ValueType result; value.reader() >> result;
+
+//                return result;
+//            } catch(...)
+//            {
+//            }
+
+//            return default_value;
+        }
+
+        std::shared_ptr<core::dbus::Object> object;
+
+        core::Property<std::string> operatorName;
+        core::Property<Status> status;
+
+        /** -1, not avalable */
+        core::Property<std::int8_t> strength;
+
+        core::Property<Technology> technology;
+
+
+//        GetProperties::ValueType properties;
+    };
+
+    struct SimManager
+    {
+        static const std::string& name()
+        {
+            static const std::string s{OFONO_SIM_MANAGER_INTERFACE};
+            return s;
+        }
+
+        struct Method
+        {
+            struct GetProperties
+            {
+                static const std::string& name()
+                {
+                    static const std::string s{"GetProperties"};
+                    return s;
+                }
+
+                typedef SimManager Interface;
+                typedef std::map<std::string, core::dbus::types::Variant> ResultType;
+
+                static std::chrono::milliseconds default_timeout()
+                {
+                    return std::chrono::seconds{1};
+                }
+            };
+            struct SetProperty
+            {
+                static const std::string& name()
+                {
+                    static const std::string s{"SetProperty"};
+                    return s;
+                }
+
+                typedef SimManager Interface;
+                typedef void ResultType;
+
+                static std::chrono::milliseconds default_timeout()
+                {
+                    return std::chrono::seconds{1};
+                }
+            };
+
+            struct ChangePin
+            {
+                static const std::string& name()
+                {
+                    static const std::string s{"ChangePin"};
+                    return s;
+                }
+
+                typedef SimManager Interface;
+                typedef void ResultType;
+
+                static std::chrono::milliseconds default_timeout()
+                {
+                    return std::chrono::seconds{1};
+                }
+            };
+
+            struct EnterPin
+            {
+                static const std::string& name()
+                {
+                    static const std::string s{"EnterPin"};
+                    return s;
+                }
+
+                typedef SimManager Interface;
+                typedef void ResultType;
+
+                static std::chrono::milliseconds default_timeout()
+                {
+                    return std::chrono::seconds{1};
+                }
+            };
+
+            struct ResetPin
+            {
+                static const std::string& name()
+                {
+                    static const std::string s{"ResetPin"};
+                    return s;
+                }
+
+                typedef SimManager Interface;
+                typedef void ResultType;
+
+                static std::chrono::milliseconds default_timeout()
+                {
+                    return std::chrono::seconds{1};
+                }
+            };
+
+            struct LockPin
+            {
+                static const std::string& name()
+                {
+                    static const std::string s{"LockPin"};
+                    return s;
+                }
+
+                typedef SimManager Interface;
+                typedef void ResultType;
+
+                static std::chrono::milliseconds default_timeout()
+                {
+                    return std::chrono::seconds{1};
+                }
+            };
+
+            struct UnlockPin
+            {
+                static const std::string& name()
+                {
+                    static const std::string s{"UnlockPin"};
+                    return s;
+                }
+
+                typedef SimManager Interface;
+                typedef void ResultType;
+
+                static std::chrono::milliseconds default_timeout()
+                {
+                    return std::chrono::seconds{1};
+                }
+            };
+#if 0
+                            array{byte} GetIcon(byte id)
+
+                                    Obtain the icon given by id.  Only ids greater than 1
+                                    are valid.  XPM format is currently used to return the
+                                    icon data.
+
+                                    Possible Errors: [service].Error.NotImplemented
+                                                     [service].Error.InProgress
+                                                     [service].Error.InvalidArguments
+                                                     [service].Error.Failed
+
+#endif
+        };
+
+        struct Property
+        {
+            struct Present
+            {
+//                boolean Present [readonly]
+
+//                                        True if a SIM card is detected.  There are
+//                                        no other properties if false.
+
+            };
+
+            struct SubscriberIdentity
+            {
+//                string SubscriberIdentity [readonly, optional]
+
+//                        Contains the IMSI of the SIM, if available.
+            };
+
+            struct PinRequired
+            {
+//                string PinRequired [readonly]
+
+//                        Contains the string type of the pin required by the
+//                        modem.  The possible values are:
+//                                "none" - Nothing is required
+//                                "pin" - SIM PIN is required
+//                                "phone" - Phone-to-SIM PIN is required
+//                                "firstphone" - Phone-to-very-first SIM
+//                                                PIN is required
+//                                "pin2" - SIM PIN2 is required
+//                                "network" - Network Personalization password is
+//                                                required
+//                                "netsub" - Network subset personalization
+//                                                password is required
+//                                "service" - Service Provider personalization
+//                                                password is required
+//                                "corp" - Corporate personalization password
+//                                                is required
+//                                "puk" - SIM PUK is required
+//                                "firstphonepuk" - Phone-to-very-first SIM PUK is
+//                                                required
+//                                "puk2" - SIM PUK2 is required
+//                                "networkpuk" - Network personalization unblocking
+//                                                password is required
+//                                "netsubpuk" - Network subset personalization
+//                                                unblocking password is required
+//                                "servicepuk" - Service provider personalization
+//                                                unblocking password is required
+//                                "corppuk" - Corporate personalization unblocking
+//                                                password is required
+            };
+
+            struct LockedPins
+            {
+//                array{string} LockedPins [readonly]
+
+//                        Contains the pins that are currently locked and will
+//                        require the user to enter the password at startup.
+//                        Using LockPin and UnlockPin will result in changes to
+//                        this property.
+
+//                        The list contains elements of the same format as the
+//                        PinRequired property.
+            };
+
+//            boolean FixedDialing [readonly]
+
+//                    True if Fixed Dialing service is enabled in SIM card.
+
+//                    If FDN is enabled, oFono halts the SIM initialization
+//                    procedure and only emergency calls are allowed.
+
+//            boolean BarredDialing [readonly]
+
+//                    True if Barred Dialing service is enabled in SIM card.
+
+//                    If BDN is enabled, oFono halts the SIM initialization
+//                    procedure and only emergency calls are allowed.
+
+
+            struct Retries
+            {
+//                dict{string,byte} Retries [readonly]
+
+//                        Contains all the retry counters available. The possible
+//                        values for the first field are the same as in
+//                        PinRequired property. The second field contains is the
+//                        counter for that pin type.
+
+//                        This property is updated after each operation that
+//                        might have changed the retry counters, i.e. calls to
+//                        ChangePin(), EnterPin(), ResetPin() LockPin(),
+//                        UnlockPin().
+            };
+        };
+
+        struct Signal
+        {
+            struct PropertyChanged
+            {
+                static const std::string& name()
+                {
+                    static const std::string s{"PropertyChanged"};
+                    return s;
+                }
+
+                typedef SimManager Interface;
+                typedef std::tuple<std::string, core::dbus::types::Variant> ArgumentType;
+            };
+        };
+
+        typedef std::shared_ptr<SimManager> Ptr;
+        SimManager(const std::shared_ptr<core::dbus::Object>& object)
+            : object(object),
+              propertyChanged(object->get_signal<Signal::PropertyChanged>())
+        {
+            std::cout << __PRETTY_FUNCTION__ << std::endl;
+
+        }
+
+        ~SimManager()
+        {
+            std::cout << __PRETTY_FUNCTION__ << std::endl;
+        }
+
+        enum class PinType
+        {
+            none,
+            pin,
+            phone,
+            firstphone,
+            pin2,
+            network,
+            netsub,
+            service,
+            corp,
+            puk,
+            firstphonepuk,
+            puk2,
+            networkpuk,
+            netsubpuk,
+            servicepuk,
+            corppuk
+        };
+
+        static std::string
+        pin2str(PinType type)
+        {
+            switch(type){
+            case PinType::none:
+                return "none";
+            case PinType::pin:
+                return "pin";
+            case PinType::phone:
+                return "phone";
+            case PinType::firstphone:
+                return "firstphone";
+            case PinType::pin2:
+                return "pin2";
+            case PinType::network:
+                return "network";
+            case PinType::netsub:
+                return "netsub";
+            case PinType::service:
+                return "service";
+            case PinType::corp:
+                return "corp";
+            case PinType::puk:
+                return "puk";
+            case PinType::firstphonepuk:
+                return "firstphonepuk";
+            case PinType::puk2:
+                return "puk2";
+            case PinType::networkpuk:
+                return "networkpuk";
+            case PinType::netsubpuk:
+                return "netsubpuk";
+            case PinType::servicepuk:
+                return "servicepuk";
+            case PinType::corppuk:
+                return "corppuk";
+            }
+            throw std::runtime_error(std::string(__PRETTY_FUNCTION__) + ": unknown pinType: " + std::to_string(static_cast<int>(type)));
+        }
+
+        static PinType
+        str2pin(std::string str)
+        {
+            if (str == "none")
+                return PinType::none;
+            else if (str == "pin")
+                return PinType::pin;
+            else if (str == "phone")
+                return PinType::phone;
+            else if (str == "firstphone")
+                return PinType::firstphone;
+            else if (str == "pin2")
+                return PinType::pin2;
+            else if (str == "network")
+                return PinType::network;
+            else if (str == "netsub")
+                return PinType::netsub;
+            else if (str == "service")
+                return PinType::service;
+            else if (str == "corp")
+                return PinType::corp;
+            else if (str == "puk")
+                return PinType::puk;
+            else if (str == "firstphonepuk")
+                return PinType::firstphonepuk;
+            else if (str == "puk2")
+                return PinType::puk2;
+            else if (str == "networkpuk")
+                return PinType::networkpuk;
+            else if (str == "netsubpuk")
+                return PinType::netsubpuk;
+            else if (str == "servicepuk")
+                return PinType::servicepuk;
+            else if (str == "corppuk")
+                return PinType::corppuk;
+
+            /// @todo throw something.
+            std::cerr << "Unknown pin type: " << str << std::endl;
+            return PinType::none;
+        }
+
+        std::map<std::string, core::dbus::types::Variant>
+        getProperties()
+        {
+            auto result =
+                    object->invoke_method_synchronously<
+                        SimManager::Method::GetProperties, SimManager::Method::GetProperties::ResultType>();
+
+            if (result.is_error())
+                throw std::runtime_error(result.error().print());
+
+            return result.value();
+        }
+
+        void
+        changePin(PinType type, std::string oldPin, std::string newPin)
+        {
+            auto result =
+                    object->invoke_method_synchronously<
+                        SimManager::Method::ChangePin, SimManager::Method::ChangePin::ResultType>
+                    (pin2str(type), oldPin, newPin);
+
+            if (result.is_error())
+                throw std::runtime_error(result.error().print());
+
+            //            void ChangePin(string type, string oldpin, string newpin)
+
+            //                    Changes the pin given by string type.
+
+            //                    Possible Errors: [service].Error.NotImplemented
+            //                                     [service].Error.InProgress
+            //                                     [service].Error.InvalidArguments
+            //                                     [service].Error.InvalidFormat
+            //                                     [service].Error.Failed
+
+        }
+
+        void
+        enterPin(PinType type, std::string pin)
+        {
+            auto result =
+                    object->invoke_method_synchronously<
+                        SimManager::Method::EnterPin, SimManager::Method::EnterPin::ResultType>
+                    (pin2str(type), pin);
+
+            if (result.is_error())
+                throw std::runtime_error(result.error().print());
+
+            //            void EnterPin(string type, string pin)
+
+            //                 Enters the currently pending pin.  The type value must
+            //                 match the pin type being asked in the PinRequired
+            //                 property.
+
+            //                 Possible Errors: [service].Error.NotImplemented
+            //                                  [service].Error.InProgress
+            //                                  [service].Error.InvalidArguments
+            //                                  [service].Error.InvalidFormat
+            //                                  [service].Error.Failed
+        }
+
+        void
+        resetPin(PinType type, std::string puk, std::string newPin)
+        {
+            auto result =
+                    object->invoke_method_synchronously<
+                    SimManager::Method::ResetPin, SimManager::Method::ResetPin::ResultType>
+                    (pin2str(type), puk, newPin);
+
+            if (result.is_error())
+                throw std::runtime_error(result.error().print());
+
+            //          void ResetPin(string type, string puk, string newpin)
+
+            //                  Provides the unblock key to the modem and if correct
+            //                  resets the pin to the new value of newpin.
+
+            //                  Possible Errors: [service].Error.NotImplemented
+            //                                   [service].Error.InProgress
+            //                                   [service].Error.InvalidArguments
+            //                                   [service].Error.InvalidFormat
+            //                                   [service].Error.Failed
+        }
+
+        void
+        lockPin(PinType type, std::string pin)
+        {
+            auto result =
+                    object->invoke_method_synchronously<
+                    SimManager::Method::LockPin, SimManager::Method::LockPin::ResultType>
+                    (pin2str(type), pin);
+
+            if (result.is_error())
+                throw std::runtime_error(result.error().print());
+
+            //          void LockPin(string type, string pin)
+
+            //                  Activates the lock for the particular pin type.  The
+            //                  device will ask for a PIN automatically next time the
+            //                  device is turned on or the SIM is removed and
+            //                  re-inserted.  The current PIN is required for the
+            //                  operation to succeed.
+
+            //                  Possible Errors: [service].Error.NotImplemented
+            //                                   [service].Error.InProgress
+            //                                   [service].Error.InvalidArguments
+            //                                   [service].Error.InvalidFormat
+            //                                   [service].Error.Failed
+
+        }
+
+        void
+        unlockPin(PinType type, std::string pin)
+        {
+            auto result =
+                    object->invoke_method_synchronously<
+                    SimManager::Method::UnlockPin, SimManager::Method::UnlockPin::ResultType>
+                    (pin2str(type), pin);
+
+            if (result.is_error())
+                throw std::runtime_error(result.error().print());
+
+
+            //          void UnlockPin(string type, string pin)
+
+            //                  Deactivates the lock for the particular pin type.  The
+            //                  current PIN is required for the operation to succeed.
+
+            //                  Possible Errors: [service].Error.NotImplemented
+            //                                   [service].Error.InProgress
+            //                                   [service].Error.InvalidArguments
+            //                                   [service].Error.InvalidFormat
+            //                                   [service].Error.Failed
+        }
+
+        std::shared_ptr<core::dbus::Object> object;
+
+        core::Property<std::set<PinType>> lockedPins;
+        core::Property<PinType> pinRequired;
+        core::Property<bool> present;
+        core::Property<std::map<PinType, std::uint8_t>> retries;
+        core::Property<std::string> subscriberIdentity;
+
+        std::shared_ptr<core::dbus::Signal<Signal::PropertyChanged, Signal::PropertyChanged::ArgumentType>> propertyChanged;
+
+    }; // Interface::SimManager
+
+    struct Modem
+    {
+        static const std::string& name()
+        {
+            static const std::string s{OFONO_MODEM_INTERFACE};
+            return s;
+        }
+
+        struct Method
+        {
+            struct GetProperties
+            {
+                static const std::string& name()
+                {
+                    static const std::string s{"GetProperties"};
+                    return s;
+                }
+
+                typedef Modem Interface;
+                typedef std::map<std::string, core::dbus::types::Variant> ResultType;
+
+                static std::chrono::milliseconds default_timeout()
+                {
+                    return std::chrono::seconds{1};
+                }
+            };
+            struct SetProperty
+            {
+                static const std::string& name()
+                {
+                    static const std::string s{"SetProperty"};
+                    return s;
+                }
+
+                typedef Modem Interface;
+                typedef void ResultType;
+
+                static std::chrono::milliseconds default_timeout()
+                {
+                    return std::chrono::seconds{1};
+                }
+            };
+        };
+
+        struct Property
+        {
+            struct Interfaces
+            {
+                static const std::string &name()
+                {
+                    static const std::string s{"Interfaces"};
+                    return s;
+                }
+
+                typedef Modem Interface;
+                typedef std::vector<std::string> ValueType;
+                static const bool readable = true;
+                static const bool writable = false;
+
+                enum class Type
+                {
+                    AssistedSatelliteNavigation,
+                    AudioSettings,
+                    CallBarring,
+                    CallForwarding,
+                    CallMeter,
+                    CallSettings,
+                    CallVolume,
+                    CellBroadcast,
+                    ConnectionManager,
+                    Handsfree,
+                    LocationReporting,
+                    MessageManager,
+                    MessageWaiting,
+                    NetworkRegistration,
+                    NetworkTime,
+                    Phonebook,
+                    PushNotification,
+                    RadioSettings,
+                    SimManager,
+                    SmartMessaging,
+                    SimToolkit,
+                    SupplementaryServices,
+                    TextTelephony,
+                    VoiceCallManager,
+                };
+            };
+
+            struct Online
+            {
+                static const std::string &name()
+                {
+                    static const std::string s{"Online"};
+                    return s;
+                }
+
+                typedef Modem Interface;
+                typedef bool ValueType;
+                static const bool readable = true;
+                static const bool writable = true;
+            };
+
+            struct Serial
+            {
+                static const std::string &name()
+                {
+                    static const std::string s{"Serial"};
+                    return s;
+                }
+
+                typedef Modem Interface;
+                typedef std::string ValueType;
+                static const bool readable = true;
+                static const bool writable = false;
+            };
+
+            struct Type
+            {
+                static const std::string &name()
+                {
+                    static const std::string s{"Type"};
+                    return s;
+                }
+
+                typedef Modem Interface;
+                typedef std::string ValueType;
+                static const bool readable = true;
+                static const bool writable = false;
+            };
+
+        };
+
+        struct Signal
+        {
+            struct PropertyChanged
+            {
+                static const std::string& name()
+                {
+                    static const std::string s{"PropertyChanged"};
+                    return s;
+                }
+
+                typedef Modem Interface;
+                typedef std::tuple<std::string, core::dbus::types::Variant> ArgumentType;
+            };
+        };
+
+        enum class Type
+        {
+            test,
+            hfp,
+            sap,
+            hardware
+        };
+
+        Type str2type(std::string str)
+        {
+            if (str == "test")
+                return Type::test;
+            if (str == "hfp")
+                return Type::hfp;
+            if (str == "sap")
+                return Type::sap;
+            if (str == "hardware")
+                return Type::hardware;
+
+            /// @todo throw something.
+            std::cerr << "Unknown modem type: " << str << std::endl;
+            return Type::test;
+        }
+
+
+        typedef std::shared_ptr<Modem> Ptr;
+        Modem(const std::shared_ptr<core::dbus::Service>& service,
+              const std::shared_ptr<core::dbus::Object>& object)
+            : service(service),
+              object(object),
+              propertyChanged(object->get_signal<Signal::PropertyChanged>())
+        {
+            std::cout << __PRETTY_FUNCTION__ << std::endl;
+            knownInterfaces = {std::make_pair(OFONO_GNSS_INTERFACE, Property::Interfaces::Type::AssistedSatelliteNavigation),
+                               std::make_pair(OFONO_AUDIO_SETTINGS_INTERFACE,         Property::Interfaces::Type::AudioSettings              ),
+                               std::make_pair(OFONO_CALL_BARRING_INTERFACE,           Property::Interfaces::Type::CallBarring                ),
+                               std::make_pair(OFONO_CALL_FORWARDING_INTERFACE,        Property::Interfaces::Type::CallForwarding             ),
+                               std::make_pair(OFONO_CALL_METER_INTERFACE,             Property::Interfaces::Type::CallMeter                  ),
+                               std::make_pair(OFONO_CALL_SETTINGS_INTERFACE,          Property::Interfaces::Type::CallSettings               ),
+                               std::make_pair(OFONO_CALL_VOLUME_INTERFACE,            Property::Interfaces::Type::CallVolume                 ),
+                               std::make_pair(OFONO_CELL_BROADCAST_INTERFACE,         Property::Interfaces::Type::CellBroadcast              ),
+                               std::make_pair(OFONO_CONNECTION_MANAGER_INTERFACE,     Property::Interfaces::Type::ConnectionManager          ),
+                               std::make_pair(OFONO_HANDSFREE_INTERFACE,              Property::Interfaces::Type::Handsfree                  ),
+                               std::make_pair(OFONO_LOCATION_REPORTING_INTERFACE,     Property::Interfaces::Type::LocationReporting          ),
+                               std::make_pair(OFONO_MESSAGE_MANAGER_INTERFACE,        Property::Interfaces::Type::MessageManager             ),
+                               std::make_pair(OFONO_MESSAGE_WAITING_INTERFACE,        Property::Interfaces::Type::MessageWaiting             ),
+                               std::make_pair(OFONO_NETWORK_REGISTRATION_INTERFACE,   Property::Interfaces::Type::NetworkRegistration        ),
+                               std::make_pair(OFONO_NETWORK_TIME_INTERFACE,           Property::Interfaces::Type::NetworkTime                ),
+                               std::make_pair(OFONO_PHONEBOOK_INTERFACE,              Property::Interfaces::Type::Phonebook                  ),
+                               std::make_pair("org.ofono.PushNotification",           Property::Interfaces::Type::PushNotification           ),
+                               std::make_pair(OFONO_RADIO_SETTINGS_INTERFACE,         Property::Interfaces::Type::RadioSettings              ),
+                               std::make_pair(OFONO_SIM_MANAGER_INTERFACE,            Property::Interfaces::Type::SimManager                 ),
+                               std::make_pair("org.ofono.SmartMessaging",             Property::Interfaces::Type::SmartMessaging             ),
+                               std::make_pair(OFONO_STK_INTERFACE,                    Property::Interfaces::Type::SimToolkit                 ),
+                               std::make_pair(OFONO_SUPPLEMENTARY_SERVICES_INTERFACE, Property::Interfaces::Type::SupplementaryServices      ),
+                               std::make_pair(OFONO_TEXT_TELEPHONY_INTERFACE,         Property::Interfaces::Type::TextTelephony              ),
+                               std::make_pair(OFONO_VOICECALL_MANAGER_INTERFACE,      Property::Interfaces::Type::VoiceCallManager           )
+                              };
+
+            interfaces.changed().connect([this](Property::Interfaces::ValueType values)
+            {
+                std::vector<Property::Interfaces::Type> newInterfaces;
+                for (auto interface : values) {
+                    auto iter = knownInterfaces.find(interface);
+                    if (iter != knownInterfaces.end()) {
+                        newInterfaces.push_back(iter->second);
+                    } else {
+                        // custom interface, we don't care
+                        std::cout << "Unknown Interface: " << interface << std::endl;
+                    }
+                }
+
+                // construct a list of known interface types
+                std::vector<Property::Interfaces::Type> knownInterfaceTypes;
+                for (auto element : knownInterfaces)
+                    knownInterfaceTypes.push_back(element.second);
+
+                // check which interfaces have been removed
+                for (auto known : knownInterfaceTypes)
+                {
+                    switch (known) {
+                    case Property::Interfaces::Type::AssistedSatelliteNavigation:
+                    case Property::Interfaces::Type::AudioSettings:
+                    case Property::Interfaces::Type::CallBarring:
+                    case Property::Interfaces::Type::CallForwarding:
+                    case Property::Interfaces::Type::CallMeter:
+                    case Property::Interfaces::Type::CallSettings:
+                    case Property::Interfaces::Type::CallVolume:
+                    case Property::Interfaces::Type::CellBroadcast:
+                    case Property::Interfaces::Type::ConnectionManager:
+                    case Property::Interfaces::Type::Handsfree:
+                    case Property::Interfaces::Type::LocationReporting:
+                    case Property::Interfaces::Type::MessageManager:
+                    case Property::Interfaces::Type::MessageWaiting:
+                        break;
+                    case Property::Interfaces::Type::NetworkRegistration:
+                    {
+                        if (std::find(newInterfaces.begin(), newInterfaces.end(), known) == newInterfaces.end() &&
+                            networkRegistration->get()) {
+                            std::cout << "REMOVED NETWORKREGISTRATION" << std::endl;
+                            networkRegistration.set(std::shared_ptr<NetworkRegistration>());
+                        }
+                        break;
+                    }
+                    case Property::Interfaces::Type::NetworkTime:
+                    case Property::Interfaces::Type::Phonebook:
+                    case Property::Interfaces::Type::PushNotification:
+                    case Property::Interfaces::Type::RadioSettings:
+                        break;
+                    case Property::Interfaces::Type::SimManager:
+                    {
+                        if (std::find(newInterfaces.begin(), newInterfaces.end(), known) == newInterfaces.end() &&
+                            simManager->get()) {
+                            std::cout << "REMOVED SIMMANAGER" << std::endl;
+                            simManager.set(std::shared_ptr<SimManager>());
+                        }
+                        break;
+                    }
+                    case Property::Interfaces::Type::SmartMessaging:
+                    case Property::Interfaces::Type::SimToolkit:
+                    case Property::Interfaces::Type::SupplementaryServices:
+                    case Property::Interfaces::Type::TextTelephony:
+                    case Property::Interfaces::Type::VoiceCallManager:
+                        break;
+                    }
+                }
+
+                // add new interfaces
+                for (auto type : newInterfaces) {
+                    switch (type) {
+                    case Property::Interfaces::Type::AssistedSatelliteNavigation:
+                    case Property::Interfaces::Type::AudioSettings:
+                    case Property::Interfaces::Type::CallBarring:
+                    case Property::Interfaces::Type::CallForwarding:
+                    case Property::Interfaces::Type::CallMeter:
+                    case Property::Interfaces::Type::CallSettings:
+                    case Property::Interfaces::Type::CallVolume:
+                    case Property::Interfaces::Type::CellBroadcast:
+                    case Property::Interfaces::Type::ConnectionManager:
+                    case Property::Interfaces::Type::Handsfree:
+                    case Property::Interfaces::Type::LocationReporting:
+                    case Property::Interfaces::Type::MessageManager:
+                    case Property::Interfaces::Type::MessageWaiting:
+                        break;
+                    case Property::Interfaces::Type::NetworkRegistration:
+                    {
+                        if (!networkRegistration->get()) {
+                            std::cout << "ADDED NETWORKREGISTRATION" << std::endl;
+                            networkRegistration.set(std::make_shared<NetworkRegistration>(this->object));
+                        }
+                        break;
+                    }
+                    case Property::Interfaces::Type::NetworkTime:
+                    case Property::Interfaces::Type::Phonebook:
+                    case Property::Interfaces::Type::PushNotification:
+                    case Property::Interfaces::Type::RadioSettings:
+                    case Property::Interfaces::Type::SimManager:
+                    {
+                        if (!simManager->get()) {
+                            std::cout << "ADDED SIMMANAGER" << std::endl;
+                            simManager.set(std::make_shared<SimManager>(this->object));
+                        }
+                        break;
+                    }
+                    case Property::Interfaces::Type::SmartMessaging:
+                    case Property::Interfaces::Type::SimToolkit:
+                    case Property::Interfaces::Type::SupplementaryServices:
+                    case Property::Interfaces::Type::TextTelephony:
+                     case Property::Interfaces::Type::VoiceCallManager:
+                        break;
+                    }
+                }
+            });
+
+            propertyChanged->connect([this](Signal::PropertyChanged::ArgumentType arg) {
+                _updateProperty(std::get<0>(arg), std::get<1>(arg));
+            });
+            for (auto element : getProperties()) {
+                _updateProperty(element.first, element.second);
+            }
+        }
+
+        std::map<std::string, core::dbus::types::Variant>
+        getProperties()
+        {
+            auto result =
+                    object->invoke_method_synchronously<
+                        Modem::Method::GetProperties, Modem::Method::GetProperties::ResultType>();
+
+            if (result.is_error())
+                throw std::runtime_error(result.error().print());
+
+            return result.value();
+        }
+
+        void setProperty(const std::string &property, core::dbus::types::Variant value)
+        {
+//            Possible Errors: [service].Error.InProgress
+//                              [service].Error.NotImplemented
+//                              [service].Error.InvalidArguments
+//                              [service].Error.NotAvailable
+//                              [service].Error.AccessDenied
+//                              [service].Error.Failed
+            auto result =
+                    object->invoke_method_synchronously<
+                        Modem::Method::SetProperty, Modem::Method::SetProperty::ResultType>(property, value);
+
+            if (result.is_error())
+                throw std::runtime_error(result.error().print());
+        }
+
+        ~Modem()
+        {
+            std::cout << __PRETTY_FUNCTION__ << std::endl;
+        }
+
+        void _updateProperty(const std::string &property, core::dbus::types::Variant value)
+        {
+            std::cout << __PRETTY_FUNCTION__ << ": " << property << std::endl;
+            if (property == Property::Interfaces::name()) {
+                auto newValue = value.as<Property::Interfaces::ValueType>();
+                interfaces.set(newValue);
+            } else if (property == Property::Online::name()) {
+                online.set(value.as<bool>());
+            } else if (property == Property::Serial::name()) {
+                serial.set(value.as<std::string>());
+            } else if (property == Property::Type::name()) {
+                type.set(str2type(value.as<std::string>()));
+            }
+        }
+
+        std::shared_ptr<core::dbus::Service> service;
+        std::shared_ptr<core::dbus::Object> object;
+
+        core::Property<Property::Interfaces::ValueType> interfaces;
+        core::Property<bool> online;
+        core::Property<std::string> serial;
+        core::Property<Type> type;
+
+        std::shared_ptr<core::dbus::Signal<Signal::PropertyChanged, Signal::PropertyChanged::ArgumentType>> propertyChanged;
+
+        core::Property<NetworkRegistration::Ptr> networkRegistration;
+        core::Property<SimManager::Ptr>          simManager;
+
+        std::map<std::string, Property::Interfaces::Type> knownInterfaces;
+
+    }; // Interface::Modem
+
+    struct Manager
+    {
+        static const std::string& name()
+        {
+            static const std::string s{OFONO_MANAGER_INTERFACE};
+            return s;
+        }
+
+        struct Method
+        {
+            struct GetModems
+            {
+                static const std::string& name()
+                {
+                    static const std::string s{"GetModems"};
+                    return s;
+                }
+
+                typedef Manager Interface;
+                typedef std::vector<core::dbus::types::Struct<core::dbus::types::ObjectPath>> ResultType;
+
+                static std::chrono::milliseconds default_timeout()
+                {
+                    return std::chrono::seconds{1};
+                }
+            };
+        };
+
+        struct Signal
+        {
+            struct ModemAdded
+            {
+                static const std::string& name()
+                {
+                    static const std::string s{"ModemAdded"};
+                    return s;
+                }
+
+                typedef Manager Interface;
+                typedef std::tuple<core::dbus::types::ObjectPath, std::map<std::string, std::string>> ArgumentType;
+            };
+
+            struct ModemRemoved
+            {
+                static const std::string& name()
+                {
+                    static const std::string s{"ModemRemoved"};
+                    return s;
+                }
+
+                typedef Manager Interface;
+                typedef core::dbus::types::ObjectPath ArgumentType;
+            };
+        };
+
+        Manager(std::shared_ptr<core::dbus::Service> &service,
+                std::shared_ptr<core::dbus::Object> &object)
+            : service(service),
+              object(object),
+              modem_added  (object->get_signal<Signal::ModemAdded>()),
+              modem_removed(object->get_signal<Signal::ModemRemoved>())
+        {
+            auto result = object->invoke_method_synchronously<Method::GetModems, Method::GetModems::ResultType>();
+
+            if (result.is_error())
+                throw std::runtime_error(result.error().print());
+
+            std::map<core::dbus::types::ObjectPath, Modem::Ptr> tmp;
+            for (const auto& element : result.value())
+            {
+                tmp.insert(std::make_pair(element.value, std::make_shared<Modem>(service, service->object_for_path(element.value))));
+            }
+            modems.set(tmp);
+
+            modem_added->connect([this](const Signal::ModemAdded::ArgumentType& arg)
+            {
+                auto current = modems.get();
+                current.insert(std::make_pair(std::get<0>(arg),std::make_shared<Modem>(this->service, this->service->object_for_path(std::get<0>(arg)))));
+                modems.set(current);
+            });
+
+            modem_removed->connect([this](const Signal::ModemRemoved::ArgumentType& arg)
+            {
+                auto current = modems.get();
+                current.erase(arg);
+                modems.set(current);
+            });
+        }
+
+        ~Manager()
+        {
+            std::cout << __PRETTY_FUNCTION__ << std::endl;
+        }
+
+        std::shared_ptr<core::dbus::Service> service;
+        std::shared_ptr<core::dbus::Object>  object;
+
+        std::shared_ptr<
+            core::dbus::Signal<Signal::ModemAdded,
+                               Signal::ModemAdded::ArgumentType>
+            > modem_added;
+
+        std::shared_ptr<
+            core::dbus::Signal<Signal::ModemRemoved,
+                               Signal::ModemRemoved::ArgumentType>
+            > modem_removed;
+
+        core::Property<std::map<core::dbus::types::ObjectPath, Modem::Ptr>> modems;
+    }; // Interface::Manager
+
+
+}; // Interface
+
+struct Service
+{
+    std::shared_ptr<Interface::Manager> manager;
+
+    static const std::string& name()
+    {
+        static const std::string s{OFONO_SERVICE};
+        return s;
+    }
+
+
+    Service(const core::dbus::Bus::Ptr& bus)
+    {
+        auto service = core::dbus::Service::use_service<Service>(bus);
+        auto object = service->object_for_path(core::dbus::types::ObjectPath(OFONO_MANAGER_PATH));
+        manager = std::make_shared<Interface::Manager>(service, object);
+    }
+
+    struct Mock
+    {
+        std::shared_ptr<Interface::Manager> manager;
+
+        Mock(const core::dbus::Bus::Ptr& bus)
+        {
+            auto service = core::dbus::Service::add_service<Service>(bus);
+            auto object = service->add_object_for_path(core::dbus::types::ObjectPath(OFONO_MANAGER_PATH));
+            manager = std::make_shared<Interface::Manager>(service, object);
+        }
+    };
+};
+
+}
+}
+
+#endif // DBUS_CPP_SERVICES_OFONO_H
+

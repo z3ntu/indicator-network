@@ -35,6 +35,8 @@ namespace networking = com::ubuntu::connectivity::networking;
 #include "menumodel-cpp/menu.h"
 #include "wifi-link-item.h"
 
+#include "modem-manager.h"
+
 class Service
 {
     IndicatorMenu::Ptr m_desktopMenu;
@@ -58,6 +60,8 @@ class Service
 
     WifiLinkItem::Ptr m_wifiLink;
 
+    TextItem::Ptr m_unlockSim;
+    ModemManager::Ptr m_simService;
 
     TextItem::Ptr m_openWifiSettings;
     TextItem::Ptr m_openCellularSettings;
@@ -82,7 +86,7 @@ class Service
     std::shared_ptr<SessionBus> m_sessionBus;
     std::unique_ptr<BusName> m_busName;
 
-    static void url_dispatcher_cb(const gchar * url, gboolean success, gpointer user_data)
+    static void url_dispatcher_cb(const gchar * url, gboolean success, gpointer)
     {
         if (!success) {
             std::cerr << "URLDispatch failed on " << url << std::endl;
@@ -167,9 +171,18 @@ public:
         m_desktopMenu->addItem(m_openWifiSettings);
         m_phoneMenu->addItem(m_openWifiSettings);
 
-        auto unlockSim = std::make_shared<TextItem>(_("Unlock SIM…"), "sim", "unlock");
-        m_desktopMenu->addItem(unlockSim);
-        m_phoneMenu->addItem(unlockSim);
+        m_unlockSim = std::make_shared<TextItem>(_("Unlock SIM…"), "sim", "unlock");
+        m_simService = std::make_shared<ModemManager>();
+
+        /// @todo support more than one sim
+        /// @todo support sims().changed()
+        /// @todo add Item::visible
+        /// @todo support isLocked().changed()
+        if (m_simService->modems()->size() == 1 &&
+            m_simService->modems()->begin()->get()->isLocked().get()) {
+            m_desktopMenu->addItem(m_unlockSim);
+            m_phoneMenu->addItem(m_unlockSim);
+        }
 
         m_openCellularSettings = std::make_shared<TextItem>(_("Cellular settings…"), "cellular", "settings");
         m_openCellularSettings->activated().connect([this](){

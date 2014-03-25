@@ -22,7 +22,7 @@
 
 #include "item.h"
 
-#include "menumodel-cpp/util.h"
+#include "gio-helpers/util.h"
 #include "menumodel-cpp/menu-item.h"
 #include "menumodel-cpp/action.h"
 
@@ -40,7 +40,7 @@ public:
 
         m_action = std::make_shared<Action>(action_name, nullptr);
         m_actionGroup->add(m_action);
-        m_action->activated().connect([this](Variant parameter){
+        m_action->activated().connect([this](Variant){
             m_activated();
         });
         m_item = std::make_shared<MenuItem>(label, std::string("indicator.") + action_name);

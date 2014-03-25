@@ -24,10 +24,9 @@
 #include <memory>
 #include <gio/gio.h>
 
+#include <cassert>
+
 #include "util.h"
-
-#include "action-group-merger.h"
-
 
 class Variant;
 
@@ -154,6 +153,21 @@ struct Codec<std::uint8_t>
         assert(variant);
         assert(g_variant_is_of_type(variant, G_VARIANT_TYPE_BYTE));
         value = g_variant_get_byte(variant);
+    }
+};
+
+template<>
+struct Codec<std::int32_t>
+{
+    inline static GVariant *encode_argument(const std::int32_t value)
+    {
+        return g_variant_new_int32(value);
+    }
+    inline static void decode_argument(const Variant &variant, std::int32_t &value)
+    {
+        assert(variant);
+        assert(g_variant_is_of_type(variant, G_VARIANT_TYPE_INT32));
+        value = g_variant_get_int32(variant);
     }
 };
 

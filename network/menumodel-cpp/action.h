@@ -27,9 +27,8 @@
 #include <core/signal.h>
 #include <gio/gio.h>
 
-#include "util.h"
-
-#include "variant.h"
+#include "gio-helpers/util.h"
+#include "gio-helpers/variant.h"
 
 
 class Action

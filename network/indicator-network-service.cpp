@@ -58,14 +58,14 @@ signal_handler(int signo) {
 }
 
 static gboolean
-stop_main_loop(gpointer user_data)
+stop_main_loop(gpointer)
 {
     mainloop.quit();
     return FALSE;
 }
 
 int
-main(int argc, char *argv[])
+main(int, char *[])
 {
     act.sa_handler = signal_handler;
     sigaction(SIGHUP, &act, 0);

@@ -43,6 +43,14 @@ pkg_check_modules(
 )
 include_directories(${NM_INCLUDE_DIRS})
 
+set(OFONO_REQUIRED_VERSION 1.12)
+pkg_check_modules(
+  OFONO REQUIRED
+  ofono>=${OFONO_REQUIRED_VERSION}
+)
+include_directories(${OFONO_INCLUDE_DIRS})
+
+
 set(NOTIFY_REQUIRED_VERSION 0.7.5)
 pkg_check_modules(
   NOTIFY REQUIRED
@@ -93,7 +101,8 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 add_definitions(
     -Wall
     -Wextra
-    -Wpedantic
+#    -Wpedantic GCC 4.7 sucks
+    -pedantic
 )
 
 configure_file(

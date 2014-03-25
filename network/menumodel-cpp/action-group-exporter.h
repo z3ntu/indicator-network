@@ -23,7 +23,7 @@
 #include <memory>
 #include <gio/gio.h>
 
-#include "util.h"
+#include "gio-helpers/util.h"
 
 #include "action-group.h"
 

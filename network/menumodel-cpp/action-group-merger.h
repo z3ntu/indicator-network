@@ -24,7 +24,7 @@
 #include <gio/gio.h>
 #include <core/connection.h>
 
-#include "util.h"
+#include "gio-helpers/util.h"
 #include "action-group.h"
 #include <set>
 #include <map>

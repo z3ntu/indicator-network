@@ -17,8 +17,8 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#ifndef UTIL_H
-#define UTIL_H
+#ifndef GIO_HELPERS_UTIL_H
+#define GIO_HELPERS_UTIL_H
 
 #include <libintl.h>
 #define _(String) gettext (String)
@@ -116,6 +116,9 @@ struct GVariantDeleter {
         g_variant_unref(ptr);
     }
 };
+
+namespace {
+
 typedef std::shared_ptr<GVariant> GVariantPtr;
 GVariantPtr make_gvariant_ptr(GVariant *ptr)
 {
@@ -136,6 +139,8 @@ int append_item_to_gmenu(GMenu *menu, GMenuItem *item)
     int n_items = g_menu_model_get_n_items(G_MENU_MODEL(menu));
     g_menu_insert_item(menu, n_items, item);
     return n_items;
+}
+
 }
 
 class SessionBus
@@ -173,7 +178,7 @@ class BusName
     std::function<void(std::string)> m_lost;
     std::shared_ptr<SessionBus> m_bus;
 
-    static void nameAcquired(GDBusConnection *connection,
+    static void nameAcquired(GDBusConnection *,
                              const gchar *name,
                              gpointer user_data)
     {
@@ -181,7 +186,7 @@ class BusName
         that->m_acquired(name);
     }
 
-    static void nameLost(GDBusConnection *connection,
+    static void nameLost(GDBusConnection *,
                          const gchar *name,
                          gpointer user_data)
     {

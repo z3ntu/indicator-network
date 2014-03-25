@@ -26,7 +26,7 @@
 
 #include <gio/gio.h>
 
-#include "util.h"
+#include "gio-helpers/util.h"
 #include "menu-model.h"
 #include "menu.h"
 

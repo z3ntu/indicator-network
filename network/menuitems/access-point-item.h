@@ -21,10 +21,10 @@
 #define ACCESS_POINT_ITEM_H
 
 #include "item.h"
-#include "menumodel-cpp/util.h"
+#include "gio-helpers/util.h"
 #include "menumodel-cpp/action.h"
 #include "menumodel-cpp/menu-item.h"
-#include "menumodel-cpp/variant.h"
+#include "gio-helpers/variant.h"
 
 #include <core/signal.h>
 
@@ -72,14 +72,14 @@ public:
         m_actionActivate = std::make_shared<Action>(actionId,
                                                     nullptr,
                                                     TypedVariant<bool>(m_isActive),
-                                                    [this](Variant value){
-                bool state = m_actionActivate->getState().as<bool>();
+                                                    [this](Variant){
+                //bool state = m_actionActivate->getState().as<bool>();
 
                 ///@ todo something weird is happening as the indicator side is not changing the state..
                 //value = !value;
     });
-        m_actionActivate->activated().connect([this](Variant parameter){
-            bool value = m_actionActivate->getState().as<bool>();
+        m_actionActivate->activated().connect([this](Variant){
+            //bool value = m_actionActivate->getState().as<bool>();
             m_activated();
         });
 

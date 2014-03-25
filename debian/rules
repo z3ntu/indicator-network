@@ -5,6 +5,9 @@
 
 export DPKG_GENSYMBOLS_CHECK_LEVEL = 4
 
+export CC=$(DEB_HOST_GNU_TYPE)-gcc-4.7
+export CXX=$(DEB_HOST_GNU_TYPE)-g++-4.7
+
 %:
 	dh $@ --parallel --fail-missing
 

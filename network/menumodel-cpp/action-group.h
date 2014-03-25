@@ -25,7 +25,7 @@
 #include <set>
 
 #include "action.h"
-#include "util.h"
+#include "gio-helpers/util.h"
 
 #include <core/signal.h>
 

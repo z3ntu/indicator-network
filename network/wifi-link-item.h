@@ -20,7 +20,7 @@
 #ifndef WIFI_LINK_ITEM_H
 #define WIFI_LINK_ITEM_H
 
-#include "menumodel-cpp/util.h"
+#include "gio-helpers/util.h"
 
 #include "menuitems/switch-item.h"
 #include "menuitems/access-point-item.h"

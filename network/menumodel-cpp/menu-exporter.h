@@ -27,6 +27,8 @@ class MenuExporter
     std::shared_ptr<SessionBus> m_sessionBus;
 public:
 
+    typedef std::shared_ptr<MenuExporter> Ptr;
+
     MenuExporter(const std::string &path, Menu::Ptr menu)
         : m_menu {menu},
           m_exportId {0}

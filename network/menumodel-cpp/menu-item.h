@@ -28,8 +28,8 @@
 
 #include <gio/gio.h>
 
-#include "variant.h"
-#include "util.h"
+#include "gio-helpers/variant.h"
+#include "gio-helpers/util.h"
 
 #include "menu-model.h"
 

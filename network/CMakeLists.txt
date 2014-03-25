@@ -2,10 +2,21 @@ set(NETWORK_SERVICE_SOURCES
     indicator-network-service.cpp
     service.h
     indicator-menu.h
+    modem.cpp
+    modem.h
+    modem-manager.cpp
+    modem-manager.h
+    sim-unlock-dialog.cpp
+    sim-unlock-dialog.h
     wifi-link-item.h
     wifi-settings.h
     wired-link.h
     wwan-link-item.h
+
+    dbus-cpp/services/ofono.h
+
+    gio-helpers/util.h
+    gio-helpers/variant.h
 
     menuitems/item.h
     menuitems/access-point-item.h
@@ -21,11 +32,16 @@ set(NETWORK_SERVICE_SOURCES
     menumodel-cpp/menu-item.h
     menumodel-cpp/menu-merger.h
     menumodel-cpp/menu-model.h
-    menumodel-cpp/util.h
-    menumodel-cpp/variant.h
+
+    notify-cpp/notification.cpp
+    notify-cpp/notification.h
 )
 
 #include_directories(include)
+
+# get std::thread working...
+# http://gcc.gnu.org/bugzilla/show_bug.cgi?id=52681
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 
 add_executable(
   indicator-network-service
@@ -37,6 +53,7 @@ target_link_libraries(
     ${GLIB_LIBRARIES}
     ${GIO_LIBRARIES}
     ${NOTIFY_LIBRARIES}
+    ${OFONO_LIBRARIES}
 )
 
 #target_link_libraries(

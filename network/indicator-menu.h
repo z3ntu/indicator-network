@@ -20,7 +20,7 @@
 #ifndef INDICATOR_MENU_H
 #define INDICATOR_MENU_H
 
-#include "menumodel-cpp/util.h"
+#include "gio-helpers/util.h"
 #include "menuitems/item.h"
 #include "menumodel-cpp/menu.h"
 #include "menumodel-cpp/action.h"

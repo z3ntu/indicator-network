@@ -98,7 +98,7 @@ class UnlockSimTestCase(IndicatorTestCase):
         super(UnlockSimTestCase, self).setUp()
         os.environ['OFONO_PHONESIM_CONFIG'] = '/path/to/phonesim.conf'
         phonesim_cmd = ['ofono-phonesim', '-p', '12345', 'path/to/conf.xml']
-        ofono_cmd = ['ofono', 'arguments here']
+        ofono_cmd = ['ofonod', 'arguments here']
         self.phonesim_process = subprocess.Popen(phonesim_cmd)
         self.ofono_process = subproces.Popen(ofono_cmd)
 

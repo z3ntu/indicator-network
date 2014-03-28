@@ -29,6 +29,7 @@ from autopilot.input._common import get_center_point
 from unity8.process_helpers import unlock_unity
 from unity8.shell.tests import UnityTestCase, _get_device_emulation_scenarios
 import dbusmock
+import subprocess
 
 logger = logging.getLogger(__name__)
 
@@ -95,9 +96,16 @@ class UnlockSimTestCase(IndicatorTestCase):
 
     def setUp(self):
         super(UnlockSimTestCase, self).setUp()
-        # Start ofono-phonesim and ofono here.
-        # The class constructor has already set up the dbus
-        # environment so all child processes inherit it automatically.
+        phonesim_cmd = ['ofono-phonesim', '-p', '12345', 'path/to/conf.xml']
+        ofono_cmd = ['ofono', 'arguments here']
+        self.phonesim_process = subprocess.Popen(phonesim_cmd)
+        self.ofono_process = subproces.Popen(ofono_cmd)
+
+    def tearDown(self):
+        self.phonesim_process.terminate()
+        self.phonesim_process.wait()
+        self.ofono_process.terminate()
+        self.ofono_process.wait()
 
     def test_click_on_unlock_sim(self):
         """Open the network indicator and click on 'unlock sim'."""

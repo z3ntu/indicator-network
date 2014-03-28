@@ -48,7 +48,7 @@ public:
         m_gmenu = make_gmenu_ptr();
     }
 
-    ~Menu()
+    virtual ~Menu()
     {
         std::lock_guard<std::recursive_mutex> lg(m_mutex);
     }

@@ -87,7 +87,7 @@ public:
         m_actionGroup->add(m_actionStrength);
     }
 
-    ~AccessPointItem()
+    virtual ~AccessPointItem()
     {
         for (auto con : m_connections)
             con.disconnect();

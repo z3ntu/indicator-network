@@ -70,7 +70,7 @@ protected:
 }
 ;
 
-TEST_F(TestMenuExporter, GetSecretsWithNone)
+TEST_F(TestMenuExporter, ExportBasicActionsAndMenu)
 {
     actionGroup->add(make_shared<::Action>("apple"));
     actionGroup->add(make_shared<::Action>("banana"));

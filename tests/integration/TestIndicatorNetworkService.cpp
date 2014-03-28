@@ -20,7 +20,6 @@
 #include <libqtdbustest/QProcessDBusService.h>
 #include <libqtdbusmock/DBusMock.h>
 #include <NetworkManager.h>
-#include <DBusTypes.h>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
@@ -36,8 +35,6 @@ class TestIndicatorNetworkService: public Test {
 protected:
 	TestIndicatorNetworkService() :
 			dbusMock(dbusTestRunner) {
-
-		DBusTypes::registerMetaTypes();
 
 		dbusMock.registerNetworkManager();
 		dbusTestRunner.startServices();

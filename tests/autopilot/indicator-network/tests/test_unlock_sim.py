@@ -28,14 +28,21 @@ from autopilot.input._common import get_center_point
 
 from unity8.process_helpers import unlock_unity
 from unity8.shell.tests import UnityTestCase, _get_device_emulation_scenarios
+import dbusmock
 
 logger = logging.getLogger(__name__)
 
-
-class IndicatorTestCase(UnityTestCase):
+class IndicatorTestCase(UnityTestCase, dbusmock.DBusTestCase):
     """NOTE that this is proposed for unity8, remains here temporarily."""
 
     device_emulation_scenarios = _get_device_emulation_scenarios()
+
+    @classmethod
+    def setUpClass(cls):
+        super(IndicatorTestCase, cls).setUpClass()
+        # Set up a private buses.
+        cls.start_session_bus();
+        cls.start_system_bus()
 
     def setUp(self):
         #if platform.model() == 'Desktop':
@@ -85,6 +92,12 @@ class IndicatorTestCase(UnityTestCase):
 class UnlockSimTestCase(IndicatorTestCase):
 
     scenarios = IndicatorTestCase.device_emulation_scenarios
+
+    def setUp(self):
+        super(UnlockSimTestCase, self).setUp()
+        # Start ofono-phonesim and ofono here.
+        # The class constructor has already set up the dbus
+        # environment so all child processes inherit it automatically.
 
     def test_click_on_unlock_sim(self):
         """Open the network indicator and click on 'unlock sim'."""

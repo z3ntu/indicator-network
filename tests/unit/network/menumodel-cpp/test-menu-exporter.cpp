@@ -31,31 +31,38 @@ using namespace testing;
 using namespace QtDBusTest;
 using namespace QtDBusMock;
 
-namespace {
+namespace
+{
 
-class TestMenuExporter: public Test {
+class TestMenuExporter : public Test
+{
 protected:
-	TestMenuExporter() :
-			dbusMock(dbusTestRunner) {
-	}
+    TestMenuExporter () :
+            dbusMock (dbusTestRunner)
+    {
+    }
 
-	void SetUp() {
-	}
+    void
+    SetUp ()
+    {
+    }
 
-	DBusTestRunner dbusTestRunner;
+    DBusTestRunner dbusTestRunner;
 
-	DBusMock dbusMock;
+    DBusMock dbusMock;
 
-	Menu::Ptr menu;
+    Menu::Ptr menu;
 
-	std::unique_ptr<MenuExporter> menuExporter;
+    std::unique_ptr<MenuExporter> menuExporter;
 }
 ;
 
-TEST_F(TestMenuExporter, GetSecretsWithNone) {
-	menu = make_shared<Menu>();
-	menuExporter.reset(
-			new MenuExporter("/com/canonical/indicator/network/desktop", menu));
+TEST_F(TestMenuExporter, GetSecretsWithNone)
+{
+    menu = make_shared<Menu> ();
+    menuExporter.reset (
+            new MenuExporter ("/com/canonical/indicator/network/desktop",
+                              menu));
 }
 
 } // namespace

@@ -72,13 +72,15 @@ protected:
 
 TEST_F(TestMenuExporter, GetSecretsWithNone)
 {
-    ::Action::Ptr apple = make_shared<::Action>("apple");
-    actionGroup->add(apple);
+    actionGroup->add(make_shared<::Action>("apple"));
+    actionGroup->add(make_shared<::Action>("banana"));
+    actionGroup->add(make_shared<::Action>("coconut"));
     actionGroupExporter.reset(
             new ActionGroupExporter(actionGroup, "/actions/path", "prefix"));
 
-    MenuItem::Ptr itemApple = make_shared<MenuItem>("Apple", "prefix.apple");
-    menu->append(itemApple);
+    menu->append(make_shared<MenuItem>("Apple", "prefix.apple"));
+    menu->append(make_shared<MenuItem>("Banana", "prefix.banana"));
+    menu->append(make_shared<MenuItem>("Coconut", "prefix.coconut"));
     menuExporter.reset(new MenuExporter("/menus/path", menu));
 
     UnityMenuModel menuModel;
@@ -94,7 +96,7 @@ TEST_F(TestMenuExporter, GetSecretsWithNone)
 
     menuSpy.wait();
     ASSERT_FALSE(menuSpy.isEmpty());
-    EXPECT_EQ(1, menuModel.rowCount());
+    EXPECT_EQ(3, menuModel.rowCount());
 }
 
 } // namespace

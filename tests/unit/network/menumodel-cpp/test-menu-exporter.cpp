@@ -17,11 +17,15 @@
  */
 
 #include <cassert>
+#include <menumodel-cpp/action.h>
+#include <menumodel-cpp/action-group-exporter.h>
+#include <menumodel-cpp/action-group.h>
 #include <menumodel-cpp/menu-exporter.h>
 #include <menumodel-cpp/menu.h>
 
 #include <libqtdbustest/DBusTestRunner.h>
 #include <libqtdbusmock/DBusMock.h>
+#include <QSignalSpy>
 #include <qmenumodel/unitymenumodel.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
@@ -38,20 +42,29 @@ class TestMenuExporter : public Test
 {
 protected:
     TestMenuExporter () :
-            dbusMock (dbusTestRunner)
+            dbusMock(dbus)
     {
     }
 
     void
     SetUp ()
     {
+        sessionBus = make_shared<SessionBus>();
+        actionGroup = make_shared<ActionGroup>();
+        menu = make_shared<Menu>();
     }
 
-    DBusTestRunner dbusTestRunner;
+    DBusTestRunner dbus;
 
     DBusMock dbusMock;
 
+    std::shared_ptr<SessionBus> sessionBus;
+
+    ActionGroup::Ptr actionGroup;
+
     Menu::Ptr menu;
+
+    std::unique_ptr<ActionGroupExporter> actionGroupExporter;
 
     std::unique_ptr<MenuExporter> menuExporter;
 }
@@ -59,10 +72,29 @@ protected:
 
 TEST_F(TestMenuExporter, GetSecretsWithNone)
 {
-    menu = make_shared<Menu> ();
-    menuExporter.reset (
-            new MenuExporter ("/com/canonical/indicator/network/desktop",
-                              menu));
+    ::Action::Ptr apple = make_shared<::Action>("apple");
+    actionGroup->add(apple);
+    actionGroupExporter.reset(
+            new ActionGroupExporter(actionGroup, "/actions/path", "prefix"));
+
+    MenuItem::Ptr itemApple = make_shared<MenuItem>("Apple", "prefix.apple");
+    menu->append(itemApple);
+    menuExporter.reset(new MenuExporter("/menus/path", menu));
+
+    UnityMenuModel menuModel;
+    QSignalSpy menuSpy(&menuModel,
+                       SIGNAL(rowsInserted(const QModelIndex&, int, int)));
+
+    menuModel.setBusName(
+            g_dbus_connection_get_unique_name(sessionBus->bus().get()));
+    menuModel.setMenuObjectPath("/menus/path");
+    QVariantMap actions;
+    actions["prefix"] = "/actions/path";
+    menuModel.setActions(actions);
+
+    menuSpy.wait();
+    ASSERT_FALSE(menuSpy.isEmpty());
+    EXPECT_EQ(1, menuModel.rowCount());
 }
 
 } // namespace

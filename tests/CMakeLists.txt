@@ -5,12 +5,14 @@ set(CMAKE_AUTOMOC ON)
 
 find_package("Valgrind" REQUIRED)
 
-include_directories("${CMAKE_SOURCE_DIR}/secret-agent")
-include_directories("${CMAKE_BINARY_DIR}/secret-agent")
-
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${GMOCK_INCLUDE_DIRS})
 include_directories(${GTEST_INCLUDE_DIRS})
+
+add_subdirectory(unit)
+
+include_directories("${CMAKE_SOURCE_DIR}/secret-agent")
+include_directories("${CMAKE_BINARY_DIR}/secret-agent")
 
 add_definitions(-DSECRET_AGENT_BIN="${CMAKE_BINARY_DIR}/secret-agent/indicator-secret-agent")
 add_definitions(-DNETWORK_SERVICE_BIN="${CMAKE_BINARY_DIR}/network/indicator-network-service")

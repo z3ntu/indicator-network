@@ -16,12 +16,13 @@
  * Author: Pete Woods <pete.woods@canonical.com>
  */
 
-#include <libqtdbustest/DBusTestRunner.h>
-#include <libqtdbustest/QProcessDBusService.h>
-#include <libqtdbusmock/DBusMock.h>
-#include <NetworkManager.h>
-#include <DBusTypes.h>
+#include <cassert>
+#include <menumodel-cpp/menu-exporter.h>
+#include <menumodel-cpp/menu.h>
 
+#include <libqtdbustest/DBusTestRunner.h>
+#include <libqtdbusmock/DBusMock.h>
+#include <qmenumodel/unitymenumodel.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
@@ -32,32 +33,29 @@ using namespace QtDBusMock;
 
 namespace {
 
-class TestIndicatorNetworkService: public Test {
+class TestMenuExporter: public Test {
 protected:
-	TestIndicatorNetworkService() :
+	TestMenuExporter() :
 			dbusMock(dbusTestRunner) {
-
-		DBusTypes::registerMetaTypes();
-
-		dbusMock.registerNetworkManager();
-		dbusTestRunner.startServices();
-
-		DBusServicePtr indicator(
-				new QProcessDBusService("com.canonical.indicator.network",
-						QDBusConnection::SessionBus, NETWORK_SERVICE_BIN,
-						QStringList()));
 	}
 
-	virtual ~TestIndicatorNetworkService() {
+	void SetUp() {
 	}
 
 	DBusTestRunner dbusTestRunner;
 
 	DBusMock dbusMock;
-};
 
-TEST_F(TestIndicatorNetworkService, Foo) {
-	//FIXME: Port the python test
+	Menu::Ptr menu;
+
+	std::unique_ptr<MenuExporter> menuExporter;
+}
+;
+
+TEST_F(TestMenuExporter, GetSecretsWithNone) {
+	menu = make_shared<Menu>();
+	menuExporter.reset(
+			new MenuExporter("/com/canonical/indicator/network/desktop", menu));
 }
 
 } // namespace

@@ -19,6 +19,7 @@
 #include <SecretAgent.h>
 #include <SecretAgentInterface.h>
 #include <NetworkManager.h>
+#include <DBusTypes.h>
 
 #include <libqtdbustest/DBusTestRunner.h>
 #include <libqtdbusmock/DBusMock.h>
@@ -38,6 +39,8 @@ class TestSecretAgentCommon {
 protected:
 	TestSecretAgentCommon() :
 			dbusMock(dbusTestRunner) {
+
+		DBusTypes::registerMetaTypes();
 
 		dbusMock.registerCustomMock("org.freedesktop.Notifications",
 				"/org/freedesktop/Notifications",
@@ -241,6 +244,7 @@ class TestSecretAgent: public TestSecretAgentCommon, public Test {
 };
 
 TEST_F(TestSecretAgent, GetSecretsWithNone) {
+
 	QDBusPendingReply<QVariantDictMap> reply(
 			agentInterface->GetSecrets(
 					connection(SecretAgent::KEY_MGMT_WPA_PSK),

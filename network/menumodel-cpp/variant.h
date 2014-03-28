@@ -26,8 +26,6 @@
 
 #include "util.h"
 
-#include "action-group-merger.h"
-
 
 class Variant;
 

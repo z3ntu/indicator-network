@@ -115,6 +115,8 @@ void SecretRequest::actionInvoked(uint id, const QString &actionKey) {
 
 /* Called when the user closes the dialog */
 void SecretRequest::notificationClosed(uint id, uint reason) {
+	Q_UNUSED(reason);
+
 	// Ignore other requests' notifications
 	if (id != m_notificationId) {
 		return;

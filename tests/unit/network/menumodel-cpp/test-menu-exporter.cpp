@@ -24,16 +24,16 @@
 #include <menumodel-cpp/menu.h>
 
 #include <libqtdbustest/DBusTestRunner.h>
-#include <libqtdbusmock/DBusMock.h>
 #include <QSignalSpy>
 #include <qmenumodel/unitymenumodel.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include <gobject/gobject.h>
+
 using namespace std;
 using namespace testing;
 using namespace QtDBusTest;
-using namespace QtDBusMock;
 
 namespace
 {
@@ -41,11 +41,6 @@ namespace
 class TestMenuExporter : public Test
 {
 protected:
-    TestMenuExporter () :
-            dbusMock(dbus)
-    {
-    }
-
     void
     SetUp ()
     {
@@ -68,8 +63,6 @@ protected:
     }
 
     DBusTestRunner dbus;
-
-    DBusMock dbusMock;
 
     std::shared_ptr<SessionBus> sessionBus;
 
@@ -112,5 +105,47 @@ TEST_F(TestMenuExporter, ExportBasicActionsAndMenu)
     EXPECT_EQ(QStringList() << "Apple" << "Banana" << "Coconut",
               toStringList(menuModel));
 }
+
+//TEST_F(TestMenuExporter, ActionActivation)
+//{
+//    std::shared_ptr<::Action> apple = make_shared<::Action>("apple");
+//    actionGroup->add(apple);
+//    actionGroupExporter.reset(
+//            new ActionGroupExporter(actionGroup, "/actions/path", "app"));
+//
+//    menu->append(make_shared<MenuItem>("Apple", "app.apple"));
+//    menuExporter.reset(new MenuExporter("/menus/path", menu));
+//
+//    UnityMenuModel menuModel;
+//    QSignalSpy menuSpy(&menuModel,
+//                       SIGNAL(rowsInserted(const QModelIndex&, int, int)));
+//
+//    menuModel.setBusName(
+//            g_dbus_connection_get_unique_name(sessionBus->bus().get()));
+//    menuModel.setMenuObjectPath("/menus/path");
+//    QVariantMap actions;
+//    actions["app"] = "/actions/path";
+//    menuModel.setActions(actions);
+//
+//    menuSpy.wait();
+//    ASSERT_FALSE(menuSpy.isEmpty());
+//    ASSERT_EQ(1, menuModel.rowCount());
+//
+//    QObject signalObject;
+//    QSignalSpy signalSpy(&signalObject,
+//                         SIGNAL(objectNameChanged(const QString &)));
+//
+//    apple->activated().connect([&signalObject](Variant)
+//    {
+//        signalObject.setObjectName("activated");
+//    });
+//
+//    menuModel.activate(0);
+//
+//    signalSpy.wait();
+//    ASSERT_FALSE(signalSpy.isEmpty());
+//
+//    ASSERT_EQ(QString("activated"), signalObject.objectName());
+//}
 
 } // namespace

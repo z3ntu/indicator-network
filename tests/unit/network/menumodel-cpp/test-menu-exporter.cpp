@@ -54,6 +54,19 @@ protected:
         menu = make_shared<Menu>();
     }
 
+    static QStringList
+    toStringList (const QAbstractListModel &model)
+    {
+        QStringList result;
+        int max(model.rowCount());
+        for (int i(0); i < max; ++i)
+        {
+            result
+                    << model.data(model.index(i), Qt::DisplayRole + 1).toString();
+        }
+        return result;
+    }
+
     DBusTestRunner dbus;
 
     DBusMock dbusMock;
@@ -96,7 +109,8 @@ TEST_F(TestMenuExporter, ExportBasicActionsAndMenu)
 
     menuSpy.wait();
     ASSERT_FALSE(menuSpy.isEmpty());
-    EXPECT_EQ(3, menuModel.rowCount());
+    EXPECT_EQ(QStringList() << "Apple" << "Banana" << "Coconut",
+              toStringList(menuModel));
 }
 
 } // namespace

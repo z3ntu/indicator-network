@@ -143,4 +143,46 @@ TEST_F(TestMenuExporter, ActionActivation)
     ASSERT_EQ(QString("activated"), signalObject.objectName());
 }
 
+TEST_F(TestMenuExporter, ParameterizedActionActivation)
+{
+    std::shared_ptr<::Action> parameterized = make_shared<::Action>("param", G_VARIANT_TYPE_STRING);
+    actionGroup->add(parameterized);
+    actionGroupExporter.reset(
+            new ActionGroupExporter(sessionBus, actionGroup, "/actions/path", "app"));
+
+    menu->append(make_shared<MenuItem>("Param", "app.param"));
+    menuExporter.reset(new MenuExporter(sessionBus, "/menus/path", menu));
+
+    UnityMenuModel menuModel;
+    QSignalSpy menuSpy(&menuModel,
+                       SIGNAL(rowsInserted(const QModelIndex&, int, int)));
+
+    menuModel.setBusName(sessionBus->address().c_str());
+    menuModel.setMenuObjectPath("/menus/path");
+    QVariantMap actions;
+    actions["app"] = "/actions/path";
+    menuModel.setActions(actions);
+    menuSpy.wait();
+    ASSERT_FALSE(menuSpy.isEmpty());
+    ASSERT_EQ(1, menuModel.rowCount());
+
+    QObject signalObject;
+    QSignalSpy signalSpy(&signalObject,
+                         SIGNAL(objectNameChanged(const QString &)));
+    string result;
+
+    parameterized->activated().connect([&signalObject, &result](Variant variant)
+    {
+        result = variant.as<string>();
+        signalObject.setObjectName("activated");
+    });
+
+    menuModel.activate(0, "hello");
+
+    signalSpy.wait();
+    ASSERT_FALSE(signalSpy.isEmpty());
+
+    ASSERT_EQ("hello", result);
+}
+
 } // namespace

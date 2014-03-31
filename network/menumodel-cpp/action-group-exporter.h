@@ -42,12 +42,12 @@ public:
     typedef std::shared_ptr<ActionGroupExporter> Ptr;
 
     ActionGroupExporter() = delete;
-    ActionGroupExporter(ActionGroup::Ptr actionGroup, const std::string &path, const std::string &prefix = "")
-        : m_exportId {0},
+    ActionGroupExporter(SessionBus::Ptr sessionBus, ActionGroup::Ptr actionGroup, const std::string &path, const std::string &prefix = "")
+        : m_sessionBus(sessionBus),
+          m_exportId {0},
           m_actionGroup {actionGroup},
           m_prefix {prefix}
     {
-        m_sessionBus.reset(new SessionBus());
         m_gSimpleActionGroup = make_gsimpleactiongroup_ptr();
 
         GError *error = NULL;

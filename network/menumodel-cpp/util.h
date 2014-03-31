@@ -144,13 +144,39 @@ class SessionBus
     std::shared_ptr<GDBusConnection> m_bus;
 
 public:
+    typedef std::shared_ptr<SessionBus> Ptr;
+
     SessionBus()
     {
         GError *error = NULL;
-        m_bus.reset(g_bus_get_sync(G_BUS_TYPE_SESSION,
-                                   NULL,
-                                   &error),
-                    GObjectDeleter());
+
+        gchar *address = g_dbus_address_get_for_bus_sync(G_BUS_TYPE_SESSION,
+                                                         NULL, &error);
+        if (!address)
+        {
+            g_assert(error != NULL);
+            if (error->domain != G_IO_ERROR
+                    || error->code != G_IO_ERROR_CANCELLED)
+            {
+                std::cerr << "Error getting the bus address: " << error->message;
+            }
+            g_error_free(error);
+            /// @todo throw something
+            return;
+        }
+
+        error = NULL;
+        m_bus.reset(
+                g_dbus_connection_new_for_address_sync(
+                        address,
+                        (GDBusConnectionFlags) (G_DBUS_CONNECTION_FLAGS_AUTHENTICATION_CLIENT
+                                | G_DBUS_CONNECTION_FLAGS_MESSAGE_BUS_CONNECTION),
+                        NULL,
+                        NULL,
+                        &error),
+                GObjectDeleter());
+        g_free(address);
+
         if (!m_bus) {
             g_assert(error != NULL);
             if (error->domain != G_IO_ERROR || error->code != G_IO_ERROR_CANCELLED) {
@@ -158,12 +184,21 @@ public:
             }
             g_error_free(error);
             /// @todo throw something
+            return;
         }
+
+        g_dbus_connection_set_exit_on_close(m_bus.get(), FALSE);
     }
 
     std::shared_ptr<GDBusConnection> bus()
     {
         return m_bus;
+    }
+
+    std::string
+    address ()
+    {
+        return std::string(g_dbus_connection_get_unique_name(m_bus.get()));
     }
 };
 

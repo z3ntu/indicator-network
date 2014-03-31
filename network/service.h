@@ -92,6 +92,7 @@ class Service
 public:
     Service()
     {
+        m_sessionBus.reset(new SessionBus());
 
         m_manager = networking::Manager::createInstance();
 
@@ -179,29 +180,28 @@ public:
         m_phoneMenu->addItem(m_openCellularSettings);
 
 
-        m_desktopMenuExporter.reset(new MenuExporter("/com/canonical/indicator/network/desktop", m_desktopMenu->menu()));
-        m_desktopGreeterMenuExporter.reset(new MenuExporter("/com/canonical/indicator/network/desktop_greeter", m_desktopGreeterMenu->menu()));
-        m_desktopWifiSettingsMenuExporter.reset(new MenuExporter("/com/canonical/indicator/network/desktop_wifi_settings", m_desktopWifiSettingsMenu->menu()));
+        m_desktopMenuExporter.reset(new MenuExporter(m_sessionBus, "/com/canonical/indicator/network/desktop", m_desktopMenu->menu()));
+        m_desktopGreeterMenuExporter.reset(new MenuExporter(m_sessionBus, "/com/canonical/indicator/network/desktop_greeter", m_desktopGreeterMenu->menu()));
+        m_desktopWifiSettingsMenuExporter.reset(new MenuExporter(m_sessionBus, "/com/canonical/indicator/network/desktop_wifi_settings", m_desktopWifiSettingsMenu->menu()));
 
-        m_tabletpMenuExporter.reset(new MenuExporter("/com/canonical/indicator/network/tablet", m_tabletMenu->menu()));
-        m_tabletGreeterMenuExporter.reset(new MenuExporter("/com/canonical/indicator/network/tablet_greeter", m_tabletGreeterMenu->menu()));
-        m_tabletWifiSettingsMenuExporter.reset(new MenuExporter("/com/canonical/indicator/network/tablet_wifi_settings", m_tabletWifiSettingsMenu->menu()));
+        m_tabletpMenuExporter.reset(new MenuExporter(m_sessionBus, "/com/canonical/indicator/network/tablet", m_tabletMenu->menu()));
+        m_tabletGreeterMenuExporter.reset(new MenuExporter(m_sessionBus, "/com/canonical/indicator/network/tablet_greeter", m_tabletGreeterMenu->menu()));
+        m_tabletWifiSettingsMenuExporter.reset(new MenuExporter(m_sessionBus, "/com/canonical/indicator/network/tablet_wifi_settings", m_tabletWifiSettingsMenu->menu()));
 
-        m_phoneMenuExporter.reset(new MenuExporter("/com/canonical/indicator/network/phone", m_phoneMenu->menu()));
-        m_phoneGreeterMenuExporter.reset(new MenuExporter("/com/canonical/indicator/network/phone_greeter", m_phoneGreeterMenu->menu()));
-        m_phoneWifiSettingsMenuExporter.reset(new MenuExporter("/com/canonical/indicator/network/phone_wifi_settings", m_phoneWifiSettingsMenu->menu()));
+        m_phoneMenuExporter.reset(new MenuExporter(m_sessionBus, "/com/canonical/indicator/network/phone", m_phoneMenu->menu()));
+        m_phoneGreeterMenuExporter.reset(new MenuExporter(m_sessionBus, "/com/canonical/indicator/network/phone_greeter", m_phoneGreeterMenu->menu()));
+        m_phoneWifiSettingsMenuExporter.reset(new MenuExporter(m_sessionBus, "/com/canonical/indicator/network/phone_wifi_settings", m_phoneWifiSettingsMenu->menu()));
 
-        m_ubiquityMenuExporter.reset(new MenuExporter("/com/canonical/indicator/network/ubiquity", m_ubiquityMenu->menu()));
+        m_ubiquityMenuExporter.reset(new MenuExporter(m_sessionBus, "/com/canonical/indicator/network/ubiquity", m_ubiquityMenu->menu()));
 
         // we have a single actiongroup for all the menus.
         m_actionGroupMerger.reset(new ActionGroupMerger());
         m_actionGroupMerger->add(m_desktopMenu->actionGroup());
         m_actionGroupMerger->add(m_phoneMenu->actionGroup());
-        m_actionGroupExporter.reset(new ActionGroupExporter(m_actionGroupMerger->actionGroup(),
+        m_actionGroupExporter.reset(new ActionGroupExporter(m_sessionBus, m_actionGroupMerger->actionGroup(),
                                                             "/com/canonical/indicator/network",
                                                             "indicator"));
 
-        m_sessionBus.reset(new SessionBus());
         m_busName.reset(new BusName("com.canonical.indicator.network",
                                     [](std::string) { std::cout << "acquired" << std::endl;
                                     },

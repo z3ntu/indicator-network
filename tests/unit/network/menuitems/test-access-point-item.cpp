@@ -63,9 +63,17 @@ protected:
 
 TEST_F(TestAccessPointItem, ExportBasicActionsAndMenu)
 {
-    networking::wifi::AccessPoint::Ptr accessPoint = make_shared<
+    shared_ptr<MockAccessPoint> accessPoint = make_shared<
             NiceMock<MockAccessPoint>>();
-    AccessPointItem::Ptr item = make_shared<AccessPointItem>(accessPoint);
+    ON_CALL(*accessPoint, ssid()).WillByDefault(Return("the ssid"));
+    ON_CALL(*accessPoint, secured()).WillByDefault(Return(true));
+    ON_CALL(*accessPoint, adhoc()).WillByDefault(Return(false));
+    accessPoint->m_strength = 70.0;
+
+    AccessPointItem::Ptr accessPointItem = make_shared<AccessPointItem>(accessPoint);
+    MenuItem::Ptr menuItem = accessPointItem->menuItem();
+
+    EXPECT_EQ("the ssid", menuItem->label());
 }
 
 } // namespace

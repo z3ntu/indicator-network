@@ -127,6 +127,9 @@ TEST_F(TestAccessPointItem, ExportBasicActionsAndMenu)
 
     ASSERT_FALSE(strengthAction.get() == nullptr);
     EXPECT_EQ(70, strengthAction->state().as<uint8_t>());
+
+    accessPoint->m_strength = 20.0;
+    EXPECT_EQ(20, strengthAction->state().as<uint8_t>());
 }
 
 } // namespace

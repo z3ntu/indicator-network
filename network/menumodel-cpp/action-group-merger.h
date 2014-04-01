@@ -141,6 +141,7 @@ public:
     {
         return m_actionGroup;
     }
+    operator ActionGroup::Ptr() { return actionGroup(); }
 };
 
 #endif // ACTION_GROUP_MERGER_H

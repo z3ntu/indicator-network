@@ -17,25 +17,27 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#ifndef WWAN_LINK_ITEM_H
-#define WWAN_LINK_ITEM_H
+#ifndef WIFI_SECTION_H
+#define WIFI_SECTION_H
+
+#include <com/ubuntu/connectivity/networking/manager.h>
 
 #include "menuitems/section.h"
 
-class WwanLinkItem : Section
+class WifiSection : public Section
 {
     class Private;
-    std::shared_ptr<Private> d;
+    std::unique_ptr<Private> d;
 
 public:
-    typedef std::shared_ptr<WwanLinkItem> Ptr;
-    WwanLinkItem();
-    ~WwanLinkItem();
+    typedef std::shared_ptr<WifiSection> Ptr;
+    WifiSection() = delete;
+    WifiSection(std::shared_ptr<com::ubuntu::connectivity::networking::Manager> manager);
+    ~WifiSection();
 
     // from Section
     virtual ActionGroup::Ptr actionGroup();
     virtual MenuModel::Ptr menuModel();
 };
 
-#endif // WWAN_LINK_ITEM_H
-
+#endif

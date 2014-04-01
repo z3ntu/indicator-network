@@ -50,117 +50,94 @@ struct Interface
         {
             struct GetProperties
             {
-//                static const std::string& name()
-//                {
-//                    static const std::string s{"GetProperties"};
-//                    return s;
-//                }
+                static const std::string& name()
+                {
+                    static const std::string s{"GetProperties"};
+                    return s;
+                }
 
-//                typedef NetworkRegistration Interface;
-//                typedef std::map<std::string, core::dbus::types::Variant<>> ValueType;
+                typedef NetworkRegistration Interface;
+                typedef std::map<std::string, core::dbus::types::Variant> ValueType;
 
-//                static std::chrono::milliseconds default_timeout()
-//                {
-//                    return std::chrono::seconds{1};
-//                }
+                static std::chrono::milliseconds default_timeout()
+                {
+                    return std::chrono::seconds{1};
+                }
             };
         };
 
         struct Property
         {
             struct Status {
-//                string Status [readonly]
+                static const std::string &name()
+                {
+                    static const std::string s{"Status"};
+                    return s;
+                }
 
-//                        The current registration status of a modem.
-
-//                        The possible values are:
-//                                "unregistered"  Not registered to any network
-//                                "registered"    Registered to home network
-//                                "searching"     Not registered, but searching
-//                                "denied"        Registration has been denied
-//                                "unknown"       Status is unknown
-//                                "roaming"       Registered, but roaming
-
+                typedef NetworkRegistration Interface;
+                typedef std::string ValueType;
+                static const bool readable = true;
+                static const bool writable = false;
             };
 
             struct Technology
             {
-//                string Technology [readonly, optional]
-//                        Contains the technology of the current network.
-//                        The possible values are: "gsm", "edge", "umts", "hspa",
-//                                                        "lte"
+                static const std::string &name()
+                {
+                    static const std::string s{"Technology"};
+                    return s;
+                }
+
+                typedef NetworkRegistration Interface;
+                typedef std::string ValueType;
+                static const bool readable = true;
+                static const bool writable = false;
             };
 
-//            struct Technology
-//            {
-//                static const char* gsm() { return "gsm"; }
-//                static const char* edge() { return "edge"; }
-//                static const char* umts() { return "umts"; }
-//                static const char* hspa() { return "hspa"; }
-//                static const char* lte() { return "lte"; }
-
-//                static const std::string& name()
-//                {
-//                    static const std::string s{"Technology"};
-//                    return s;
-//                }
-
-//                typedef NetworkRegistration Interface;
-//                typedef std::string ValueType;
-//                static const bool readable = true;
-//                static const bool writable = false;
-//            };
-
             struct Strength
-            {                
-                //                byte Strength [readonly, optional]
+            {
+                static const std::string &name()
+                {
+                    static const std::string s{"Strength"};
+                    return s;
+                }
 
-                //                        Contains the current signal strength as a percentage
-                //                        between 0-100 percent.
-
+                typedef NetworkRegistration Interface;
+                typedef std::int8_t ValueType;
+                static const bool readable = true;
+                static const bool writable = false;
             };
 
             struct Name
             {
-                //                string Name [readonly]
+                static const std::string &name()
+                {
+                    static const std::string s{"Name"};
+                    return s;
+                }
 
-                //                        Contains the current operator name, suitable for
-                //                        display on the idle screen or an empty string if
-                //                        not registered to a network.
-
+                typedef NetworkRegistration Interface;
+                typedef std::string ValueType;
+                static const bool readable = true;
+                static const bool writable = false;
             };
         };
 
         struct Signal
         {
+            struct PropertyChanged
+            {
+                static const std::string& name()
+                {
+                    static const std::string s{"PropertyChanged"};
+                    return s;
+                }
 
-            struct PropertyChanged {};
+                typedef NetworkRegistration Interface;
+                typedef std::tuple<std::string, core::dbus::types::Variant> ArgumentType;
+            };
         };
-
-        typedef std::shared_ptr<NetworkRegistration> Ptr;
-        NetworkRegistration(const std::shared_ptr<core::dbus::Object>& object)
-            : object(object)
-//              properties{}
-        {
-            std::cout << __PRETTY_FUNCTION__ << std::endl;
-
-//            auto result = object->invoke_method_synchronously<GetProperties, GetProperties::ValueType>();
-//            if (result.is_error())
-//                throw std::runtime_error(result.error().print());
-
-//            properties = result.value();
-
-
-            status.set(Status::unknown);
-            strength.set(-1);
-            technology.set(Technology::notAvailable);
-        }
-
-        ~NetworkRegistration()
-        {
-            std::cout << __PRETTY_FUNCTION__ << std::endl;
-        }
-
 
         enum class Status
         {
@@ -220,35 +197,65 @@ struct Interface
             throw std::runtime_error(std::string(__PRETTY_FUNCTION__) + ": Unknown techonology '" + str + "'");
         }
 
-        template<typename Property>
-        typename Property::ValueType get(
-                const typename Property::ValueType& default_value = typename Property::ValueType{}) const
+        typedef std::shared_ptr<NetworkRegistration> Ptr;
+        NetworkRegistration(const std::shared_ptr<core::dbus::Object>& object)
+            : object(object),
+              propertyChanged(object->get_signal<Signal::PropertyChanged>())
         {
-//            try
-//            {
-//                core::dbus::types::Any value = properties.at(Property::name()).get();
-//                typename Property::ValueType result; value.reader() >> result;
+            std::cout << __PRETTY_FUNCTION__ << std::endl;
 
-//                return result;
-//            } catch(...)
-//            {
-//            }
+            status.set(Status::unknown);
+            strength.set(-1);
+            technology.set(Technology::notAvailable);
 
-//            return default_value;
+            propertyChanged->connect([this](Signal::PropertyChanged::ArgumentType args){
+                _updateProperty(std::get<0>(args), std::get<1>(args));
+            });
+            auto result = object->invoke_method_synchronously<Method::GetProperties, Method::GetProperties::ValueType>();
+            if (result.is_error())
+                throw std::runtime_error(result.error().print());
+            for (auto element : result.value())
+                _updateProperty(element.first, element.second);
+        }
+
+        ~NetworkRegistration()
+        {
+            std::cout << __PRETTY_FUNCTION__ << std::endl;
+        }
+
+        void _updateProperty(std::string property, core::dbus::types::Variant value)
+        {
+            std::cout << __PRETTY_FUNCTION__ << ": " << property << std::endl;
+            if (property == Property::Name::name()) {
+                operatorName.set(value.as<Property::Name::ValueType>());
+            } else if (property == Property::Status::name()) {
+                status.set(str2status(value.as<Property::Status::ValueType>()));
+            } else if (property == Property::Strength::name()) {
+                strength.set(value.as<Property::Strength::ValueType>());
+            } else if (property == Property::Technology::name()) {
+                technology.set(str2technology(value.as<Property::Technology::ValueType>()));
+            } else {
+                //throw std::runtime_error(std::string(__PRETTY_FUNCTION__) + ": unexpected property change: " + property);
+                std::cout << std::string(__PRETTY_FUNCTION__) + ": unhandled property change: " + property << std::endl;
+            }
         }
 
         std::shared_ptr<core::dbus::Object> object;
+        std::shared_ptr<core::dbus::Signal<Signal::PropertyChanged, Signal::PropertyChanged::ArgumentType>> propertyChanged;
+
 
         core::Property<std::string> operatorName;
         core::Property<Status> status;
 
-        /** -1, not avalable */
+        /**
+         * Contains the current signal strength as a percentage
+         * between 0-100 percent.
+         *
+         * -1, not avalable
+         */
         core::Property<std::int8_t> strength;
 
         core::Property<Technology> technology;
-
-
-//        GetProperties::ValueType properties;
     };
 
     struct SimManager
@@ -378,114 +385,78 @@ struct Interface
                     return std::chrono::seconds{1};
                 }
             };
-#if 0
-                            array{byte} GetIcon(byte id)
-
-                                    Obtain the icon given by id.  Only ids greater than 1
-                                    are valid.  XPM format is currently used to return the
-                                    icon data.
-
-                                    Possible Errors: [service].Error.NotImplemented
-                                                     [service].Error.InProgress
-                                                     [service].Error.InvalidArguments
-                                                     [service].Error.Failed
-
-#endif
         };
 
         struct Property
         {
             struct Present
             {
-//                boolean Present [readonly]
+                static const std::string &name()
+                {
+                    static const std::string s{"Present"};
+                    return s;
+                }
 
-//                                        True if a SIM card is detected.  There are
-//                                        no other properties if false.
-
+                typedef SimManager Interface;
+                typedef bool ValueType;
+                static const bool readable = true;
+                static const bool writable = false;
             };
 
             struct SubscriberIdentity
             {
-//                string SubscriberIdentity [readonly, optional]
+                static const std::string &name()
+                {
+                    static const std::string s{"SubscriberIdentity"};
+                    return s;
+                }
 
-//                        Contains the IMSI of the SIM, if available.
+                typedef SimManager Interface;
+                typedef std::string ValueType;
+                static const bool readable = true;
+                static const bool writable = false;
             };
 
             struct PinRequired
             {
-//                string PinRequired [readonly]
+                static const std::string &name()
+                {
+                    static const std::string s{"PinRequired"};
+                    return s;
+                }
 
-//                        Contains the string type of the pin required by the
-//                        modem.  The possible values are:
-//                                "none" - Nothing is required
-//                                "pin" - SIM PIN is required
-//                                "phone" - Phone-to-SIM PIN is required
-//                                "firstphone" - Phone-to-very-first SIM
-//                                                PIN is required
-//                                "pin2" - SIM PIN2 is required
-//                                "network" - Network Personalization password is
-//                                                required
-//                                "netsub" - Network subset personalization
-//                                                password is required
-//                                "service" - Service Provider personalization
-//                                                password is required
-//                                "corp" - Corporate personalization password
-//                                                is required
-//                                "puk" - SIM PUK is required
-//                                "firstphonepuk" - Phone-to-very-first SIM PUK is
-//                                                required
-//                                "puk2" - SIM PUK2 is required
-//                                "networkpuk" - Network personalization unblocking
-//                                                password is required
-//                                "netsubpuk" - Network subset personalization
-//                                                unblocking password is required
-//                                "servicepuk" - Service provider personalization
-//                                                unblocking password is required
-//                                "corppuk" - Corporate personalization unblocking
-//                                                password is required
+                typedef SimManager Interface;
+                typedef std::string ValueType;
+                static const bool readable = true;
+                static const bool writable = false;
             };
 
             struct LockedPins
             {
-//                array{string} LockedPins [readonly]
+                static const std::string &name()
+                {
+                    static const std::string s{"LockedPins"};
+                    return s;
+                }
 
-//                        Contains the pins that are currently locked and will
-//                        require the user to enter the password at startup.
-//                        Using LockPin and UnlockPin will result in changes to
-//                        this property.
-
-//                        The list contains elements of the same format as the
-//                        PinRequired property.
+                typedef SimManager Interface;
+                typedef std::vector<std::string> ValueType;
+                static const bool readable = true;
+                static const bool writable = false;
             };
-
-//            boolean FixedDialing [readonly]
-
-//                    True if Fixed Dialing service is enabled in SIM card.
-
-//                    If FDN is enabled, oFono halts the SIM initialization
-//                    procedure and only emergency calls are allowed.
-
-//            boolean BarredDialing [readonly]
-
-//                    True if Barred Dialing service is enabled in SIM card.
-
-//                    If BDN is enabled, oFono halts the SIM initialization
-//                    procedure and only emergency calls are allowed.
-
 
             struct Retries
             {
-//                dict{string,byte} Retries [readonly]
+                static const std::string &name()
+                {
+                    static const std::string s{"Retries"};
+                    return s;
+                }
 
-//                        Contains all the retry counters available. The possible
-//                        values for the first field are the same as in
-//                        PinRequired property. The second field contains is the
-//                        counter for that pin type.
-
-//                        This property is updated after each operation that
-//                        might have changed the retry counters, i.e. calls to
-//                        ChangePin(), EnterPin(), ResetPin() LockPin(),
-//                        UnlockPin().
+                typedef SimManager Interface;
+                typedef std::map<std::string, std::int8_t> ValueType;
+                static const bool readable = true;
+                static const bool writable = false;
             };
         };
 
@@ -503,20 +474,6 @@ struct Interface
                 typedef std::tuple<std::string, core::dbus::types::Variant> ArgumentType;
             };
         };
-
-        typedef std::shared_ptr<SimManager> Ptr;
-        SimManager(const std::shared_ptr<core::dbus::Object>& object)
-            : object(object),
-              propertyChanged(object->get_signal<Signal::PropertyChanged>())
-        {
-            std::cout << __PRETTY_FUNCTION__ << std::endl;
-
-        }
-
-        ~SimManager()
-        {
-            std::cout << __PRETTY_FUNCTION__ << std::endl;
-        }
 
         enum class PinType
         {
@@ -753,16 +710,75 @@ struct Interface
             //                                   [service].Error.Failed
         }
 
+        typedef std::shared_ptr<SimManager> Ptr;
+        SimManager(const std::shared_ptr<core::dbus::Object>& object)
+            : object(object),
+              propertyChanged(object->get_signal<Signal::PropertyChanged>())
+        {
+            std::cout << __PRETTY_FUNCTION__ << std::endl;
+
+            pinRequired.set(PinType::none);
+            present.set(false);
+            present.changed().connect([this](bool value){
+                // when sim goes away all the other properties are invalidated.
+                if (!value) {
+                    lockedPins.set(std::set<PinType>());
+                    pinRequired.set(PinType::none);
+                    retries.set(std::map<PinType, std::uint8_t>());
+                    subscriberIdentity.set("");
+                }
+            });
+
+            propertyChanged->connect([this](Signal::PropertyChanged::ArgumentType args){
+                _updateProperty(std::get<0>(args), std::get<1>(args));
+            });
+            auto result =
+                    object->invoke_method_synchronously<
+                        SimManager::Method::GetProperties, SimManager::Method::GetProperties::ResultType>();
+            if (result.is_error())
+                throw std::runtime_error(result.error().print());
+            for (auto element : result.value())
+                _updateProperty(element.first, element.second);
+        }
+
+        ~SimManager()
+        {
+            std::cout << __PRETTY_FUNCTION__ << std::endl;
+        }
+
+        void _updateProperty(std::string property, core::dbus::types::Variant value)
+        {
+            if (property == Property::LockedPins::name()) {
+                std::set<PinType> tmp;
+                for (auto str : value.as<Property::LockedPins::ValueType>()) {
+                    tmp.insert(str2pin(str));
+                }
+                lockedPins.set(tmp);
+            } else if (property == Property::PinRequired::name()) {
+                pinRequired.set(str2pin(value.as<Property::PinRequired::ValueType>()));
+            } else if (property == Property::Present::name()) {
+                present.set(value.as<Property::Present::ValueType>());
+            } else if (property == Property::Retries::name()) {
+                std::map<PinType, std::uint8_t> tmp;
+                for (auto element : value.as<Property::Retries::ValueType>()) {
+                    tmp[str2pin(element.first)] = element.second;
+                }
+                retries.set(tmp);
+            } else if (property == Property::SubscriberIdentity::name()) {
+                subscriberIdentity.set(value.as<Property::SubscriberIdentity::ValueType>());
+            } else {
+                std::cout << std::string(__PRETTY_FUNCTION__) + ": unhandled property change: " + property << std::endl;
+            }
+        }
+
         std::shared_ptr<core::dbus::Object> object;
+        std::shared_ptr<core::dbus::Signal<Signal::PropertyChanged, Signal::PropertyChanged::ArgumentType>> propertyChanged;
 
         core::Property<std::set<PinType>> lockedPins;
         core::Property<PinType> pinRequired;
         core::Property<bool> present;
         core::Property<std::map<PinType, std::uint8_t>> retries;
         core::Property<std::string> subscriberIdentity;
-
-        std::shared_ptr<core::dbus::Signal<Signal::PropertyChanged, Signal::PropertyChanged::ArgumentType>> propertyChanged;
-
     }; // Interface::SimManager
 
     struct Modem
@@ -1135,11 +1151,13 @@ struct Interface
                 auto newValue = value.as<Property::Interfaces::ValueType>();
                 interfaces.set(newValue);
             } else if (property == Property::Online::name()) {
-                online.set(value.as<bool>());
+                online.set(value.as<Property::Online::ValueType>());
             } else if (property == Property::Serial::name()) {
-                serial.set(value.as<std::string>());
+                serial.set(value.as<Property::Serial::ValueType>());
             } else if (property == Property::Type::name()) {
-                type.set(str2type(value.as<std::string>()));
+                type.set(str2type(value.as<Property::Type::ValueType>()));
+            } else {
+                std::cout << std::string(__PRETTY_FUNCTION__) + ": unhandled property change: " + property << std::endl;
             }
         }
 

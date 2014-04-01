@@ -21,9 +21,9 @@
 #define INDICATOR_MENU_H
 
 #include "gio-helpers/util.h"
-#include "menuitems/item.h"
-#include "menumodel-cpp/menu.h"
-#include "menumodel-cpp/action.h"
+#include "menuitems/section.h"
+#include "menumodel-cpp/menu-merger.h"
+#include "menumodel-cpp/action-group-merger.h"
 
 #include <vector>
 
@@ -48,9 +48,9 @@ public:
         m_actionGroup->add(m_rootAction);
 
         m_rootMenu = std::make_shared<Menu>();
-        m_subMenu = std::make_shared<Menu>();
+        m_subMenuMerger = std::make_shared<MenuMerger>();
 
-        m_rootItem = MenuItem::newSubmenu(m_subMenu);
+        m_rootItem = MenuItem::newSubmenu(m_subMenuMerger);
 
         m_rootItem->setAction("indicator." + prefix + ".network-status");
         m_rootItem->setAttribute("x-canonical-type", TypedVariant<std::string>("com.canonical.indicator.root"));
@@ -74,6 +74,10 @@ public:
 
     void updateRootState()
     {
+        /** @todo pre-label std::string
+         *  @todo accessible-desc std::string
+         */
+
         std::map<std::string, Variant> state;
         if (!m_label.empty()) {
             state["label"] = TypedVariant<std::string>(m_label);
@@ -91,7 +95,6 @@ public:
             }
         }
 
-#if 0
         if (!m_icons.empty()) {
             std::vector<Variant> icons;
             for (auto name : m_icons) {
@@ -101,9 +104,10 @@ public:
                     std::cerr << e.what();
                 }
             }
-            m_state["icons"] = TypedVariant<std::vector<Variant>>(icons);
+            state["icons"] = TypedVariant<std::vector<Variant>>(icons);
         }
 
+#if 0
 
         if (m_airplaneMode) {
             try {
@@ -283,12 +287,11 @@ public:
     }
 
     virtual void
-    addItem(Item::Ptr item)
+    addSection(Section::Ptr section)
     {
-        m_items.push_back(item);
-        m_actionGroupMerger->add(item->actionGroup());
-
-        m_subMenu->append(item->menuItem());
+        m_sections.push_back(section);
+        m_actionGroupMerger->add(*section);
+        m_subMenuMerger->append(*section);
     }
 
     Menu::Ptr
@@ -314,12 +317,12 @@ private:
     MenuItem::Ptr m_rootItem;
 
     Menu::Ptr m_rootMenu;
-    Menu::Ptr m_subMenu;
+    MenuMerger::Ptr m_subMenuMerger;
 
     ActionGroupMerger::Ptr m_actionGroupMerger;
     ActionGroup::Ptr m_actionGroup;
 
-    std::vector<Item::Ptr> m_items;
+    std::vector<Section::Ptr> m_sections;
 };
 
 #endif // INDICATOR_MENU_H

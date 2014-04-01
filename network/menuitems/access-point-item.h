@@ -32,6 +32,7 @@
 namespace networking = com::ubuntu::connectivity::networking;
 
 #include <functional>
+#include <vector>
 
 class AccessPointItem : public Item
 {

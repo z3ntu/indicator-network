@@ -29,13 +29,14 @@ namespace networking = com::ubuntu::connectivity::networking;
 
 #include <cassert>
 
-#include "menuitems/switch-item.h"
 #include "indicator-menu.h"
-#include "menumodel-cpp/menu-exporter.h"
-#include "menumodel-cpp/menu.h"
-#include "wifi-link-item.h"
 
-#include "modem-manager.h"
+#include "menumodel-cpp/action-group-merger.h"
+#include "menumodel-cpp/menu-exporter.h"
+
+#include "quick-access-section.h"
+#include "wifi-section.h"
+#include "wwan-section.h"
 
 class Service
 {
@@ -53,18 +54,14 @@ class Service
 
     IndicatorMenu::Ptr m_ubiquityMenu;
 
+
     std::shared_ptr<networking::Manager> m_manager;
 
 
-    SwitchItem::Ptr m_flightModeSwitch;
+    QuickAccessSection::Ptr m_quickAccessSection;
+    WifiSection::Ptr m_wifiSection;
+    WwanSection::Ptr m_wwanSection;
 
-    WifiLinkItem::Ptr m_wifiLink;
-
-    TextItem::Ptr m_unlockSim;
-    ModemManager::Ptr m_simService;
-
-    TextItem::Ptr m_openWifiSettings;
-    TextItem::Ptr m_openCellularSettings;
 
     std::unique_ptr<MenuExporter> m_desktopMenuExporter;
     std::unique_ptr<MenuExporter> m_desktopGreeterMenuExporter;
@@ -86,13 +83,6 @@ class Service
     std::shared_ptr<SessionBus> m_sessionBus;
     std::unique_ptr<BusName> m_busName;
 
-    static void url_dispatcher_cb(const gchar * url, gboolean success, gpointer)
-    {
-        if (!success) {
-            std::cerr << "URLDispatch failed on " << url << std::endl;
-        }
-    }
-
 public:
     Service()
     {
@@ -113,31 +103,13 @@ public:
 
         m_ubiquityMenu = std::make_shared<IndicatorMenu>("ubiquity");
 
-
         m_desktopMenu->setIcons({"nm-signal-75", "nm-signal-25"});
         m_desktopMenu->setIcon("nm-signal-75-secure");
         m_phoneMenu->setIcons({"nm-signal-75", "nm-signal-25"});
-        m_phoneMenu->setIcon("nm-signal-75-secure");
+        //m_phoneMenu->setIcon("nm-signal-75-secure");
 
-        m_flightModeSwitch = std::make_shared<SwitchItem>(_("Flight Mode"), "airplane", "enabled");
-        switch (m_manager->flightMode().get()) {
-        case networking::Manager::FlightModeStatus::off:
-            m_flightModeSwitch->state().set(false);
-            break;
-        case networking::Manager::FlightModeStatus::on:
-            m_flightModeSwitch->state().set(true);
-            break;
-        }
-        m_manager->flightMode().changed().connect([this](networking::Manager::FlightModeStatus value){
-            switch (value) {
-            case networking::Manager::FlightModeStatus::off:
-                m_flightModeSwitch->state().set(false);
-                break;
-            case networking::Manager::FlightModeStatus::on:
-                m_flightModeSwitch->state().set(true);
-                break;
-            }
-        });
+#if 0
+
         /// @todo handle icons properly
         m_flightModeSwitch->state().changed().connect([this](bool value){
             if (value) {
@@ -150,47 +122,19 @@ public:
                 m_phoneMenu->setIcon("nm-signal-75-secure");
             }
         });
+#endif
 
-        m_desktopMenu->addItem(m_flightModeSwitch);
-        m_phoneMenu->addItem(m_flightModeSwitch);
+        m_quickAccessSection = std::make_shared<QuickAccessSection>(m_manager);;
+        m_desktopMenu->addSection(m_quickAccessSection);
+        m_phoneMenu->addSection(m_quickAccessSection);
 
-        for (auto link : m_manager->links().get()) {
-            auto wifi_link = std::dynamic_pointer_cast<networking::wifi::Link>(link);
-            m_wifiLink = std::make_shared<WifiLinkItem>(wifi_link);
-            m_desktopMenu->addItem(m_wifiLink);
-            m_phoneMenu->addItem(m_wifiLink);
-            // just take the first one now.
-            /// @todo multiple links and links()->changed()
-            break;
-        }
+        m_wifiSection = std::make_shared<WifiSection>(m_manager);
+        m_desktopMenu->addSection(m_wifiSection);
+        m_phoneMenu->addSection(m_wifiSection);
 
-        m_openWifiSettings = std::make_shared<TextItem>(_("Wi-Fi settings…"), "wifi", "settings");
-        m_openWifiSettings->activated().connect([this](){
-            url_dispatch_send("settings:///system/wifi", Service::url_dispatcher_cb, this);
-        });
-        m_desktopMenu->addItem(m_openWifiSettings);
-        m_phoneMenu->addItem(m_openWifiSettings);
-
-        m_unlockSim = std::make_shared<TextItem>(_("Unlock SIM…"), "sim", "unlock");
-        m_simService = std::make_shared<ModemManager>();
-
-        /// @todo support more than one sim
-        /// @todo support sims().changed()
-        /// @todo add Item::visible
-        /// @todo support isLocked().changed()
-        if (m_simService->modems()->size() == 1 &&
-            m_simService->modems()->begin()->get()->isLocked().get()) {
-            m_desktopMenu->addItem(m_unlockSim);
-            m_phoneMenu->addItem(m_unlockSim);
-        }
-
-        m_openCellularSettings = std::make_shared<TextItem>(_("Cellular settings…"), "cellular", "settings");
-        m_openCellularSettings->activated().connect([this](){
-            url_dispatch_send("settings:///system/cellular", Service::url_dispatcher_cb, this);
-        });
-        m_desktopMenu->addItem(m_openCellularSettings);
-        m_phoneMenu->addItem(m_openCellularSettings);
-
+        m_wwanSection = std::make_shared<WwanSection>();
+        m_desktopMenu->addSection(m_wwanSection);
+        m_phoneMenu->addSection(m_wwanSection);
 
         m_desktopMenuExporter.reset(new MenuExporter("/com/canonical/indicator/network/desktop", m_desktopMenu->menu()));
         m_desktopGreeterMenuExporter.reset(new MenuExporter("/com/canonical/indicator/network/desktop_greeter", m_desktopGreeterMenu->menu()));

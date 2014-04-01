@@ -26,6 +26,7 @@
 #include <gio/gio.h>
 #include <memory>
 #include <condition_variable>
+#include <iostream>
 
 struct GMainLoopSync
 {

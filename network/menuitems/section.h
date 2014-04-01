@@ -17,42 +17,23 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#ifndef ITEM_H
-#define ITEM_H
-
-#include "menumodel-cpp/action-group-merger.h"
-#include "menumodel-cpp/menu-item.h"
+#ifndef SECTION_H
+#define SECTION_H
 
 #include <memory>
+#include "menumodel-cpp/action-group.h"
+#include "menumodel-cpp/menu-model.h"
 
-class Item
+class Section
 {
 public:
-    typedef std::shared_ptr<Item> Ptr;
+    typedef std::shared_ptr<Section> Ptr;
 
-    Item()
-    {
-        m_actionGroupMerger = std::make_shared<ActionGroupMerger>();
-        m_actionGroup = std::make_shared<ActionGroup>();
-        m_actionGroupMerger->add(m_actionGroup);
-    }
-
-    virtual ActionGroup::Ptr actionGroup()
-    {
-        return m_actionGroupMerger->actionGroup();
-    }
-
-    virtual MenuItem::Ptr menuItem() = 0;
+    virtual ActionGroup::Ptr actionGroup() = 0;
+    virtual MenuModel::Ptr   menuModel()   = 0;
 
     operator ActionGroup::Ptr() { return actionGroup(); }
-    operator MenuItem::Ptr()    { return menuItem();    }
-
-protected:
-
-    ActionGroup::Ptr m_actionGroup;
-    ActionGroupMerger::Ptr m_actionGroupMerger;
-
-private:
+    operator MenuModel::Ptr()   { return menuModel();   }
 };
 
-#endif // ITEM_H
+#endif

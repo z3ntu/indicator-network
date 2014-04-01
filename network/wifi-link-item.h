@@ -26,8 +26,6 @@
 #include "menuitems/access-point-item.h"
 #include "menuitems/text-item.h"
 
-#include "url-dispatcher.h"
-
 #include "menumodel-cpp/action-group.h"
 #include "menumodel-cpp/action-group-merger.h"
 #include "menumodel-cpp/menu.h"
@@ -87,7 +85,7 @@ public:
         m_rootMerger = std::make_shared<MenuMerger>();
 
         m_switch = std::make_shared<SwitchItem>(_("Wi-Fi"), "wifi", "enable");
-        m_actionGroupMerger->add(m_switch->actionGroup());
+        m_actionGroupMerger->add(*m_switch);
         switch (m_link->status().get()) {
         case networking::Link::Status::disabled:
             m_switch->state().set(false);
@@ -151,16 +149,16 @@ public:
         });
 
         m_otherNetwork = std::make_shared<TextItem>(_("Other network…"), "wifi", "othernetwork");
-        m_actionGroupMerger->add(m_otherNetwork->actionGroup());
+        m_actionGroupMerger->add(*m_otherNetwork);
 
-        m_topMenu->append(m_switch->menuItem());
+        m_topMenu->append(*m_switch);
         m_rootMerger->append(m_topMenu);
 
         m_apsMerger->append(m_connectedBeforeApsMenu);
         m_apsMerger->append(m_neverConnectedApsMenu);
         m_rootMerger->append(m_apsMerger);
 
-        m_bottomMenu->append(m_otherNetwork->menuItem());
+        m_bottomMenu->append(*m_otherNetwork);
         m_rootMerger->append(m_bottomMenu);
 
         m_item = MenuItem::newSection(m_rootMerger);

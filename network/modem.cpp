@@ -34,106 +34,128 @@ public:
     core::Property<org::ofono::Interface::NetworkRegistration::Status> status;
     core::Property<std::int8_t> strength;
     core::Property<org::ofono::Interface::NetworkRegistration::Technology> technology;
+
+    void networkRegistrationChanged(org::ofono::Interface::NetworkRegistration::Ptr netreg);
+    void simManagerChanged(org::ofono::Interface::SimManager::Ptr simmgr);
+
+    void pinRequiredChanged(org::ofono::Interface::SimManager::PinType pin);
 };
 
+void
+Modem::Private::networkRegistrationChanged(org::ofono::Interface::NetworkRegistration::Ptr netreg)
+{
+    std::cout << __PRETTY_FUNCTION__ << std::endl;
+    std::cout << "NETWORK REGISTRATION CHANGED: " << netreg << std::endl;
+    if (netreg) {
+        operatorName.set(netreg->operatorName.get());
+        netreg->operatorName.changed().connect([this](std::string value){
+            operatorName.set(value);
+        });
+
+        status.set(netreg->status.get());
+        netreg->status.changed().connect([this](org::ofono::Interface::NetworkRegistration::Status value){
+            status.set(value);
+        });
+
+        strength.set(netreg->strength.get());
+        netreg->strength.changed().connect([this](std::int8_t value){
+            strength.set(value);
+        });
+
+        technology.set(netreg->technology.get());
+        netreg->technology.changed().connect([this](org::ofono::Interface::NetworkRegistration::Technology value){
+            technology.set(value);
+        });
+
+    } else {
+        operatorName.set("");
+        status.set(org::ofono::Interface::NetworkRegistration::Status::unknown);
+        strength.set(-1);
+        technology.set(org::ofono::Interface::NetworkRegistration::Technology::notAvailable);
+    }
+}
+
+
+void
+Modem::Private::simManagerChanged(org::ofono::Interface::SimManager::Ptr simmgr)
+{
+    std::cout << __PRETTY_FUNCTION__ << std::endl;
+    std::cout << "SIM MANAGER CHANGED: " << simmgr << std::endl;
+    if (simmgr) {
+        simPresent.set(simmgr->present.get());
+        simmgr->present.changed().connect([this](bool value){
+            std::cout << "PRESENT CHANGED: " << value << std::endl;
+            simPresent.set(value);
+        });
+
+        pinRequiredChanged(simmgr->pinRequired.get());
+        simmgr->pinRequired.changed().connect([this](org::ofono::Interface::SimManager::PinType pin){
+            pinRequiredChanged(pin);
+        });
+
+        /// @todo retries
+        /// @todo subscriberIdentity
+
+    } else {
+        requiredPin.set(PinType::none);
+        simPresent.set(false);
+        isLocked.set(false);
+    }
+}
+
+void
+Modem::Private::pinRequiredChanged(org::ofono::Interface::SimManager::PinType pin)
+{
+    std::cout << __PRETTY_FUNCTION__ << std::endl;
+    std::cout << "PIN REQUIRED CHANGED: " << (int)pin << std::endl;
+    switch(pin)
+    {
+    case org::ofono::Interface::SimManager::PinType::none:
+        requiredPin.set(PinType::none);
+        isLocked.set(false);
+        break;
+    case org::ofono::Interface::SimManager::PinType::pin:
+        requiredPin.set(PinType::pin);
+        isLocked.set(true);
+        break;
+    case org::ofono::Interface::SimManager::PinType::puk:
+        requiredPin.set(PinType::puk);
+        isLocked.set(true);
+        break;
+    default:
+        throw std::runtime_error("Ofono requires a PIN we have not been prepared to handle (" +
+                                 org::ofono::Interface::SimManager::pin2str(pin) +
+                                 "). Bailing out.");
+    }
+}
 
 Modem::Modem(org::ofono::Interface::Modem::Ptr ofonoModem)
 {
+    std::cout << __PRETTY_FUNCTION__ << std::endl;
+
     d.reset(new Private);
     d->ofonoModem = ofonoModem;
 
-    auto simManagerChanged = [this](org::ofono::Interface::SimManager::Ptr simmgr){
-        if (simmgr) {
-            d->simPresent.set(simmgr->present.get());
-            simmgr->present.changed().connect([this](bool value){
-                d->simPresent.set(value);
-            });
-
-            auto pinRequiredChanged = [this](org::ofono::Interface::SimManager::PinType pin){
-                switch(pin)
-                {
-                case org::ofono::Interface::SimManager::PinType::none:
-                    d->requiredPin.set(PinType::none);
-                    d->isLocked.set(false);
-                    break;
-                case org::ofono::Interface::SimManager::PinType::pin:
-                    d->requiredPin.set(PinType::pin);
-                    d->isLocked.set(true);
-                    break;
-                case org::ofono::Interface::SimManager::PinType::puk:
-                    d->requiredPin.set(PinType::puk);
-                    d->isLocked.set(true);
-                    break;
-                default:
-                    throw std::runtime_error("Ofono requires a PIN we have not been prepared to handle (" +
-                                             org::ofono::Interface::SimManager::pin2str(pin) +
-                                             "). Bailing out.");
-                }
-            };
-            pinRequiredChanged(simmgr->pinRequired.get());
-            simmgr->pinRequired.changed().connect([pinRequiredChanged](org::ofono::Interface::SimManager::PinType pin){
-                pinRequiredChanged(pin);
-            });
-
-            /// @todo retries
-            /// @todo subscriberIdentity
-
-        } else {
-            d->requiredPin.set(PinType::none);
-            d->simPresent.set(false);
-            d->isLocked.set(false);
-        }
-    };
-    simManagerChanged(d->ofonoModem->simManager.get());
-    d->ofonoModem->simManager.changed().connect([simManagerChanged](org::ofono::Interface::SimManager::Ptr value){
-        simManagerChanged(value);
+    d->simManagerChanged(d->ofonoModem->simManager.get());
+    d->ofonoModem->simManager.changed().connect([this](org::ofono::Interface::SimManager::Ptr value){
+        d->simManagerChanged(value);
     });
 
-    auto networkRegistrationChanged = [this](org::ofono::Interface::NetworkRegistration::Ptr netreg){
-        if (netreg) {
-            d->operatorName.set(netreg->operatorName.get());
-            netreg->operatorName.changed().connect([this](std::string value){
-                d->operatorName.set(value);
-            });
-
-            d->status.set(netreg->status.get());
-            netreg->status.changed().connect([this](org::ofono::Interface::NetworkRegistration::Status value){
-                d->status.set(value);
-            });
-
-            d->strength.set(netreg->strength.get());
-            netreg->strength.changed().connect([this](std::int8_t value){
-                d->strength.set(value);
-            });
-
-            d->technology.set(netreg->technology.get());
-            netreg->technology.changed().connect([this](org::ofono::Interface::NetworkRegistration::Technology value){
-                d->technology.set(value);
-            });
-
-        } else {
-            d->operatorName.set("");
-            d->status.set(org::ofono::Interface::NetworkRegistration::Status::unknown);
-            d->strength.set(-1);
-            d->technology.set(org::ofono::Interface::NetworkRegistration::Technology::notAvailable);
-        }
-
-    };
-    networkRegistrationChanged(d->ofonoModem->networkRegistration.get());
-    d->ofonoModem->networkRegistration.changed().connect([networkRegistrationChanged](org::ofono::Interface::NetworkRegistration::Ptr value){
-        networkRegistrationChanged(value);
+    d->networkRegistrationChanged(d->ofonoModem->networkRegistration.get());
+    d->ofonoModem->networkRegistration.changed().connect([this](org::ofono::Interface::NetworkRegistration::Ptr value){
+        d->networkRegistrationChanged(value);
     });
+}
+
+Modem::~Modem()
+{
+    std::cout << __PRETTY_FUNCTION__ << std::endl;
 }
 
 org::ofono::Interface::Modem::Ptr
 Modem::ofonoModem() const
 {
     return d->ofonoModem;
-}
-
-Modem::~Modem()
-{
-
 }
 
 void

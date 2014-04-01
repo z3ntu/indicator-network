@@ -1,25 +1,28 @@
 set(NETWORK_SERVICE_SOURCES
     indicator-network-service.cpp
+
     service.h
     indicator-menu.h
     modem.cpp
     modem.h
     modem-manager.cpp
-    modem-manager.h
+    quick-access-section.cpp
     sim-unlock-dialog.cpp
-    sim-unlock-dialog.h
     wifi-link-item.h
+    wifi-section.cpp
     wifi-settings.h
     wired-link.h
-    wwan-link-item.h
+    wwan-link-item.cpp
+    wwan-section.cpp
 
     dbus-cpp/services/ofono.h
 
     gio-helpers/util.h
     gio-helpers/variant.h
 
-    menuitems/item.h
     menuitems/access-point-item.h
+    menuitems/item.h
+    menuitems/section.h
     menuitems/switch-item.h
     menuitems/text-item.h
 
@@ -35,6 +38,8 @@ set(NETWORK_SERVICE_SOURCES
 
     notify-cpp/notification.cpp
     notify-cpp/notification.h
+
+    url-dispatcher-cpp/url-dispatcher.cpp
 )
 
 #include_directories(include)

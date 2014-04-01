@@ -124,7 +124,7 @@ public:
         std::set<org::ofono::Interface::Modem::Ptr> added;
         std::set_difference(ofonoModems.begin(), ofonoModems.end(),
                             current.begin(), current.end(),
-                            std::inserter(current, current.begin()));
+                            std::inserter(added, added.begin()));
 
         for (auto iter = currentModems.cbegin(); iter != currentModems.cend(); ++iter) {
             if (removed.find((*iter)->ofonoModem()) != removed.end()) {
@@ -435,12 +435,13 @@ public:
 
 ModemManager::ModemManager()
 {
+    std::cout << __PRETTY_FUNCTION__ << std::endl;
     d.reset(new Private);
 }
 
 ModemManager::~ModemManager()
 {
-
+    std::cout << __PRETTY_FUNCTION__ << std::endl;
 }
 
 const core::Property<std::set<Modem::Ptr>> &

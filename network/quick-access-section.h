@@ -17,25 +17,25 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#ifndef WWAN_LINK_ITEM_H
-#define WWAN_LINK_ITEM_H
+#ifndef QUICK_ACCESS_SECTION_H
+#define QUICK_ACCESS_SECTION_H
 
 #include "menuitems/section.h"
+#include <com/ubuntu/connectivity/networking/manager.h>
 
-class WwanLinkItem : Section
+class QuickAccessSection : public Section
 {
     class Private;
-    std::shared_ptr<Private> d;
+    std::unique_ptr<Private> d;
 
 public:
-    typedef std::shared_ptr<WwanLinkItem> Ptr;
-    WwanLinkItem();
-    ~WwanLinkItem();
+    typedef std::shared_ptr<QuickAccessSection> Ptr;
+    QuickAccessSection() = delete;
+    QuickAccessSection(std::shared_ptr<com::ubuntu::connectivity::networking::Manager> manager);
+    ~QuickAccessSection();
 
-    // from Section
     virtual ActionGroup::Ptr actionGroup();
     virtual MenuModel::Ptr menuModel();
 };
 
-#endif // WWAN_LINK_ITEM_H
-
+#endif

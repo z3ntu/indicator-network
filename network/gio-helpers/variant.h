@@ -21,6 +21,7 @@
 #define VARIANT_H
 
 #include <map>
+#include <vector>
 #include <memory>
 #include <gio/gio.h>
 
@@ -198,6 +199,35 @@ struct Codec<std::map<std::string, Variant>>
         {
             /// @todo do we trust the keys to be unique..?
             value[key] = Variant::fromGVariant(g_variant_ref(val));
+        }
+    }
+};
+
+template<>
+struct Codec<std::vector<Variant>>
+{
+    inline static GVariant *encode_argument(const std::vector<Variant> &values)
+    {
+        GVariantBuilder builder;
+        g_variant_builder_init(&builder, G_VARIANT_TYPE("av"));
+        for (auto value : values) {
+            g_variant_builder_add(&builder,
+                                  "v",
+                                  value.operator GVariant*());
+        }
+        return g_variant_builder_end(&builder);
+    }
+    inline static void decode_argument(const Variant &variant, std::vector<Variant> &values)
+    {
+        assert(variant);
+        assert(g_variant_is_of_type(variant, G_VARIANT_TYPE("av")));
+        GVariantIter iter;
+        GVariant *val = 0;
+        g_variant_iter_init (&iter, variant);
+        while (g_variant_iter_loop (&iter, "v", &val))
+        {
+            /// @todo do we trust the keys to be unique..?
+            values.push_back(Variant::fromGVariant(val));
         }
     }
 };

@@ -17,25 +17,16 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#ifndef WWAN_LINK_ITEM_H
-#define WWAN_LINK_ITEM_H
+#ifndef URL_DISPATCHER_CPP_H
+#define URL_DISPATCHER_CPP_H
 
-#include "menuitems/section.h"
+#include <string>
+#include <functional>
 
-class WwanLinkItem : Section
+class UrlDispatcher
 {
-    class Private;
-    std::shared_ptr<Private> d;
-
 public:
-    typedef std::shared_ptr<WwanLinkItem> Ptr;
-    WwanLinkItem();
-    ~WwanLinkItem();
-
-    // from Section
-    virtual ActionGroup::Ptr actionGroup();
-    virtual MenuModel::Ptr menuModel();
+    static void send(std::string url, std::function<void(std::string, bool)> cb = std::function<void(std::string, bool)>(nullptr));
 };
 
-#endif // WWAN_LINK_ITEM_H
-
+#endif

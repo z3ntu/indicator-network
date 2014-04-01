@@ -4,7 +4,6 @@ add_definitions(-DNETWORK_SERVICE_BIN="${CMAKE_BINARY_DIR}/network/indicator-net
 set(
     INTEGRATION_TESTS_SRC
     TestIndicatorNetworkService.cpp
-    "${CMAKE_SOURCE_DIR}/tests/main.cpp"
 )
 
 add_executable(
@@ -21,6 +20,7 @@ qt5_use_modules(
 
 target_link_libraries(
     integration-tests
+    test-utils
     ${QTDBUSMOCK_LIBRARIES}
     ${QTDBUSTEST_LIBRARIES}
     ${QMENUMODEL_LIBRARIES}

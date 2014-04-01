@@ -3,7 +3,6 @@ set(
     MENUITEMS_CPP_UNIT_TESTS_SRC
     test-access-point-item.cpp
     test-switch-item.cpp
-    "${CMAKE_SOURCE_DIR}/tests/main.cpp"
 )
 
 add_executable(
@@ -20,6 +19,7 @@ qt5_use_modules(
 
 target_link_libraries(
     menuitems-cpp-unit-tests
+    test-utils
     ${QTDBUSMOCK_LDFLAGS}
     ${QTDBUSTEST_LDFLAGS}
     ${QMENUMODEL_LDFLAGS}

@@ -19,6 +19,7 @@
 #include <cassert>
 
 #include <menuitems/switch-item.h>
+#include <utils/action-utils.h>
 
 #include <libqtdbustest/DBusTestRunner.h>
 #include <gmock/gmock.h>
@@ -27,6 +28,7 @@
 using namespace std;
 using namespace testing;
 using namespace QtDBusTest;
+using namespace testutils;
 
 namespace
 {
@@ -34,17 +36,30 @@ namespace
 class TestSwitchItem : public Test
 {
 protected:
-    void
-    SetUp ()
-    {
-    }
-
     DBusTestRunner dbus;
 };
 
 TEST_F(TestSwitchItem, ExportBasicActionsAndMenu)
 {
     auto switchItem = make_shared<SwitchItem>("label", "prefix", "name");
+    EXPECT_FALSE(switchItem->state());
+
+    auto menuItem = switchItem->menuItem();
+    EXPECT_EQ("label", menuItem->label());
+
+    string name = menuItem->action();
+    EXPECT_EQ("indicator.prefix.name", name);
+
+    auto actionGroup = switchItem->actionGroup();
+    auto action = findAction(actionGroup, name);
+    ASSERT_FALSE(action == nullptr);
+
+    EXPECT_FALSE(action->state().as<bool>());
+
+    action->setState(TypedVariant<bool>(true));
+
+    // FIXME Why can't we make this assertion
+//    EXPECT_TRUE(switchItem->state());
 }
 
 } // namespace

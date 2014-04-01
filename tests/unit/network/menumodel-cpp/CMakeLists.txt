@@ -2,7 +2,6 @@
 set(
     MENUMODEL_CPP_UNIT_TESTS_SRC
     test-menu-exporter.cpp
-    "${CMAKE_SOURCE_DIR}/tests/main.cpp"
 )
 
 add_executable(
@@ -19,6 +18,7 @@ qt5_use_modules(
 
 target_link_libraries(
     menumodel-cpp-unit-tests
+    test-utils
     ${QTDBUSMOCK_LDFLAGS}
     ${QTDBUSTEST_LDFLAGS}
     ${QMENUMODEL_LDFLAGS}

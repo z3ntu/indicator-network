@@ -77,6 +77,7 @@ public:
            const Variant &state = Variant(),
            std::function<void(Variant)> changeStateHandler = std::function<void(Variant)>())
         : m_name {name},
+          m_state {state},
           m_changeStateHandler {changeStateHandler}
     {
         /// @todo validate that name is valid.
@@ -128,7 +129,7 @@ public:
         });
     }
 
-    Variant getState()
+    Variant state()
     {
         std::lock_guard<std::recursive_mutex> lg(m_mutex);
         return m_state;

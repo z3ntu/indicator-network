@@ -7,7 +7,6 @@ add_definitions(-DSECRET_AGENT_BIN="${CMAKE_BINARY_DIR}/secret-agent/indicator-s
 set(
     SECRET_AGENT_UNIT_TESTS_SRC
     TestSecretAgent.cpp
-    "${CMAKE_SOURCE_DIR}/tests/main.cpp"
 )
 
 set_source_files_properties(
@@ -37,6 +36,7 @@ qt5_use_modules(
 target_link_libraries(
     secret-agent-unit-tests
     indicator-secret-agent
+    test-utils
     ${QTDBUSMOCK_LIBRARIES}
     ${QTDBUSTEST_LIBRARIES}
     ${QMENUMODEL_LIBRARIES}

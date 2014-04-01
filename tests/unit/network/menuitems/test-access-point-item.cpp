@@ -19,6 +19,7 @@
 #include <cassert>
 
 #include <menuitems/access-point-item.h>
+#include <utils/action-utils.h>
 
 #include <libqtdbustest/DBusTestRunner.h>
 #include <gmock/gmock.h>
@@ -27,6 +28,7 @@
 using namespace std;
 using namespace testing;
 using namespace QtDBusTest;
+using namespace testutils;
 
 namespace
 {
@@ -52,53 +54,7 @@ public:
 class TestAccessPointItem : public Test
 {
 protected:
-    void
-    SetUp ()
-    {
-    }
-
     DBusTestRunner dbus;
-
-    static string
-    string_value (MenuItem::Ptr menuItem, const string &name)
-    {
-        char *attribute = NULL;
-        if (g_menu_item_get_attribute(menuItem->gmenuitem(), name.c_str(), "s",
-                                      &attribute))
-        {
-            string result = attribute;
-            g_free(attribute);
-            return result;
-        }
-        throw std::logic_error("could not get string attribute");
-    }
-
-    static bool
-    bool_value (MenuItem::Ptr menuItem, const string &name)
-    {
-        bool result;
-        if (!g_menu_item_get_attribute(menuItem->gmenuitem(), name.c_str(), "b",
-                                       &result))
-        {
-            throw std::logic_error("could not get boolean attribute");
-        }
-        return result;
-    }
-
-    static ::Action::Ptr
-    findAction (ActionGroup::Ptr actionGroup, const string &name)
-    {
-        ::Action::Ptr action;
-        std::set<::Action::Ptr> actions = actionGroup->actions();
-        for (auto it(actions.begin()); it != actions.end(); ++it)
-        {
-            if ((*it)->name() == name)
-            {
-                action = *it;
-            }
-        }
-        return action;
-    }
 };
 
 TEST_F(TestAccessPointItem, ExportBasicActionsAndMenu)
@@ -120,10 +76,9 @@ TEST_F(TestAccessPointItem, ExportBasicActionsAndMenu)
 
     string strengthActionName = string_value(
             menuItem, "x-canonical-wifi-ap-strength-action");
-    auto pos = strengthActionName.find('.');
-    string shortName = strengthActionName.substr(pos + 1);
 
-    auto strengthAction = findAction(accessPointItem->actionGroup(), shortName);
+    auto strengthAction = findAction(accessPointItem->actionGroup(),
+                                     strengthActionName);
 
     ASSERT_FALSE(strengthAction.get() == nullptr);
     EXPECT_EQ(70, strengthAction->state().as<uint8_t>());

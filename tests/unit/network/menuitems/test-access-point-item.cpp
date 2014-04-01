@@ -126,7 +126,7 @@ TEST_F(TestAccessPointItem, ExportBasicActionsAndMenu)
     auto strengthAction = findAction(accessPointItem->actionGroup(), shortName);
 
     ASSERT_FALSE(strengthAction.get() == nullptr);
-//    EXPECT_EQ(5, strengthAction->getState().as<uint8_t>());
+    EXPECT_EQ(70, strengthAction->state().as<uint8_t>());
 }
 
 } // namespace

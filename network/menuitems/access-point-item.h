@@ -74,13 +74,13 @@ public:
                                                     nullptr,
                                                     TypedVariant<bool>(m_isActive),
                                                     [this](Variant value){
-                bool state = m_actionActivate->getState().as<bool>();
+                bool state = m_actionActivate->state().as<bool>();
 
                 ///@ todo something weird is happening as the indicator side is not changing the state..
                 //value = !value;
     });
         m_actionActivate->activated().connect([this](Variant parameter){
-            bool value = m_actionActivate->getState().as<bool>();
+            bool value = m_actionActivate->state().as<bool>();
             m_activated();
         });
 

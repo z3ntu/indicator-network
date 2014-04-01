@@ -59,6 +59,46 @@ protected:
 
     DBusTestRunner dbus;
 
+    static string
+    string_value (MenuItem::Ptr menuItem, const string &name)
+    {
+        char *attribute = NULL;
+        if (g_menu_item_get_attribute(menuItem->gmenuitem(), name.c_str(), "s",
+                                      &attribute))
+        {
+            string result = attribute;
+            g_free(attribute);
+            return result;
+        }
+        throw std::logic_error("could not get string attribute");
+    }
+
+    static bool
+    bool_value (MenuItem::Ptr menuItem, const string &name)
+    {
+        bool result;
+        if (!g_menu_item_get_attribute(menuItem->gmenuitem(), name.c_str(), "b",
+                                       &result))
+        {
+            throw std::logic_error("could not get boolean attribute");
+        }
+        return result;
+    }
+
+    static ::Action::Ptr
+    findAction (ActionGroup::Ptr actionGroup, const string &name)
+    {
+        ::Action::Ptr action;
+        std::set<::Action::Ptr> actions = actionGroup->actions();
+        for (auto it(actions.begin()); it != actions.end(); ++it)
+        {
+            if ((*it)->name() == name)
+            {
+                action = *it;
+            }
+        }
+        return action;
+    }
 };
 
 TEST_F(TestAccessPointItem, ExportBasicActionsAndMenu)
@@ -70,10 +110,23 @@ TEST_F(TestAccessPointItem, ExportBasicActionsAndMenu)
     ON_CALL(*accessPoint, adhoc()).WillByDefault(Return(false));
     accessPoint->m_strength = 70.0;
 
-    AccessPointItem::Ptr accessPointItem = make_shared<AccessPointItem>(accessPoint);
-    MenuItem::Ptr menuItem = accessPointItem->menuItem();
+    auto accessPointItem = make_shared<AccessPointItem>(accessPoint);
+
+    auto menuItem = accessPointItem->menuItem();
 
     EXPECT_EQ("the ssid", menuItem->label());
+    EXPECT_EQ(false, bool_value(menuItem, "x-canonical-wifi-ap-is-adhoc"));
+    EXPECT_EQ(true, bool_value(menuItem, "x-canonical-wifi-ap-is-secure"));
+
+    string strengthActionName = string_value(
+            menuItem, "x-canonical-wifi-ap-strength-action");
+    auto pos = strengthActionName.find('.');
+    string shortName = strengthActionName.substr(pos + 1);
+
+    auto strengthAction = findAction(accessPointItem->actionGroup(), shortName);
+
+    ASSERT_FALSE(strengthAction.get() == nullptr);
+//    EXPECT_EQ(5, strengthAction->getState().as<uint8_t>());
 }
 
 } // namespace

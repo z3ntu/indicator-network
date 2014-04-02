@@ -46,7 +46,7 @@ public:
         m_action = std::make_shared<Action>(action_name, nullptr, TypedVariant<bool>(m_state.get()));
         m_actionGroup->add(m_action);
         m_action->activated().connect([this](Variant){
-            bool value = m_action->getState().as<bool>();
+            bool value = m_action->state().as<bool>();
             ///@ todo something weird is happening as the indicator side is not changing the state..
             value = !value;
             m_state.set(value);

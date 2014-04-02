@@ -37,6 +37,8 @@ public:
         m_actionGroupMerger->add(m_actionGroup);
     }
 
+    virtual ~Item() = default;
+
     virtual ActionGroup::Ptr actionGroup()
     {
         return m_actionGroupMerger->actionGroup();

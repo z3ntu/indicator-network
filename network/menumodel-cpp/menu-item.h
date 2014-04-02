@@ -151,6 +151,12 @@ public:
         std::lock_guard<std::recursive_mutex> lg(m_mutex);
         return m_changed;
     }
+
+    const std::string &
+    action () const
+    {
+        return m_action;
+    }
 };
 
 #endif // MENU_ITEM_H

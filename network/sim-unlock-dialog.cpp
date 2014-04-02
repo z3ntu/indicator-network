@@ -44,6 +44,8 @@ public:
     core::Signal<void> m_cancelled;
     core::Signal<void> m_closed;
 
+    std::shared_ptr<SessionBus> m_sessionBus;
+
     Action::Ptr m_notifyAction;
     ActionGroup::Ptr m_actionGroup;
     ActionGroupExporter::Ptr m_actionGroupExporter;
@@ -95,8 +97,10 @@ public:
         });
         m_actionGroup->add(m_notifyAction);
 
-        m_menuExporter = std::make_shared<MenuExporter>(menuPath, m_menu);
-        m_actionGroupExporter = std::make_shared<ActionGroupExporter>(m_actionGroup, actionPath);
+        m_sessionBus.reset(new SessionBus());
+
+        m_menuExporter = std::make_shared<MenuExporter>(m_sessionBus, menuPath, m_menu);
+        m_actionGroupExporter = std::make_shared<ActionGroupExporter>(m_sessionBus, m_actionGroup, actionPath);
 
         m_notification = std::make_shared<notify::Notification>(title, body, "");
         m_notification->setHintString("x-canonical-snap-decisions", "true");

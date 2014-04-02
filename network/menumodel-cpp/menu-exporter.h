@@ -29,14 +29,15 @@ public:
 
     typedef std::shared_ptr<MenuExporter> Ptr;
 
-    MenuExporter(const std::string &path, Menu::Ptr menu)
+    MenuExporter(SessionBus::Ptr sessionBus, const std::string &path, Menu::Ptr menu)
         : m_menu {menu},
-          m_exportId {0}
+          m_exportId {0},
+          m_sessionBus(sessionBus)
     {
+        assert(sessionBus);
         assert(!path.empty());
         assert(menu);
 
-        m_sessionBus.reset(new SessionBus());
         GError *error = NULL;
         m_exportId = g_dbus_connection_export_menu_model(m_sessionBus->bus().get(),
                                                          path.c_str(),

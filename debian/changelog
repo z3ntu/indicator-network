@@ -1,3 +1,16 @@
+indicator-network (0.5.1+14.04.20140318-0ubuntu1) trusty; urgency=low
+
+  [ Colin Watson ]
+  * Only build-depend on valgrind on architectures that have it.
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Tue, 18 Mar 2014 21:29:32 +0000
+
+indicator-network (0.5.1+14.04.20140305-0ubuntu1) trusty; urgency=low
+
+  * New rebuild forced
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Wed, 05 Mar 2014 13:22:28 +0000
+
 indicator-network (0.5.1+14.04.20140207-0ubuntu1) trusty; urgency=low
 
   [ Ted Gould ]

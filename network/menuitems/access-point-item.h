@@ -74,13 +74,10 @@ public:
                                                     nullptr,
                                                     TypedVariant<bool>(m_isActive),
                                                     [this](Variant){
-                //bool state = m_actionActivate->getState().as<bool>();
-
                 ///@ todo something weird is happening as the indicator side is not changing the state..
                 //value = !value;
-    });
+        });
         m_actionActivate->activated().connect([this](Variant){
-            //bool value = m_actionActivate->getState().as<bool>();
             m_activated();
         });
 
@@ -88,7 +85,7 @@ public:
         m_actionGroup->add(m_actionStrength);
     }
 
-    ~AccessPointItem()
+    virtual ~AccessPointItem()
     {
         for (auto con : m_connections)
             con.disconnect();

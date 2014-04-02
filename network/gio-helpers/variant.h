@@ -103,7 +103,7 @@ public:
     operator GVariant*() const { return m_variant.get(); }
 
 protected:
-    Variant(GVariant *variant)
+    explicit Variant(GVariant *variant)
     {
         m_variant = make_gvariant_ptr(variant);
     }
@@ -115,7 +115,9 @@ template<typename T>
 class TypedVariant : public Variant
 {
 public:
-    TypedVariant(const T &value = T())
+
+
+    explicit TypedVariant(const T &value = T())
     {
         m_variant = make_gvariant_ptr(Codec<T>::encode_argument(value));
     }

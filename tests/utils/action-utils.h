@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Canonical, Ltd.
+ * Copyright (C) 2014 Canonical, Ltd.
  *
  * This program is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 3, as published
@@ -16,29 +16,25 @@
  * Author: Pete Woods <pete.woods@canonical.com>
  */
 
-#include <config.h>
+#ifndef ACTIONUTILS_H_
+#define ACTIONUTILS_H_
 
-#include <QCoreApplication>
-#include <gtest/gtest.h>
+#include <cassert>
+#include <menumodel-cpp/action-group.h>
+#include <menumodel-cpp/menu-item.h>
 
-#include <libqtdbusmock/DBusMock.h>
-#include <DBusTypes.h>
+namespace testutils
+{
 
-using namespace QtDBusMock;
+std::string
+string_value (MenuItem::Ptr menuItem, const std::string &name);
 
-int main(int argc, char **argv) {
-	qputenv("LANG", "C.UTF-8");
-	unsetenv("LC_ALL");
+bool
+bool_value (MenuItem::Ptr menuItem, const std::string &name);
 
-	setlocale(LC_ALL, "");
-	bindtextdomain(GETTEXT_PACKAGE, LOCALE_DIR);
-	textdomain(GETTEXT_PACKAGE);
+Action::Ptr
+findAction (ActionGroup::Ptr actionGroup, const std::string &name);
 
-	QCoreApplication application(argc, argv);
+} /* namespace testutils */
 
-	DBusMock::registerMetaTypes();
-	DBusTypes::registerMetaTypes();
-
-	::testing::InitGoogleTest(&argc, argv);
-	return RUN_ALL_TESTS();
-}
+#endif /* ACTIONUTILS_H_ */

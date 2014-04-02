@@ -55,6 +55,8 @@ public:
         m_item = std::make_shared<MenuItem>(label,
                                             std::string("indicator.") + action_name);
         m_item->setAttribute("x-canonical-type", TypedVariant<std::string>("com.canonical.indicator.switch"));
+
+        /// @todo state changes don't work properly
     }
 
     virtual MenuItem::Ptr

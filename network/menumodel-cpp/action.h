@@ -66,6 +66,9 @@ class Action
         Action *that =  static_cast<Action *>(user_data);
         if (that->m_changeStateHandler)
             that->m_changeStateHandler(new_value);
+        /// @todo probably should assert if reached here.
+        ///       this callback should never be set up if no
+        ///       changeStateHandler is provided.
     }
 
 public:
@@ -125,6 +128,9 @@ public:
         GMainLoopDispatch([=](){
           g_simple_action_set_state(G_SIMPLE_ACTION(m_gaction.get()), value);
         });
+        /// @todo state changes don't work properly. We probably need to make the
+        ///       state a Property to be able to get signals on change.
+        ///       or alternatively call changeStateHandler here
     }
 
     Variant getState()

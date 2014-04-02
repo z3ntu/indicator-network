@@ -224,9 +224,7 @@ struct Codec<std::vector<Variant>>
         GVariantIter iter;
         GVariant *val = 0;
         g_variant_iter_init (&iter, variant);
-        while (g_variant_iter_loop (&iter, "v", &val))
-        {
-            /// @todo do we trust the keys to be unique..?
+        while (g_variant_iter_loop (&iter, "v", &val)) {
             values.push_back(Variant::fromGVariant(val));
         }
     }

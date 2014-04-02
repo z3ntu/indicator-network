@@ -23,9 +23,7 @@ class Modem::Private
 {
 public:
     org::ofono::Interface::Modem::Ptr ofonoModem;
-
-    core::Property<bool> isLocked;
-    core::Property<bool> simPresent;
+    core::Property<Modem::SimStatus> simStatus;
     core::Property<Modem::PinType> requiredPin;
     core::Property<std::map<Modem::PinType, std::uint8_t>> retries;
     core::Property<std::string> subscriberIdentity;
@@ -38,6 +36,7 @@ public:
     void networkRegistrationChanged(org::ofono::Interface::NetworkRegistration::Ptr netreg);
     void simManagerChanged(org::ofono::Interface::SimManager::Ptr simmgr);
 
+    void simPresentChanged(bool value);
     void pinRequiredChanged(org::ofono::Interface::SimManager::PinType pin);
 };
 
@@ -82,24 +81,18 @@ Modem::Private::simManagerChanged(org::ofono::Interface::SimManager::Ptr simmgr)
     std::cout << __PRETTY_FUNCTION__ << std::endl;
     std::cout << "SIM MANAGER CHANGED: " << simmgr << std::endl;
     if (simmgr) {
-        simPresent.set(simmgr->present.get());
-        simmgr->present.changed().connect([this](bool value){
-            std::cout << "PRESENT CHANGED: " << value << std::endl;
-            simPresent.set(value);
-        });
+        simmgr->present.changed().connect(std::bind(&Private::simPresentChanged, this, std::placeholders::_1));
+        simPresentChanged(simmgr->present.get());
 
+        simmgr->pinRequired.changed().connect(std::bind(&Private::pinRequiredChanged, this, std::placeholders::_1));
         pinRequiredChanged(simmgr->pinRequired.get());
-        simmgr->pinRequired.changed().connect([this](org::ofono::Interface::SimManager::PinType pin){
-            pinRequiredChanged(pin);
-        });
 
         /// @todo retries
         /// @todo subscriberIdentity
 
     } else {
+        simStatus.set(SimStatus::offline);
         requiredPin.set(PinType::none);
-        simPresent.set(false);
-        isLocked.set(false);
     }
 }
 
@@ -112,15 +105,15 @@ Modem::Private::pinRequiredChanged(org::ofono::Interface::SimManager::PinType pi
     {
     case org::ofono::Interface::SimManager::PinType::none:
         requiredPin.set(PinType::none);
-        isLocked.set(false);
+        simStatus.set(SimStatus::ready);
         break;
     case org::ofono::Interface::SimManager::PinType::pin:
         requiredPin.set(PinType::pin);
-        isLocked.set(true);
+        simStatus.set(SimStatus::locked);
         break;
     case org::ofono::Interface::SimManager::PinType::puk:
         requiredPin.set(PinType::puk);
-        isLocked.set(true);
+        simStatus.set(SimStatus::locked);
         break;
     default:
         throw std::runtime_error("Ofono requires a PIN we have not been prepared to handle (" +
@@ -128,6 +121,16 @@ Modem::Private::pinRequiredChanged(org::ofono::Interface::SimManager::PinType pi
                                  "). Bailing out.");
     }
 }
+
+void
+Modem::Private::simPresentChanged(bool value)
+{
+    std::cout << "PRESENT CHANGED: " << value << std::endl;
+    if (!value) {
+        simStatus.set(SimStatus::missing);
+    }
+}
+
 
 Modem::Modem(org::ofono::Interface::Modem::Ptr ofonoModem)
 {
@@ -223,16 +226,10 @@ Modem::changePin(PinType type, const std::string &oldPin, const std::string &new
     }
 }
 
-const core::Property<bool> &
-Modem::isLocked()
+const core::Property<Modem::SimStatus> &
+Modem::simStatus()
 {
-    return d->isLocked;
-}
-
-const core::Property<bool> &
-Modem::simPresent()
-{
-    return d->simPresent;
+    return d->simStatus;
 }
 
 const core::Property<Modem::PinType> &

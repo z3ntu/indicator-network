@@ -239,48 +239,6 @@ public:
         }
     }
 
-    void updateIcon()
-    {
-        if (!m_activeAccessPoint) {
-            m_icon = "nm-no-connection";
-            m_a11ydesc = _("Network (none)");
-            return;
-        }
-
-        /// @todo connecting animation..
-
-        int strength = m_activeAccessPoint->strength().get();
-        bool secured = m_activeAccessPoint->secured();
-
-        gchar *a11ydesc = nullptr;
-        if (secured) {
-            a11ydesc = g_strdup_printf(_("Network (wireless, %d%%, secure)"), strength);
-        } else {
-            a11ydesc = g_strdup_printf(_("Network (wireless, %d%%)"), strength);
-        }
-        m_a11ydesc = {a11ydesc};
-        g_free(a11ydesc);
-
-        int iconStrength;
-        if (strength >= 75)
-            iconStrength = 75;
-         else if (strength >= 50)
-            iconStrength = 50;
-        else if (strength >= 25)
-            iconStrength = 25;
-        else
-            iconStrength = 0;
-
-        gchar *icon = nullptr;
-        if (secured) {
-            m_icon = g_strdup_printf("nm-signal-%d-secure", iconStrength);
-        } else {
-            m_icon = g_strdup_printf("nm-signal-%d", iconStrength);
-        }
-        m_icon = {icon};
-        g_free(icon);
-    }
-
     virtual MenuItem::Ptr
     menuItem() {
         return m_item;

@@ -35,25 +35,27 @@ public:
     ActionGroupMerger::Ptr m_actionGroupMerger;
     Menu::Ptr m_menu;
 
-    ModemManager::Ptr m_simService;
+    ModemManager::Ptr m_modemManager;
 
     TextItem::Ptr m_openCellularSettings;
 
-    Private();
+    Private() = delete;
+    Private(ModemManager::Ptr modemManager);
 };
 
-WwanSection::Private::Private()
+WwanSection::Private::Private(ModemManager::Ptr modemManager)
+    : m_modemManager{modemManager}
 {
     m_actionGroupMerger = std::make_shared<ActionGroupMerger>();
     m_menu = std::make_shared<Menu>();
-    m_simService = std::make_shared<ModemManager>();
 
     /// @todo support more than one sim
     /// @todo support sims().changed()
     /// @todo add Item::visible
     /// @todo support isLocked().changed()
-    if (m_simService->modems()->size() == 1 &&
-        m_simService->modems()->begin()->get()->isLocked().get()) {
+    if (m_modemManager->modems()->size() == 1 &&
+        m_modemManager->modems()->begin()->get()->simStatus().get() == Modem::SimStatus::locked) {
+            ; // show the unlock thingy.
     }
 
     m_openCellularSettings = std::make_shared<TextItem>(_("Cellular settings…"), "cellular", "settings");
@@ -68,9 +70,9 @@ WwanSection::Private::Private()
     m_actionGroupMerger->add(*m_openCellularSettings);
 }
 
-WwanSection::WwanSection()
+WwanSection::WwanSection(ModemManager::Ptr modemManager)
 {
-    d.reset(new Private);
+    d.reset(new Private(modemManager));
 }
 
 WwanSection::~WwanSection()

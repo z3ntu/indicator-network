@@ -17,25 +17,27 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#ifndef WWAN_SECTION_H
-#define WWAN_SECTION_H
+#ifndef ROOT_STATE_MANAGER
+#define ROOT_STATE_MANAGER
 
-#include "menuitems/section.h"
+#include <com/ubuntu/connectivity/networking/manager.h>
 #include "modem-manager.h"
 
-class WwanSection : public Section
+#include "gio-helpers/variant.h"
+
+class RootState
 {
     class Private;
     std::unique_ptr<Private> d;
 
 public:
-    typedef std::shared_ptr<WwanSection> Ptr;
-    WwanSection() = delete;
-    WwanSection(ModemManager::Ptr modemManager);
-    ~WwanSection();
+    typedef std::shared_ptr<RootState> Ptr;
 
-    virtual ActionGroup::Ptr actionGroup();
-    virtual MenuModel::Ptr menuModel();
+    RootState() = delete;
+    RootState(std::shared_ptr<com::ubuntu::connectivity::networking::Manager> manager, ModemManager::Ptr modemManager);
+    virtual ~RootState();
+
+    const core::Property<Variant> &state();
 };
 
 #endif

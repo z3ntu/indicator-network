@@ -767,7 +767,7 @@ struct Interface
             } else if (property == Property::SubscriberIdentity::name()) {
                 subscriberIdentity.set(value.as<Property::SubscriberIdentity::ValueType>());
             } else {
-                std::cout << std::string(__PRETTY_FUNCTION__) + ": unhandled property change: " + property << std::endl;
+                //std::cout << std::string(__PRETTY_FUNCTION__) + ": unhandled property change: " + property << std::endl;
             }
         }
 
@@ -1146,9 +1146,11 @@ struct Interface
 
         void _updateProperty(const std::string &property, core::dbus::types::Variant value)
         {
-            std::cout << __PRETTY_FUNCTION__ << ": " << property << std::endl;
+            //std::cout << __PRETTY_FUNCTION__ << ": " << property << std::endl;
             if (property == Property::Interfaces::name()) {
+                //std::cout << "READING" << std::endl;
                 auto newValue = value.as<Property::Interfaces::ValueType>();
+                //std::cout << "READ." << std::endl;
                 interfaces.set(newValue);
             } else if (property == Property::Online::name()) {
                 online.set(value.as<Property::Online::ValueType>());
@@ -1157,7 +1159,7 @@ struct Interface
             } else if (property == Property::Type::name()) {
                 type.set(str2type(value.as<Property::Type::ValueType>()));
             } else {
-                std::cout << std::string(__PRETTY_FUNCTION__) + ": unhandled property change: " + property << std::endl;
+                //std::cout << std::string(__PRETTY_FUNCTION__) + ": unhandled property change: " + property << std::endl;
             }
         }
 

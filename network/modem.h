@@ -40,7 +40,18 @@ public:
         puk
     };
 
+    enum class SimStatus
+    {
+        offline,
+        missing,
+        error,
+        locked,
+        permanentlyLocked,
+        ready
+    };
+
     typedef std::shared_ptr<Modem> Ptr;
+    typedef std::weak_ptr<Modem> WeakPtr;
     Modem() = delete;
     Modem(org::ofono::Interface::Modem::Ptr ofonoModem);
     virtual ~Modem();
@@ -59,9 +70,8 @@ public:
                    const std::string &newPin);
 
 
-    const core::Property<bool> &isLocked();
+    const core::Property<SimStatus> &simStatus();
     const core::Property<PinType> &requiredPin();
-    const core::Property<bool> &simPresent();
     const core::Property<std::map<PinType, std::uint8_t>> &retries();
     const core::Property<std::string> &subscriberIdentity();
 

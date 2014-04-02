@@ -7,6 +7,7 @@ set(NETWORK_SERVICE_SOURCES
     modem.h
     modem-manager.cpp
     quick-access-section.cpp
+    root-state.cpp
     sim-unlock-dialog.cpp
     wifi-link-item.h
     wifi-section.cpp

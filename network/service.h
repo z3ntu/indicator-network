@@ -21,7 +21,6 @@
 #define SERVICE_H
 
 #include <com/ubuntu/connectivity/networking/manager.h>
-#include <com/ubuntu/connectivity/networking/wifi/link.h>
 namespace networking = com::ubuntu::connectivity::networking;
 
 #include <functional>
@@ -33,6 +32,9 @@ namespace networking = com::ubuntu::connectivity::networking;
 
 #include "menumodel-cpp/action-group-merger.h"
 #include "menumodel-cpp/menu-exporter.h"
+
+#include "root-state.h"
+#include "modem-manager.h"
 
 #include "quick-access-section.h"
 #include "wifi-section.h"
@@ -56,6 +58,8 @@ class Service
 
 
     std::shared_ptr<networking::Manager> m_manager;
+    ModemManager::Ptr m_modemManager;
+    RootState::Ptr m_rootState;
 
 
     QuickAccessSection::Ptr m_quickAccessSection;
@@ -88,41 +92,24 @@ public:
     {
 
         m_manager = networking::Manager::createInstance();
+        m_modemManager = std::make_shared<ModemManager>();
 
-        m_desktopMenu = std::make_shared<IndicatorMenu>("desktop");
-        m_desktopGreeterMenu = std::make_shared<IndicatorMenu>("desktop.greeter");
-        m_desktopWifiSettingsMenu = std::make_shared<IndicatorMenu>("desktop.wifi.settings");
+        m_rootState = std::make_shared<RootState>(m_manager, m_modemManager);
 
-        m_tabletMenu = std::make_shared<IndicatorMenu>("tablet");
-        m_tabletGreeterMenu = std::make_shared<IndicatorMenu>("tablet.greeter");
-        m_tabletWifiSettingsMenu = std::make_shared<IndicatorMenu>("tablet.wifi.settings");
+        m_desktopMenu = std::make_shared<IndicatorMenu>(m_rootState, "desktop");
+        m_desktopGreeterMenu = std::make_shared<IndicatorMenu>(m_rootState, "desktop.greeter");
+        m_desktopWifiSettingsMenu = std::make_shared<IndicatorMenu>(m_rootState, "desktop.wifi.settings");
 
-        m_phoneMenu = std::make_shared<IndicatorMenu>("phone");
-        m_phoneGreeterMenu = std::make_shared<IndicatorMenu>("phone.greeter");
-        m_phoneWifiSettingsMenu = std::make_shared<IndicatorMenu>("phone.wifi.settings");
+        m_tabletMenu = std::make_shared<IndicatorMenu>(m_rootState, "tablet");
+        m_tabletGreeterMenu = std::make_shared<IndicatorMenu>(m_rootState, "tablet.greeter");
+        m_tabletWifiSettingsMenu = std::make_shared<IndicatorMenu>(m_rootState, "tablet.wifi.settings");
 
-        m_ubiquityMenu = std::make_shared<IndicatorMenu>("ubiquity");
+        m_phoneMenu = std::make_shared<IndicatorMenu>(m_rootState, "phone");
+        m_phoneGreeterMenu = std::make_shared<IndicatorMenu>(m_rootState, "phone.greeter");
+        m_phoneWifiSettingsMenu = std::make_shared<IndicatorMenu>(m_rootState, "phone.wifi.settings");
 
-        m_desktopMenu->setIcons({"nm-signal-75", "nm-signal-25"});
-        m_desktopMenu->setIcon("nm-signal-75-secure");
-        m_phoneMenu->setIcons({"nm-signal-75", "nm-signal-25"});
-        //m_phoneMenu->setIcon("nm-signal-75-secure");
+        m_ubiquityMenu = std::make_shared<IndicatorMenu>(m_rootState, "ubiquity");
 
-#if 0
-
-        /// @todo handle icons properly
-        m_flightModeSwitch->state().changed().connect([this](bool value){
-            if (value) {
-                //m_manager->enableFlightMode();
-                m_desktopMenu->setIcon("airplane-mode");
-                m_phoneMenu->setIcon("airplane-mode");
-            } else {
-                //m_manager->disableFlightMode();
-                m_desktopMenu->setIcon("nm-signal-75-secure");
-                m_phoneMenu->setIcon("nm-signal-75-secure");
-            }
-        });
-#endif
 
         m_quickAccessSection = std::make_shared<QuickAccessSection>(m_manager);;
         m_desktopMenu->addSection(m_quickAccessSection);
@@ -132,7 +119,7 @@ public:
         m_desktopMenu->addSection(m_wifiSection);
         m_phoneMenu->addSection(m_wifiSection);
 
-        m_wwanSection = std::make_shared<WwanSection>();
+        m_wwanSection = std::make_shared<WwanSection>(m_modemManager);
         m_desktopMenu->addSection(m_wwanSection);
         m_phoneMenu->addSection(m_wwanSection);
 

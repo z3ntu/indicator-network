@@ -9,4 +9,11 @@ export G_MESSAGES_DEBUG
 respawn
 respawn limit 2 10
 
+pre-start script
+	# NOTE: Only used on Unity8 today, not 7
+	if [ "x$DESKTOP_SESSION" == "xubuntu-touch" ] ; then
+		stop; exit 0
+	fi
+end script
+
 exec @NETWORK_SERVICE@

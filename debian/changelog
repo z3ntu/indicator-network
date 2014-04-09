@@ -1,3 +1,13 @@
+indicator-network (0.5.1+14.04.20140409.1-0ubuntu1) trusty; urgency=low
+
+  [ Ted Gould ]
+  * Synchronize process management across indicators (LP: #1233226)
+
+  [ Ubuntu daily release ]
+  * New rebuild forced
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Wed, 09 Apr 2014 21:38:03 +0000
+
 indicator-network (0.5.1+14.04.20140318-0ubuntu1) trusty; urgency=low
 
   [ Colin Watson ]

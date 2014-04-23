@@ -24,8 +24,11 @@ from __future__ import absolute_import
 import subprocess
 
 class PhonesimManager:
-    def __init__(self, sims):
-        self.phonesim_exe = '/usr/bin/ofono-phonesim'
+    def __init__(self, sims, exe=None):
+        if exe is None:
+            self.phonesim_exe = '/usr/bin/ofono-phonesim'
+        else:
+            self.phonesim_exe = exe
         self.sims = sims
         self.sim_processes = {}
 

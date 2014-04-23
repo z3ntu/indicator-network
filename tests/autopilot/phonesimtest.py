@@ -1,3 +1,5 @@
+#!/usr/bin/python -tt
+
 # -*- Mode: Python; coding: utf-8; indent-tabs-mode: nil; tab-width: 4 -*-
 #
 # Unity Indicators Autopilot Test Suite
@@ -21,5 +23,26 @@ from __future__ import absolute_import
 
 import subprocess
 
+class PhonesimManager:
+    def __init__(self):
+        self.phonesim_exe = '/usr/bin/ofono-phonesim'
+        self.sims = [('sim1', 12345, '/usr/share/phonesim/default.xml'),
+                     ('sim2', 12346, '/usr/share/phonesim/default.xml')]
+        self.sim_processes = {}
+
+    def start_phonesim_processes(self):
+        for simname, simport, conffile in self.sims:
+            cmd = [self.phonesim_exe, '-p', str(simport), conffile]
+            p = subprocess.Popen(cmd)
+            self.sim_processes[simname] = p
+
+    def shutdown(self):
+        for p in self.sim_processes.values():
+            p.kill()
+        self.sim_processes = {}
+
 if __name__ == '__main__':
-    pass
+    m = PhonesimManager()
+    m.start_phonesim_processes()
+    m.shutdown()
+

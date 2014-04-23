@@ -24,10 +24,9 @@ from __future__ import absolute_import
 import subprocess
 
 class PhonesimManager:
-    def __init__(self):
+    def __init__(self, sims):
         self.phonesim_exe = '/usr/bin/ofono-phonesim'
-        self.sims = [('sim1', 12345, '/usr/share/phonesim/default.xml'),
-                     ('sim2', 12346, '/usr/share/phonesim/default.xml')]
+        self.sims = sims
         self.sim_processes = {}
 
     def start_phonesim_processes(self):
@@ -41,8 +40,39 @@ class PhonesimManager:
             p.kill()
         self.sim_processes = {}
 
+    def reset_ofono(self):
+        cmd = ['dbus-send', '--system', '--dest=org.ofono', '/',\
+               'org.ofono.phonesim.Manager.Reset']
+        subprocess.check_call(cmd)
+
+    def remove_all_ofono(self):
+        cmd = ['dbus-send', '--system', '--dest=org.ofono', '/',\
+               'org.ofono.phonesim.Manager.RemoveAll']
+        subprocess.check_call(cmd)
+
+    def add_ofono(self, name):
+        for simname, simport, _ in self.sims:
+            if name == simname:
+                cmd = ['dbus-send', '--system', '--dest=org.ofono', '/',\
+               'org.ofono.phonesim.Manager.Add', 'string:' + simname, \
+               'string:127.0.0.1', 'string:' + simport]
+                subprocess.check_call(cmd)
+                return
+        raise RuntimeError('Tried to add unknown modem %s.' % name)
+
+    def power_on(self, name):
+        cmd = ['dbus-send', '--system', '--dest=org.ofono', '/'+myname, \
+               'org.ofono.Modem.SetProperty', 'string:Powered', 'variant:boolean:true']
+        subprocess.check_call(cmd)
+
+    def power_off(self, name):
+        cmd = ['dbus-send', '--system', '--dest=org.ofono', '/'+myname, \
+               'org.ofono.Modem.SetProperty', 'string:Powered', 'variant:boolean:false']
+        subprocess.check_call(cmd)
+
 if __name__ == '__main__':
-    m = PhonesimManager()
+    sims = [('sim1', 12345, '/usr/share/phonesim/default.xml'),
+            ('sim2', 12346, '/usr/share/phonesim/default.xml')]
+    m = PhonesimManager(sims)
     m.start_phonesim_processes()
     m.shutdown()
-

@@ -161,7 +161,7 @@ Modem::ofonoModem() const
     return d->ofonoModem;
 }
 
-void
+bool
 Modem::enterPin(PinType type, const std::string &pin)
 {
     if (!d->ofonoModem->simManager.get()) {
@@ -171,19 +171,19 @@ Modem::enterPin(PinType type, const std::string &pin)
     std::cout << __PRETTY_FUNCTION__ << std::endl;
     switch(type) {
     case PinType::none:
-        return;
+        return true;
     case PinType::pin:
-        d->ofonoModem->simManager.get()->enterPin(org::ofono::Interface::SimManager::PinType::pin,
-                                                  pin);
+        return d->ofonoModem->simManager.get()->enterPin(org::ofono::Interface::SimManager::PinType::pin,
+                                                         pin);
     case PinType::puk:
-        d->ofonoModem->simManager.get()->enterPin(org::ofono::Interface::SimManager::PinType::puk,
-                                                  pin);
+        return d->ofonoModem->simManager.get()->enterPin(org::ofono::Interface::SimManager::PinType::puk,
+                                                         pin);
         break;
     }
 }
 
 
-void
+bool
 Modem::resetPin(PinType type, const std::string &puk, const std::string &pin)
 {
     if (!d->ofonoModem->simManager.get()) {
@@ -193,17 +193,17 @@ Modem::resetPin(PinType type, const std::string &puk, const std::string &pin)
     std::cout << __PRETTY_FUNCTION__ << std::endl;
     switch(type) {
     case PinType::none:
-        return;
+        return true;
     case PinType::pin:
-        d->ofonoModem->simManager.get()->resetPin(org::ofono::Interface::SimManager::PinType::pin,
-                                                  puk,
-                                                  pin);
+        return d->ofonoModem->simManager.get()->resetPin(org::ofono::Interface::SimManager::PinType::pin,
+                                                         puk,
+                                                         pin);
     default:
         throw std::runtime_error(std::string(__PRETTY_FUNCTION__) + ": Not Supported.");
     }
 }
 
-void
+bool
 Modem::changePin(PinType type, const std::string &oldPin, const std::string &newPin)
 {
     if (!d->ofonoModem->simManager.get()) {
@@ -213,15 +213,15 @@ Modem::changePin(PinType type, const std::string &oldPin, const std::string &new
     std::cout << __PRETTY_FUNCTION__ << std::endl;
     switch(type) {
     case PinType::none:
-        return;
+        return true;
     case PinType::pin:
-        d->ofonoModem->simManager.get()->changePin(org::ofono::Interface::SimManager::PinType::pin,
-                                                   oldPin,
-                                                   newPin);
+        return d->ofonoModem->simManager.get()->changePin(org::ofono::Interface::SimManager::PinType::pin,
+                                                          oldPin,
+                                                          newPin);
     case PinType::puk:
-        d->ofonoModem->simManager.get()->changePin(org::ofono::Interface::SimManager::PinType::puk,
-                                                   oldPin,
-                                                   newPin);
+        return d->ofonoModem->simManager.get()->changePin(org::ofono::Interface::SimManager::PinType::puk,
+                                                          oldPin,
+                                                          newPin);
         break;
     }
 }

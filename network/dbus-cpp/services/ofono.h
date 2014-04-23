@@ -123,7 +123,7 @@ struct Interface
                 static const bool writable = false;
             };
         };
-
+    
         struct Signal
         {
             struct PropertyChanged
@@ -589,7 +589,7 @@ struct Interface
             return result.value();
         }
 
-        void
+        bool
         changePin(PinType type, std::string oldPin, std::string newPin)
         {
             auto result =
@@ -597,22 +597,24 @@ struct Interface
                         SimManager::Method::ChangePin, SimManager::Method::ChangePin::ResultType>
                     (pin2str(type), oldPin, newPin);
 
-            if (result.is_error())
-                throw std::runtime_error(result.error().print());
-
-            //            void ChangePin(string type, string oldpin, string newpin)
-
-            //                    Changes the pin given by string type.
-
-            //                    Possible Errors: [service].Error.NotImplemented
-            //                                     [service].Error.InProgress
-            //                                     [service].Error.InvalidArguments
-            //                                     [service].Error.InvalidFormat
-            //                                     [service].Error.Failed
-
+            if (result.is_error()) {
+                auto &error = result.error();
+                if (error.name() == "org.ofono.Error.NotImplemented") {
+                    throw std::runtime_error(result.error().print());
+                } else if (error.name() == "org.ofono.Error.InProgress") {
+                    throw std::runtime_error(result.error().print());
+                } else if (error.name() == "org.ofono.Error.InvalidArguments") {
+                    throw std::logic_error(result.error().print());
+                } else if (error.name() == "org.ofono.Error.InvalidFormat") {
+                    throw std::logic_error(result.error().print());
+                } else if (error.name() == "org.ofono.Error.Failed") {
+                    return false;
+                }
+            }
+            return true;
         }
 
-        void
+        bool
         enterPin(PinType type, std::string pin)
         {
             auto result =
@@ -620,23 +622,24 @@ struct Interface
                         SimManager::Method::EnterPin, SimManager::Method::EnterPin::ResultType>
                     (pin2str(type), pin);
 
-            if (result.is_error())
-                throw std::runtime_error(result.error().print());
-
-            //            void EnterPin(string type, string pin)
-
-            //                 Enters the currently pending pin.  The type value must
-            //                 match the pin type being asked in the PinRequired
-            //                 property.
-
-            //                 Possible Errors: [service].Error.NotImplemented
-            //                                  [service].Error.InProgress
-            //                                  [service].Error.InvalidArguments
-            //                                  [service].Error.InvalidFormat
-            //                                  [service].Error.Failed
+            if (result.is_error()) {
+                auto &error = result.error();
+                if (error.name() == "org.ofono.Error.NotImplemented") {
+                    throw std::runtime_error(result.error().print());
+                } else if (error.name() == "org.ofono.Error.InProgress") {
+                    throw std::runtime_error(result.error().print());
+                } else if (error.name() == "org.ofono.Error.InvalidArguments") {
+                    throw std::logic_error(result.error().print());
+                } else if (error.name() == "org.ofono.Error.InvalidFormat") {
+                    throw std::logic_error(result.error().print());
+                } else if (error.name() == "org.ofono.Error.Failed") {
+                    return false;
+                }
+            }
+            return true;
         }
 
-        void
+        bool
         resetPin(PinType type, std::string puk, std::string newPin)
         {
             auto result =
@@ -644,22 +647,24 @@ struct Interface
                     SimManager::Method::ResetPin, SimManager::Method::ResetPin::ResultType>
                     (pin2str(type), puk, newPin);
 
-            if (result.is_error())
-                throw std::runtime_error(result.error().print());
-
-            //          void ResetPin(string type, string puk, string newpin)
-
-            //                  Provides the unblock key to the modem and if correct
-            //                  resets the pin to the new value of newpin.
-
-            //                  Possible Errors: [service].Error.NotImplemented
-            //                                   [service].Error.InProgress
-            //                                   [service].Error.InvalidArguments
-            //                                   [service].Error.InvalidFormat
-            //                                   [service].Error.Failed
+            if (result.is_error()) {
+                auto &error = result.error();
+                if (error.name() == "org.ofono.Error.NotImplemented") {
+                    throw std::runtime_error(result.error().print());
+                } else if (error.name() == "org.ofono.Error.InProgress") {
+                    throw std::runtime_error(result.error().print());
+                } else if (error.name() == "org.ofono.Error.InvalidArguments") {
+                    throw std::logic_error(result.error().print());
+                } else if (error.name() == "org.ofono.Error.InvalidFormat") {
+                    throw std::logic_error(result.error().print());
+                } else if (error.name() == "org.ofono.Error.Failed") {
+                    return false;
+                }
+            }
+            return true;
         }
 
-        void
+        bool
         lockPin(PinType type, std::string pin)
         {
             auto result =
@@ -667,26 +672,24 @@ struct Interface
                     SimManager::Method::LockPin, SimManager::Method::LockPin::ResultType>
                     (pin2str(type), pin);
 
-            if (result.is_error())
-                throw std::runtime_error(result.error().print());
-
-            //          void LockPin(string type, string pin)
-
-            //                  Activates the lock for the particular pin type.  The
-            //                  device will ask for a PIN automatically next time the
-            //                  device is turned on or the SIM is removed and
-            //                  re-inserted.  The current PIN is required for the
-            //                  operation to succeed.
-
-            //                  Possible Errors: [service].Error.NotImplemented
-            //                                   [service].Error.InProgress
-            //                                   [service].Error.InvalidArguments
-            //                                   [service].Error.InvalidFormat
-            //                                   [service].Error.Failed
-
+            if (result.is_error()) {
+                auto &error = result.error();
+                if (error.name() == "org.ofono.Error.NotImplemented") {
+                    throw std::runtime_error(result.error().print());
+                } else if (error.name() == "org.ofono.Error.InProgress") {
+                    throw std::runtime_error(result.error().print());
+                } else if (error.name() == "org.ofono.Error.InvalidArguments") {
+                    throw std::logic_error(result.error().print());
+                } else if (error.name() == "org.ofono.Error.InvalidFormat") {
+                    throw std::logic_error(result.error().print());
+                } else if (error.name() == "org.ofono.Error.Failed") {
+                    return false;
+                }
+            }
+            return true;
         }
 
-        void
+        bool
         unlockPin(PinType type, std::string pin)
         {
             auto result =
@@ -694,20 +697,21 @@ struct Interface
                     SimManager::Method::UnlockPin, SimManager::Method::UnlockPin::ResultType>
                     (pin2str(type), pin);
 
-            if (result.is_error())
-                throw std::runtime_error(result.error().print());
-
-
-            //          void UnlockPin(string type, string pin)
-
-            //                  Deactivates the lock for the particular pin type.  The
-            //                  current PIN is required for the operation to succeed.
-
-            //                  Possible Errors: [service].Error.NotImplemented
-            //                                   [service].Error.InProgress
-            //                                   [service].Error.InvalidArguments
-            //                                   [service].Error.InvalidFormat
-            //                                   [service].Error.Failed
+            if (result.is_error()) {
+                auto &error = result.error();
+                if (error.name() == "org.ofono.Error.NotImplemented") {
+                    throw std::runtime_error(result.error().print());
+                } else if (error.name() == "org.ofono.Error.InProgress") {
+                    throw std::runtime_error(result.error().print());
+                } else if (error.name() == "org.ofono.Error.InvalidArguments") {
+                    throw std::logic_error(result.error().print());
+                } else if (error.name() == "org.ofono.Error.InvalidFormat") {
+                    throw std::logic_error(result.error().print());
+                } else if (error.name() == "org.ofono.Error.Failed") {
+                    return false;
+                }
+            }
+            return true;
         }
 
         typedef std::shared_ptr<SimManager> Ptr;
@@ -856,7 +860,6 @@ struct Interface
                     MessageManager,
                     MessageWaiting,
                     NetworkRegistration,
-                    NetworkTime,
                     Phonebook,
                     PushNotification,
                     RadioSettings,
@@ -975,7 +978,6 @@ struct Interface
                                std::make_pair(OFONO_MESSAGE_MANAGER_INTERFACE,        Property::Interfaces::Type::MessageManager             ),
                                std::make_pair(OFONO_MESSAGE_WAITING_INTERFACE,        Property::Interfaces::Type::MessageWaiting             ),
                                std::make_pair(OFONO_NETWORK_REGISTRATION_INTERFACE,   Property::Interfaces::Type::NetworkRegistration        ),
-                               std::make_pair(OFONO_NETWORK_TIME_INTERFACE,           Property::Interfaces::Type::NetworkTime                ),
                                std::make_pair(OFONO_PHONEBOOK_INTERFACE,              Property::Interfaces::Type::Phonebook                  ),
                                std::make_pair("org.ofono.PushNotification",           Property::Interfaces::Type::PushNotification           ),
                                std::make_pair(OFONO_RADIO_SETTINGS_INTERFACE,         Property::Interfaces::Type::RadioSettings              ),
@@ -1032,7 +1034,6 @@ struct Interface
                         }
                         break;
                     }
-                    case Property::Interfaces::Type::NetworkTime:
                     case Property::Interfaces::Type::Phonebook:
                     case Property::Interfaces::Type::PushNotification:
                     case Property::Interfaces::Type::RadioSettings:
@@ -1080,7 +1081,6 @@ struct Interface
                         }
                         break;
                     }
-                    case Property::Interfaces::Type::NetworkTime:
                     case Property::Interfaces::Type::Phonebook:
                     case Property::Interfaces::Type::PushNotification:
                     case Property::Interfaces::Type::RadioSettings:

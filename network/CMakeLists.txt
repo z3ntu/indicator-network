@@ -1,3 +1,12 @@
+
+add_subdirectory(notify-cpp)
+include_directories(notify-cpp)
+
+set(NOTIFY_CPP_SOURCES
+    notify-cpp/notification.cpp
+    notify-cpp/snapdecision/sim-unlock.cpp
+)
+
 set(NETWORK_SERVICE_SOURCES
     indicator-network-service.cpp
 
@@ -7,8 +16,8 @@ set(NETWORK_SERVICE_SOURCES
     modem.h
     modem-manager.cpp
     quick-access-section.cpp
-    root-state.cpp
     sim-unlock-dialog.cpp
+    root-state.cpp
     wifi-link-item.h
     wifi-section.cpp
     wifi-settings.h
@@ -37,8 +46,7 @@ set(NETWORK_SERVICE_SOURCES
     menumodel-cpp/menu-merger.h
     menumodel-cpp/menu-model.h
 
-    notify-cpp/notification.cpp
-    notify-cpp/notification.h
+    ${NOTIFY_CPP_SOURCES}
 
     url-dispatcher-cpp/url-dispatcher.cpp
 )

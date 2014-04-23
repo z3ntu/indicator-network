@@ -30,12 +30,22 @@ public:
     ActionGroupMerger::Ptr m_actionGroupMerger;
     Menu::Ptr m_menu;
 
-    TextItem::Ptr m_unlockSim;
+    Modem::Ptr m_modem;
+    ModemManager::Ptr m_modemManager;
 
-    Private();
+    TextItem::Ptr m_unlockSim;
+    bool m_wasLocked;
+
+    Private() = delete;
+    Private(Modem::Ptr modem, ModemManager::Ptr modemManager);
+
+    void simStatusChanged(Modem::SimStatus status);
+    void unlockSim();
 };
 
-WwanLinkItem::Private::Private()
+WwanLinkItem::Private::Private(Modem::Ptr modem, ModemManager::Ptr modemManager)
+    : m_modem{modem},
+      m_modemManager{modemManager}
 {
     m_actionGroupMerger = std::make_shared<ActionGroupMerger>();
     m_menu = std::make_shared<Menu>();
@@ -43,23 +53,47 @@ WwanLinkItem::Private::Private()
     /// @todo add stuff to control the link
 
     m_unlockSim = std::make_shared<TextItem>(_("Unlock SIM…"), "sim", "unlock");
+    m_unlockSim->activated().connect(std::bind(&ModemManager::unlockModem, m_modemManager.get(), m_modem));
+
     m_actionGroupMerger->add(*m_unlockSim);
-    m_menu->append(*m_unlockSim);
+
+    m_wasLocked = false;
+    m_modem->simStatus().changed().connect(std::bind(&Private::simStatusChanged, this, std::placeholders::_1));
+    simStatusChanged(m_modem->simStatus().get());
 }
 
-WwanLinkItem::WwanLinkItem()
+void
+WwanLinkItem::Private::simStatusChanged(Modem::SimStatus status)
 {
-    d.reset(new Private);
+    if (status == Modem::SimStatus::locked) {
+        if (!m_wasLocked) {
+            //m_actionGroupMerger->add(*m_unlockSim);
+            m_menu->append(*m_unlockSim);
+            m_wasLocked = true;
+        }
+    } else {
+        if (m_wasLocked) {
+            //m_actionGroupMerger->remove(*m_unlockSim);
+            m_menu->remove(m_menu->find(*m_unlockSim));
+            m_wasLocked = false;
+        }
+    }
+}
+
+WwanLinkItem::WwanLinkItem(Modem::Ptr modem, ModemManager::Ptr modemManager)
+{
+    d.reset(new Private(modem, modemManager));
 }
 
 WwanLinkItem::~WwanLinkItem()
 {
-
+    std::cerr << __PRETTY_FUNCTION__ << " :XXXXXXXXXXXXX" << std::endl;
 }
 
 ActionGroup::Ptr
 WwanLinkItem::actionGroup()
 {
+    std::cerr << __PRETTY_FUNCTION__ << " :XXXXXXXXXXXXX" << std::endl;
     return *d->m_actionGroupMerger;
 }
 

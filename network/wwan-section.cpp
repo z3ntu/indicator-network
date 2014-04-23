@@ -19,6 +19,8 @@
 
 #include "wwan-section.h"
 
+#include "wwan-link-item.h"
+
 #include "menuitems/text-item.h"
 
 #include "menumodel-cpp/action-group-merger.h"
@@ -33,30 +35,49 @@ class WwanSection::Private
 public:
 
     ActionGroupMerger::Ptr m_actionGroupMerger;
-    Menu::Ptr m_menu;
+
+    MenuMerger::Ptr m_menuMerger;
+
+    Menu::Ptr m_upperMenu;
+    MenuMerger::Ptr m_linkMenuMerger;
+    Menu::Ptr m_bottomMenu;
+
+    Menu::Ptr m_topMenu;
+    MenuItem::Ptr m_topItem;
 
     ModemManager::Ptr m_modemManager;
 
     TextItem::Ptr m_openCellularSettings;
 
+    std::list<std::pair<Modem::Ptr, WwanLinkItem::Ptr>> m_items;
+
     Private() = delete;
     Private(ModemManager::Ptr modemManager);
+
+    void modemsChanged(const std::set<Modem::Ptr> &modems);
 };
 
 WwanSection::Private::Private(ModemManager::Ptr modemManager)
     : m_modemManager{modemManager}
 {
     m_actionGroupMerger = std::make_shared<ActionGroupMerger>();
-    m_menu = std::make_shared<Menu>();
+    m_menuMerger = std::make_shared<MenuMerger>();
 
-    /// @todo support more than one sim
-    /// @todo support sims().changed()
-    /// @todo add Item::visible
-    /// @todo support isLocked().changed()
-    if (m_modemManager->modems()->size() == 1 &&
-        m_modemManager->modems()->begin()->get()->simStatus().get() == Modem::SimStatus::locked) {
-            ; // show the unlock thingy.
-    }
+    m_upperMenu  = std::make_shared<Menu>();
+    m_linkMenuMerger = std::make_shared<MenuMerger>();
+    m_bottomMenu = std::make_shared<Menu>();
+
+    m_menuMerger->append(m_upperMenu);
+    m_menuMerger->append(m_linkMenuMerger);
+    m_menuMerger->append(m_bottomMenu);
+
+    // have the modem list in their own section.
+    m_topItem = MenuItem::newSection(m_menuMerger);
+    m_topMenu = std::make_shared<Menu>();
+    m_topMenu->append(m_topItem);
+
+    m_modemManager->modems().changed().connect(std::bind(&Private::modemsChanged, this, std::placeholders::_1));
+    modemsChanged(m_modemManager->modems());
 
     m_openCellularSettings = std::make_shared<TextItem>(_("Cellular settings…"), "cellular", "settings");
     m_openCellularSettings->activated().connect([](){
@@ -66,8 +87,43 @@ WwanSection::Private::Private(ModemManager::Ptr modemManager)
         });
     });
 
-    m_menu->append(*m_openCellularSettings);
+    m_bottomMenu->append(*m_openCellularSettings);
     m_actionGroupMerger->add(*m_openCellularSettings);
+}
+
+void
+WwanSection::Private::modemsChanged(const std::set<Modem::Ptr> &modems)
+{
+    /// @todo we have to address the correct ordering of the modems
+
+    std::set<Modem::Ptr> current;
+    for (auto element : m_items)
+        current.insert(element.first);
+
+    std::set<Modem::Ptr> removed;
+    std::set_difference(current.begin(), current.end(),
+                        modems.begin(), modems.end(),
+                        std::inserter(removed, removed.begin()));
+
+    std::set<Modem::Ptr> added;
+    std::set_difference(modems.begin(), modems.end(),
+                        current.begin(), current.end(),
+                        std::inserter(added, added.begin()));
+    for (auto modem : removed) {
+        for (auto iter = m_items.begin(); iter != m_items.end(); ++iter) {
+            m_linkMenuMerger->remove(*(*iter).second);
+            m_actionGroupMerger->remove(*(*iter).second);
+            m_items.erase(iter);
+            --iter;
+        }
+    }
+
+    for (auto modem : added) {
+        auto item = std::make_shared<WwanLinkItem>(modem, m_modemManager);
+        m_linkMenuMerger->append(*item);
+        m_actionGroupMerger->add(*item);
+        m_items.push_back(std::make_pair(modem, item));
+    }
 }
 
 WwanSection::WwanSection(ModemManager::Ptr modemManager)
@@ -89,5 +145,5 @@ WwanSection::actionGroup()
 MenuModel::Ptr
 WwanSection::menuModel()
 {
-    return d->m_menu;
+    return d->m_topMenu;
 }

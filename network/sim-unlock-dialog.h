@@ -17,13 +17,11 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#ifndef SIM_UNLOCK_DIALOG_H
-#define SIM_UNLOCK_DIALOG_H
-
-#include <core/property.h>
+#ifndef SIM_UNLOCK_DIALOG
+#define SIM_UNLOCK_DIALOG
 
 #include <memory>
-
+#include "modem.h"
 
 class SimUnlockDialog
 {
@@ -31,41 +29,32 @@ class SimUnlockDialog
     std::unique_ptr<Private> d;
 
 public:
+    enum class State {
+        ready,
+        unlocking,
+        changingPin
+    };
 
     typedef std::shared_ptr<SimUnlockDialog> Ptr;
-
-    SimUnlockDialog(const std::string &title,
-                    const std::string &body,
-                    std::pair<std::uint8_t, std::uint8_t> pinMinMax);
+    SimUnlockDialog();
     ~SimUnlockDialog();
 
-    core::Signal<std::string> &pinEntered();
-    core::Signal<void> &cancelled();
-    core::Signal<void> &closed();
+    void unlock(Modem::Ptr modem);
 
     /**
-     * To update the value in the dialog, call update().
+     * there must be no other operation active on the dialog
+     * modem has to be on ready state, i.e. it has to be unlocked before
+     * changing the pin.
+     *
+     * @param modem
      */
-    core::Property<std::string> &title();
+    void changePin(Modem::Ptr modem);
 
-    /**
-     * To update the value in the dialog, call update().
-     */
-    core::Property<std::string> &body();
+    void cancel();
 
-    /**
-     * To update the value in the dialog, call update().
-     */
-    core::Property<std::pair<std::uint8_t, std::uint8_t>> &pinMinMax();
+    Modem::Ptr modem();
 
-    /**
-     * Update the dialog.
-     * if the dialog has not been shown, does nothing.
-     */
-    void update();
-
-    void show();
-    void close();
+    core::Property<State> &state();
 };
 
 #endif

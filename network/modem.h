@@ -52,20 +52,21 @@ public:
 
     typedef std::shared_ptr<Modem> Ptr;
     typedef std::weak_ptr<Modem> WeakPtr;
+
     Modem() = delete;
     Modem(org::ofono::Interface::Modem::Ptr ofonoModem);
     virtual ~Modem();
 
     org::ofono::Interface::Modem::Ptr ofonoModem() const;
 
-    void enterPin(PinType type,
+    bool enterPin(PinType type,
                   const std::string &pin);
 
-    void resetPin(PinType type,
+    bool resetPin(PinType type,
                   const std::string &puk,
                   const std::string &pin);
 
-    void changePin(PinType type,
+    bool changePin(PinType type,
                    const std::string &oldPin,
                    const std::string &newPin);
 

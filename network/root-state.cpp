@@ -52,11 +52,6 @@ public:
     void flightModeChanged(networking::Manager::FlightModeStatus status);
     void modemsChanged(const std::set<Modem::Ptr> &modems);
 
-    void simStatusChanged(Modem::SimStatus status, Modem::WeakPtr weakModem);
-    void modemStatusChanged(org::ofono::Interface::NetworkRegistration::Status status, Modem::WeakPtr weakModem);
-    void modemTechnologyChanged(org::ofono::Interface::NetworkRegistration::Technology technology, Modem::WeakPtr weakModem);
-    void modemStrengthChanged(std::int8_t strength, Modem::WeakPtr weakModem);
-
     void updateModem(Modem::WeakPtr weakModem);
 
     void updateNetworkingIcon();
@@ -97,6 +92,8 @@ RootState::Private::flightModeChanged(networking::Manager::FlightModeStatus stat
 void
 RootState::Private::modemsChanged(const std::set<Modem::Ptr> &modems)
 {
+    /// @todo we have to address the correct ordering of the modems
+
     std::set<Modem::Ptr> current;
     for (auto element : m_cellularIcons)
         current.insert(element.first);

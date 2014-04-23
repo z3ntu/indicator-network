@@ -32,7 +32,7 @@ public:
     virtual ActionGroup::Ptr actionGroup() = 0;
     virtual MenuModel::Ptr   menuModel()   = 0;
 
-    operator ActionGroup::Ptr() { return actionGroup(); }
+    operator ActionGroup::Ptr() { std::cerr << __PRETTY_FUNCTION__ << " :YYYYYYYYYYYYY" << std::endl; return actionGroup(); }
     operator MenuModel::Ptr()   { return menuModel();   }
 };
 

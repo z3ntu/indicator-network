@@ -20,6 +20,7 @@
 #ifndef MENU_MERGER_H
 #define MENU_MERGER_H
 
+#include <algorithm>
 #include <memory>
 #include <vector>
 #include <map>
@@ -37,6 +38,7 @@ class MenuMerger : public MenuModel
 
     std::map<GMenuModel*, MenuModel::Ptr> m_gmodelToMenu;
     std::map<GMenuModel*, int> m_startPositions;
+    std::map<GMenuModel*, gulong> m_handlerId;
 
     static void items_changed_cb(GMenuModel *model,
                                  gint        position,
@@ -105,12 +107,27 @@ public:
         // add all items
         itemsChanged(*menu, 0, 0, g_menu_model_get_n_items(*menu));
 
-        /// @todo disconnect
-        g_signal_connect(menu->operator GMenuModel *(),
-                         "items-changed",
-                         G_CALLBACK(MenuMerger::items_changed_cb),
-                         this);
+        m_handlerId[*menu] = g_signal_connect(menu->operator GMenuModel *(),
+                                              "items-changed",
+                                              G_CALLBACK(MenuMerger::items_changed_cb),
+                                              this);
     }
+
+    void remove(MenuModel::Ptr menu)
+    {
+        /// @todo menu might have been added multiple times
+        assert(std::find(m_menus.begin(), m_menus.end(), menu) != m_menus.end());
+
+        g_signal_handler_disconnect(menu->operator GMenuModel *(), m_handlerId[*menu]);
+        m_handlerId.erase(*menu);
+
+        // remove all items
+        itemsChanged(*menu, 0, g_menu_model_get_n_items(*menu), 0);
+
+        m_startPositions.erase(*menu);
+        m_gmodelToMenu.erase(*menu);
+        m_menus.erase(std::remove(m_menus.begin(), m_menus.end(), menu), m_menus.end());
+        }
 
     operator GMenuModel*() { return G_MENU_MODEL(m_gmenu.get()); }
 };

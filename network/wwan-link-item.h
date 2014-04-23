@@ -21,15 +21,17 @@
 #define WWAN_LINK_ITEM_H
 
 #include "menuitems/section.h"
+#include "modem-manager.h"
 
-class WwanLinkItem : Section
+class WwanLinkItem : public Section
 {
     class Private;
     std::shared_ptr<Private> d;
 
 public:
     typedef std::shared_ptr<WwanLinkItem> Ptr;
-    WwanLinkItem();
+    WwanLinkItem() = delete;
+    WwanLinkItem(Modem::Ptr, ModemManager::Ptr modemManager);
     ~WwanLinkItem();
 
     // from Section

@@ -24,7 +24,6 @@ Build-Depends: cmake,
                pkg-config,
                python3-dbusmock,
                qtbase5-dev,
-               valac (>= 0.22),
                valgrind [amd64 armhf i386 powerpc],
 Standards-Version: 3.9.3
 # If you aren't a member of ~indicator-applet-developers but need to upload

@@ -28,8 +28,8 @@
 
 #include <core/signal.h>
 
-#include <com/ubuntu/connectivity/networking/wifi/access-point.h>
-namespace networking = com::ubuntu::connectivity::networking;
+#include <connectivity/networking/wifi/access-point.h>
+namespace networking = connectivity::networking;
 
 #include <functional>
 #include <vector>

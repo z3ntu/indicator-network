@@ -20,8 +20,8 @@
 #ifndef SERVICE_H
 #define SERVICE_H
 
-#include <com/ubuntu/connectivity/networking/manager.h>
-namespace networking = com::ubuntu::connectivity::networking;
+#include <connectivity/networking/manager.h>
+namespace networking = connectivity::networking;
 
 #include <functional>
 #include <iostream>

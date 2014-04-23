@@ -64,12 +64,12 @@ class PhonesimManager:
         raise RuntimeError('Tried to add unknown modem %s.' % name)
 
     def power_on(self, name):
-        cmd = ['dbus-send', '--system', '--dest=org.ofono', '/'+myname, \
+        cmd = ['dbus-send', '--system', '--dest=org.ofono', '/'+name, \
                'org.ofono.Modem.SetProperty', 'string:Powered', 'variant:boolean:true']
         subprocess.check_call(cmd)
 
     def power_off(self, name):
-        cmd = ['dbus-send', '--system', '--dest=org.ofono', '/'+myname, \
+        cmd = ['dbus-send', '--system', '--dest=org.ofono', '/'+name, \
                'org.ofono.Modem.SetProperty', 'string:Powered', 'variant:boolean:false']
         subprocess.check_call(cmd)
 

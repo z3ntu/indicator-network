@@ -21,10 +21,10 @@
 
 #include <functional>
 
-#include <com/ubuntu/connectivity/networking/wifi/link.h>
-#include <com/ubuntu/connectivity/networking/wifi/access-point.h>
+#include <connectivity/networking/wifi/link.h>
+#include <connectivity/networking/wifi/access-point.h>
 
-namespace networking = com::ubuntu::connectivity::networking;
+namespace networking = connectivity::networking;
 
 class RootState::Private
 {
@@ -359,7 +359,7 @@ RootState::Private::updateRootState()
     m_state.set(TypedVariant<std::map<std::string, Variant>>(state));
 }
 
-RootState::RootState(std::shared_ptr<com::ubuntu::connectivity::networking::Manager> manager, ModemManager::Ptr modemManager)
+RootState::RootState(std::shared_ptr<connectivity::networking::Manager> manager, ModemManager::Ptr modemManager)
 {
     d.reset(new Private(manager, modemManager));
 }

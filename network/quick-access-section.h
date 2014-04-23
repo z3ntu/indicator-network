@@ -21,7 +21,7 @@
 #define QUICK_ACCESS_SECTION_H
 
 #include "menuitems/section.h"
-#include <com/ubuntu/connectivity/networking/manager.h>
+#include <connectivity/networking/manager.h>
 
 class QuickAccessSection : public Section
 {
@@ -31,8 +31,8 @@ class QuickAccessSection : public Section
 public:
     typedef std::shared_ptr<QuickAccessSection> Ptr;
     QuickAccessSection() = delete;
-    QuickAccessSection(std::shared_ptr<com::ubuntu::connectivity::networking::Manager> manager);
-    ~QuickAccessSection();
+    QuickAccessSection(std::shared_ptr<connectivity::networking::Manager> manager);
+    virtual ~QuickAccessSection();
 
     virtual ActionGroup::Ptr actionGroup();
     virtual MenuModel::Ptr menuModel();

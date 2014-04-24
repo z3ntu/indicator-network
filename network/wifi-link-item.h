@@ -31,8 +31,8 @@
 #include "menumodel-cpp/menu.h"
 #include "menumodel-cpp/menu-merger.h"
 
-#include <com/ubuntu/connectivity/networking/wifi/link.h>
-namespace networking = com::ubuntu::connectivity::networking;
+#include <connectivity/networking/wifi/link.h>
+namespace networking = connectivity::networking;
 
 #include <algorithm>
 #include <locale>

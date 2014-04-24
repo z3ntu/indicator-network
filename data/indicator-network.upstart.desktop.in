@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Indicator Network
+Exec=@NETWORK_SERVICE@
+StartupNotify=false
+Terminal=false
+Hidden=true
+OnlyShowIn=Unity;

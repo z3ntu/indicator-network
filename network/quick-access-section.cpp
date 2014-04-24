@@ -24,7 +24,7 @@
 #include "menumodel-cpp/action-group-merger.h"
 #include "menumodel-cpp/menu-merger.h"
 
-namespace networking = com::ubuntu::connectivity::networking;
+namespace networking = connectivity::networking;
 
 class QuickAccessSection::Private
 {

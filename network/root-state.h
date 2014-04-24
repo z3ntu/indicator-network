@@ -20,7 +20,7 @@
 #ifndef ROOT_STATE_MANAGER
 #define ROOT_STATE_MANAGER
 
-#include <com/ubuntu/connectivity/networking/manager.h>
+#include <connectivity/networking/manager.h>
 #include "modem-manager.h"
 
 #include "gio-helpers/variant.h"
@@ -34,7 +34,7 @@ public:
     typedef std::shared_ptr<RootState> Ptr;
 
     RootState() = delete;
-    RootState(std::shared_ptr<com::ubuntu::connectivity::networking::Manager> manager, ModemManager::Ptr modemManager);
+    RootState(std::shared_ptr<connectivity::networking::Manager> manager, ModemManager::Ptr modemManager);
     virtual ~RootState();
 
     const core::Property<Variant> &state();

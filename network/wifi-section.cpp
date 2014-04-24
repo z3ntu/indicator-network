@@ -26,7 +26,7 @@
 class WifiSection::Private
 {
 public:
-    std::shared_ptr<com::ubuntu::connectivity::networking::Manager> m_manager;
+    std::shared_ptr<connectivity::networking::Manager> m_manager;
 
     ActionGroupMerger::Ptr m_actionGroupMerger;
     Menu::Ptr m_menu;
@@ -35,7 +35,7 @@ public:
     TextItem::Ptr m_openWifiSettings;
 
     Private() = delete;
-    Private(std::shared_ptr<com::ubuntu::connectivity::networking::Manager> manager)
+    Private(std::shared_ptr<connectivity::networking::Manager> manager)
         : m_manager{manager}
     {
         m_actionGroupMerger = std::make_shared<ActionGroupMerger>();
@@ -68,7 +68,7 @@ public:
 public:
 };
 
-WifiSection::WifiSection(std::shared_ptr<com::ubuntu::connectivity::networking::Manager> manager)
+WifiSection::WifiSection(std::shared_ptr<connectivity::networking::Manager> manager)
 {
     d.reset(new Private(manager));
 }

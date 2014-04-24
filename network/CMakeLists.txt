@@ -63,7 +63,7 @@ add_executable(
 )
 target_link_libraries(
     indicator-network-service
-    ${CONNECTIVITY_CPP_LIBRARIES}
+    ${CONNECTIVITY_CPP_LDFLAGS}
     ${GLIB_LIBRARIES}
     ${GIO_LIBRARIES}
     ${NOTIFY_LIBRARIES}

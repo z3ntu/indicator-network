@@ -20,7 +20,7 @@
 #ifndef WIFI_SECTION_H
 #define WIFI_SECTION_H
 
-#include <com/ubuntu/connectivity/networking/manager.h>
+#include <connectivity/networking/manager.h>
 
 #include "menuitems/section.h"
 
@@ -32,7 +32,7 @@ class WifiSection : public Section
 public:
     typedef std::shared_ptr<WifiSection> Ptr;
     WifiSection() = delete;
-    WifiSection(std::shared_ptr<com::ubuntu::connectivity::networking::Manager> manager);
+    WifiSection(std::shared_ptr<connectivity::networking::Manager> manager);
     ~WifiSection();
 
     // from Section

@@ -120,11 +120,9 @@ public:
         m_desktopMenu->addSection(m_wifiSection);
         m_phoneMenu->addSection(m_wifiSection);
 
-        std::cerr << __PRETTY_FUNCTION__ << " :XXXXXXXXXXXXX" << std::endl;
         m_wwanSection = std::make_shared<WwanSection>(m_modemManager);
         m_desktopMenu->addSection(m_wwanSection);
         m_phoneMenu->addSection(m_wwanSection);
-        std::cerr << __PRETTY_FUNCTION__ << " :YYYYYYYYYYYY" << std::endl;
 
         m_desktopMenuExporter.reset(new MenuExporter(m_sessionBus, "/com/canonical/indicator/network/desktop", m_desktopMenu->menu()));
         m_desktopGreeterMenuExporter.reset(new MenuExporter(m_sessionBus, "/com/canonical/indicator/network/desktop_greeter", m_desktopGreeterMenu->menu()));

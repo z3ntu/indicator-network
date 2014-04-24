@@ -124,7 +124,7 @@ RootState::Private::updateModem(Modem::WeakPtr weakModem)
 {
     auto modem = weakModem.lock();
     if (!modem) {
-        std::cout << std::string(__PRETTY_FUNCTION__) << ": modem expired" << std::endl;
+        std::cerr << std::string(__PRETTY_FUNCTION__) << ": modem expired" << std::endl;
         return;
     }
 
@@ -327,15 +327,11 @@ RootState::Private::updateRootState()
         icons.push_back(m_networkingIcon);
     }
 
-
-    std::cout << "PRELABEL: " << m_preLabel << std::endl;
     if (!m_preLabel.empty())
         state["pre-label"] = TypedVariant<std::string>(m_preLabel);
 
     if (!m_label.empty())
         state["label"] = TypedVariant<std::string>(m_label);
-
-
 
     /// @todo translation hint
     state["title"] = TypedVariant<std::string>(_("Network"));

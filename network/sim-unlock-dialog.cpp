@@ -281,7 +281,7 @@ SimUnlockDialog::Private::cancelled()
 {
     std::cout << "SIM notification cancelled" << std::endl;
 
-    reset();
+    m_sd->close();
 }
 
 void
@@ -394,7 +394,7 @@ SimUnlockDialog::changePin(Modem::Ptr modem)
                 d->m_sd->showError(_("Pin codes did not match."));
                 d->m_sd->title().set(_("Enter new PIN code"));
             } else {
-                if (d->m_modem->changePin(Modem::PinType::pin, currentPin, newPin)) {
+                if (0/*d->m_modem->changePin(Modem::PinType::pin, currentPin, newPin)*/) {
                     currentPin.clear();
                     newPin.clear();
                     /// @todo make sure the dialog can be cancelled again

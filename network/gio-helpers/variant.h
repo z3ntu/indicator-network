@@ -81,22 +81,10 @@ public:
 
     bool operator==(const Variant &rhs) const
     {
-        std::cout << __PRETTY_FUNCTION__
-                  << ": this(" << reinterpret_cast<std::uintptr_t>(m_variant.get())
-                  << ") rhs(" << reinterpret_cast<std::uintptr_t>(rhs.m_variant.get()) << ")"
-                  << std::endl;
-        bool val = (m_variant == rhs.m_variant);
-        std::cout << val << std::endl;
         return m_variant == rhs.m_variant;
     }
     bool operator!=(const Variant &rhs) const
     {
-        std::cout << __PRETTY_FUNCTION__
-                  << ": this(" << reinterpret_cast<std::uintptr_t>(m_variant.get())
-                  << ") rhs(" << reinterpret_cast<std::uintptr_t>(rhs.m_variant.get()) << ")"
-                  << std::endl;
-        bool val = (m_variant != rhs.m_variant);
-        std::cout << val << std::endl;
         return !(*this == rhs);
     }
 

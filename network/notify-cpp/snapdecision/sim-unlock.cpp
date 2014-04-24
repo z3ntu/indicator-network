@@ -46,6 +46,8 @@ public:
     std::shared_ptr<SessionBus> m_sessionBus;
 
     Action::Ptr m_notifyAction;
+    Action::Ptr m_pinMinMaxAction;
+    Action::Ptr m_errorAction;
     ActionGroup::Ptr m_actionGroup;
     ActionGroupExporter::Ptr m_actionGroupExporter;
 
@@ -84,10 +86,12 @@ public:
         m_menuItem->setAttribute("x-canonical-type", TypedVariant<std::string>("com.canonical.snapdecision.pinlock"));
         /// @todo we need both min and max.
         m_menuItem->setAttribute("x-canonical-pin-length", TypedVariant<std::int32_t>(pinMinMax.first));
+        m_menuItem->setAttribute("x-canonical-pin-min-max", TypedVariant<std::string>("notifications.pinMinMax"));
+        m_menuItem->setAttribute("x-canonical-pin-error", TypedVariant<std::string>("notifications.error"));
         m_menu->append(m_menuItem);
 
         m_actionGroup = std::make_shared<ActionGroup>();
-        m_notifyAction = std::make_shared<Action>("notifications.simunlock",
+        m_notifyAction = std::make_shared<Action>("simunlock",
                                                   G_VARIANT_TYPE_BOOLEAN,
                                                   TypedVariant<std::string>(""),
                                                   [this](Variant state)
@@ -99,6 +103,29 @@ public:
                 m_cancelled();
         });
         m_actionGroup->add(m_notifyAction);
+
+#if 0
+        m_pinMinMaxAction = std::make_shared<Action>("pinMinMax",
+                                                     nullptr,
+                                                     TypedVariant<std::vector<std::int32_t>>(m_pinMinMax),
+                                                     [this](Variant state)
+        {
+        });
+        m_actionGroup->add(m_pinMinMaxrAction);
+#endif
+        m_errorAction = std::make_shared<Action>("error",
+                                                  nullptr,
+                                                  TypedVariant<std::string>(""),
+                                                  [this](Variant state)
+        {
+            auto tmp = state.as<std::string>();
+            if (tmp.empty()) {
+                // ack from the dialog side.
+                // find the error and call the cb
+            } else {
+            }
+        });
+        m_actionGroup->add(m_errorAction);
 
         m_menuExporter = std::make_shared<MenuExporter>(m_sessionBus, menuPath, m_menu);
         m_actionGroupExporter = std::make_shared<ActionGroupExporter>(m_sessionBus, m_actionGroup, actionPath);

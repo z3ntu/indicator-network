@@ -47,7 +47,6 @@ public:
                                                 nullptr,
                                                 rootState->state().get());
         rootState->state().changed().connect([this](const Variant &state){
-            std::cout << "ROOT STATE CHANGED" << std::endl;
             m_rootAction->setState(state);
         });
         m_actionGroup->add(m_rootAction);
@@ -66,9 +65,7 @@ public:
     addSection(Section::Ptr section)
     {
         m_sections.push_back(section);
-        std::cerr << __PRETTY_FUNCTION__ << " :XXXXXXXXXXXXX" << std::endl;
         m_actionGroupMerger->add(*section);
-        std::cerr << __PRETTY_FUNCTION__ << " :YYYYYYYYYYYYY" << std::endl;
         m_subMenuMerger->append(*section);
     }
 

@@ -86,14 +86,11 @@ WwanLinkItem::WwanLinkItem(Modem::Ptr modem, ModemManager::Ptr modemManager)
 }
 
 WwanLinkItem::~WwanLinkItem()
-{
-    std::cerr << __PRETTY_FUNCTION__ << " :XXXXXXXXXXXXX" << std::endl;
-}
+{}
 
 ActionGroup::Ptr
 WwanLinkItem::actionGroup()
 {
-    std::cerr << __PRETTY_FUNCTION__ << " :XXXXXXXXXXXXX" << std::endl;
     return *d->m_actionGroupMerger;
 }
 

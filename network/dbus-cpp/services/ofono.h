@@ -202,8 +202,6 @@ struct Interface
             : object(object),
               propertyChanged(object->get_signal<Signal::PropertyChanged>())
         {
-            std::cout << __PRETTY_FUNCTION__ << std::endl;
-
             status.set(Status::unknown);
             strength.set(-1);
             technology.set(Technology::notAvailable);
@@ -219,13 +217,10 @@ struct Interface
         }
 
         ~NetworkRegistration()
-        {
-            std::cout << __PRETTY_FUNCTION__ << std::endl;
-        }
+        {}
 
         void _updateProperty(std::string property, core::dbus::types::Variant value)
         {
-            std::cout << __PRETTY_FUNCTION__ << ": " << property << std::endl;
             if (property == Property::Name::name()) {
                 operatorName.set(value.as<Property::Name::ValueType>());
             } else if (property == Property::Status::name()) {
@@ -719,8 +714,6 @@ struct Interface
             : object(object),
               propertyChanged(object->get_signal<Signal::PropertyChanged>())
         {
-            std::cout << __PRETTY_FUNCTION__ << std::endl;
-
             pinRequired.set(PinType::none);
             present.set(false);
             present.changed().connect([this](bool value){
@@ -746,9 +739,7 @@ struct Interface
         }
 
         ~SimManager()
-        {
-            std::cout << __PRETTY_FUNCTION__ << std::endl;
-        }
+        {}
 
         void _updateProperty(std::string property, core::dbus::types::Variant value)
         {
@@ -963,7 +954,6 @@ struct Interface
               object(object),
               propertyChanged(object->get_signal<Signal::PropertyChanged>())
         {
-            std::cout << __PRETTY_FUNCTION__ << std::endl;
             knownInterfaces = {std::make_pair(OFONO_GNSS_INTERFACE, Property::Interfaces::Type::AssistedSatelliteNavigation),
                                std::make_pair(OFONO_AUDIO_SETTINGS_INTERFACE,         Property::Interfaces::Type::AudioSettings              ),
                                std::make_pair(OFONO_CALL_BARRING_INTERFACE,           Property::Interfaces::Type::CallBarring                ),
@@ -1029,7 +1019,6 @@ struct Interface
                     {
                         if (std::find(newInterfaces.begin(), newInterfaces.end(), known) == newInterfaces.end() &&
                             networkRegistration->get()) {
-                            std::cout << "REMOVED NETWORKREGISTRATION" << std::endl;
                             networkRegistration.set(std::shared_ptr<NetworkRegistration>());
                         }
                         break;
@@ -1042,7 +1031,6 @@ struct Interface
                     {
                         if (std::find(newInterfaces.begin(), newInterfaces.end(), known) == newInterfaces.end() &&
                             simManager->get()) {
-                            std::cout << "REMOVED SIMMANAGER" << std::endl;
                             simManager.set(std::shared_ptr<SimManager>());
                         }
                         break;
@@ -1076,7 +1064,6 @@ struct Interface
                     case Property::Interfaces::Type::NetworkRegistration:
                     {
                         if (!networkRegistration->get()) {
-                            std::cout << "ADDED NETWORKREGISTRATION" << std::endl;
                             networkRegistration.set(std::make_shared<NetworkRegistration>(this->object));
                         }
                         break;
@@ -1087,7 +1074,6 @@ struct Interface
                     case Property::Interfaces::Type::SimManager:
                     {
                         if (!simManager->get()) {
-                            std::cout << "ADDED SIMMANAGER" << std::endl;
                             simManager.set(std::make_shared<SimManager>(this->object));
                         }
                         break;
@@ -1140,17 +1126,12 @@ struct Interface
         }
 
         ~Modem()
-        {
-            std::cout << __PRETTY_FUNCTION__ << std::endl;
-        }
+        {}
 
         void _updateProperty(const std::string &property, core::dbus::types::Variant value)
         {
-            //std::cout << __PRETTY_FUNCTION__ << ": " << property << std::endl;
             if (property == Property::Interfaces::name()) {
-                //std::cout << "READING" << std::endl;
                 auto newValue = value.as<Property::Interfaces::ValueType>();
-                //std::cout << "READ." << std::endl;
                 interfaces.set(newValue);
             } else if (property == Property::Online::name()) {
                 online.set(value.as<Property::Online::ValueType>());
@@ -1270,9 +1251,7 @@ struct Interface
         }
 
         ~Manager()
-        {
-            std::cout << __PRETTY_FUNCTION__ << std::endl;
-        }
+        {}
 
         std::shared_ptr<core::dbus::Service> service;
         std::shared_ptr<core::dbus::Object>  object;

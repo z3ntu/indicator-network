@@ -1,12 +1,19 @@
 description "Indicator Network Backend"
-author "Ted Gould <ted@canonical.com>"
 
-start on indicators-loaded or indicator-services-start
+start on indicator-services-start
 stop on desktop-end or indicator-services-end
 
 env G_MESSAGES_DEBUG=all
 export G_MESSAGES_DEBUG
 
 respawn
+respawn limit 2 10
+
+pre-start script
+	# NOTE: Only used on Unity8 today, not 7
+	if [ "x$DESKTOP_SESSION" != "xubuntu-touch" ] ; then
+		stop; exit 0
+	fi
+end script
 
 exec @NETWORK_SERVICE@

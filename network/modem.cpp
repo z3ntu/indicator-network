@@ -85,12 +85,14 @@ Modem::Private::simManagerChanged(org::ofono::Interface::SimManager::Ptr simmgr)
         pinRequiredChanged(simmgr->pinRequired.get());
 
         simmgr->retries.changed().connect(std::bind(&Private::retriesChanged, this, std::placeholders::_1));
+        retriesChanged(simmgr->retries.get());
 
         /// @todo subscriberIdentity
 
     } else {
         m_simStatus.set(SimStatus::offline);
         m_requiredPin.set(PinType::none);
+        m_retries.set({});
     }
 }
 
@@ -125,9 +127,11 @@ Modem::Private::retriesChanged(std::map<org::ofono::Interface::SimManager::PinTy
     for (auto element : retries) {
         switch(element.first) {
         case org::ofono::Interface::SimManager::PinType::pin:
+            std::cout << "\tpin:" << (int)element.second << std::endl;
             tmp[Modem::PinType::pin] = element.second;
             break;
         case org::ofono::Interface::SimManager::PinType::puk:
+            std::cout << "\tpuk:" << (int)element.second << std::endl;
             tmp[Modem::PinType::puk] = element.second;
             break;
         default:

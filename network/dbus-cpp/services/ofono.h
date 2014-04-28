@@ -612,11 +612,16 @@ struct Interface
         bool
         enterPin(PinType type, std::string pin)
         {
-            auto result =
-                    object->invoke_method_synchronously<
+            try {
+                auto result =
+                        object->invoke_method_synchronously<
                         SimManager::Method::EnterPin, SimManager::Method::EnterPin::ResultType>
-                    (pin2str(type), pin);
-
+                        (pin2str(type), pin);
+            } catch(std::runtime_error &e) {
+                /// @todo dbus-cpp does not provide proper errors yet :/
+                return false;
+            }
+#if 0
             if (result.is_error()) {
                 auto &error = result.error();
                 if (error.name() == "org.ofono.Error.NotImplemented") {
@@ -631,17 +636,23 @@ struct Interface
                     return false;
                 }
             }
+#endif
             return true;
         }
 
         bool
         resetPin(PinType type, std::string puk, std::string newPin)
         {
-            auto result =
-                    object->invoke_method_synchronously<
-                    SimManager::Method::ResetPin, SimManager::Method::ResetPin::ResultType>
-                    (pin2str(type), puk, newPin);
-
+            try {
+                auto result =
+                        object->invoke_method_synchronously<
+                        SimManager::Method::ResetPin, SimManager::Method::ResetPin::ResultType>
+                        (pin2str(type), puk, newPin);
+            } catch(std::runtime_error &e) {
+                /// @todo dbus-cpp does not provide proper errors yet :/
+                return false;
+            }
+#if 0
             if (result.is_error()) {
                 auto &error = result.error();
                 if (error.name() == "org.ofono.Error.NotImplemented") {
@@ -656,6 +667,7 @@ struct Interface
                     return false;
                 }
             }
+#endif
             return true;
         }
 

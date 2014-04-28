@@ -141,7 +141,6 @@ SimUnlockDialog::Private::update()
 {
     std::lock_guard<std::recursive_mutex> lock(m_updateMutex);
 
-    std::cout << __PRETTY_FUNCTION__ << std::endl;
     m_sd->title().set("");
     m_sd->body().set("");
     m_sd->pinMinMax().set({0, 0});
@@ -219,7 +218,6 @@ void
 SimUnlockDialog::Private::pinEntered(std::string pin)
 {
     std::lock_guard<std::recursive_mutex> lock(m_updateMutex);
-    std::cout << __PRETTY_FUNCTION__ << std::endl;
     switch (m_enterPinState) {
     case EnterPinStates::initial:
         // should never happen

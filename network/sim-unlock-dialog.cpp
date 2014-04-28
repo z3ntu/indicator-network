@@ -17,6 +17,16 @@ public:
         unlockPin
     };
 
+    enum class EnterPinStates
+    {
+        initial,
+        enterPin,
+        enterPuk,
+        enterNewPin,
+        confirmNewPin
+    };
+    EnterPinStates m_enterPinState;
+
     core::Property<State> m_state;
     Modem::Ptr m_modem;
 
@@ -25,6 +35,8 @@ public:
     std::string m_newPin;
     std::string m_oldPin;
     std::string m_pukCode;
+
+    std::recursive_mutex m_updateMutex;
 
     void sendEnterPin(std::string pin)
     {
@@ -69,7 +81,7 @@ public:
     {
         m_sd->showPopup(_("This will be the last attempt.\n"
                           "\n"
-                          "If the SIM PIN is entered incorrectly, your SIM"
+                          "If the SIM PIN is entered incorrectly, your SIM "
                           "will be blocked and would require the PUK Code to unlock."),
                         closed);
     }
@@ -102,32 +114,6 @@ public:
                         closed);
     }
 
-    struct askCodeEnv
-    {
-        std::vector<core::Connection> connections;
-        std::map<Modem::PinType, std::uint8_t> lastRetries;
-        Modem::PinType lastPinType;
-    } m_askCodeEnv;
-    void askCodeEnter()
-    {
-        assert(m_modem);
-        m_askCodeEnv.connections.push_back(
-                    m_modem->requiredPin().changed().connect(std::bind(&Private::askCodeAction, this))
-                    );
-        m_askCodeEnv.connections.push_back(
-                    m_modem->retries().changed().connect(std::bind(&Private::askCodeAction, this))
-                    );
-        m_askCodeEnv.lastRetries.clear();
-        m_askCodeEnv.lastPinType = m_modem->requiredPin().get();
-    }
-    void askCodeLeave()
-    {
-        for (auto &c : m_askCodeEnv.connections)
-            c.disconnect();
-    }
-    void askCodeAction();
-
-
     Private();
 
     void update();
@@ -139,11 +125,6 @@ public:
     void reset();
     void sendFailNotification(const std::string &title);
 };
-
-void
-SimUnlockDialog::Private::askCodeAction()
-{
-}
 
 SimUnlockDialog::Private::Private()
 {
@@ -158,6 +139,9 @@ SimUnlockDialog::Private::Private()
 void
 SimUnlockDialog::Private::update()
 {
+    std::lock_guard<std::recursive_mutex> lock(m_updateMutex);
+
+    std::cout << __PRETTY_FUNCTION__ << std::endl;
     m_sd->title().set("");
     m_sd->body().set("");
     m_sd->pinMinMax().set({0, 0});
@@ -170,129 +154,123 @@ SimUnlockDialog::Private::update()
                   {Modem::PinType::puk, 10}};
 
     auto type = m_modem->requiredPin().get();
+    auto retries = m_modem->retries().get();
 
-    switch(type){
-    case Modem::PinType::none:
-        // we are done.
+    if (m_enterPinState == EnterPinStates::enterPin &&
+        type == Modem::PinType::puk) {
+        // we transitioned from pin query to PUK query
+        m_enterPinState = EnterPinStates::enterPuk;
+    }
+
+    switch (m_enterPinState) {
+    case EnterPinStates::initial:
         return;
-    case Modem::PinType::pin:
-        /// @todo add SIM identifier
-        m_sd->title().set(_("Enter SIM PIN"));
-        break;
-    case Modem::PinType::puk:
-        /// @todo add SIM identifier
-        m_sd->title().set(_("Enter PUK code"));
+    case EnterPinStates::enterPin:
+    case EnterPinStates::enterPuk:
+    {
+        std::string title;
+        switch(type){
+        case Modem::PinType::none:
+            // we are done.
+            return;
+        case Modem::PinType::pin:
+            /// @todo add SIM identifier
+            title = _("Enter SIM PIN");
+            break;
+        case Modem::PinType::puk:
+            /// @todo add SIM identifier
+            title = _("Enter PUK code");
+            break;
+        }
+        m_sd->pinMinMax().set(lengths[type]);
+
+        std::string attempts;
+        if (retries.find(type) != retries.end()) {
+            auto attempt = maxRetries[type] - retries[type] + 1;
+            gchar *tmp = g_strdup_printf(_("Attempt %d of %d"), attempt, maxRetries[type]);
+            attempts = {tmp};
+            g_free(tmp);
+        }
+
+        /// @todo get a proper unlock dialog API..
+        if (attempts.empty()) {
+            m_sd->title().set(title);
+        } else {
+            m_sd->title().set("<b>" + title + "</b><br>" + attempts);
+        }
+        std::cout << m_sd->title().get() << std::endl;
         break;
     }
-    m_sd->pinMinMax().set(lengths[type]);
-
-    auto retries = m_modem->retries().get();
-    std::string attempts;
-    if (retries.find(type) != retries.end()) {
-        auto attempt = maxRetries[type] - retries[type] + 1;
-        gchar *tmp = g_strdup_printf(_("Attempt %d of %d"), attempt, maxRetries[type]);
-        attempts = {tmp};
-        g_free(tmp);
+    case EnterPinStates::enterNewPin:
+        m_sd->title().set(_("Enter new PIN code"));
+        break;
+    case EnterPinStates::confirmNewPin:
+        m_sd->title().set(_("Confirm new PIN code"));
+        break;
     }
 
     /// @todo should be able to see cleartext puk and pin when entering puk or changing pin.
-
     /// @todo add phone number or IMSI or something to the body
-    if (!attempts.empty())
-        m_sd->body().set(attempts);
-
     m_sd->update();
     m_sd->show();
-
-#if 0
-        bool sendChangePinNotification()
-        {
-            if (send_unlock(_("Please enter SIM PIN"), "pin", 4, pin_change_old_entered)) {
-              debug(@"SIM change. Sent old pin request");
-              return true;
-            } else {
-              debug(@"SIM change. Old pin notification failed");
-              return false;
-            }
-        }
-void pinChangeOldEntered(std::string pin)
-{
-    close_all_notifications(true);
-
-    if (send_unlock(_("Please enter new SIM PIN"), "pin", 4, pin_change_new_entered)) {
-      debug("SIM change pin request. Sent new pin request");
-      old_pin = pin;
-    } else {
-      warning("SIM change pin request. New pin notification failed");
-      clear_stored_data();
-    }
-}
-void pinChangeNewEntered(std::string pin)
-{
-    close_all_notifications(false);
-
-    if (send_unlock(_("Please confirm PIN code"), null, 4, pin_change_confirm_entered)) {
-      debug("SIM change pin request. Sent confirm pin request");
-      new_pin = pin;
-    } else {
-      warning("SIM change pin request. Confirm pin notification failed");
-      clear_stored_data();
-    }
-}
-void pinUnlockEntered(std::string pin)
-{
-    if (required_pin == last_required_pin) {
-      bool retry = false;
-      if (required_pin == "puk") {
-          // if it's a puk, we need to reset the pin.
-          close_all_notifications(true);
-          if (send_unlock(_("Enter new PIN code"), null, 4, pin_reset_new_entered)) {
-            debug("SIM pin request. Sent new pin request");
-            puk_code = pin;
-          } else {
-            warning("SIM pin request. New pin notification failed");
-          }
-      } else  if (!enter_pin(required_pin, pin, out retry)) {
-        warning("SIM pin request. Failed. retry=$(retry)");
-        close_all_notifications(true);
-        if (retry) {
-          send_unlock_notification();
-        } else {
-          send_fail_notification("An unexpected error occurred.");
-        }
-      } else {
-        debug("SIM pin request. Done");
-        close_all_notifications(true);
-      }
-    } else {
-      warning(@"Required pin type changed. old=$(last_required_pin), new=$(required_pin)");
-      close_all_notifications(true);
-    }
-}
-
-    }
-#endif
-
-}
-
-
-void
-SimUnlockDialog::Private::cancelled()
-{
-    std::cout << "SIM notification cancelled" << std::endl;
-
-    m_sd->close();
 }
 
 void
 SimUnlockDialog::Private::pinEntered(std::string pin)
 {
+    std::lock_guard<std::recursive_mutex> lock(m_updateMutex);
     std::cout << __PRETTY_FUNCTION__ << std::endl;
+    switch (m_enterPinState) {
+    case EnterPinStates::initial:
+        // should never happen
+        assert(0);
+        return;
+    case EnterPinStates::enterPin:
+        if (!m_modem->enterPin(Modem::PinType::pin, pin)) {
+            m_sd->showError(_("Oops!<br>Incorrect PIN entered."));
+        } else {
+            m_sd->close();
+        }
+        break;
+    case EnterPinStates::enterPuk:
+        m_pukCode = pin;
+        m_enterPinState = EnterPinStates::enterNewPin;
+        break;
+    case EnterPinStates::enterNewPin:
+        m_newPin = pin;
+        m_enterPinState = EnterPinStates::confirmNewPin;
+        break;
+    case EnterPinStates::confirmNewPin:
+        if (m_newPin != pin) {
+            m_sd->showError(_("PIN codes did not match."));
+            m_enterPinState = EnterPinStates::enterNewPin;
+            m_newPin.clear();
+        } else {
+            if (!m_modem->resetPin(Modem::PinType::pin, m_pukCode, pin)) {
+                m_sd->showError(_("Oops!<br>Incorrect PUK entered."));
+                m_enterPinState = EnterPinStates::enterPuk;
+                m_pukCode.clear();
+                m_newPin.clear();
+            } else {
+                m_sd->close();
+            }
+        }
+        break;
+    }
+    update();
+}
+
+void
+SimUnlockDialog::Private::cancelled()
+{
+    std::cout << "SIM notification cancelled" << std::endl;
+    m_sd->close();
 }
 
 void
 SimUnlockDialog::Private::closed()
 {
+    std::cout << __PRETTY_FUNCTION__ << std::endl;
     reset();
 }
 
@@ -304,6 +282,8 @@ SimUnlockDialog::Private::reset()
     m_newPin.clear();
     m_oldPin.clear();
     m_pukCode.clear();
+
+    m_enterPinState = EnterPinStates::initial;
 
     m_state.set(State::ready);
 }
@@ -326,11 +306,23 @@ SimUnlockDialog::unlock(Modem::Ptr modem)
     d->m_modem = modem;
     d->m_state.set(State::unlocking);
 
-    modem->requiredPin().changed().connect(std::bind(&Private::update, *d));
-    modem->retries().changed().connect(std::bind(&Private::update, *d));
+    /// @todo disconnect!
+    modem->requiredPin().changed().connect(std::bind(&Private::update, d.get()));
+    modem->retries().changed().connect(std::bind(&Private::update, d.get()));
 
     auto retries = modem->retries().get();
     auto type = modem->requiredPin().get();
+    switch(type){
+    case Modem::PinType::none:
+        d->reset();
+        return;
+    case Modem::PinType::pin:
+        d->m_enterPinState = Private::EnterPinStates::enterPin;
+        break;
+    case Modem::PinType::puk:
+        d->m_enterPinState = Private::EnterPinStates::enterPuk;
+        break;
+    }
 
     int pinRetries = -1;
     int pukRetries = -1;
@@ -379,6 +371,7 @@ SimUnlockDialog::changePin(Modem::Ptr modem)
     std::string currentPin;
     std::string newPin;
 
+    /// @todo disconnect.
     d->m_sd->pinEntered().connect([this, &currentPin, &newPin](std::string pin){
         if (currentPin.empty()) {
             currentPin = pin;
@@ -391,10 +384,10 @@ SimUnlockDialog::changePin(Modem::Ptr modem)
             // we have the current PIN and the newPin and confirmed pin is provided as argument pin
             if (newPin != pin) {
                 newPin.clear();
-                d->m_sd->showError(_("Pin codes did not match."));
+                d->m_sd->showError(_("PIN codes did not match."));
                 d->m_sd->title().set(_("Enter new PIN code"));
             } else {
-                if (0/*d->m_modem->changePin(Modem::PinType::pin, currentPin, newPin)*/) {
+                if (d->m_modem->changePin(Modem::PinType::pin, currentPin, newPin)) {
                     currentPin.clear();
                     newPin.clear();
                     /// @todo make sure the dialog can be cancelled again

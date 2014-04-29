@@ -31,6 +31,8 @@ from unity8.shell.tests import UnityTestCase, _get_device_emulation_scenarios
 import dbusmock
 import subprocess
 
+import os
+
 logger = logging.getLogger(__name__)
 
 class IndicatorTestCase(UnityTestCase, dbusmock.DBusTestCase):
@@ -42,8 +44,8 @@ class IndicatorTestCase(UnityTestCase, dbusmock.DBusTestCase):
     def setUpClass(cls):
         super(IndicatorTestCase, cls).setUpClass()
         # Set up a private buses.
-        cls.start_session_bus();
-        cls.start_system_bus()
+        #cls.start_session_bus();
+        #cls.start_system_bus()
 
     def setUp(self):
         #if platform.model() == 'Desktop':
@@ -96,28 +98,36 @@ class UnlockSimTestCase(IndicatorTestCase):
 
     def setUp(self):
         super(UnlockSimTestCase, self).setUp()
-        os.environ['OFONO_PHONESIM_CONFIG'] = '/path/to/phonesim.conf'
-        phonesim_cmd = ['ofono-phonesim', '-p', '12345', 'path/to/conf.xml']
-        ofono_cmd = ['ofonod', 'arguments here']
-        self.phonesim_process = subprocess.Popen(phonesim_cmd)
-        self.ofono_process = subproces.Popen(ofono_cmd)
+        #os.environ['OFONO_PHONESIM_CONFIG'] = '/path/to/phonesim.conf'
+        #phonesim_cmd = ['ofono-phonesim', '-p', '12345', 'path/to/conf.xml']
+        #ofono_cmd = ['ofonod', 'arguments here']
+        #self.phonesim_process = subprocess.Popen(phonesim_cmd)
+        #self.ofono_process = subproces.Popen(ofono_cmd)
 
     def tearDown(self):
-        self.phonesim_process.terminate()
-        self.phonesim_process.wait()
-        self.ofono_process.terminate()
-        self.ofono_process.wait()
+        #self.phonesim_process.terminate()
+        #self.phonesim_process.wait()
+        #self.ofono_process.terminate()
+        #self.ofono_process.wait()
+        pass
 
     def test_click_on_unlock_sim(self):
         """Open the network indicator and click on 'unlock sim'."""
         # TODO: self.main_window.open_indicator_page when above lands in unity8
         indicator_page = self.open_indicator_page(
             'indicator-network')
+        
+        listview = indicator_page.select_single('QQuickListView', objectName='mainMenu')
         unlock_sim_standard = indicator_page.wait_select_single(
             'Standard',
             objectName='indicator.sim.unlock')
         self.assertTrue(unlock_sim_standard.visible)
         self.pointing_device = input.Pointer(device=input.Touch.create())
-        self.pointing_device.click_object(unlock_sim_standard)
-        # FIXME: delete :)
+
+        listview.click_element('indicator.sim.unlock')
+        #self.pointing_device.click_object(unlock_sim_standard)
+
+        #self.unity_proxy.print_tree()
         sleep(20)
+        # FIXME: delete :)
+        

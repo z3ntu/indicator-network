@@ -29,7 +29,7 @@ from unity8.shell.tests import UnityTestCase, _get_device_emulation_scenarios
 import dbusmock
 import subprocess
 
-from PhonesimManager import PhonesimManager
+from indicator_network.tests.PhonesimManager import PhonesimManager
 from time import sleep
 
 logger = logging.getLogger(__name__)
@@ -104,12 +104,18 @@ class UnlockSimTestCase(IndicatorTestCase):
 
     def setUp(self):
         super(UnlockSimTestCase, self).setUp()
-        sims = [('sim1', 12345, '/usr/share/phonesim/default.xml'),]
+        # FIXME: the pin-unlock has to come from the system somewhere..
+        sims = [('sim1', 12345, '/home/antti/branches/indicator-network/indicator-network-cpp/tests/data/pin-unlock.xml'),]
         self.phonesim_manager = PhonesimManager(sims);
         self.phonesim_manager.start_phonesim_processes()
+        self.phonesim_manager.remove_all_ofono()
+        self.phonesim_manager.add_ofono('sim1')
+        self.phonesim_manager.power_on('sim1')
+        # give ofono some time to settle
+        sleep(3)
 
     def tearDown(self):
-        m.shutdown()
+        self.phonesim_manager.shutdown()
         super(UnlockSimTestCase, self).tearDown()
 
     def test_click_on_unlock_sim(self):
@@ -131,13 +137,3 @@ class UnlockSimTestCase(IndicatorTestCase):
         #self.unity_proxy.print_tree()
         sleep(5)
         # FIXME: delete :)
-        
-
-if __name__ == '__main__':
-    print("FOOOOO")
-    sims = [('sim1', 12345, '/usr/share/phonesim/default.xml'),
-            ('sim2', 12346, '/usr/share/phonesim/default.xml')]
-    m = PhonesimManager(sims)
-    m.start_phonesim_processes()
-    sleep(20)
-    m.shutdown()

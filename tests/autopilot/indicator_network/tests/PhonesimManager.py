@@ -23,6 +23,8 @@ from __future__ import absolute_import
 
 import subprocess
 
+from time import sleep
+
 class PhonesimManager:
     def __init__(self, sims, exe=None):
         if exe is None:
@@ -37,6 +39,8 @@ class PhonesimManager:
             cmd = [self.phonesim_exe, '-p', str(simport), conffile]
             p = subprocess.Popen(cmd)
             self.sim_processes[simname] = p
+        # give the processes some time to start
+        sleep(1)
 
     def shutdown(self):
         for p in self.sim_processes.values():
@@ -44,32 +48,32 @@ class PhonesimManager:
         self.sim_processes = {}
 
     def reset_ofono(self):
-        cmd = ['dbus-send', '--system', '--dest=org.ofono', '/',\
+        cmd = ['dbus-send', '--type=method_call', '--system', '--dest=org.ofono', '/',\
                'org.ofono.phonesim.Manager.Reset']
         subprocess.check_call(cmd)
 
     def remove_all_ofono(self):
-        cmd = ['dbus-send', '--system', '--dest=org.ofono', '/',\
+        cmd = ['dbus-send', '--type=method_call', '--system', '--dest=org.ofono', '/',\
                'org.ofono.phonesim.Manager.RemoveAll']
         subprocess.check_call(cmd)
 
     def add_ofono(self, name):
         for simname, simport, _ in self.sims:
             if name == simname:
-                cmd = ['dbus-send', '--system', '--dest=org.ofono', '/',\
+                cmd = ['dbus-send', '--type=method_call', '--system', '--dest=org.ofono', '/',\
                'org.ofono.phonesim.Manager.Add', 'string:' + simname, \
-               'string:127.0.0.1', 'string:' + simport]
+               'string:127.0.0.1', 'string:' + str(simport)]
                 subprocess.check_call(cmd)
                 return
         raise RuntimeError('Tried to add unknown modem %s.' % name)
 
     def power_on(self, name):
-        cmd = ['dbus-send', '--system', '--dest=org.ofono', '/'+name, \
+        cmd = ['dbus-send', '--type=method_call', '--system', '--dest=org.ofono', '/'+name, \
                'org.ofono.Modem.SetProperty', 'string:Powered', 'variant:boolean:true']
         subprocess.check_call(cmd)
 
     def power_off(self, name):
-        cmd = ['dbus-send', '--system', '--dest=org.ofono', '/'+name, \
+        cmd = ['dbus-send', '--type=method_call', '--system', '--dest=org.ofono', '/'+name, \
                'org.ofono.Modem.SetProperty', 'string:Powered', 'variant:boolean:false']
         subprocess.check_call(cmd)
 

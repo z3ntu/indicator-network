@@ -230,16 +230,19 @@
     <set name="PINNAME" value="SIM PIN"/>
 
     <!-- Value of the PIN that is required -->
-    <set name="PINVALUE" value="1397"/>
+    <set name="PINVALUE" value="1234"/>
+
+    <!-- How many times can PIN unlocking be attempted -->
+    <set name="PINRETRYCOUNT" value="3"/>
 
     <!-- pin protection status -->
     <set name="SC" value="0"/>
 
     <!-- Value of the PIN2 that is required -->
-    <set name="PIN2VALUE" value="3579"/>
+    <set name="PIN2VALUE" value="5678"/>
 
     <!-- Value of the PUK that is required -->
-    <set name="PUKVALUE" value="13974268"/>
+    <set name="PUKVALUE" value="1234567890"/>
 
     <!-- Value of the PUK2 that is required -->
     <set name="PUK2VALUE" value="01010101"/>
@@ -307,6 +310,9 @@
 
     <!-- Positioning reporting state -->
     <set name="CPOSR" value="0" />
+
+    <!-- SIM insertion state -->
+    <set name="SIMSTATE" value="1" />
 
 <!-- Time -->
 <!-- Enable for testing
@@ -2277,6 +2283,19 @@
 </chat>
 
 <chat>
+    <!-- Do we support CPINR? -->
+    <command>AT+CPINR=?</command>
+    <response>OK\n</response>
+</chat>
+
+<chat>
+    <!-- How many pin unlock attempts remain -->
+    <command>AT+CPINR</command>
+    <response>+CPINR: SIM PIN,${PINRETRYCOUNT},3\nOK\n</response>
+</chat>
+
+
+<chat>
     <!-- Check for which PIN is required -->
     <command>AT+CPIN?</command>
     <response delay="2000">+CPIN: ${PINNAME}\n\nOK</response>
@@ -2287,6 +2306,7 @@
     <command>AT+CPIN="${PINVALUE}"</command>
     <response>+CPIN: READY\n\nOK</response>
     <set name="PINNAME" value="READY"/>
+    <set name="PINRETRYCOUNT" value="3"/>
 </chat>
 
 <chat>
@@ -2302,6 +2322,7 @@
     <response>+CPIN: READY\n\nOK</response>
     <set name="PINVALUE" value="${*}"/>
     <set name="PINNAME" value="READY"/>
+    <set name="PINRETRYCOUNT" value="3"/>
 </chat>
 
 <chat>
@@ -2317,6 +2338,7 @@
     <command>AT+CPIN="*","*"</command>
     <response>+CPIN: SIM PUK\n\nERROR</response>
     <set name="PINNAME" value="SIM PUK"/>
+    <set name="PINRETRYCOUNT" value="0"/>
 </chat>
 
 <chat>
@@ -2324,6 +2346,7 @@
     <command>AT+CPIN=*</command>
     <response>+CPIN: SIM PIN\n\nERROR</response>
     <set name="PINNAME" value="SIM PIN"/>
+    <set name="PINRETRYCOUNT" value="2"/>
     <switch name="pinretry1"/>
 </chat>
 
@@ -2334,6 +2357,7 @@
         <command>AT+CPIN="${PINVALUE}"</command>
         <response>+CPIN: READY\n\nOK</response>
         <set name="PINNAME" value="READY"/>
+        <set name="PINRETRYCOUNT" value="3"/>
         <switch name="default"/>
     </chat>
 
@@ -2343,6 +2367,7 @@
         <response>+CPIN: READY\n\nOK</response>
         <set name="PINVALUE" value="${*}"/>
         <set name="PINNAME" value="READY"/>
+        <set name="PINRETRYCOUNT" value="3"/>
         <switch name="default"/>
     </chat>
 
@@ -2351,6 +2376,7 @@
         <command>AT+CPIN=*</command>
         <response>+CPIN: SIM PIN\n\nERROR</response>
         <set name="PINNAME" value="SIM PIN"/>
+        <set name="PINRETRYCOUNT" value="1"/>
         <switch name="pinretry2"/>
     </chat>
 
@@ -2363,6 +2389,7 @@
         <command>AT+CPIN="${PINVALUE}"</command>
         <response>+CPIN: READY\n\nOK</response>
         <set name="PINNAME" value="READY"/>
+        <set name="PINRETRYCOUNT" value="3"/>
         <switch name="default"/>
     </chat>
 
@@ -2372,6 +2399,7 @@
         <response>+CPIN: READY\n\nOK</response>
         <set name="PINVALUE" value="${*}"/>
         <set name="PINNAME" value="READY"/>
+        <set name="PINRETRYCOUNT" value="3"/>
         <switch name="default"/>
     </chat>
 
@@ -2380,6 +2408,7 @@
         <command>AT+CPIN=*</command>
         <response>+CPIN: SIM PUK\n\nERROR</response>
         <set name="PINNAME" value="SIM PUK"/>
+        <set name="PINRETRYCOUNT" value="0"/>
     </chat>
 
 </state>
@@ -3060,6 +3089,17 @@
     </chat>
 </state>
 
+<chat>
+    <command>AT+SIMSTATE?</command>
+    <response>+SIMSTATE: ${SIMSTATE}\n\nOK</response>
+</chat>
+
+<chat>
+    <!-- Query if SIMSTATE supported -->
+    <command>AT+SIMSTATE=?</command>
+    <response>OK</response>
+</chat>
+
 <!-- Modem compatibility commands for phones that support data services -->
 
 <chat>
@@ -3512,8 +3552,8 @@ OK</response>
 </file>
 
 <file name="EFpnn" recordsize="20">
-    43 0A 00 54 75 78 20 43 6F 6D 6D FF 80 04 49 6E 66 6F FF FF
-    43 05 00 4C 6F 6E 67 45 06 00 53 68 6F 72 74 FF FF FF FF FF
+    43 08 80 D4 3A 1E 34 7C B7 DB 80 04 49 6E 66 6F FF FF FF FF
+    43 05 84 CC B7 FB 0C 45 06 85 53 F4 5B 4E 07 FF FF FF FF FF
 </file>
 
 <file name="EFmwis" recordsize="6">

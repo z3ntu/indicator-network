@@ -19,8 +19,6 @@
 from __future__ import absolute_import
 
 import logging
-# FIXME: remove when finished testing
-from time import sleep
 
 from autopilot import logging as autopilot_logging
 from autopilot import input, platform
@@ -31,9 +29,22 @@ from unity8.shell.tests import UnityTestCase, _get_device_emulation_scenarios
 import dbusmock
 import subprocess
 
-import os
+from PhonesimManager import PhonesimManager
+from time import sleep
 
 logger = logging.getLogger(__name__)
+
+# FIXME:
+# This is a workaround for https://bugs.launchpad.net/ubuntu-ui-toolkit/+bug/1314390
+# Remove once fixed in upstream and available through repos
+from ubuntuuitoolkit import emulators as toolkit_emulators
+class QQuickListView(toolkit_emulators.QQuickListView):
+
+    def _get_top_container(self):
+        """Return the top-most container with a globalRect."""
+        root = self.get_root_instance()
+        return root.get_children()[0].get_children()[1]
+
 
 class IndicatorTestCase(UnityTestCase, dbusmock.DBusTestCase):
     """NOTE that this is proposed for unity8, remains here temporarily."""
@@ -43,14 +54,9 @@ class IndicatorTestCase(UnityTestCase, dbusmock.DBusTestCase):
     @classmethod
     def setUpClass(cls):
         super(IndicatorTestCase, cls).setUpClass()
-        # Set up a private buses.
-        #cls.start_session_bus();
-        #cls.start_system_bus()
 
-    def setUp(self):
-        #if platform.model() == 'Desktop':
-        #    self.skipTest('Test cannot be run on the desktop.')
-        super(IndicatorTestCase, self).setUp()
+    def setUp(self):            
+        super(IndicatorTestCase, self).setUp()    
         self.unity_proxy = self.launch_unity()
         unlock_unity(self.unity_proxy)
         self.pointing_device = input.Pointer(device=input.Touch.create())
@@ -98,18 +104,13 @@ class UnlockSimTestCase(IndicatorTestCase):
 
     def setUp(self):
         super(UnlockSimTestCase, self).setUp()
-        #os.environ['OFONO_PHONESIM_CONFIG'] = '/path/to/phonesim.conf'
-        #phonesim_cmd = ['ofono-phonesim', '-p', '12345', 'path/to/conf.xml']
-        #ofono_cmd = ['ofonod', 'arguments here']
-        #self.phonesim_process = subprocess.Popen(phonesim_cmd)
-        #self.ofono_process = subproces.Popen(ofono_cmd)
+        sims = [('sim1', 12345, '/usr/share/phonesim/default.xml'),]
+        self.phonesim_manager = PhonesimManager(sims);
+        self.phonesim_manager.start_phonesim_processes()
 
     def tearDown(self):
-        #self.phonesim_process.terminate()
-        #self.phonesim_process.wait()
-        #self.ofono_process.terminate()
-        #self.ofono_process.wait()
-        pass
+        m.shutdown()
+        super(UnlockSimTestCase, self).tearDown()
 
     def test_click_on_unlock_sim(self):
         """Open the network indicator and click on 'unlock sim'."""
@@ -118,16 +119,25 @@ class UnlockSimTestCase(IndicatorTestCase):
             'indicator-network')
         
         listview = indicator_page.select_single('QQuickListView', objectName='mainMenu')
-        unlock_sim_standard = indicator_page.wait_select_single(
+        unlock_sim_standard = listview.wait_select_single(
             'Standard',
             objectName='indicator.sim.unlock')
         self.assertTrue(unlock_sim_standard.visible)
         self.pointing_device = input.Pointer(device=input.Touch.create())
 
+        #listview.print_tree(output='listview.log')
         listview.click_element('indicator.sim.unlock')
-        #self.pointing_device.click_object(unlock_sim_standard)
 
         #self.unity_proxy.print_tree()
-        sleep(20)
+        sleep(5)
         # FIXME: delete :)
         
+
+if __name__ == '__main__':
+    print("FOOOOO")
+    sims = [('sim1', 12345, '/usr/share/phonesim/default.xml'),
+            ('sim2', 12346, '/usr/share/phonesim/default.xml')]
+    m = PhonesimManager(sims)
+    m.start_phonesim_processes()
+    sleep(20)
+    m.shutdown()

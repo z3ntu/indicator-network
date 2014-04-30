@@ -125,7 +125,8 @@ public:
                             current.begin(), current.end(),
                             std::inserter(added, added.begin()));
 
-        for (auto iter = currentModems.begin(); iter != currentModems.end(); ++iter) {
+        auto iter = currentModems.begin();
+        while (iter != currentModems.end()) {
             if (removed.find((*iter)->ofonoModem()) != removed.end()) {
 
                 m_pendingUnlocks.remove(*iter);
@@ -133,9 +134,9 @@ public:
                     m_unlockDialog->cancel();
 
                 iter = currentModems.erase(iter);
-                --iter; // call -- as loop does ++ next;
                 continue;
             }
+            ++iter;
         }
 
         for (auto ofonoModem : added) {

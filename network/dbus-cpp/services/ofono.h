@@ -1212,7 +1212,7 @@ struct Interface
                 }
 
                 typedef Manager Interface;
-                typedef std::tuple<core::dbus::types::ObjectPath, std::map<std::string, std::string>> ArgumentType;
+                typedef std::tuple<core::dbus::types::ObjectPath, std::map<std::string, core::dbus::types::Variant>> ArgumentType;
             };
 
             struct ModemRemoved

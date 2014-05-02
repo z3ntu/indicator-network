@@ -38,6 +38,8 @@ public:
 
     std::recursive_mutex m_updateMutex;
 
+    std::vector<core::Connection> m_connections;
+
     void sendEnterPin(std::string pin)
     {
         int retries = -1;
@@ -275,6 +277,9 @@ SimUnlockDialog::Private::closed()
 void
 SimUnlockDialog::Private::reset()
 {
+    for (auto &c : m_connections)
+        c.disconnect();
+    m_connections.clear();
     m_modem.reset();
 
     m_newPin.clear();
@@ -304,9 +309,11 @@ SimUnlockDialog::unlock(Modem::Ptr modem)
     d->m_modem = modem;
     d->m_state.set(State::unlocking);
 
-    /// @todo disconnect!
-    modem->requiredPin().changed().connect(std::bind(&Private::update, d.get()));
-    modem->retries().changed().connect(std::bind(&Private::update, d.get()));
+    auto c = modem->requiredPin().changed().connect(std::bind(&Private::update, d.get()));
+    d->m_connections.push_back(c);
+
+    c = modem->retries().changed().connect(std::bind(&Private::update, d.get()));
+    d->m_connections.push_back(c);
 
     auto retries = modem->retries().get();
     auto type = modem->requiredPin().get();

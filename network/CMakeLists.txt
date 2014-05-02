@@ -1,5 +1,4 @@
 
-add_subdirectory(notify-cpp)
 include_directories(notify-cpp)
 
 set(NOTIFY_CPP_SOURCES

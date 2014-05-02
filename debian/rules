@@ -9,12 +9,16 @@ export CC=$(DEB_HOST_GNU_TYPE)-gcc-4.7
 export CXX=$(DEB_HOST_GNU_TYPE)-g++-4.7
 
 %:
-	dh $@ --parallel --fail-missing
+	dh $@ --parallel --fail-missing --with python3
 
 override_dh_install:
+	cd tests/autopilot; \
+	set -ex; for python in $(shell py3versions -r); do \
+	    $$python setup.py install --root=$(CURDIR)/debian/tmp --install-layout=deb; \
+	done; \
+	cd $(CURDIR)
 	mkdir -p debian/indicator-network/etc/apport/crashdb.conf.d
 	cp debian/indicator-network-crashdb.conf debian/indicator-network/etc/apport/crashdb.conf.d
 	mkdir -p debian/indicator-network/usr/share/apport/package-hooks
 	cp debian/source_indicator-network.py debian/indicator-network/usr/share/apport/package-hooks
-	dh_install --list-missing
-
+	dh_install -X'*.pyc' -X'__pycache__' --fail-missing

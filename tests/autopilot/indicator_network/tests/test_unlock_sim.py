@@ -44,8 +44,23 @@ class QQuickListView(toolkit_emulators.QQuickListView):
 
 
 class UnlockSimTestCase(UnityTestCase):
-
     scenarios = _get_device_emulation_scenarios()
+
+
+    def get_lockscreen(self):
+        return self.unity_proxy.wait_select_single('Notifications', objectName='notificationList').wait_select_single('Lockscreen')
+
+    def get_pinPadButton(self, buttonId):
+        return self.get_lockscreen().wait_select_single(
+            "PinPadButton",
+            objectName="pinPadButton%i" % buttonId
+        )
+
+    def get_pinPadButtonErase(self):
+        return self.get_lockscreen().wait_select_single(
+            'PinPadButton',
+            objectName='pinPadButtonErase'
+        )
 
     def setUp(self):
         super(UnlockSimTestCase, self).setUp()
@@ -95,17 +110,16 @@ class UnlockSimTestCase(UnityTestCase):
         self.assertTrue(unlock_sim_standard.visible)
         list_view.click_element('indicator.sim.unlock')
 
-        pin_lockscreen = self.main_window.get_lockscreen()
+        # get the lockscreen from snap decisions.
+        pin_lockscreen = self.get_lockscreen()
 
         # FIXME: make helper?  Or generalize what's in unity8/shell/tests?
-        pin_pad_button_1 = self.main_window.get_pinPadButton(1)
-        pin_pad_button_2 = self.main_window.get_pinPadButton(2)
-        pin_pad_button_3 = self.main_window.get_pinPadButton(3)
-        pin_pad_button_4 = self.main_window.get_pinPadButton(4)
-        pin_pad_button_erase = self.main_window.wait_select_single(
-            'PinPadButton',
-            objectName='pinPadButtonErase'
-        )
+        pin_pad_button_1 = self.get_pinPadButton(1)
+        pin_pad_button_2 = self.get_pinPadButton(2)
+        pin_pad_button_3 = self.get_pinPadButton(3)
+        pin_pad_button_4 = self.get_pinPadButton(4)
+        pin_pad_button_erase = self.get_pinPadButtonErase()
+
         self.pointing_device.click_object(pin_pad_button_1)
         self.pointing_device.click_object(pin_pad_button_2)
         self.pointing_device.click_object(pin_pad_button_3)

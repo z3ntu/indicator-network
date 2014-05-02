@@ -72,11 +72,18 @@ class PhonesimManager(object):
         sim = self.system_bus.get_object('org.ofono', '/'+sim_name)
         modem = dbus.Interface(sim, dbus_interface='org.ofono.Modem')
         modem.SetProperty('Powered', True)
+        sleep(1)
 
     def power_off(self, sim_name):
         sim = self.system_bus.get_object('org.ofono', '/'+sim_name)
         modem = dbus.Interface(sim, dbus_interface='org.ofono.Modem')
         modem.SetProperty('Powered', False)
+        sleep(1)
+
+    def get_required_pin(self, sim_name):
+        sim = self.system_bus.get_object('org.ofono', '/'+sim_name)
+        interface = dbus.Interface(sim, dbus_interface='org.ofono.SimManager')
+        return str(interface.GetProperties()['PinRequired'])
 
 
 if __name__ == '__main__':

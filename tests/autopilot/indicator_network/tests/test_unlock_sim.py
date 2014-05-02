@@ -88,6 +88,11 @@ class UnlockSimTestCase(UnityTestCase):
     def test_unlock_sim(self):
         """Unlock the SIM via the network indicator, entering PIN."""
 
+        self.assertThat(
+            self.phonesim_manager.get_required_pin('sim1'),
+            Equals('pin')
+        )
+
         indicator_network_widget = self.main_window._get_indicator_widget(
             'indicator-network'
         )
@@ -130,3 +135,9 @@ class UnlockSimTestCase(UnityTestCase):
             indicator_network_widget.leftLabel,
             Eventually(NotEquals('SIM Locked'))
         )
+
+        self.assertThat(
+            self.phonesim_manager.get_required_pin('sim1'),
+            Equals('none')
+        )
+

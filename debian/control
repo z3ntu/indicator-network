@@ -54,8 +54,7 @@ Depends: ${misc:Depends},
          libautopilot-qt (>= 1.4),
          unity8-autopilot,
          python-dbus,
-         python-pkg-resources,
-	 
+         python-pkg-resources,	 
 Description: Autopilot tests for the network indicator for Ubuntu
  The Indicator-network service is responsible for exporting the system settings
  menu through dbus.  This package contains its autopilot tests.

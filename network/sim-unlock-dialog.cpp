@@ -131,17 +131,17 @@ public:
 SimUnlockDialog::Private::Private()
 {
     m_sd = std::make_shared<notify::snapdecision::SimUnlock>();
-    m_sd->cancelled().connect(std::bind(&Private::cancelled, this));
-    m_sd->pinEntered().connect(std::bind(&Private::pinEntered, this, std::placeholders::_1));
-    m_sd->closed().connect(std::bind(&Private::closed, this));
-
     reset();
 }
 
 void
 SimUnlockDialog::Private::update()
 {
+    std::cout << __PRETTY_FUNCTION__ << std::endl;
     std::lock_guard<std::recursive_mutex> lock(m_updateMutex);
+
+    if (!m_modem || !m_sd)
+        return;
 
     m_sd->title().set("");
     m_sd->body().set("");
@@ -219,6 +219,8 @@ SimUnlockDialog::Private::update()
 void
 SimUnlockDialog::Private::pinEntered(std::string pin)
 {
+    std::cout << __PRETTY_FUNCTION__ << std::endl;
+
     std::lock_guard<std::recursive_mutex> lock(m_updateMutex);
     switch (m_enterPinState) {
     case EnterPinStates::initial:
@@ -229,7 +231,10 @@ SimUnlockDialog::Private::pinEntered(std::string pin)
         if (!m_modem->enterPin(Modem::PinType::pin, pin)) {
             m_sd->showError(_("Oops!<br>Incorrect PIN entered."));
         } else {
+            std::cout << "Correct PIN entered." << std::endl;
             m_sd->close();
+            reset();
+            return;
         }
         break;
     case EnterPinStates::enterPuk:
@@ -252,7 +257,10 @@ SimUnlockDialog::Private::pinEntered(std::string pin)
                 m_pukCode.clear();
                 m_newPin.clear();
             } else {
+                std::cout << "ResetPin succesfull." << std::endl;
                 m_sd->close();
+                reset();
+                return;
             }
         }
         break;
@@ -277,9 +285,17 @@ SimUnlockDialog::Private::closed()
 void
 SimUnlockDialog::Private::reset()
 {
-    for (auto &c : m_connections)
-        c.disconnect();
-    m_connections.clear();
+    std::cout << __PRETTY_FUNCTION__ << std::endl;
+    /** @todo
+     * bug in dbus-cpp :/
+     * can't disconnect here as the reset() is called from pinEnterer() and
+     * we can't disconnect a signal inside one of it's handlers right now.
+     * uncomment this code once dbus-cpp is fixed.
+     * for (auto &c : m_connections)
+     *   c.disconnect();
+     * m_connections.clear();
+     * m_sd.reset();
+     */
     m_modem.reset();
 
     m_newPin.clear();
@@ -309,10 +325,24 @@ SimUnlockDialog::unlock(Modem::Ptr modem)
     d->m_modem = modem;
     d->m_state.set(State::unlocking);
 
+    /// @todo delayed disconnections, see comment in reset()
+    for (auto &c : d->m_connections)
+        c.disconnect();
+    d->m_connections.clear();
+
     auto c = modem->requiredPin().changed().connect(std::bind(&Private::update, d.get()));
     d->m_connections.push_back(c);
 
     c = modem->retries().changed().connect(std::bind(&Private::update, d.get()));
+    d->m_connections.push_back(c);
+
+    c = d->m_sd->cancelled().connect(std::bind(&Private::cancelled, d.get()));
+    d->m_connections.push_back(c);
+
+    c = d->m_sd->pinEntered().connect(std::bind(&Private::pinEntered, d.get(), std::placeholders::_1));
+    d->m_connections.push_back(c);
+
+    c = d->m_sd->closed().connect(std::bind(&Private::closed, d.get()));
     d->m_connections.push_back(c);
 
     auto retries = modem->retries().get();
@@ -367,6 +397,15 @@ SimUnlockDialog::changePin(Modem::Ptr modem)
     d->m_modem = modem;
     d->m_state.set(State::changingPin);
 
+    if (d->m_modem)
+        throw std::logic_error("Unlocking already in progress.");
+
+    auto c = d->m_sd->cancelled().connect(std::bind(&Private::cancelled, d.get()));
+    d->m_connections.push_back(c);
+
+    c = d->m_sd->closed().connect(std::bind(&Private::closed, d.get()));
+    d->m_connections.push_back(c);
+
     /// @todo add SIM identifier
     d->m_sd->title().set(_("Enter SIM PIN"));
     d->m_sd->body().set("");
@@ -376,8 +415,7 @@ SimUnlockDialog::changePin(Modem::Ptr modem)
     std::string currentPin;
     std::string newPin;
 
-    /// @todo disconnect.
-    d->m_sd->pinEntered().connect([this, &currentPin, &newPin](std::string pin){
+    c = d->m_sd->pinEntered().connect([this, &currentPin, &newPin](std::string pin){
         if (currentPin.empty()) {
             currentPin = pin;
             d->m_sd->title().set(_("Enter new PIN code"));
@@ -404,7 +442,7 @@ SimUnlockDialog::changePin(Modem::Ptr modem)
             }
         }
     });
-    /// @todo SimUnlock::cancelled() and SimUnlock::closed()
+    d->m_connections.push_back(c);
 }
 
 void

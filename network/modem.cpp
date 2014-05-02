@@ -45,25 +45,25 @@ void
 Modem::Private::networkRegistrationChanged(org::ofono::Interface::NetworkRegistration::Ptr netreg)
 {
     if (netreg) {
-        m_operatorName.set(netreg->operatorName.get());
         netreg->operatorName.changed().connect([this](std::string value){
             m_operatorName.set(value);
         });
+        m_operatorName.set(netreg->operatorName.get());
 
-        m_status.set(netreg->status.get());
         netreg->status.changed().connect([this](org::ofono::Interface::NetworkRegistration::Status value){
             m_status.set(value);
         });
+        m_status.set(netreg->status.get());
 
-        m_strength.set(netreg->strength.get());
         netreg->strength.changed().connect([this](std::int8_t value){
             m_strength.set(value);
         });
+        m_strength.set(netreg->strength.get());
 
-        m_technology.set(netreg->technology.get());
         netreg->technology.changed().connect([this](org::ofono::Interface::NetworkRegistration::Technology value){
             m_technology.set(value);
         });
+        m_technology.set(netreg->technology.get());
 
     } else {
         m_operatorName.set("");

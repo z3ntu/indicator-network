@@ -18,6 +18,7 @@
 
 from __future__ import absolute_import
 
+import os
 from testtools.matchers import Equals, NotEquals
 
 from autopilot import input
@@ -46,12 +47,12 @@ class UnlockSimTestCase(UnityTestCase):
 
     def setUp(self):
         super(UnlockSimTestCase, self).setUp()
-        # FIXME: the pin-unlock has to come from the system somewhere..
-        sims = [
-            ('sim1',
-             12345,
-             '/home/alesage/workspace/Wellark/indicator-network-cpp-the-return/tests/data/pin-unlock.xml'),
-        ]
+        # FIXME: use pkg_resources to ship
+        sims = [('sim1',
+                 12345,
+                 os.path.join(
+                     os.getcwd(),
+                     'indicator-network/data/pin-unlock.xml')),]
         self.phonesim_manager = PhonesimManager(sims)
         self.phonesim_manager.start_phonesim_processes()
         self.phonesim_manager.remove_all_ofono()

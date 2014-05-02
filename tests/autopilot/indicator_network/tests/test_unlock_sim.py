@@ -26,7 +26,7 @@ from pkg_resources import resource_filename
 from unity8.process_helpers import unlock_unity
 from unity8.shell.tests import UnityTestCase, _get_device_emulation_scenarios
 
-from indicator_network.tests.PhonesimManager import PhonesimManager
+from indicator_network.helpers.phonesim_manager import PhonesimManager
 
 # FIXME:
 # This is a workaround for https://bugs.launchpad.net/ubuntu-ui-toolkit/+bug/1314390  # noqa

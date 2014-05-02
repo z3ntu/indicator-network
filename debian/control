@@ -23,6 +23,7 @@ Build-Depends: cmake,
                ofono-dev,
                pkg-config,
                python3-dbusmock,
+               python3-setuptools,
                qtbase5-dev,
                valgrind [amd64 armhf i386 powerpc],
 Standards-Version: 3.9.3

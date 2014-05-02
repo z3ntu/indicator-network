@@ -46,3 +46,16 @@ Conflicts: chewie,
 Description: Systems settings menu service - Network indicator
  The Indicator-network service is responsible for exporting the system settings
  menu through dbus.
+
+Package: indicator-network-autopilot
+Architecture: all
+Depends: ${misc:Depends},
+         indicator-network (>= ${source:Version}),
+         libautopilot-qt (>= 1.4),
+         unity8-autopilot,
+         python-dbus,
+         python-pkg-resources,
+	 
+Description: Autopilot tests for the network indicator for Ubuntu
+ The Indicator-network service is responsible for exporting the system settings
+ menu through dbus.  This package contains its autopilot tests.

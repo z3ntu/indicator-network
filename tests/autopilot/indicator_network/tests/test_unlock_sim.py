@@ -18,24 +18,19 @@
 
 from __future__ import absolute_import
 
-import logging
+import os
+from testtools.matchers import Equals, NotEquals
 
-from autopilot import logging as autopilot_logging
-from autopilot import input, platform
-from autopilot.input._common import get_center_point
-
+from autopilot import input
+from autopilot.matchers import Eventually
+from pkg_resources import resource_filename
 from unity8.process_helpers import unlock_unity
 from unity8.shell.tests import UnityTestCase, _get_device_emulation_scenarios
-import dbusmock
-import subprocess
 
-from indicator_network.tests.PhonesimManager import PhonesimManager
-from time import sleep
-
-logger = logging.getLogger(__name__)
+from indicator_network.helpers.phonesim_manager import PhonesimManager
 
 # FIXME:
-# This is a workaround for https://bugs.launchpad.net/ubuntu-ui-toolkit/+bug/1314390
+# This is a workaround for https://bugs.launchpad.net/ubuntu-ui-toolkit/+bug/1314390  # noqa
 # Remove once fixed in upstream and available through repos
 from ubuntuuitoolkit import emulators as toolkit_emulators
 class QQuickListView(toolkit_emulators.QQuickListView):
@@ -46,94 +41,74 @@ class QQuickListView(toolkit_emulators.QQuickListView):
         return root.get_children()[0].get_children()[1]
 
 
-class IndicatorTestCase(UnityTestCase, dbusmock.DBusTestCase):
-    """NOTE that this is proposed for unity8, remains here temporarily."""
+class UnlockSimTestCase(UnityTestCase):
 
-    device_emulation_scenarios = _get_device_emulation_scenarios()
-
-    @classmethod
-    def setUpClass(cls):
-        super(IndicatorTestCase, cls).setUpClass()
-
-    def setUp(self):            
-        super(IndicatorTestCase, self).setUp()    
-        self.unity_proxy = self.launch_unity()
-        unlock_unity(self.unity_proxy)
-        self.pointing_device = input.Pointer(device=input.Touch.create())
-
-    def get_indicator_widget(self, indicator_name):
-        return self.main_window.select_single(
-            'DefaultIndicatorWidget',
-            objectName=indicator_name+'-widget'
-        )
-
-    def get_indicator_page(self, indicator_name):
-        return self.main_window.select_single(
-            'DefaultIndicatorPage',
-            objectName=indicator_name+'-page'
-        )
-
-    @autopilot_logging.log_action(logger.info)
-    def open_indicator_page(self, indicator_name):
-        """Return the indicator page.
-
-        Swipe to open the indicator, wait until it's open.
-        """
-        widget = self.get_indicator_widget(indicator_name)
-        start_x, start_y = get_center_point(widget)
-        end_x = start_x
-        end_y = self.main_window.height
-        self.pointing_device.drag(start_x, start_y, end_x, end_y)
-        # TODO: assert that the indicator page opened [alesage 2013-12-06]
-        return self.get_indicator_page(indicator_name)
-
-    @autopilot_logging.log_action(logger.info)
-    def close_indicator_page(self, indicator_name):
-        """Swipe to close the indicator, wait until it's closed."""
-        widget = self.get_indicator_widget(indicator_name)
-        end_x, end_y = get_center_point(widget)
-        start_x = end_x
-        start_y = self.main_window.height
-        self.pointing_device.drag(start_x, start_y, end_x, end_y)
-        # TODO: assert that the indicator page closed [alesage 2013-12-06]
-
-
-class UnlockSimTestCase(IndicatorTestCase):
-
-    scenarios = IndicatorTestCase.device_emulation_scenarios
+    scenarios = _get_device_emulation_scenarios()
 
     def setUp(self):
         super(UnlockSimTestCase, self).setUp()
-        # FIXME: the pin-unlock has to come from the system somewhere..
-        sims = [('sim1', 12345, '/home/antti/branches/indicator-network/indicator-network-cpp/tests/data/pin-unlock.xml'),]
-        self.phonesim_manager = PhonesimManager(sims);
+        # FIXME: use pkg_resources to ship
+        sims = [('sim1',
+                 12345,
+                 os.path.join(
+                     os.getcwd(),
+                     'indicator-network/data/pin-unlock.xml')),]
+        self.phonesim_manager = PhonesimManager(sims)
         self.phonesim_manager.start_phonesim_processes()
         self.phonesim_manager.remove_all_ofono()
         self.phonesim_manager.add_ofono('sim1')
         self.phonesim_manager.power_on('sim1')
-        # give ofono some time to settle
-        sleep(3)
+        self.unity_proxy = self.launch_unity()
+        unlock_unity(self.unity_proxy)
+        self.pointing_device = input.Pointer(device=input.Touch.create())
 
     def tearDown(self):
         self.phonesim_manager.shutdown()
         super(UnlockSimTestCase, self).tearDown()
 
-    def test_click_on_unlock_sim(self):
-        """Open the network indicator and click on 'unlock sim'."""
-        # TODO: self.main_window.open_indicator_page when above lands in unity8
-        indicator_page = self.open_indicator_page(
-            'indicator-network')
-        
-        listview = indicator_page.select_single('QQuickListView', objectName='mainMenu')
-        unlock_sim_standard = listview.wait_select_single(
+    def test_unlock_sim(self):
+        """Unlock the SIM via the network indicator, entering PIN."""
+
+        indicator_network_widget = self.main_window._get_indicator_widget(
+            'indicator-network'
+        )
+        self.assertThat(
+            indicator_network_widget.leftLabel,
+            Eventually(Equals('SIM Locked'))
+        )
+
+        indicator_page = self.main_window.open_indicator_page(
+            'indicator-network'
+        )
+        list_view = indicator_page.select_single(
+            'QQuickListView',
+            objectName='mainMenu'
+        )
+        unlock_sim_standard = list_view.wait_select_single(
             'Standard',
-            objectName='indicator.sim.unlock')
+            objectName='indicator.sim.unlock'
+        )
         self.assertTrue(unlock_sim_standard.visible)
-        self.pointing_device = input.Pointer(device=input.Touch.create())
+        list_view.click_element('indicator.sim.unlock')
 
-        #listview.print_tree(output='listview.log')
-        listview.click_element('indicator.sim.unlock')
+        pin_lockscreen = self.main_window.get_lockscreen()
 
-        #self.unity_proxy.print_tree()
-        sleep(5)
-        # FIXME: delete :)
+        # FIXME: make helper?  Or generalize what's in unity8/shell/tests?
+        pin_pad_button_1 = self.main_window.get_pinPadButton(1)
+        pin_pad_button_2 = self.main_window.get_pinPadButton(2)
+        pin_pad_button_3 = self.main_window.get_pinPadButton(3)
+        pin_pad_button_4 = self.main_window.get_pinPadButton(4)
+        pin_pad_button_erase = self.main_window.wait_select_single(
+            'PinPadButton',
+            objectName='pinPadButtonErase'
+        )
+        self.pointing_device.click_object(pin_pad_button_1)
+        self.pointing_device.click_object(pin_pad_button_2)
+        self.pointing_device.click_object(pin_pad_button_3)
+        self.pointing_device.click_object(pin_pad_button_4)
+        self.pointing_device.click_object(pin_pad_button_erase)
+
+        self.assertThat(
+            indicator_network_widget.leftLabel,
+            Eventually(NotEquals('SIM Locked'))
+        )

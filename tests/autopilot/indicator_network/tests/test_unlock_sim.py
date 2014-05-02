@@ -19,6 +19,8 @@
 from __future__ import absolute_import
 
 import os
+import sysconfig
+
 from testtools.matchers import Equals, NotEquals
 
 from autopilot import input
@@ -47,12 +49,14 @@ class UnlockSimTestCase(UnityTestCase):
 
     def setUp(self):
         super(UnlockSimTestCase, self).setUp()
-        # FIXME: use pkg_resources to ship
+
+        phonesim_datadir = os.getenv('INDICATOR_NETWORK_PHONESIM_DATA')
+        if phonesim_datadir == None:
+            phonesim_datadir = sysconfig.get_config_var('datarootdir') + '/indicator-network/phonesim'
+
         sims = [('sim1',
                  12345,
-                 os.path.join(
-                     os.getcwd(),
-                     'indicator-network/data/pin-unlock.xml')),]
+                 phonesim_datadir + '/pin-unlock.xml'),]
         self.phonesim_manager = PhonesimManager(sims)
         self.phonesim_manager.start_phonesim_processes()
         self.phonesim_manager.remove_all_ofono()

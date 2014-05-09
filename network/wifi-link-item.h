@@ -149,7 +149,7 @@ public:
         });
 
         m_otherNetwork = std::make_shared<TextItem>(_("Other network…"), "wifi", "othernetwork");
-        m_actionGroupMerger->add(*m_otherNetwork);
+        //m_actionGroupMerger->add(*m_otherNetwork);
 
         m_topMenu->append(*m_switch);
         m_rootMerger->append(m_topMenu);
@@ -158,7 +158,7 @@ public:
         m_apsMerger->append(m_neverConnectedApsMenu);
         m_rootMerger->append(m_apsMerger);
 
-        m_bottomMenu->append(*m_otherNetwork);
+        //m_bottomMenu->append(*m_otherNetwork);
         m_rootMerger->append(m_bottomMenu);
 
         m_item = MenuItem::newSection(m_rootMerger);

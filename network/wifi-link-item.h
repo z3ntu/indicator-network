@@ -204,6 +204,7 @@ public:
             bool isActive = (ap == m_activeAccessPoint);
             auto item = std::make_shared<AccessPointItem>(ap, isActive);
             item->activated().connect([this, ap](){
+                updateActiveAccessPoint(ap);
                 m_link->connect_to(ap);
             });
             m_accessPoints[ap] = item;

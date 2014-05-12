@@ -44,7 +44,7 @@ class PhonesimManager(object):
 
     def start_phonesim_processes(self):
         for simname, simport, conffile in self.sims:
-            cmd = [self.phonesim_exe, '-p', str(simport), conffile]
+            cmd = ['/usr/bin/xvfb-run', '-a', self.phonesim_exe, '-p', str(simport), conffile]
             p = subprocess.Popen(cmd)
             self.sim_processes[simname] = p
         # give the processes some time to start

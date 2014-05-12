@@ -38,6 +38,8 @@ public:
     // from Section
     virtual ActionGroup::Ptr actionGroup();
     virtual MenuModel::Ptr menuModel();
+
+    MenuModel::Ptr settingsModel();
 };
 
 #endif

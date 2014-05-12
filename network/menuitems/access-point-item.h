@@ -21,10 +21,9 @@
 #define ACCESS_POINT_ITEM_H
 
 #include "item.h"
-#include "gio-helpers/util.h"
 #include "menumodel-cpp/action.h"
 #include "menumodel-cpp/menu-item.h"
-#include "gio-helpers/variant.h"
+#include "menumodel-cpp/gio-helpers/variant.h"
 
 #include <core/signal.h>
 

@@ -20,8 +20,6 @@
 #ifndef WIFI_LINK_ITEM_H
 #define WIFI_LINK_ITEM_H
 
-#include "gio-helpers/util.h"
-
 #include "menuitems/switch-item.h"
 #include "menuitems/access-point-item.h"
 #include "menuitems/text-item.h"
@@ -66,6 +64,8 @@ class WifiLinkItem : public Item
     std::string m_a11ydesc;
 
     TextItem::Ptr m_otherNetwork;
+
+    std::mutex m_updateActiveAccessPointMutex;
 
 public:
     typedef std::shared_ptr<WifiLinkItem> Ptr;
@@ -166,7 +166,6 @@ public:
 
     void updateAccessPoints(std::set<networking::wifi::AccessPoint::Ptr> accessPoints)
     {
-
         /// @todo previously connected
         /// @todo apply visibility policy.
 
@@ -219,6 +218,7 @@ public:
 
     void updateActiveAccessPoint(networking::wifi::AccessPoint::Ptr ap)
     {
+        std::lock_guard<std::mutex> lock(m_updateActiveAccessPointMutex);
         m_activeAccessPoint = ap;
 
         auto current = m_connectedBeforeApsMenu->begin();

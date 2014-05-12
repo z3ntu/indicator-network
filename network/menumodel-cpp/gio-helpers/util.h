@@ -27,6 +27,7 @@
 #include <memory>
 #include <condition_variable>
 #include <iostream>
+#include <vector>
 
 struct GMainLoopSync
 {
@@ -66,27 +67,16 @@ public:
 
 struct GMainLoopDispatch
 {
-    static gboolean dispatch_cb(gpointer user_data)
-    {
-        std::function<void()> *funcPtr = static_cast<std::function<void()>*>(user_data);
-        (*funcPtr)();
-        return G_SOURCE_REMOVE;
-    }
+    static gboolean dispatch_cb(gpointer);
 
 public:
-    GMainLoopDispatch(std::function<void()> func)
-    {
-        if (g_main_context_acquire(g_main_context_default())) {
-            func();
-            g_main_context_release(g_main_context_default());
-        } else {
-            std::function<void()> *funcPtr = new std::function<void()>(func);
-            g_idle_add_full(G_PRIORITY_HIGH,
-                            GSourceFunc(GMainLoopDispatch::dispatch_cb),
-                            funcPtr,
-                            NULL);
-        }
-    }
+    typedef std::function<void()> Func;
+    static std::mutex _lock;
+    // vector keeps the order of the functions
+    static std::vector<Func *> _funcs;
+
+    //GMainLoopDispatch() = delete;
+    GMainLoopDispatch(std::function<void()> func);
 };
 
 struct GObjectDeleter {

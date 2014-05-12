@@ -57,19 +57,19 @@ public:
     {
         std::lock_guard<std::recursive_mutex> lg(m_mutex);
         m_items.push_back(item);
-        GMainLoopDispatch([=](){
+        //GMainLoopDispatch([=](){
             g_menu_append_item(m_gmenu.get(), item->gmenuitem());
-        });
+        //});
         if (std::count(m_items.begin(), m_items.end(), item) == 1) {
             /// @todo disconenct
             item->changed().connect([this, item](){
                 int index = 0;
                 for (auto iter = m_items.begin(); iter != m_items.end(); ++iter) {
                     if (*iter == item) {
-                        GMainLoopDispatch([=](){
+                        //GMainLoopDispatch([=](){
                             g_menu_remove(m_gmenu.get(), index);
                             g_menu_insert_item(m_gmenu.get(), index, item->gmenuitem());
-                        });
+                        //});
                     }
                     ++index;
                 }
@@ -88,9 +88,9 @@ public:
             ++index;
             ++iter;
         }
-        GMainLoopDispatch([=](){
+        //GMainLoopDispatch([=](){
             g_menu_insert_item(m_gmenu.get(), index, item->gmenuitem());
-        });
+        //});
         m_items.insert(position, item);
     }
 
@@ -132,9 +132,9 @@ public:
         if (iter == m_items.end())
          return;
 
-        GMainLoopDispatch([=](){
+        //GMainLoopDispatch([=](){
             g_menu_remove(m_gmenu.get(), index);
-        });
+        //});
         m_items.erase(item);
     }
 
@@ -148,9 +148,9 @@ public:
         int index = m_items.size()-1;
         for (auto iter = m_items.rbegin(); iter != m_items.rend(); ++iter) {
             if (*iter == item) {
-                GMainLoopDispatch([=](){
+                //GMainLoopDispatch([=](){
                     g_menu_remove(m_gmenu.get(), index);
-                });
+                //});
             }
             --index;
         }
@@ -201,9 +201,9 @@ public:
     void clear()
     {
         std::lock_guard<std::recursive_mutex> lg(m_mutex);
-        GMainLoopDispatch([=](){
+        //GMainLoopDispatch([=](){
             g_menu_remove_all(m_gmenu.get());
-        });
+        //});
         m_items.clear();
     }
 

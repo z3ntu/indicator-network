@@ -44,15 +44,12 @@ class Service
 {
     IndicatorMenu::Ptr m_desktopMenu;
     IndicatorMenu::Ptr m_desktopGreeterMenu;
-    IndicatorMenu::Ptr m_desktopWifiSettingsMenu;
 
     IndicatorMenu::Ptr m_tabletMenu;
     IndicatorMenu::Ptr m_tabletGreeterMenu;
-    IndicatorMenu::Ptr m_tabletWifiSettingsMenu;
 
     IndicatorMenu::Ptr m_phoneMenu;
     IndicatorMenu::Ptr m_phoneGreeterMenu;
-    IndicatorMenu::Ptr m_phoneWifiSettingsMenu;
 
     IndicatorMenu::Ptr m_ubiquityMenu;
 
@@ -99,15 +96,12 @@ public:
 
         m_desktopMenu = std::make_shared<IndicatorMenu>(m_rootState, "desktop");
         m_desktopGreeterMenu = std::make_shared<IndicatorMenu>(m_rootState, "desktop.greeter");
-        m_desktopWifiSettingsMenu = std::make_shared<IndicatorMenu>(m_rootState, "desktop.wifi.settings");
 
         m_tabletMenu = std::make_shared<IndicatorMenu>(m_rootState, "tablet");
         m_tabletGreeterMenu = std::make_shared<IndicatorMenu>(m_rootState, "tablet.greeter");
-        m_tabletWifiSettingsMenu = std::make_shared<IndicatorMenu>(m_rootState, "tablet.wifi.settings");
 
         m_phoneMenu = std::make_shared<IndicatorMenu>(m_rootState, "phone");
         m_phoneGreeterMenu = std::make_shared<IndicatorMenu>(m_rootState, "phone.greeter");
-        m_phoneWifiSettingsMenu = std::make_shared<IndicatorMenu>(m_rootState, "phone.wifi.settings");
 
         m_ubiquityMenu = std::make_shared<IndicatorMenu>(m_rootState, "ubiquity");
 
@@ -126,15 +120,15 @@ public:
 
         m_desktopMenuExporter.reset(new MenuExporter(m_sessionBus, "/com/canonical/indicator/network/desktop", m_desktopMenu->menu()));
         m_desktopGreeterMenuExporter.reset(new MenuExporter(m_sessionBus, "/com/canonical/indicator/network/desktop_greeter", m_desktopGreeterMenu->menu()));
-        m_desktopWifiSettingsMenuExporter.reset(new MenuExporter(m_sessionBus, "/com/canonical/indicator/network/desktop_wifi_settings", m_desktopWifiSettingsMenu->menu()));
+        m_desktopWifiSettingsMenuExporter.reset(new MenuExporter(m_sessionBus, "/com/canonical/indicator/network/desktop_wifi_settings", m_wifiSection->settingsModel()));
 
         m_tabletpMenuExporter.reset(new MenuExporter(m_sessionBus, "/com/canonical/indicator/network/tablet", m_tabletMenu->menu()));
         m_tabletGreeterMenuExporter.reset(new MenuExporter(m_sessionBus, "/com/canonical/indicator/network/tablet_greeter", m_tabletGreeterMenu->menu()));
-        m_tabletWifiSettingsMenuExporter.reset(new MenuExporter(m_sessionBus, "/com/canonical/indicator/network/tablet_wifi_settings", m_tabletWifiSettingsMenu->menu()));
+        m_tabletWifiSettingsMenuExporter.reset(new MenuExporter(m_sessionBus, "/com/canonical/indicator/network/tablet_wifi_settings", m_wifiSection->settingsModel()));
 
         m_phoneMenuExporter.reset(new MenuExporter(m_sessionBus, "/com/canonical/indicator/network/phone", m_phoneMenu->menu()));
         m_phoneGreeterMenuExporter.reset(new MenuExporter(m_sessionBus, "/com/canonical/indicator/network/phone_greeter", m_phoneGreeterMenu->menu()));
-        m_phoneWifiSettingsMenuExporter.reset(new MenuExporter(m_sessionBus, "/com/canonical/indicator/network/phone_wifi_settings", m_phoneWifiSettingsMenu->menu()));
+        m_phoneWifiSettingsMenuExporter.reset(new MenuExporter(m_sessionBus, "/com/canonical/indicator/network/phone_wifi_settings", m_wifiSection->settingsModel()));
 
         m_ubiquityMenuExporter.reset(new MenuExporter(m_sessionBus, "/com/canonical/indicator/network/ubiquity", m_ubiquityMenu->menu()));
 

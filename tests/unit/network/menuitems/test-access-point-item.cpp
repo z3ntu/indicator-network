@@ -72,8 +72,8 @@ TEST_F(TestAccessPointItem, ExportBasicActionsAndMenu)
     auto menuItem = accessPointItem->menuItem();
 
     EXPECT_EQ("the ssid", menuItem->label());
-    EXPECT_EQ(false, bool_value(menuItem, "x-canonical-wifi-ap-is-adhoc"));
-    EXPECT_EQ(true, bool_value(menuItem, "x-canonical-wifi-ap-is-secure"));
+    EXPECT_FALSE(bool_value(menuItem, "x-canonical-wifi-ap-is-adhoc"));
+    EXPECT_TRUE(bool_value(menuItem, "x-canonical-wifi-ap-is-secure"));
 
     string strengthActionName = string_value(
             menuItem, "x-canonical-wifi-ap-strength-action");

@@ -1,4 +1,6 @@
 
+add_subdirectory(menumodel-cpp)
+
 include_directories(notify-cpp)
 
 set(NOTIFY_CPP_SOURCES
@@ -26,24 +28,11 @@ set(NETWORK_SERVICE_SOURCES
 
     dbus-cpp/services/ofono.h
 
-    gio-helpers/util.h
-    gio-helpers/variant.h
-
     menuitems/access-point-item.h
     menuitems/item.h
     menuitems/section.h
     menuitems/switch-item.h
     menuitems/text-item.h
-
-    menumodel-cpp/action.h
-    menumodel-cpp/action-group.h
-    menumodel-cpp/action-group-exporter.h
-    menumodel-cpp/action-group-merger.h
-    menumodel-cpp/menu.h
-    menumodel-cpp/menu-exporter.h
-    menumodel-cpp/menu-item.h
-    menumodel-cpp/menu-merger.h
-    menumodel-cpp/menu-model.h
 
     ${NOTIFY_CPP_SOURCES}
 
@@ -62,6 +51,7 @@ add_executable(
 )
 target_link_libraries(
     indicator-network-service
+    menumodel_cpp
     ${CONNECTIVITY_CPP_LDFLAGS}
     ${GLIB_LIBRARIES}
     ${GIO_LIBRARIES}

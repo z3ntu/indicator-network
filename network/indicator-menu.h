@@ -20,7 +20,6 @@
 #ifndef INDICATOR_MENU_H
 #define INDICATOR_MENU_H
 
-#include "gio-helpers/util.h"
 #include "menuitems/section.h"
 #include "menumodel-cpp/menu-merger.h"
 #include "menumodel-cpp/action-group-merger.h"

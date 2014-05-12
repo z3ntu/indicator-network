@@ -19,6 +19,7 @@ qt5_use_modules(
 target_link_libraries(
     menumodel-cpp-unit-tests
     test-utils
+    menumodel_cpp
     ${QTDBUSMOCK_LDFLAGS}
     ${QTDBUSTEST_LDFLAGS}
     ${QMENUMODEL_LDFLAGS}

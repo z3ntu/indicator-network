@@ -22,26 +22,26 @@
 
 class MenuExporter
 {
-    Menu::Ptr m_menu;
+    MenuModel::Ptr m_menuModel;
     gint m_exportId;
     std::shared_ptr<SessionBus> m_sessionBus;
 public:
 
     typedef std::shared_ptr<MenuExporter> Ptr;
 
-    MenuExporter(SessionBus::Ptr sessionBus, const std::string &path, Menu::Ptr menu)
-        : m_menu {menu},
+    MenuExporter(SessionBus::Ptr sessionBus, const std::string &path, MenuModel::Ptr menuModel)
+        : m_menuModel {menuModel},
           m_exportId {0},
           m_sessionBus(sessionBus)
     {
         assert(sessionBus);
         assert(!path.empty());
-        assert(menu);
+        assert(menuModel);
 
         GError *error = NULL;
         m_exportId = g_dbus_connection_export_menu_model(m_sessionBus->bus().get(),
                                                          path.c_str(),
-                                                         *menu,
+                                                         *menuModel,
                                                          &error);
         if (error) {
             if (error->domain != G_IO_ERROR || error->code != G_IO_ERROR_CANCELLED) {

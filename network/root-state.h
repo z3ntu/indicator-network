@@ -23,7 +23,7 @@
 #include <connectivity/networking/manager.h>
 #include "modem-manager.h"
 
-#include "gio-helpers/variant.h"
+#include "menumodel-cpp/gio-helpers/variant.h"
 
 class RootState
 {

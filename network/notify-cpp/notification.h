@@ -24,7 +24,7 @@
 
 #include <core/property.h>
 
-#include "gio-helpers/variant.h"
+#include "menumodel-cpp/gio-helpers/variant.h"
 
 namespace notify {
 

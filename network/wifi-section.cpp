@@ -30,6 +30,7 @@ public:
 
     ActionGroupMerger::Ptr m_actionGroupMerger;
     Menu::Ptr m_menu;
+    Menu::Ptr m_settingsMenu;
 
     WifiLinkItem::Ptr m_wifiLink;
     TextItem::Ptr m_openWifiSettings;
@@ -40,6 +41,8 @@ public:
     {
         m_actionGroupMerger = std::make_shared<ActionGroupMerger>();
         m_menu = std::make_shared<Menu>();
+        m_settingsMenu = std::make_shared<Menu>();
+
 
         for (auto link : m_manager->links().get()) {
             auto wifi_link = std::dynamic_pointer_cast<networking::wifi::Link>(link);
@@ -47,6 +50,7 @@ public:
 
             m_actionGroupMerger->add(*m_wifiLink);
             m_menu->append(*m_wifiLink);
+            m_settingsMenu->append(*m_wifiLink);
 
             // just take the first one now.
             /// @todo multiple links and links()->changed()
@@ -88,4 +92,10 @@ MenuModel::Ptr
 WifiSection::menuModel()
 {
     return d->m_menu;
+}
+
+MenuModel::Ptr
+WifiSection::settingsModel()
+{
+    return d->m_settingsMenu;
 }

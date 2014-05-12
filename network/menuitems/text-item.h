@@ -22,7 +22,6 @@
 
 #include "item.h"
 
-#include "gio-helpers/util.h"
 #include "menumodel-cpp/menu-item.h"
 #include "menumodel-cpp/action.h"
 

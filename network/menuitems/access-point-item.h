@@ -73,8 +73,7 @@ public:
                                                     nullptr,
                                                     TypedVariant<bool>(m_isActive),
                                                     [this](Variant){
-                ///@ todo something weird is happening as the indicator side is not changing the state..
-                //value = !value;
+                ///@ todo something weird is happening as the unity8 side is not changing the state..
         });
         m_actionActivate->activated().connect([this](Variant){
             m_activated();

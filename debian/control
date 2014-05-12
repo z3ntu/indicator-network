@@ -53,6 +53,7 @@ Architecture: all
 Depends: ${misc:Depends},
          indicator-network (>= ${source:Version}),
          libautopilot-qt (>= 1.4),
+         ofono-phonesim-autostart,
          unity8-autopilot,
          python-dbus,
          python-pkg-resources,	 

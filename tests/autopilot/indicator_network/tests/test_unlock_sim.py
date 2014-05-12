@@ -70,7 +70,7 @@ class UnlockSimTestCase(UnityTestCase):
             phonesim_datadir = sysconfig.get_config_var('datarootdir') + '/indicator-network/phonesim'
 
         sims = [('sim1',
-                 12345,
+                 23456,
                  phonesim_datadir + '/pin-unlock.xml'),]
         self.phonesim_manager = PhonesimManager(sims)
         self.phonesim_manager.start_phonesim_processes()

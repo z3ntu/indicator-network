@@ -82,11 +82,9 @@ Action::Action(const std::string &name, const
 Action::~Action()
 {
     std::lock_guard<std::recursive_mutex> lg(m_mutex);
-    GMainLoopDispatch([=](){
-        g_signal_handler_disconnect(m_gaction.get(), m_activateHandlerId);
-        if (m_changeStateHandlerId)
-            g_signal_handler_disconnect(m_gaction.get(), m_changeStateHandlerId);
-    });
+    g_signal_handler_disconnect(m_gaction.get(), m_activateHandlerId);
+    if (m_changeStateHandlerId)
+        g_signal_handler_disconnect(m_gaction.get(), m_changeStateHandlerId);
 }
 
 std::string

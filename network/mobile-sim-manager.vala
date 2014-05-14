@@ -19,7 +19,6 @@
  */
 
 using NM;
-using Notify;
 
 namespace Network
 {
@@ -52,12 +51,12 @@ namespace Network
     private const string OFONO_ERROR_FAILED = "org.ofono.Error.Failed";
 
     struct CurrentNotification {
-      public int                id;
-      public Notification?      notification;
-      public uint               unlock_menu_export_id;
-      public uint               unlock_actions_export_id;
-      public Menu?              unlock_menu;
-      public SimpleActionGroup? unlock_actions;
+      public int                  id;
+      public Notify.Notification? notification;
+      public uint                 unlock_menu_export_id;
+      public uint                 unlock_actions_export_id;
+      public Menu?                unlock_menu;
+      public SimpleActionGroup?   unlock_actions;
 
       public CurrentNotification() {
         this.id = 0;
@@ -198,7 +197,7 @@ namespace Network
       }
 
       // create and show the notification
-      var notification = new Notification(title, body, "");
+      var notification = new Notify.Notification(title, body, "");
       notification.set_hint_string ("x-canonical-snap-decisions", "true");
       notification.set_hint ("x-canonical-private-menu-model", menu_model_paths.end ());
 
@@ -227,7 +226,7 @@ namespace Network
     private void send_fail_notification (string title)
     {
       try {
-        var notification = new Notification(title, "", "");
+        var notification = new Notify.Notification(title, "", "");
         notification.closed.connect (notification_closed);
         notification.show ();
       } catch (Error e) {
@@ -516,7 +515,7 @@ namespace Network
       }
     }
 
-    private void notification_closed (Notification? notification)
+    private void notification_closed (Notify.Notification? notification)
     {
       unowned List<CurrentNotification?>? element = notifications.first ();
       while (element != null) {

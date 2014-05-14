@@ -7,13 +7,6 @@ include /usr/share/dpkg/default.mk
 
 export DPKG_GENSYMBOLS_CHECK_LEVEL = 4
 
-ifneq (ppc64el,$(DEB_HOST_ARCH))
-	export GCC_VERSION := -4.7
-endif
-
-export CC=$(DEB_HOST_GNU_TYPE)-gcc$(GCC_VERSION)
-export CXX=$(DEB_HOST_GNU_TYPE)-g++$(GCC_VERSION)
-
 %:
 	dh $@ --parallel --fail-missing --with python3
 

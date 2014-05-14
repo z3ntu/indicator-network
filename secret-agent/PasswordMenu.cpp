@@ -38,6 +38,7 @@ public:
 
 	static void passwordChangedCallback(GAction *passwordAction,
 			GVariant *variant, gpointer userData) {
+		Q_UNUSED(passwordAction);
 		PasswordMenuPriv *self(reinterpret_cast<PasswordMenuPriv*>(userData));
 		self->passwordChanged(variant);
 	}

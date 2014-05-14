@@ -1,0 +1,8 @@
+
+Running from a source tree:
+$ export INDICATOR_NETWORK_PHONESIM_DATA=`pwd`/../data/phonesim/
+$ autopilot3 run indicator_network
+
+Running tests under unity7:
+indicator-network has to be started manually under unity7 before running the tests:
+$ initctl start indicator-network

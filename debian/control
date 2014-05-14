@@ -7,6 +7,8 @@ Build-Depends: cmake,
                dbus,
                debhelper (>= 9.0.0),
                google-mock (>= 1.6.0+svn437),
+               libconnectivity-cpp-dev (>=0.0.1+14.10.20140514),
+               libdbus-cpp-dev (>= 3.0.0),
                libglib2.0-dev,
                libnm-glib-dev (>= 0.9),
                libnm-util-dev (>= 0.9),
@@ -16,10 +18,11 @@ Build-Depends: cmake,
                libqtdbustest1-dev,
                liburl-dispatcher1-dev,
                network-manager-dev,
+               ofono-dev,
                pkg-config,
                python3-dbusmock,
+               python3-setuptools,
                qtbase5-dev,
-               valac (>= 0.22),
                valgrind [amd64 armhf i386 powerpc],
 Standards-Version: 3.9.3
 # If you aren't a member of ~indicator-applet-developers but need to upload
@@ -42,3 +45,16 @@ Conflicts: chewie,
 Description: Systems settings menu service - Network indicator
  The Indicator-network service is responsible for exporting the system settings
  menu through dbus.
+
+Package: indicator-network-autopilot
+Architecture: all
+Depends: ${misc:Depends},
+         indicator-network (>= ${source:Version}),
+         libautopilot-qt (>= 1.4),
+         ofono-phonesim-autostart,
+         unity8-autopilot,
+         python-dbus,
+         python-pkg-resources,	 
+Description: Autopilot tests for the network indicator for Ubuntu
+ The Indicator-network service is responsible for exporting the system settings
+ menu through dbus.  This package contains its autopilot tests.

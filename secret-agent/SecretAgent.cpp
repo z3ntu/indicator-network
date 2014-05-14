@@ -134,15 +134,21 @@ void SecretAgent::FinishGetSecrets(SecretRequest &request, bool error) {
 
 void SecretAgent::CancelGetSecrets(const QDBusObjectPath &connectionPath,
 		const QString &settingName) {
+	Q_UNUSED(connectionPath);
+	Q_UNUSED(settingName);
 	m_request.reset();
 }
 
 void SecretAgent::DeleteSecrets(const QVariantDictMap &connection,
 		const QDBusObjectPath &connectionPath) {
+	Q_UNUSED(connection);
+	Q_UNUSED(connectionPath);
 }
 
 void SecretAgent::SaveSecrets(const QVariantDictMap &connection,
 		const QDBusObjectPath &connectionPath) {
+	Q_UNUSED(connection);
+	Q_UNUSED(connectionPath);
 }
 
 org::freedesktop::Notifications & SecretAgent::notifications() {

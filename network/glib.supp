@@ -1,0 +1,141 @@
+{
+   default GMainContext allocation
+   Memcheck:Leak
+   ...
+   fun:g_main_context_new
+   fun:g_main_context_default
+   ...
+}
+
+{
+   g_main_context_default() mutex
+   Memcheck:Leak
+   ...
+   fun:g_mutex_lock
+   fun:g_main_context_default
+   ...
+}
+
+{
+   g_main_loop_run() thread
+   Memcheck:Leak
+   ...
+   fun:g_thread_self
+   fun:g_main_loop_run
+   ...
+}
+
+{
+   g_main_context_iterate() g_malloc()
+   Memcheck:Leak
+   ...
+   fun:g_malloc
+   fun:g_main_context_iterate.isra.23
+   fun:g_main_loop_run
+   ...
+}
+
+{
+   g_main_context_iterate() g_main_context_check()
+   Memcheck:Leak
+   ...
+   fun:g_main_context_check
+   fun:g_main_context_iterate.isra.23
+   ...
+}
+
+{
+   gobject_init_ctor()
+   Memcheck:Leak
+   ...
+   fun:gobject_init_ctor
+   ...
+}
+
+{
+   g_type_register_static()
+   Memcheck:Leak
+   ...
+   fun:g_type_register_static
+   ...
+}
+
+{
+   g_bus_get()
+   Memcheck:Leak
+   ...
+   fun:g_bus_get
+   ...
+}
+
+{
+   clone() start_thread() g_thread_proxy()
+   Memcheck:Leak
+   ...
+   fun:g_thread_proxy
+   fun:start_thread
+   fun:clone
+}
+
+
+
+{
+   g_main_context_push_thread_default()
+   Memcheck:Leak
+   ...
+   fun:g_main_context_push_thread_default
+   ...
+}
+
+{
+   g_type_class_ref()
+   Memcheck:Leak
+   ...
+   fun:g_type_class_ref
+   ...
+}
+
+{
+   g_bus_own_name_on_connection() g_hash_table_new_full()
+   Memcheck:Leak
+   ...
+   fun:g_hash_table_new_full
+   fun:g_bus_own_name_on_connection
+   ...
+}
+
+{
+   g_bus_own_name_on_connection() g_hash_table_insert_internal()
+   Memcheck:Leak
+   ...
+   fun:g_hash_table_insert_internal
+   fun:g_bus_own_name_on_connection
+   ...
+}
+
+{
+   g_bus_own_name_on_connection() g_mutex_lock()
+   Memcheck:Leak
+   ...
+   fun:g_mutex_lock
+   fun:g_bus_own_name_on_connection
+   ...
+}
+
+{
+   g_dbus_connection_export_menu_model()
+   Memcheck:Leak
+   ...
+   fun:g_dbus_node_info_new_for_xml
+   fun:g_dbus_connection_export_menu_model
+   ...
+}
+
+{
+   g_dbus_connection_export_menu_model() 2
+   Memcheck:Leak
+   ...
+   fun:g_dbus_connection_register_object
+   fun:g_dbus_connection_export_menu_model
+   ...
+}

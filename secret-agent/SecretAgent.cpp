@@ -54,12 +54,27 @@ SecretAgent::SecretAgent(const QDBusConnection &systemConnection,
 				_("Unable to register user secret agent object on DBus"));
 	}
 
+	// Watch for NM restarting (or starting after we do)
+	connect(systemConnection.interface(),
+	        SIGNAL(serviceOwnerChanged(QString, QString, QString)),
+	        this, SLOT(serviceOwnerChanged(QString, QString, QString)));
+
 	m_agentManager.Register("com.canonical.indicator.SecretAgent").waitForFinished();
 }
 
 SecretAgent::~SecretAgent() {
 	m_agentManager.Unregister().waitForFinished();
 	m_systemConnection.unregisterObject(NM_DBUS_PATH_SECRET_AGENT);
+}
+
+void SecretAgent::serviceOwnerChanged(const QString &name,
+		const QString &oldOwner, const QString &newOwner) {
+	Q_UNUSED(oldOwner)
+	if (name == NM_DBUS_SERVICE) {
+		if (!newOwner.isEmpty()) {
+			m_agentManager.Register("com.canonical.indicator.SecretAgent").waitForFinished();
+		}
+	}
 }
 
 /**

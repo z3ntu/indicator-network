@@ -197,7 +197,7 @@ RootState::Private::updateModem(Modem::WeakPtr weakModem)
             m_modemTechIcon = "network-cellular-edge";
             break;
         case org::ofono::Interface::NetworkRegistration::Technology::umts:
-            m_modemTechIcon = "network-cellular-umts";
+            m_modemTechIcon = "network-cellular-3g";
             break;
         case org::ofono::Interface::NetworkRegistration::Technology::hspa:
             m_modemTechIcon = "network-cellular-hspa";

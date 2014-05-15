@@ -45,18 +45,18 @@ const QString SecretAgent::KEY_MGMT_NONE("none");
 SecretAgent::SecretAgent(const QDBusConnection &systemConnection,
 		const QDBusConnection &sessionConnection, QObject *parent) :
 		QObject(parent), m_adaptor(new SecretAgentAdaptor(this)), m_systemConnection(
-				systemConnection), m_sessionConnection(sessionConnection), m_agentManager(
-		NM_DBUS_SERVICE, NM_DBUS_PATH_AGENT_MANAGER, m_systemConnection), m_notifications(
-				"org.freedesktop.Notifications",
-				"/org/freedesktop/Notifications", m_sessionConnection), m_request(nullptr) {
+				systemConnection), m_sessionConnection(sessionConnection), m_managerWatcher(
+				NM_DBUS_SERVICE, m_systemConnection), m_agentManager(NM_DBUS_SERVICE,
+				NM_DBUS_PATH_AGENT_MANAGER, m_systemConnection), m_notifications(
+				"org.freedesktop.Notifications", "/org/freedesktop/Notifications",
+				m_sessionConnection), m_request(nullptr) {
 	if (!m_systemConnection.registerObject(NM_DBUS_PATH_SECRET_AGENT, this)) {
 		throw logic_error(
 				_("Unable to register user secret agent object on DBus"));
 	}
 
 	// Watch for NM restarting (or starting after we do)
-	connect(systemConnection.interface(),
-	        SIGNAL(serviceOwnerChanged(QString, QString, QString)),
+	connect(&m_managerWatcher, SIGNAL(serviceOwnerChanged(QString, QString, QString)),
 	        this, SLOT(serviceOwnerChanged(QString, QString, QString)));
 
 	m_agentManager.Register("com.canonical.indicator.SecretAgent").waitForFinished();
@@ -69,11 +69,10 @@ SecretAgent::~SecretAgent() {
 
 void SecretAgent::serviceOwnerChanged(const QString &name,
 		const QString &oldOwner, const QString &newOwner) {
+	Q_UNUSED(name)
 	Q_UNUSED(oldOwner)
-	if (name == NM_DBUS_SERVICE) {
-		if (!newOwner.isEmpty()) {
-			m_agentManager.Register("com.canonical.indicator.SecretAgent").waitForFinished();
-		}
+	if (!newOwner.isEmpty()) {
+		m_agentManager.Register("com.canonical.indicator.SecretAgent").waitForFinished();
 	}
 }
 

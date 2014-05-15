@@ -85,6 +85,8 @@ protected:
 
 	QDBusConnection m_sessionConnection;
 
+	QDBusServiceWatcher m_managerWatcher;
+
 	org::freedesktop::NetworkManager::AgentManager m_agentManager;
 
 	org::freedesktop::Notifications m_notifications;

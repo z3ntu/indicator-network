@@ -76,9 +76,6 @@ WwanSection::Private::Private(ModemManager::Ptr modemManager)
     m_topMenu = std::make_shared<Menu>();
     m_topMenu->append(m_topItem);
 
-    m_modemManager->modems().changed().connect(std::bind(&Private::modemsChanged, this, std::placeholders::_1));
-    modemsChanged(m_modemManager->modems());
-
     m_openCellularSettings = std::make_shared<TextItem>(_("Cellular settings…"), "cellular", "settings");
     m_openCellularSettings->activated().connect([](){
         UrlDispatcher::send("settings:///system/cellular", [](std::string url, bool success){
@@ -86,9 +83,10 @@ WwanSection::Private::Private(ModemManager::Ptr modemManager)
                 std::cerr << "URL Dispatcher failed on " << url << std::endl;
         });
     });
-
-    m_bottomMenu->append(*m_openCellularSettings);
     m_actionGroupMerger->add(*m_openCellularSettings);
+
+    m_modemManager->modems().changed().connect(std::bind(&Private::modemsChanged, this, std::placeholders::_1));
+    modemsChanged(m_modemManager->modems());
 }
 
 void
@@ -123,6 +121,13 @@ WwanSection::Private::modemsChanged(const std::set<Modem::Ptr> &modems)
         m_linkMenuMerger->append(*item);
         m_actionGroupMerger->add(*item);
         m_items.push_back(std::make_pair(modem, item));
+    }
+
+    if (modems.size() == 0) {
+        m_bottomMenu->clear();
+    } else {
+        if (m_bottomMenu->find(*m_openCellularSettings) == m_bottomMenu->end())
+            m_bottomMenu->append(*m_openCellularSettings);
     }
 }
 

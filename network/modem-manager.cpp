@@ -56,16 +56,6 @@ public:
 
         m_dbus.reset(new core::dbus::DBus(m_bus));
 
-        auto names = m_dbus->list_names();
-        if (std::find(names.begin(), names.end(), org::ofono::Service::name()) != names.end()) {
-            ofono_appeared();
-        } else {
-            ofono_disappeared();
-        }
-        m_watcher = m_dbus->make_service_watcher(org::ofono::Service::name());
-        m_watcher->service_registered().connect([this]()  { ofono_appeared();    });
-        m_watcher->service_unregistered().connect([this](){ ofono_disappeared(); });
-
         m_unlockDialog = std::make_shared<SimUnlockDialog>();
         m_unlockDialog->state().changed().connect([this](SimUnlockDialog::State state){
             switch (state) {
@@ -82,6 +72,16 @@ public:
                 break;
             }
         });
+
+        auto names = m_dbus->list_names();
+        if (std::find(names.begin(), names.end(), org::ofono::Service::name()) != names.end()) {
+            ofono_appeared();
+        } else {
+            ofono_disappeared();
+        }
+        m_watcher = m_dbus->make_service_watcher(org::ofono::Service::name());
+        m_watcher->service_registered().connect([this]()  { ofono_appeared();    });
+        m_watcher->service_unregistered().connect([this](){ ofono_disappeared(); });
     }
 
     ~Private()

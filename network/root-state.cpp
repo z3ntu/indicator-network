@@ -62,7 +62,8 @@ public:
 
 RootState::Private::Private(std::shared_ptr<networking::Manager> manager, ModemManager::Ptr modemManager)
     : m_manager{manager},
-      m_modemManager{modemManager}
+      m_modemManager{modemManager},
+      m_roaming{false}
 {    
     m_manager->flightMode().changed().connect(std::bind(&Private::flightModeChanged, this, std::placeholders::_1));
     flightModeChanged(m_manager->flightMode().get());

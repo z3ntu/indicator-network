@@ -1,3 +1,10 @@
+indicator-network (0.5.1+14.10.20140516.2-0ubuntu1) utopic; urgency=low
+
+  [ Antti Kaijanmäki ]
+  * Fix crash when ofono is not running. (LP: #1320220)
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Fri, 16 May 2014 16:07:02 +0000
+
 indicator-network (0.5.1+14.10.20140515-0ubuntu1) utopic; urgency=low
 
   [ Antti Kaijanmäki ]

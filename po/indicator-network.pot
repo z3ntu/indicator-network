@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-05-21 20:11+0300\n"
+"POT-Creation-Date: 2014-05-21 20:53+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -37,17 +37,8 @@ msgstr ""
 msgid "No Signal"
 msgstr ""
 
-#: network/root-state.cpp:249
-#, c-format
-msgid "Network (wireless, %d%%, secure)"
-msgstr ""
-
-#: network/root-state.cpp:251
-#, c-format
-msgid "Network (wireless, %d%%)"
-msgstr ""
-
-#: network/root-state.cpp:338
+#. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
+#: network/root-state.cpp:337
 msgid "Network"
 msgstr ""
 
@@ -140,37 +131,12 @@ msgstr ""
 msgid "Auto-join previous networks"
 msgstr ""
 
-#: network/wired-link.h:2
-msgid "Wired"
-msgstr ""
-
-#: network/wired-link.h:31
-msgid "Network (wired)"
-msgstr ""
-
-#: network/wwan-link-item.cpp:55 network/wwan-link-item.cpp:927
+#: network/wwan-link-item.cpp:55
 msgid "Unlock SIM…"
 msgstr ""
 
-#: network/wwan-link-item.cpp:885 network/wwan-section.cpp:79
+#: network/wwan-section.cpp:79
 msgid "Cellular settings…"
-msgstr ""
-
-#: network/wwan-link-item.cpp:900
-msgid "Cellular"
-msgstr ""
-
-#: network/wwan-link-item.cpp:1013
-#, c-format
-msgid "Network (cellular, %s)"
-msgstr ""
-
-#: network/wwan-link-item.cpp:1016
-msgid "Network (cellular)"
-msgstr ""
-
-#: secret-agent/SecretAgent.cpp:54
-msgid "Unable to register user secret agent object on DBus"
 msgstr ""
 
 #: secret-agent/SecretRequest.cpp:60

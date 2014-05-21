@@ -81,8 +81,8 @@ public:
 
     void showLastPinAttemptPopup(std::function<void()> closed = std::function<void()>())
     {
-        m_sd->showPopup(_("This will be the last attempt.\n"
-                          "\n"
+        m_sd->showPopup(_("This will be the last attempt.<br>"
+                          "<br>"
                           "If the SIM PIN is entered incorrectly, your SIM "
                           "will be blocked and would require the PUK Code to unlock."),
                         closed);
@@ -90,28 +90,28 @@ public:
 
     void showPinBlockedPopup(std::function<void()> closed = std::function<void()>())
     {
-        m_sd->showPopup(_("Your SIM is now blocked.\n"
-                          "\n"
-                          "Enter the PUK Code to unlock.\n"
-                          "\n"
+        m_sd->showPopup(_("Your SIM is now blocked.<br>"
+                          "<br>"
+                          "Enter the PUK Code to unlock.<br>"
+                          "<br>"
                           "You may contact your network provider for PUK Code."),
                         closed);
     }
 
     void showLastPukAttemptPopup(std::function<void()> closed = std::function<void()>())
     {
-        m_sd->showPopup(_("This will be the last attempt.\n"
-                          "\n"
-                          "If the PUK code entered incorrectly, your SIM will need to be replaced.\n"
-                          "\n"
-                          "\nPlease contact your network provider."),
+        m_sd->showPopup(_("This will be the last attempt.<br>"
+                          "<br>"
+                          "If the PUK code is entered incorrectly, your SIM will need to be replaced.<br>"
+                          "<br>"
+                          "Please contact your network provider."),
                         closed);
     }
 
     void showSimPermanentlyBlockedPopup(std::function<void()> closed = std::function<void()>())
     {
-        m_sd->showPopup(_("Your SIM is now permanently blocked and needs to be replaced.\n"
-                          "\n"
+        m_sd->showPopup(_("Your SIM is now permanently blocked and needs to be replaced.<br>"
+                          "<br>"
                           "Please contact your network provider."),
                         closed);
     }

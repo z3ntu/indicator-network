@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-05-21 23:16+0300\n"
+"POT-Creation-Date: 2014-05-22 11:31+0300\n"
 "PO-Revision-Date: 2014-01-22 13:00+0000\n"
 "Last-Translator: Jiri Grönroos <Unknown>\n"
 "Language-Team: Finnish <fi@li.org>\n"
@@ -43,67 +43,71 @@ msgstr "Ei signaalia"
 msgid "Network"
 msgstr "Verkko"
 
-#: network/sim-unlock-dialog.cpp:84
+#. TRANSLATORS: this string is not currently being shown on the screen. Please do not translate yet.
+#: network/sim-unlock-dialog.cpp:85
 msgid ""
 "This will be the last attempt.<br><br>If the SIM PIN is entered incorrectly, "
 "your SIM will be blocked and would require the PUK Code to unlock."
 msgstr ""
 
-#: network/sim-unlock-dialog.cpp:93
+#. TRANSLATORS: this string is not currently being shown on the screen. Please do not translate yet.
+#: network/sim-unlock-dialog.cpp:95
 msgid ""
 "Your SIM is now blocked.<br><br>Enter the PUK Code to unlock.<br><br>You may "
 "contact your network provider for PUK Code."
 msgstr ""
 
-#: network/sim-unlock-dialog.cpp:103
+#. TRANSLATORS: this string is not currently being shown on the screen. Please do not translate yet.
+#: network/sim-unlock-dialog.cpp:106
 msgid ""
 "This will be the last attempt.<br><br>If the PUK code is entered "
 "incorrectly, your SIM will need to be replaced.<br><br>Please contact your "
 "network provider."
 msgstr ""
 
-#: network/sim-unlock-dialog.cpp:113
+#. TRANSLATORS: this string is not currently being shown on the screen. Please do not translate yet.
+#: network/sim-unlock-dialog.cpp:117
 msgid ""
 "Your SIM is now permanently blocked and needs to be replaced.<br><br>Please "
 "contact your network provider."
 msgstr ""
 
-#: network/sim-unlock-dialog.cpp:179 network/sim-unlock-dialog.cpp:410
-#: network/sim-unlock-dialog.cpp:438
+#: network/sim-unlock-dialog.cpp:183 network/sim-unlock-dialog.cpp:414
+#: network/sim-unlock-dialog.cpp:442
 msgid "Enter SIM PIN"
 msgstr ""
 
-#: network/sim-unlock-dialog.cpp:183
+#: network/sim-unlock-dialog.cpp:187
 msgid "Enter PUK code"
 msgstr ""
 
-#: network/sim-unlock-dialog.cpp:191
+#: network/sim-unlock-dialog.cpp:195
 #, c-format
 msgid "Attempt %d of %d"
 msgstr ""
 
-#: network/sim-unlock-dialog.cpp:206 network/sim-unlock-dialog.cpp:421
-#: network/sim-unlock-dialog.cpp:431
+#: network/sim-unlock-dialog.cpp:210 network/sim-unlock-dialog.cpp:425
+#: network/sim-unlock-dialog.cpp:435
 msgid "Enter new PIN code"
 msgstr ""
 
-#: network/sim-unlock-dialog.cpp:209 network/sim-unlock-dialog.cpp:425
+#: network/sim-unlock-dialog.cpp:213 network/sim-unlock-dialog.cpp:429
 msgid "Confirm new PIN code"
 msgstr ""
 
-#: network/sim-unlock-dialog.cpp:232
+#: network/sim-unlock-dialog.cpp:236
 msgid "Oops!<br>Incorrect PIN entered."
 msgstr ""
 
-#: network/sim-unlock-dialog.cpp:250 network/sim-unlock-dialog.cpp:430
+#: network/sim-unlock-dialog.cpp:254 network/sim-unlock-dialog.cpp:434
 msgid "PIN codes did not match."
 msgstr ""
 
-#: network/sim-unlock-dialog.cpp:255
+#: network/sim-unlock-dialog.cpp:259
 msgid "Oops!<br>Incorrect PUK entered."
 msgstr ""
 
-#: network/sim-unlock-dialog.cpp:437
+#: network/sim-unlock-dialog.cpp:441
 msgid "Failed to change PIN."
 msgstr ""
 
@@ -118,10 +122,6 @@ msgstr ""
 #: network/wifi-section.cpp:60
 msgid "Wi-Fi settings…"
 msgstr "Wifi-asetukset…"
-
-#: network/wifi-settings.h:16
-msgid "Auto-join previous networks"
-msgstr "Liity automaattisesti tunnettuihin verkkoihin"
 
 #: network/wwan-link-item.cpp:55
 msgid "Unlock SIM…"
@@ -151,6 +151,9 @@ msgstr ""
 #: secret-agent/SecretRequest.cpp:74
 msgid "Cancel"
 msgstr ""
+
+#~ msgid "Auto-join previous networks"
+#~ msgstr "Liity automaattisesti tunnettuihin verkkoihin"
 
 #~ msgid "Wired"
 #~ msgstr "Kiinteä"

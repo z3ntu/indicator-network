@@ -1,25 +1,26 @@
-# Initial .po for Finnish, created manually.
-# Copyright (C) YEAR Canonical Ltd.
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Finnish translation for indicator-network
+# Copyright (c) 2014 Rosetta Contributors and Canonical Ltd 2014
+# This file is distributed under the same license as the indicator-network package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2014.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-05-21 23:16+0300\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"PO-Revision-Date: 2014-01-22 13:00+0000\n"
+"Last-Translator: Jiri Grönroos <Unknown>\n"
+"Language-Team: Finnish <fi@li.org>\n"
+"Language: fi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2014-05-21 21:32+0000\n"
+"X-Generator: Launchpad (build 17017)\n"
 
 #: network/quick-access-section.cpp:50
 msgid "Flight Mode"
-msgstr "Lentokonetila"
+msgstr "Lentotila"
 
 #: network/root-state.cpp:145
 msgid "No SIM"
@@ -31,7 +32,7 @@ msgstr "SIM-virhe"
 
 #: network/root-state.cpp:153
 msgid "SIM Locked"
-msgstr "SIM lukittu"
+msgstr ""
 
 #: network/root-state.cpp:163
 msgid "No Signal"
@@ -70,83 +71,107 @@ msgstr ""
 #: network/sim-unlock-dialog.cpp:179 network/sim-unlock-dialog.cpp:410
 #: network/sim-unlock-dialog.cpp:438
 msgid "Enter SIM PIN"
-msgstr "Syötä SIM PIN"
+msgstr ""
 
 #: network/sim-unlock-dialog.cpp:183
 msgid "Enter PUK code"
-msgstr "Syötä PUK-koodi"
+msgstr ""
 
 #: network/sim-unlock-dialog.cpp:191
 #, c-format
 msgid "Attempt %d of %d"
-msgstr "Yritys %d / %d"
+msgstr ""
 
 #: network/sim-unlock-dialog.cpp:206 network/sim-unlock-dialog.cpp:421
 #: network/sim-unlock-dialog.cpp:431
 msgid "Enter new PIN code"
-msgstr "Syötä uusi PIN-koodi"
+msgstr ""
 
 #: network/sim-unlock-dialog.cpp:209 network/sim-unlock-dialog.cpp:425
 msgid "Confirm new PIN code"
-msgstr "Varmista uusi PIN-koodi"
+msgstr ""
 
 #: network/sim-unlock-dialog.cpp:232
 msgid "Oops!<br>Incorrect PIN entered."
-msgstr "Hups!<br>Väärä PIN-koodi syötetty."
+msgstr ""
 
 #: network/sim-unlock-dialog.cpp:250 network/sim-unlock-dialog.cpp:430
 msgid "PIN codes did not match."
-msgstr "PIN-koodit eivät täsmänneet."
+msgstr ""
 
 #: network/sim-unlock-dialog.cpp:255
 msgid "Oops!<br>Incorrect PUK entered."
-msgstr "Hups!<br>Väärä PUK-koodi syötetty."
+msgstr ""
 
 #: network/sim-unlock-dialog.cpp:437
 msgid "Failed to change PIN."
-msgstr "PIN-koodin vaihto epäonnistui."
+msgstr ""
 
 #: network/wifi-link-item.h:87
 msgid "Wi-Fi"
-msgstr "Wi-Fi"
+msgstr "Wifi"
 
 #: network/wifi-link-item.h:151
 msgid "Other network…"
-msgstr "Muu verkko…"
+msgstr ""
 
 #: network/wifi-section.cpp:60
 msgid "Wi-Fi settings…"
-msgstr "Wi-Fi asetukset…"
+msgstr "Wifi-asetukset…"
 
 #: network/wifi-settings.h:16
 msgid "Auto-join previous networks"
-msgstr ""
+msgstr "Liity automaattisesti tunnettuihin verkkoihin"
 
 #: network/wwan-link-item.cpp:55
 msgid "Unlock SIM…"
-msgstr "Avaa SIM…"
+msgstr "Avaa SIM-lukitus…"
 
 #: network/wwan-section.cpp:79
 msgid "Cellular settings…"
-msgstr "Matkapuhelinverkon asetukset…"
+msgstr "Mobiiliverkon asetukset…"
 
 #: secret-agent/SecretRequest.cpp:60
 #, qt-format
 msgid "Connect to “%1”"
-msgstr "yhdistä verkkoon “%1”"
+msgstr ""
 
 #: secret-agent/SecretRequest.cpp:65
 msgid "WPA"
-msgstr "WPA"
+msgstr ""
 
 #: secret-agent/SecretRequest.cpp:67
 msgid "WEP"
-msgstr "WEP"
+msgstr ""
 
 #: secret-agent/SecretRequest.cpp:73
 msgid "Connect"
-msgstr "Yhdistä"
+msgstr ""
 
 #: secret-agent/SecretRequest.cpp:74
 msgid "Cancel"
-msgstr "Peruuta"
+msgstr ""
+
+#~ msgid "Wired"
+#~ msgstr "Kiinteä"
+
+#~ msgid "Network (wireless, %d%%, secure)"
+#~ msgstr "Verkko (langaton, %d%%, salattu)"
+
+#~ msgid "Network (wireless, %d%%)"
+#~ msgstr "Verkko (langaton, %d%%)"
+
+#~ msgid "Network (wired)"
+#~ msgstr "Verkko (kiinteä)"
+
+#~ msgid "Network (cellular, %s)"
+#~ msgstr "Verkko (mobiili, %s)"
+
+#~ msgid "Network (cellular)"
+#~ msgstr "Verkko (mobiili)"
+
+#~ msgid "Network (none)"
+#~ msgstr "Verkko (ei mitään)"
+
+#~ msgid "Cellular"
+#~ msgstr "Mobiili"

@@ -243,16 +243,15 @@ RootState::Private::updateNetworkingIcon()
                 int strength = wifiLink->activeAccessPoint().get()->strength().get();
                 bool secured = wifiLink->activeAccessPoint().get()->secured();
 
-#if 0
-                gchar *a11ydesc = nullptr;
-                if (secured) {
-                    a11ydesc = g_strdup_printf(_("Network (wireless, %d%%, secure)"), strength);
-                } else {
-                    a11ydesc = g_strdup_printf(_("Network (wireless, %d%%)"), strength);
-                }
-                m_a11ydesc = {a11ydesc};
-                g_free(a11ydesc);
-#endif
+                /// @todo deal with a11ydesc
+//                gchar *a11ydesc = nullptr;
+//                if (secured) {
+//                    a11ydesc = g_strdup_printf(_("Network (wireless, %d%%, secure)"), strength);
+//                } else {
+//                    a11ydesc = g_strdup_printf(_("Network (wireless, %d%%)"), strength);
+//                }
+//                m_a11ydesc = {a11ydesc};
+//                g_free(a11ydesc);
 
                 if (strength >= 80) {
                     m_networkingIcon = secured ? "nm-signal-100-secure" : "nm-signal-100";
@@ -334,7 +333,7 @@ RootState::Private::updateRootState()
     if (!m_label.empty())
         state["label"] = TypedVariant<std::string>(m_label);
 
-    /// @todo translation hint
+    // TRANSLATORS: this is the indicator title shown on the top header of the indicator area
     state["title"] = TypedVariant<std::string>(_("Network"));
 
     /// @todo state["accessibility-desc"] = TypedVariant<std::string>(a11ydesc);

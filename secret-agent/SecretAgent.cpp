@@ -51,7 +51,7 @@ SecretAgent::SecretAgent(const QDBusConnection &systemConnection,
 				"/org/freedesktop/Notifications", m_sessionConnection), m_request(nullptr) {
 	if (!m_systemConnection.registerObject(NM_DBUS_PATH_SECRET_AGENT, this)) {
 		throw logic_error(
-				_("Unable to register user secret agent object on DBus"));
+                "Unable to register user secret agent object on DBus");
 	}
 
 	m_agentManager.Register("com.canonical.indicator.SecretAgent").waitForFinished();

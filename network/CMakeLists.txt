@@ -21,8 +21,6 @@ set(NETWORK_SERVICE_SOURCES
     root-state.cpp
     wifi-link-item.h
     wifi-section.cpp
-    wifi-settings.h
-    wired-link.h
     wwan-link-item.cpp
     wwan-section.cpp
 

@@ -3,19 +3,13 @@ cmake_minimum_required(VERSION 2.8.9)
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" "${CMAKE_MODULE_PATH}")
 
-
-# combine these two?
-set(PACKAGE ${CMAKE_PROJECT_NAME})
-set(GETTEXT_PACKAGE indicator-network)
-set(LOCALE_DIR "${CMAKE_INSTALL_FULL_DATADIR}/locale")
-
-# in config.h
-#add_definitions( -DGETTEXT_PACKAGE="${GETTEXT_PACKAGE}" )
-
 find_package(PkgConfig REQUIRED)
 include(GNUInstallDirs)
 include(Coverage)
 include(UseGSettings)
+
+set(GETTEXT_PACKAGE indicator-network)
+set(LOCALE_DIR "${CMAKE_INSTALL_FULL_DATADIR}/locale")
 
 # Workaround for libexecdir on debian
 if (EXISTS "/etc/debian_version")
@@ -112,6 +106,7 @@ configure_file(
 add_subdirectory(data)
 add_subdirectory(network)
 add_subdirectory(secret-agent)
+add_subdirectory(po)
 
 enable_testing()
 add_subdirectory(tests)

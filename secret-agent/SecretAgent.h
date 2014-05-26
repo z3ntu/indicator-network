@@ -74,12 +74,18 @@ public Q_SLOTS:
 
 	org::freedesktop::Notifications & notifications();
 
+protected Q_SLOTS:
+    void serviceOwnerChanged(const QString &name, const QString &oldOwner,
+            const QString &newOwner);
+
 protected:
 	QScopedPointer<SecretAgentAdaptor> m_adaptor;
 
 	QDBusConnection m_systemConnection;
 
 	QDBusConnection m_sessionConnection;
+
+	QDBusServiceWatcher m_managerWatcher;
 
 	org::freedesktop::NetworkManager::AgentManager m_agentManager;
 

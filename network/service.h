@@ -108,15 +108,21 @@ public:
 
         m_quickAccessSection = std::make_shared<QuickAccessSection>(m_manager);;
         m_desktopMenu->addSection(m_quickAccessSection);
+        m_desktopGreeterMenu->addSection(m_quickAccessSection);
         m_phoneMenu->addSection(m_quickAccessSection);
+        m_phoneGreeterMenu->addSection(m_quickAccessSection);
 
         m_wifiSection = std::make_shared<WifiSection>(m_manager);
         m_desktopMenu->addSection(m_wifiSection);
+        m_desktopGreeterMenu->addSection(m_wifiSection);
         m_phoneMenu->addSection(m_wifiSection);
+        m_phoneGreeterMenu->addSection(m_wifiSection);
 
         m_wwanSection = std::make_shared<WwanSection>(m_modemManager);
         m_desktopMenu->addSection(m_wwanSection);
+        m_desktopGreeterMenu->addSection(m_wwanSection);
         m_phoneMenu->addSection(m_wwanSection);
+        m_phoneGreeterMenu->addSection(m_wwanSection);
 
         m_desktopMenuExporter.reset(new MenuExporter(m_sessionBus, "/com/canonical/indicator/network/desktop", m_desktopMenu->menu()));
         m_desktopGreeterMenuExporter.reset(new MenuExporter(m_sessionBus, "/com/canonical/indicator/network/desktop_greeter", m_desktopGreeterMenu->menu()));
@@ -135,7 +141,9 @@ public:
         // we have a single actiongroup for all the menus.
         m_actionGroupMerger.reset(new ActionGroupMerger());
         m_actionGroupMerger->add(m_desktopMenu->actionGroup());
+        m_actionGroupMerger->add(m_desktopGreeterMenu->actionGroup());
         m_actionGroupMerger->add(m_phoneMenu->actionGroup());
+        m_actionGroupMerger->add(m_phoneGreeterMenu->actionGroup());
         m_actionGroupExporter.reset(new ActionGroupExporter(m_sessionBus, m_actionGroupMerger->actionGroup(),
                                                             "/com/canonical/indicator/network",
                                                             "indicator"));

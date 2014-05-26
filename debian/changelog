@@ -1,3 +1,16 @@
+indicator-network (0.5.1+14.10.20140526.1-0ubuntu1) utopic; urgency=low
+
+  [ Michael Terry ]
+  * Watch for NetworkManager name changes on DBus and re-register with
+    it when they happen. (LP: #1319580)
+  * Add back support for phone_greeter and desktop_greeter. (LP:
+    #1320339)
+
+  [ Ubuntu daily release ]
+  * New rebuild forced
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Mon, 26 May 2014 15:09:01 +0000
+
 indicator-network (0.5.1+14.10.20140523-0ubuntu1) utopic; urgency=low
 
   [ Antti Kaijanmäki ]

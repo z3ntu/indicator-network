@@ -1,4 +1,4 @@
-# Finnish translation for indicator-network
+# Hebrew translation for indicator-network
 # Copyright (c) 2014 Rosetta Contributors and Canonical Ltd 2014
 # This file is distributed under the same license as the indicator-network package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2014.
@@ -6,42 +6,41 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: indicator-network\n"
-"Report-Msgid-Bugs-To: \n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-05-22 11:31+0300\n"
-"PO-Revision-Date: 2014-05-26 17:20+0000\n"
-"Last-Translator: Jiri Grönroos <Unknown>\n"
-"Language-Team: Finnish <fi@li.org>\n"
+"PO-Revision-Date: 2014-05-26 16:08+0000\n"
+"Last-Translator: Yaron <sh.yaron@gmail.com>\n"
+"Language-Team: Hebrew <he@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Launchpad-Export-Date: 2014-05-27 06:10+0000\n"
 "X-Generator: Launchpad (build 17017)\n"
-"Language: fi\n"
 
 #: network/quick-access-section.cpp:50
 msgid "Flight Mode"
-msgstr "Lentotila"
+msgstr "מצב טיסה"
 
 #: network/root-state.cpp:145
 msgid "No SIM"
-msgstr "Ei SIM-korttia"
+msgstr "אין SIM"
 
 #: network/root-state.cpp:148
 msgid "SIM Error"
-msgstr "SIM-virhe"
+msgstr "שגיאת SIM"
 
 #: network/root-state.cpp:153
 msgid "SIM Locked"
-msgstr "SIM lukittu"
+msgstr "ה־SIM נעול"
 
 #: network/root-state.cpp:163
 msgid "No Signal"
-msgstr "Ei signaalia"
+msgstr "אין אות"
 
 #. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
 #: network/root-state.cpp:337
 msgid "Network"
-msgstr "Verkko"
+msgstr "רשת"
 
 #. TRANSLATORS: this string is not currently being shown on the screen. Please do not translate yet.
 #: network/sim-unlock-dialog.cpp:85
@@ -49,6 +48,8 @@ msgid ""
 "This will be the last attempt.<br><br>If the SIM PIN is entered incorrectly, "
 "your SIM will be blocked and would require the PUK Code to unlock."
 msgstr ""
+"זה יהיה הניסיון האחרון.<br><br>אם קוד ה־PIN של כרטיס ה־SIM יהיה שגוי גם "
+"הפעם, כרטיס ה־SIM שלך יינעל ויידרש קוד ה־PUK כדי לשחרר אותו."
 
 #. TRANSLATORS: this string is not currently being shown on the screen. Please do not translate yet.
 #: network/sim-unlock-dialog.cpp:95
@@ -56,6 +57,9 @@ msgid ""
 "Your SIM is now blocked.<br><br>Enter the PUK Code to unlock.<br><br>You may "
 "contact your network provider for PUK Code."
 msgstr ""
+"כרטיס ה־SIM שלך חסום מרגע זה.<br><br>נא להזין את קוד ה־PUK כדי "
+"לשחרר.<br><br>במידת הצורך ניתן ליצור קשר עם ספק הרשת הסלולרית שלך לקבלת קוד "
+"ה־PUK."
 
 #. TRANSLATORS: this string is not currently being shown on the screen. Please do not translate yet.
 #: network/sim-unlock-dialog.cpp:106
@@ -64,6 +68,8 @@ msgid ""
 "incorrectly, your SIM will need to be replaced.<br><br>Please contact your "
 "network provider."
 msgstr ""
+"זה יהיה הניסיון האחרון.<br><br>אם קוד ה־PUK יהיה שגוי גם הפעם, יהיה עליך "
+"להחליף את כרטיס ה־SIM שלך.<br><br>נא ליצור קשר עם ספק הרשת הסלולרית שלך."
 
 #. TRANSLATORS: this string is not currently being shown on the screen. Please do not translate yet.
 #: network/sim-unlock-dialog.cpp:117
@@ -71,70 +77,72 @@ msgid ""
 "Your SIM is now permanently blocked and needs to be replaced.<br><br>Please "
 "contact your network provider."
 msgstr ""
+"כרטיס ה־SIM שלך חסום לצמיתות ועליך להחליפו.<br><br>נא ליצור קשר עם ספק הרשת "
+"הסלולרית שלך."
 
 #: network/sim-unlock-dialog.cpp:183 network/sim-unlock-dialog.cpp:414
 #: network/sim-unlock-dialog.cpp:442
 msgid "Enter SIM PIN"
-msgstr "Anna SIM-kortin PIN-koodi"
+msgstr "נא להזין את ה־PIN של ה־SIM"
 
 #: network/sim-unlock-dialog.cpp:187
 msgid "Enter PUK code"
-msgstr "Anna PUK-koodi"
+msgstr "נא להזין קוד PUK"
 
 #: network/sim-unlock-dialog.cpp:195
 #, c-format
 msgid "Attempt %d of %d"
-msgstr "Yritys %d/%d"
+msgstr "ניסיון %d מתוך %d"
 
 #: network/sim-unlock-dialog.cpp:210 network/sim-unlock-dialog.cpp:425
 #: network/sim-unlock-dialog.cpp:435
 msgid "Enter new PIN code"
-msgstr "Anna uusi PIN-koodi"
+msgstr "נא להזין קוד PIN חדש"
 
 #: network/sim-unlock-dialog.cpp:213 network/sim-unlock-dialog.cpp:429
 msgid "Confirm new PIN code"
-msgstr "Vahvista uusi PIN-koodi"
+msgstr "אישור קוד ה־PIN החדש"
 
 #: network/sim-unlock-dialog.cpp:236
 msgid "Oops!<br>Incorrect PIN entered."
-msgstr "Hups!<br>Virheellinen PIN-koodi."
+msgstr "אופס!<br>קוד ה־PIN שהוזן שגוי."
 
 #: network/sim-unlock-dialog.cpp:254 network/sim-unlock-dialog.cpp:434
 msgid "PIN codes did not match."
-msgstr "PIN-koodit eivät täsmänneet."
+msgstr "הקודים של ה־PIN שהזנת אינם תואמים."
 
 #: network/sim-unlock-dialog.cpp:259
 msgid "Oops!<br>Incorrect PUK entered."
-msgstr "Hups!<br>Virheellinen PUK-koodi."
+msgstr "אופס!<br>קוד ה־PUK שהוזן שגוי."
 
 #: network/sim-unlock-dialog.cpp:441
 msgid "Failed to change PIN."
-msgstr "PIN-koodin vaihtaminen epäonnistui."
+msgstr "החלפת ה־PIN נכשלה."
 
 #: network/wifi-link-item.h:87
 msgid "Wi-Fi"
-msgstr "Wifi"
+msgstr "רשת אלחוטית"
 
 #: network/wifi-link-item.h:151
 msgid "Other network…"
-msgstr "Muu verkko…"
+msgstr "רשת אחרת…"
 
 #: network/wifi-section.cpp:60
 msgid "Wi-Fi settings…"
-msgstr "Wifi-asetukset…"
+msgstr "הגדרות רשת אלחוטית…"
 
 #: network/wwan-link-item.cpp:55
 msgid "Unlock SIM…"
-msgstr "Avaa SIM-lukitus…"
+msgstr "שחרור נעילת ה־SIM…"
 
 #: network/wwan-section.cpp:79
 msgid "Cellular settings…"
-msgstr "Mobiiliverkon asetukset…"
+msgstr "הגדרות סלולריות…"
 
 #: secret-agent/SecretRequest.cpp:60
 #, qt-format
 msgid "Connect to “%1”"
-msgstr "Yhdistä kohteeseen “%1”"
+msgstr "התחברות אל „%1“"
 
 #: secret-agent/SecretRequest.cpp:65
 msgid "WPA"
@@ -146,8 +154,8 @@ msgstr "WEP"
 
 #: secret-agent/SecretRequest.cpp:73
 msgid "Connect"
-msgstr "Yhdistä"
+msgstr "התחברות"
 
 #: secret-agent/SecretRequest.cpp:74
 msgid "Cancel"
-msgstr "Peruuta"
+msgstr "ביטול"

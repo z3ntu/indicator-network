@@ -38,7 +38,6 @@ public:
                 Variant variant = TypedVariant<bool>(value);
                 m_action->setState(variant);
             }
-            return true;
         });
         m_state.set(false);
 
@@ -50,6 +49,7 @@ public:
             ///@ todo something weird is happening as the indicator side is not changing the state..
             value = !value;
             m_state.set(value);
+            m_activated();
         });
 
         m_item = std::make_shared<MenuItem>(label,
@@ -64,14 +64,23 @@ public:
         return m_item;
     }
 
+    // state of the switch
     core::Property<bool> &
     state()
     {
         return m_state;
     }
 
+    // triggered when the user activates a state change
+    core::Signal<void> &
+    activated()
+    {
+        return m_activated;
+    }
+
 private:
     core::Property<bool> m_state;
+    core::Signal<void> m_activated;
 
     Action::Ptr m_action;
     MenuItem::Ptr m_item;

@@ -45,8 +45,6 @@ QuickAccessSection::Private::Private(std::shared_ptr<networking::Manager> manage
     m_actionGroupMerger = std::make_shared<ActionGroupMerger>();
     m_menu = std::make_shared<Menu>();
 
-    /// @todo re-enable once urfkill lands
-#if 0
     m_flightModeSwitch = std::make_shared<SwitchItem>(_("Flight Mode"), "airplane", "enabled");
     switch (m_manager->flightMode().get()) {
     case networking::Manager::FlightModeStatus::off:
@@ -66,11 +64,15 @@ QuickAccessSection::Private::Private(std::shared_ptr<networking::Manager> manage
             break;
         }
     });
-
+    m_flightModeSwitch->activated().connect([this](){
+        if (m_flightModeSwitch->state().get())
+            m_manager->enableFlightMode();
+        else
+            m_manager->disableFlightMode();
+    });
 
     m_actionGroupMerger->add(*m_flightModeSwitch);
     m_menu->append(*m_flightModeSwitch);
-#endif
 }
 
 QuickAccessSection::QuickAccessSection(std::shared_ptr<networking::Manager> manager)

@@ -132,6 +132,7 @@ public:
 
         m_notification = std::make_shared<notify::Notification>(title, body, "");
         m_notification->setHintString("x-canonical-snap-decisions", "true");
+        m_notification->setHint("x-canonical-snap-decisions-timeout", TypedVariant<std::int32_t>(std::numeric_limits<std::int32_t>::max()));
         m_notification->setHint("x-canonical-private-menu-model", TypedVariant<std::map<std::string, Variant>>(modelPaths));
         m_notification->closed().connect([this](){ m_closed(); });
 

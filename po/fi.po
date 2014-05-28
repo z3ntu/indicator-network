@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-05-22 11:31+0300\n"
-"PO-Revision-Date: 2014-05-26 17:20+0000\n"
+"PO-Revision-Date: 2014-05-27 08:06+0000\n"
 "Last-Translator: Jiri Grönroos <Unknown>\n"
 "Language-Team: Finnish <fi@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-05-27 06:10+0000\n"
+"X-Launchpad-Export-Date: 2014-05-28 05:56+0000\n"
 "X-Generator: Launchpad (build 17017)\n"
 "Language: fi\n"
 
@@ -49,6 +49,8 @@ msgid ""
 "This will be the last attempt.<br><br>If the SIM PIN is entered incorrectly, "
 "your SIM will be blocked and would require the PUK Code to unlock."
 msgstr ""
+"Tämä on viimeinen yritys.<br><br>Jos SIM-kortin PIN-koodi kirjoitetaan "
+"väärin, SIM-kortti lukkiutuu. Lukituksen avausta varten tarvitset PUK-koodin."
 
 #. TRANSLATORS: this string is not currently being shown on the screen. Please do not translate yet.
 #: network/sim-unlock-dialog.cpp:95
@@ -56,6 +58,8 @@ msgid ""
 "Your SIM is now blocked.<br><br>Enter the PUK Code to unlock.<br><br>You may "
 "contact your network provider for PUK Code."
 msgstr ""
+"SIM-korttisi on lukittu.<br><br>Avaa lukitus antamalla PUK-koodi.<br><br>PUK-"
+"koodin saat tarvittaessa palveluntarjoajaltasi."
 
 #. TRANSLATORS: this string is not currently being shown on the screen. Please do not translate yet.
 #: network/sim-unlock-dialog.cpp:106
@@ -64,6 +68,8 @@ msgid ""
 "incorrectly, your SIM will need to be replaced.<br><br>Please contact your "
 "network provider."
 msgstr ""
+"Tämä on viimeinen yritys.<br><br>Jos PUK-koodi kirjoitetaan väärin, SIM-"
+"kortti tulee vaihtaa.<br><br>Ota tarvittaessa yhteys palveluntarjoajaasi."
 
 #. TRANSLATORS: this string is not currently being shown on the screen. Please do not translate yet.
 #: network/sim-unlock-dialog.cpp:117
@@ -71,6 +77,8 @@ msgid ""
 "Your SIM is now permanently blocked and needs to be replaced.<br><br>Please "
 "contact your network provider."
 msgstr ""
+"SIM-korttisi on lukittu pysyvästi, joten se on vaihdettava.<br><br>Ota "
+"yhteys palveluntarjoajaasi."
 
 #: network/sim-unlock-dialog.cpp:183 network/sim-unlock-dialog.cpp:414
 #: network/sim-unlock-dialog.cpp:442
@@ -134,7 +142,7 @@ msgstr "Mobiiliverkon asetukset…"
 #: secret-agent/SecretRequest.cpp:60
 #, qt-format
 msgid "Connect to “%1”"
-msgstr "Yhdistä kohteeseen “%1”"
+msgstr "Yhdistä verkkoon “%1”"
 
 #: secret-agent/SecretRequest.cpp:65
 msgid "WPA"

@@ -1,4 +1,4 @@
-# Finnish translation for indicator-network
+# Italian translation for indicator-network
 # Copyright (c) 2014 Rosetta Contributors and Canonical Ltd 2014
 # This file is distributed under the same license as the indicator-network package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2014.
@@ -6,42 +6,41 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: indicator-network\n"
-"Report-Msgid-Bugs-To: \n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-05-22 11:31+0300\n"
-"PO-Revision-Date: 2014-05-27 08:06+0000\n"
-"Last-Translator: Jiri Grönroos <Unknown>\n"
-"Language-Team: Finnish <fi@li.org>\n"
+"PO-Revision-Date: 2014-05-27 13:40+0000\n"
+"Last-Translator: Claudio Arseni <claudio.arseni@gmail.com>\n"
+"Language-Team: Italian <it@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Launchpad-Export-Date: 2014-05-28 05:56+0000\n"
 "X-Generator: Launchpad (build 17017)\n"
-"Language: fi\n"
 
 #: network/quick-access-section.cpp:50
 msgid "Flight Mode"
-msgstr "Lentotila"
+msgstr "Modalità aereo"
 
 #: network/root-state.cpp:145
 msgid "No SIM"
-msgstr "Ei SIM-korttia"
+msgstr "Nessuna SIM"
 
 #: network/root-state.cpp:148
 msgid "SIM Error"
-msgstr "SIM-virhe"
+msgstr "Errore SIM"
 
 #: network/root-state.cpp:153
 msgid "SIM Locked"
-msgstr "SIM lukittu"
+msgstr "SIM bloccata"
 
 #: network/root-state.cpp:163
 msgid "No Signal"
-msgstr "Ei signaalia"
+msgstr "Segnale assente"
 
 #. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
 #: network/root-state.cpp:337
 msgid "Network"
-msgstr "Verkko"
+msgstr "Rete"
 
 #. TRANSLATORS: this string is not currently being shown on the screen. Please do not translate yet.
 #: network/sim-unlock-dialog.cpp:85
@@ -49,8 +48,8 @@ msgid ""
 "This will be the last attempt.<br><br>If the SIM PIN is entered incorrectly, "
 "your SIM will be blocked and would require the PUK Code to unlock."
 msgstr ""
-"Tämä on viimeinen yritys.<br><br>Jos SIM-kortin PIN-koodi kirjoitetaan "
-"väärin, SIM-kortti lukkiutuu. Lukituksen avausta varten tarvitset PUK-koodin."
+"Questo è l'ultimo tentativo.<br><br>Se verrà inserito un PIN errato, la SIM "
+"verrà bloccata e sarà richiesto il codice PUK per sbloccarla."
 
 #. TRANSLATORS: this string is not currently being shown on the screen. Please do not translate yet.
 #: network/sim-unlock-dialog.cpp:95
@@ -58,8 +57,8 @@ msgid ""
 "Your SIM is now blocked.<br><br>Enter the PUK Code to unlock.<br><br>You may "
 "contact your network provider for PUK Code."
 msgstr ""
-"SIM-korttisi on lukittu.<br><br>Avaa lukitus antamalla PUK-koodi.<br><br>PUK-"
-"koodin saat tarvittaessa palveluntarjoajaltasi."
+"La SIM è bloccata.<br><br>Inserire il codice PUK per sbloccarla.<br><br> È "
+"possibile contattare il proprio provider di rete per ottenere il codice PUK."
 
 #. TRANSLATORS: this string is not currently being shown on the screen. Please do not translate yet.
 #: network/sim-unlock-dialog.cpp:106
@@ -68,8 +67,8 @@ msgid ""
 "incorrectly, your SIM will need to be replaced.<br><br>Please contact your "
 "network provider."
 msgstr ""
-"Tämä on viimeinen yritys.<br><br>Jos PUK-koodi kirjoitetaan väärin, SIM-"
-"kortti tulee vaihtaa.<br><br>Ota tarvittaessa yhteys palveluntarjoajaasi."
+"Questo è l'ultimo tentativo.<br><br>Se verrà inserito un PUK errato, la SIM "
+"dovrà essere sostituita.<br><br>Contattare il proprio provider di rete."
 
 #. TRANSLATORS: this string is not currently being shown on the screen. Please do not translate yet.
 #: network/sim-unlock-dialog.cpp:117
@@ -77,72 +76,72 @@ msgid ""
 "Your SIM is now permanently blocked and needs to be replaced.<br><br>Please "
 "contact your network provider."
 msgstr ""
-"SIM-korttisi on lukittu pysyvästi, joten se on vaihdettava.<br><br>Ota "
-"yhteys palveluntarjoajaasi."
+"La SIM è stata bloccata in modo permanente e dovrà essere "
+"sostituita.<br><br>Contattare il proprio provider di rete."
 
 #: network/sim-unlock-dialog.cpp:183 network/sim-unlock-dialog.cpp:414
 #: network/sim-unlock-dialog.cpp:442
 msgid "Enter SIM PIN"
-msgstr "Anna SIM-kortin PIN-koodi"
+msgstr "Inserire il PIN"
 
 #: network/sim-unlock-dialog.cpp:187
 msgid "Enter PUK code"
-msgstr "Anna PUK-koodi"
+msgstr "Inserire il codice PUK"
 
 #: network/sim-unlock-dialog.cpp:195
 #, c-format
 msgid "Attempt %d of %d"
-msgstr "Yritys %d/%d"
+msgstr "Tentativo %d di %d"
 
 #: network/sim-unlock-dialog.cpp:210 network/sim-unlock-dialog.cpp:425
 #: network/sim-unlock-dialog.cpp:435
 msgid "Enter new PIN code"
-msgstr "Anna uusi PIN-koodi"
+msgstr "Inserire il nuovo PIN"
 
 #: network/sim-unlock-dialog.cpp:213 network/sim-unlock-dialog.cpp:429
 msgid "Confirm new PIN code"
-msgstr "Vahvista uusi PIN-koodi"
+msgstr "Confermare il nuovo PIN"
 
 #: network/sim-unlock-dialog.cpp:236
 msgid "Oops!<br>Incorrect PIN entered."
-msgstr "Hups!<br>Virheellinen PIN-koodi."
+msgstr "Attenzione.<br>PIN inserito errato."
 
 #: network/sim-unlock-dialog.cpp:254 network/sim-unlock-dialog.cpp:434
 msgid "PIN codes did not match."
-msgstr "PIN-koodit eivät täsmänneet."
+msgstr "I codici PIN non corrispondono."
 
 #: network/sim-unlock-dialog.cpp:259
 msgid "Oops!<br>Incorrect PUK entered."
-msgstr "Hups!<br>Virheellinen PUK-koodi."
+msgstr "Attenzione.<br>PUK inserito errato."
 
 #: network/sim-unlock-dialog.cpp:441
 msgid "Failed to change PIN."
-msgstr "PIN-koodin vaihtaminen epäonnistui."
+msgstr "Cambio PIN non riuscito."
 
 #: network/wifi-link-item.h:87
 msgid "Wi-Fi"
-msgstr "Wifi"
+msgstr "Wi-Fi"
 
 #: network/wifi-link-item.h:151
 msgid "Other network…"
-msgstr "Muu verkko…"
+msgstr "Altra rete..."
 
 #: network/wifi-section.cpp:60
 msgid "Wi-Fi settings…"
-msgstr "Wifi-asetukset…"
+msgstr "Impostazioni Wi-Fi..."
 
 #: network/wwan-link-item.cpp:55
 msgid "Unlock SIM…"
-msgstr "Avaa SIM-lukitus…"
+msgstr "Sblocca SIM..."
 
 #: network/wwan-section.cpp:79
 msgid "Cellular settings…"
-msgstr "Mobiiliverkon asetukset…"
+msgstr "Impostazioni rete mobile..."
 
 #: secret-agent/SecretRequest.cpp:60
 #, qt-format
 msgid "Connect to “%1”"
-msgstr "Yhdistä verkkoon “%1”"
+msgstr "Connesso a \"%1\""
 
 #: secret-agent/SecretRequest.cpp:65
 msgid "WPA"
@@ -154,8 +153,8 @@ msgstr "WEP"
 
 #: secret-agent/SecretRequest.cpp:73
 msgid "Connect"
-msgstr "Yhdistä"
+msgstr "Connetti"
 
 #: secret-agent/SecretRequest.cpp:74
 msgid "Cancel"
-msgstr "Peruuta"
+msgstr "Annulla"

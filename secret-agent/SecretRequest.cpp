@@ -40,6 +40,7 @@ SecretRequest::SecretRequest(SecretAgent &secretAgent,
 	QVariantMap notificationHints;
 	notificationHints["x-canonical-snap-decisions"] = "true";
 	notificationHints["x-canonical-private-button-tint"] = "true";
+	notificationHints["x-canonical-snap-decisions-timeout"] = std::numeric_limits<std::int32_t>::max();
 
 	QVariantMap menuModelActions;
 	menuModelActions["notifications"] = m_menu.actionPath();

@@ -26,7 +26,7 @@ public:
     typedef std::shared_ptr<MenuModel> Ptr;
 
     virtual operator GMenuModel*() = 0;
-    virtual ~MenuModel() {};
+    virtual ~MenuModel() {}
 };
 
 #endif

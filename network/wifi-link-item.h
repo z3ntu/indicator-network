@@ -110,8 +110,8 @@ public:
                 break;
             }
         });
-        m_switch->state().changed().connect([this](bool value){
-            if (value) {
+        m_switch->activated().connect([this](){
+            if (m_switch->state().get()) {
                 m_link->enable();
             } else {
                 m_link->disable();

@@ -1,4 +1,4 @@
-# Spanish translation for indicator-network
+# Breton translation for indicator-network
 # Copyright (c) 2014 Rosetta Contributors and Canonical Ltd 2014
 # This file is distributed under the same license as the indicator-network package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2014.
@@ -8,9 +8,9 @@ msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-05-22 11:31+0300\n"
-"PO-Revision-Date: 2014-06-17 00:25+0000\n"
-"Last-Translator: Adolfo Jayme <fitoschido@gmail.com>\n"
-"Language-Team: Spanish <es@li.org>\n"
+"PO-Revision-Date: 2014-06-16 11:46+0000\n"
+"Last-Translator: Fohanno Thierry <thierry.fohanno@ofis-bzh.org>\n"
+"Language-Team: Breton <br@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -19,28 +19,28 @@ msgstr ""
 
 #: network/quick-access-section.cpp:50
 msgid "Flight Mode"
-msgstr "Modo avión"
+msgstr "Mod nijerez"
 
 #: network/root-state.cpp:145
 msgid "No SIM"
-msgstr "Sin SIM"
+msgstr "Kartenn SIM ebet"
 
 #: network/root-state.cpp:148
 msgid "SIM Error"
-msgstr "Error de SIM"
+msgstr "Fazi kartenn SIM"
 
 #: network/root-state.cpp:153
 msgid "SIM Locked"
-msgstr "SIM bloqueada"
+msgstr "Kartenn SIM prennet"
 
 #: network/root-state.cpp:163
 msgid "No Signal"
-msgstr "Sin señal"
+msgstr "Sinal ebet"
 
 #. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
 #: network/root-state.cpp:337
 msgid "Network"
-msgstr "Red"
+msgstr "Rouedad"
 
 #. TRANSLATORS: this string is not currently being shown on the screen. Please do not translate yet.
 #: network/sim-unlock-dialog.cpp:85
@@ -48,6 +48,9 @@ msgid ""
 "This will be the last attempt.<br><br>If the SIM PIN is entered incorrectly, "
 "your SIM will be blocked and would require the PUK Code to unlock."
 msgstr ""
+"An esae diwezhañ e vo.<br><br>Ma ne vez ket skrivet kod PIN ar gartenn SIM "
+"evel zo dleet e vo prennet ho kartenn SIM hag ezhomm a vo eus ar c'hod PUK "
+"evit dibrennañ anezhi."
 
 #. TRANSLATORS: this string is not currently being shown on the screen. Please do not translate yet.
 #: network/sim-unlock-dialog.cpp:95
@@ -55,6 +58,9 @@ msgid ""
 "Your SIM is now blocked.<br><br>Enter the PUK Code to unlock.<br><br>You may "
 "contact your network provider for PUK Code."
 msgstr ""
+"Prennet eo ho kartenn SIM pelloc'h.<br><br>Ebarzhit ar c'hod PUK evit "
+"dibrennañ anezhi.<br><br>Gallout a rit mont e darempred gant hoc'h oberataer "
+"pellgomzerezh evit tapout ho kod PUK."
 
 #. TRANSLATORS: this string is not currently being shown on the screen. Please do not translate yet.
 #: network/sim-unlock-dialog.cpp:106
@@ -63,6 +69,9 @@ msgid ""
 "incorrectly, your SIM will need to be replaced.<br><br>Please contact your "
 "network provider."
 msgstr ""
+"An esae diwezhañ e vo.<br><br>Ma ne vez ket ebarzhet ar c'hod PUK evel zo "
+"dleet, e rankoc'h erlec'hiañ ho kartenn SIM.<br><br>Kit e darempred gant "
+"hoc'h oberataer pellgomzerezh, mar plij."
 
 #. TRANSLATORS: this string is not currently being shown on the screen. Please do not translate yet.
 #: network/sim-unlock-dialog.cpp:117
@@ -70,70 +79,72 @@ msgid ""
 "Your SIM is now permanently blocked and needs to be replaced.<br><br>Please "
 "contact your network provider."
 msgstr ""
+"Prennet da vat eo ho kartenn SIM pelloc'h, ha ret eo erlec'hiañ "
+"anezhi.<br><br>Kit e darempred gant hoc'h oberataer pellgomzerezh, mar plij."
 
 #: network/sim-unlock-dialog.cpp:183 network/sim-unlock-dialog.cpp:414
 #: network/sim-unlock-dialog.cpp:442
 msgid "Enter SIM PIN"
-msgstr ""
+msgstr "Ebarzhit kod PIN ar gartenn SIM"
 
 #: network/sim-unlock-dialog.cpp:187
 msgid "Enter PUK code"
-msgstr "Escriba el código PUK"
+msgstr "Ebarzhit ar c'hod PUK"
 
 #: network/sim-unlock-dialog.cpp:195
 #, c-format
 msgid "Attempt %d of %d"
-msgstr "Intento %d de %d"
+msgstr "Esae %d diwar %d"
 
 #: network/sim-unlock-dialog.cpp:210 network/sim-unlock-dialog.cpp:425
 #: network/sim-unlock-dialog.cpp:435
 msgid "Enter new PIN code"
-msgstr ""
+msgstr "Ebarzhit ar c'hod PIN nevez"
 
 #: network/sim-unlock-dialog.cpp:213 network/sim-unlock-dialog.cpp:429
 msgid "Confirm new PIN code"
-msgstr ""
+msgstr "Kadarnaat ar c'hod PIN nevez"
 
 #: network/sim-unlock-dialog.cpp:236
 msgid "Oops!<br>Incorrect PIN entered."
-msgstr ""
+msgstr "Hopopop !<br>Direizh eo ar c'hod PIN."
 
 #: network/sim-unlock-dialog.cpp:254 network/sim-unlock-dialog.cpp:434
 msgid "PIN codes did not match."
-msgstr ""
+msgstr "Ar c'hodoù PIN ne glotont ket an eil gant egile."
 
 #: network/sim-unlock-dialog.cpp:259
 msgid "Oops!<br>Incorrect PUK entered."
-msgstr ""
+msgstr "Hopopop !<br>Direizh eo ar c'hod PUK."
 
 #: network/sim-unlock-dialog.cpp:441
 msgid "Failed to change PIN."
-msgstr ""
+msgstr "Chwitet eo cheñchamant ar c'hod PIN."
 
 #: network/wifi-link-item.h:87
 msgid "Wi-Fi"
-msgstr "Red inalámbrica"
+msgstr "Wi-Fi"
 
 #: network/wifi-link-item.h:151
 msgid "Other network…"
-msgstr "Otra red…"
+msgstr "Rouedad all..."
 
 #: network/wifi-section.cpp:60
 msgid "Wi-Fi settings…"
-msgstr "Configurar red inalámbrica…"
+msgstr "Arventennoù Wi-Fi..."
 
 #: network/wwan-link-item.cpp:55
 msgid "Unlock SIM…"
-msgstr "Desbloquear SIM…"
+msgstr "Dibrennañ ar gartenn SIM..."
 
 #: network/wwan-section.cpp:79
 msgid "Cellular settings…"
-msgstr "Configuración de datos móviles..."
+msgstr "Arventennoù an hezougell..."
 
 #: secret-agent/SecretRequest.cpp:60
 #, qt-format
 msgid "Connect to “%1”"
-msgstr ""
+msgstr "Kevreañ ouzh “%1”"
 
 #: secret-agent/SecretRequest.cpp:65
 msgid "WPA"
@@ -145,8 +156,8 @@ msgstr "WEP"
 
 #: secret-agent/SecretRequest.cpp:73
 msgid "Connect"
-msgstr "Conectarse"
+msgstr "Kevreañ"
 
 #: secret-agent/SecretRequest.cpp:74
 msgid "Cancel"
-msgstr "Cancelar"
+msgstr "Nullañ"

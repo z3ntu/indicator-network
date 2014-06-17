@@ -174,13 +174,14 @@ RootState::Private::updateModem(Modem::WeakPtr weakModem)
         }
 
         auto strength = modem->strength().get();
-        if (strength >= 80)
+        /* Using same values as used by Android, not linear (LP: #1329945)*/
+        if (strength >= 39)
             m_cellularIcons[modem] = "gsm-3g-full";
-        else if (strength >= 60)
+        else if (strength >= 26)
             m_cellularIcons[modem] = "gsm-3g-high";
-        else if (strength >= 40)
+        else if (strength >= 16)
             m_cellularIcons[modem] = "gsm-3g-medium";
-        else if (strength >= 20)
+        else if (strength >= 6)
             m_cellularIcons[modem] = "gsm-3g-low";
         else
             m_cellularIcons[modem] = "gsm-3g-none";
@@ -253,13 +254,14 @@ RootState::Private::updateNetworkingIcon()
 //                m_a11ydesc = {a11ydesc};
 //                g_free(a11ydesc);
 
-                if (strength >= 80) {
+                /* Using same values as used by Android, not linear (LP: #1329945)*/
+                if (strength >= 39) {
                     m_networkingIcon = secured ? "nm-signal-100-secure" : "nm-signal-100";
-                } else if (strength >= 60) {
+                } else if (strength >= 26) {
                     m_networkingIcon = secured ? "nm-signal-75-secure" : "nm-signal-75";
-                } else if (strength >= 40) {
+                } else if (strength >= 16) {
                     m_networkingIcon = secured ? "nm-signal-50-secure" : "nm-signal-50";
-                } else if (strength >= 20) {
+                } else if (strength >= 6) {
                     m_networkingIcon = secured ? "nm-signal-25-secure" : "nm-signal-25";
                 } else {
                     m_networkingIcon = secured ? "nm-signal-0-secure" : "nm-signal-0";

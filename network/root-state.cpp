@@ -255,13 +255,13 @@ RootState::Private::updateNetworkingIcon()
 //                g_free(a11ydesc);
 
                 /* Using same values as used by Android, not linear (LP: #1329945)*/
-                if (strength >= 39) {
+                if (strength >= 80) {
                     m_networkingIcon = secured ? "nm-signal-100-secure" : "nm-signal-100";
-                } else if (strength >= 26) {
+                } else if (strength >= 60) {
                     m_networkingIcon = secured ? "nm-signal-75-secure" : "nm-signal-75";
-                } else if (strength >= 16) {
+                } else if (strength >= 40) {
                     m_networkingIcon = secured ? "nm-signal-50-secure" : "nm-signal-50";
-                } else if (strength >= 6) {
+                } else if (strength >= 20) {
                     m_networkingIcon = secured ? "nm-signal-25-secure" : "nm-signal-25";
                 } else {
                     m_networkingIcon = secured ? "nm-signal-0-secure" : "nm-signal-0";

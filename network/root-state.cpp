@@ -254,7 +254,6 @@ RootState::Private::updateNetworkingIcon()
 //                m_a11ydesc = {a11ydesc};
 //                g_free(a11ydesc);
 
-                /* Using same values as used by Android, not linear (LP: #1329945)*/
                 if (strength >= 80) {
                     m_networkingIcon = secured ? "nm-signal-100-secure" : "nm-signal-100";
                 } else if (strength >= 60) {

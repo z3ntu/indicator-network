@@ -1,29 +1,29 @@
 # Uyghur translation for indicator-network
 # Copyright (c) 2014 Rosetta Contributors and Canonical Ltd 2014
 # This file is distributed under the same license as the indicator-network package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2014.
+# Gheyret Kenji <gheyret@gmail.com>, 2014.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-05-22 11:31+0300\n"
-"PO-Revision-Date: 2014-05-26 09:30+0000\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: Uyghur <ug@li.org>\n"
+"PO-Revision-Date: 2014-06-19 11:13+0000\n"
+"Last-Translator: Gheyret T.Kenji <Unknown>\n"
+"Language-Team: Uyghur Computer Science Association <UKIJ@yahoogroups.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-06-02 06:13+0000\n"
-"X-Generator: Launchpad (build 17031)\n"
+"X-Launchpad-Export-Date: 2014-06-20 06:13+0000\n"
+"X-Generator: Launchpad (build 17058)\n"
 
 #: network/quick-access-section.cpp:50
 msgid "Flight Mode"
-msgstr "ئايرۇپىلان ھالىتى"
+msgstr "ئايروپىلان ھالىتى"
 
 #: network/root-state.cpp:145
 msgid "No SIM"
-msgstr "SIM  بايقالمىدى"
+msgstr "SIM  يوق"
 
 #: network/root-state.cpp:148
 msgid "SIM Error"
@@ -31,7 +31,7 @@ msgstr "SIM خاتالىقى"
 
 #: network/root-state.cpp:153
 msgid "SIM Locked"
-msgstr ""
+msgstr "SIM قۇلۇپلانغان"
 
 #: network/root-state.cpp:163
 msgid "No Signal"
@@ -74,11 +74,11 @@ msgstr ""
 #: network/sim-unlock-dialog.cpp:183 network/sim-unlock-dialog.cpp:414
 #: network/sim-unlock-dialog.cpp:442
 msgid "Enter SIM PIN"
-msgstr ""
+msgstr "SIM نىڭ ئىمى(PIN) نى كىرگۈزۈڭ"
 
 #: network/sim-unlock-dialog.cpp:187
 msgid "Enter PUK code"
-msgstr ""
+msgstr "PUK كودىنى كىرگۈزۈڭ"
 
 #: network/sim-unlock-dialog.cpp:195
 #, c-format
@@ -88,7 +88,7 @@ msgstr ""
 #: network/sim-unlock-dialog.cpp:210 network/sim-unlock-dialog.cpp:425
 #: network/sim-unlock-dialog.cpp:435
 msgid "Enter new PIN code"
-msgstr ""
+msgstr "يېڭى PUK نومۇرىنى كىرگۈزۈڭ"
 
 #: network/sim-unlock-dialog.cpp:213 network/sim-unlock-dialog.cpp:429
 msgid "Confirm new PIN code"
@@ -100,7 +100,7 @@ msgstr ""
 
 #: network/sim-unlock-dialog.cpp:254 network/sim-unlock-dialog.cpp:434
 msgid "PIN codes did not match."
-msgstr ""
+msgstr "PIN نومۇرى ئوخشاشمىدى."
 
 #: network/sim-unlock-dialog.cpp:259
 msgid "Oops!<br>Incorrect PUK entered."
@@ -108,19 +108,19 @@ msgstr ""
 
 #: network/sim-unlock-dialog.cpp:441
 msgid "Failed to change PIN."
-msgstr ""
+msgstr "PIN نومۇرىنى ئۆزگەرتىش مەغلۇپ بولدى."
 
 #: network/wifi-link-item.h:87
 msgid "Wi-Fi"
-msgstr "سمسىز تور (wi-fi)"
+msgstr "Wi-Fi"
 
 #: network/wifi-link-item.h:151
 msgid "Other network…"
-msgstr ""
+msgstr "باشقا تور…"
 
 #: network/wifi-section.cpp:60
 msgid "Wi-Fi settings…"
-msgstr "سمسىز تور (wi-fi) تەڭشىكى..."
+msgstr "سىمسىز تور (wi-fi) تەڭشىكى..."
 
 #: network/wwan-link-item.cpp:55
 msgid "Unlock SIM…"
@@ -133,20 +133,20 @@ msgstr "كۆچمە تور تەڭشىكى"
 #: secret-agent/SecretRequest.cpp:60
 #, qt-format
 msgid "Connect to “%1”"
-msgstr ""
+msgstr "«%1» غا باغلان"
 
 #: secret-agent/SecretRequest.cpp:65
 msgid "WPA"
-msgstr ""
+msgstr "WPA"
 
 #: secret-agent/SecretRequest.cpp:67
 msgid "WEP"
-msgstr ""
+msgstr "WEP"
 
 #: secret-agent/SecretRequest.cpp:73
 msgid "Connect"
-msgstr ""
+msgstr "باغلان"
 
 #: secret-agent/SecretRequest.cpp:74
 msgid "Cancel"
-msgstr ""
+msgstr "ئەمەلدىن قالدۇر"

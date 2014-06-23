@@ -174,13 +174,14 @@ RootState::Private::updateModem(Modem::WeakPtr weakModem)
         }
 
         auto strength = modem->strength().get();
-        if (strength >= 80)
+        /* Using same values as used by Android, not linear (LP: #1329945)*/
+        if (strength >= 39)
             m_cellularIcons[modem] = "gsm-3g-full";
-        else if (strength >= 60)
+        else if (strength >= 26)
             m_cellularIcons[modem] = "gsm-3g-high";
-        else if (strength >= 40)
+        else if (strength >= 16)
             m_cellularIcons[modem] = "gsm-3g-medium";
-        else if (strength >= 20)
+        else if (strength >= 6)
             m_cellularIcons[modem] = "gsm-3g-low";
         else
             m_cellularIcons[modem] = "gsm-3g-none";

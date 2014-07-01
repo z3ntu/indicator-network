@@ -19,7 +19,7 @@
 
 #include "wwan-link-item.h"
 
-#include "menuitems/text-item.h"
+#include "menuitems/modem-info-item.h"
 
 #include "menumodel-cpp/menu.h"
 
@@ -33,13 +33,12 @@ public:
     Modem::Ptr m_modem;
     ModemManager::Ptr m_modemManager;
 
-    TextItem::Ptr m_unlockSim;
-    bool m_wasLocked;
+    ModemInfoItem::Ptr m_infoItem;
 
     Private() = delete;
     Private(Modem::Ptr modem, ModemManager::Ptr modemManager);
 
-    void simStatusChanged(Modem::SimStatus status);
+    void update();
     void unlockSim();
 };
 
@@ -50,33 +49,105 @@ WwanLinkItem::Private::Private(Modem::Ptr modem, ModemManager::Ptr modemManager)
     m_actionGroupMerger = std::make_shared<ActionGroupMerger>();
     m_menu = std::make_shared<Menu>();
 
-    /// @todo add stuff to control the link
+    m_infoItem = std::make_shared<ModemInfoItem>();
+    m_infoItem->unlock().connect(std::bind(&ModemManager::unlockModem, m_modemManager.get(), m_modem));
 
-    m_unlockSim = std::make_shared<TextItem>(_("Unlock SIM…"), "sim", "unlock");
-    m_unlockSim->activated().connect(std::bind(&ModemManager::unlockModem, m_modemManager.get(), m_modem));
+    m_actionGroupMerger->add(*m_infoItem);
+    m_menu->append(*m_infoItem);
 
-    m_actionGroupMerger->add(*m_unlockSim);
+    m_modem->simStatus().changed().connect(std::bind(&Private::update, this));
+    m_modem->operatorName().changed().connect(std::bind(&Private::update, this));
+    m_modem->status().changed().connect(std::bind(&Private::update, this));
+    m_modem->strength().changed().connect(std::bind(&Private::update, this));
+    m_modem->technology().changed().connect(std::bind(&Private::update, this));
+    update();
 
-    m_wasLocked = false;
-    m_modem->simStatus().changed().connect(std::bind(&Private::simStatusChanged, this, std::placeholders::_1));
-    simStatusChanged(m_modem->simStatus().get());
+
+//    void setStatusIcon(const std::string &name);
+//    void setStatusText(const std::string &value);
+//    void setConnectivityIcon(const std::string &name);
+//    void setSimIdentifierText(const std::string &value);
+//    void setLocked(bool value);
+//    void setRoaming(bool value);
 }
 
 void
-WwanLinkItem::Private::simStatusChanged(Modem::SimStatus status)
+WwanLinkItem::Private::update()
 {
-    if (status == Modem::SimStatus::locked) {
-        if (!m_wasLocked) {
-            //m_actionGroupMerger->add(*m_unlockSim);
-            m_menu->append(*m_unlockSim);
-            m_wasLocked = true;
+    std::string simIdentifier = "";
+
+    std::cout << __PRETTY_FUNCTION__ << ": " << (int)m_modem->simStatus().get() << std::endl;
+
+    switch(m_modem->simStatus().get()) {
+    case Modem::SimStatus::offline:
+        m_infoItem->setStatusIcon("airplane-mode");
+        m_infoItem->setStatusText(_("Offline"));
+        m_infoItem->setConnectivityIcon("");
+        m_infoItem->setSimIdentifierText(simIdentifier);
+        m_infoItem->setLocked(false);
+        m_infoItem->setRoaming(false);
+        break;
+    case Modem::SimStatus::missing:
+        m_infoItem->setStatusIcon("");
+        m_infoItem->setStatusText(_("No SIM"));
+        m_infoItem->setConnectivityIcon("");
+        m_infoItem->setSimIdentifierText(simIdentifier);
+        m_infoItem->setLocked(false);
+        m_infoItem->setRoaming(false);
+        break;
+    case Modem::SimStatus::error:
+        m_infoItem->setStatusIcon("");
+        m_infoItem->setStatusText(_("SIM Error"));
+        m_infoItem->setConnectivityIcon("");
+        m_infoItem->setSimIdentifierText(simIdentifier);
+        m_infoItem->setLocked(false);
+        m_infoItem->setRoaming(false);
+        break;
+    case Modem::SimStatus::locked:
+    case Modem::SimStatus::permanentlyLocked:
+        m_infoItem->setStatusIcon("");
+        m_infoItem->setStatusText(_("SIM Locked"));
+        m_infoItem->setConnectivityIcon("");
+        m_infoItem->setSimIdentifierText(simIdentifier);
+        m_infoItem->setLocked(true);
+        m_infoItem->setRoaming(false);
+        break;
+    case Modem::SimStatus::ready:
+        m_infoItem->setStatusIcon("");
+        m_infoItem->setStatusText(m_modem->operatorName().get());
+        m_infoItem->setConnectivityIcon("");
+        m_infoItem->setSimIdentifierText(simIdentifier);
+        m_infoItem->setLocked(false);
+        m_infoItem->setRoaming(false);
+
+        std::cout << (int) m_modem->status().get() << std::endl;
+        switch (m_modem->status().get()) {
+        case org::ofono::Interface::NetworkRegistration::Status::unregistered:
+            m_infoItem->setStatusText(_("Unregistered"));
+            break;
+        case org::ofono::Interface::NetworkRegistration::Status::denied:
+            m_infoItem->setStatusText(_("Denied"));
+            break;
+        case org::ofono::Interface::NetworkRegistration::Status::searching:
+            m_infoItem->setStatusText(_("Searching"));
+            break;
+        case org::ofono::Interface::NetworkRegistration::Status::roaming:
+            m_infoItem->setRoaming(true);
+            /* fallthrough */
+        case org::ofono::Interface::NetworkRegistration::Status::registered:
+            std::cout << "OPERATOR: " << m_modem->operatorName().get() << std::endl;
+            m_infoItem->setStatusText(m_modem->operatorName());
+            m_infoItem->setStatusIcon(Modem::strengthIcon(m_modem->strength().get()));
+            if (m_modem->strength().get() == 0) {
+                m_infoItem->setStatusText(_("No Signal"));
+            }
+            break;
+        case org::ofono::Interface::NetworkRegistration::Status::unknown:
+            break;
         }
-    } else {
-        if (m_wasLocked) {
-            //m_actionGroupMerger->remove(*m_unlockSim);
-            m_menu->remove(m_menu->find(*m_unlockSim));
-            m_wasLocked = false;
-        }
+
+        m_infoItem->setConnectivityIcon(Modem::technologyIcon(m_modem->technology().get()));
+        break;
     }
 }
 

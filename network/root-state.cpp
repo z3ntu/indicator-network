@@ -33,7 +33,6 @@ public:
     ModemManager::Ptr m_modemManager;
     core::Property<Variant> m_state;
 
-    std::string m_preLabel;
     std::string m_label;
 
     /// @todo multiple adapters etc..
@@ -129,43 +128,28 @@ RootState::Private::updateModem(Modem::WeakPtr weakModem)
         return;
     }
 
-    /// @todo multisim for all of these
-    m_preLabel.clear();
     m_roaming = false;
     m_modemTechIcon.clear();
 
     m_cellularIcons[modem] = "";
 
-
     switch(modem->simStatus().get()) {
     case Modem::SimStatus::offline:
-        /// @todo show something.
-        break;
     case Modem::SimStatus::missing:
-        m_preLabel = _("No SIM");
-        break;
     case Modem::SimStatus::error:
-        m_preLabel = _("SIM Error");
-        break;
     case Modem::SimStatus::locked:
     case Modem::SimStatus::permanentlyLocked:
-        /// @todo handle perm blocked somehow
-        m_preLabel = _("SIM Locked");
+        /// @todo show icons when they land to the archive.
         break;
     case Modem::SimStatus::ready:
     {
         switch (modem->status().get()) {
         case org::ofono::Interface::NetworkRegistration::Status::unregistered:
-            /// @todo show something?
-            break;
         case org::ofono::Interface::NetworkRegistration::Status::denied:
-            /// @todo maybe show something like "Denied" ?
-            m_preLabel = _("No Signal");
-            break;
         case org::ofono::Interface::NetworkRegistration::Status::unknown:
         case org::ofono::Interface::NetworkRegistration::Status::searching:
         case org::ofono::Interface::NetworkRegistration::Status::registered:
-            /// @todo show something?
+            /// @todo show icons when they land to the archive.
             break;
         case org::ofono::Interface::NetworkRegistration::Status::roaming:
             /// @todo multisim
@@ -173,44 +157,8 @@ RootState::Private::updateModem(Modem::WeakPtr weakModem)
             break;
         }
 
-        auto strength = modem->strength().get();
-        /* Using same values as used by Android, not linear (LP: #1329945)*/
-        if (strength >= 39)
-            m_cellularIcons[modem] = "gsm-3g-full";
-        else if (strength >= 26)
-            m_cellularIcons[modem] = "gsm-3g-high";
-        else if (strength >= 16)
-            m_cellularIcons[modem] = "gsm-3g-medium";
-        else if (strength >= 6)
-            m_cellularIcons[modem] = "gsm-3g-low";
-        else
-            m_cellularIcons[modem] = "gsm-3g-none";
-
-        switch (modem->technology().get()){
-        case org::ofono::Interface::NetworkRegistration::Technology::notAvailable:
-            /// @todo check this..
-            // "network-cellular-pre-edge"
-            //  a11ydesc = _("Network (cellular, %s)").printf(current_protocol)
-            break;
-        case org::ofono::Interface::NetworkRegistration::Technology::gsm:
-            m_modemTechIcon = "network-cellular-pre-edge";
-            break;
-        case org::ofono::Interface::NetworkRegistration::Technology::edge:
-            m_modemTechIcon = "network-cellular-edge";
-            break;
-        case org::ofono::Interface::NetworkRegistration::Technology::umts:
-            m_modemTechIcon = "network-cellular-3g";
-            break;
-        case org::ofono::Interface::NetworkRegistration::Technology::hspa:
-            m_modemTechIcon = "network-cellular-hspa";
-            break;
-        /// @todo oFono can't tell us about hspa+ yet
-        //case org::ofono::Interface::NetworkRegistration::Technology::hspaplus:
-        //    break;
-        case org::ofono::Interface::NetworkRegistration::Technology::lte:
-            m_modemTechIcon = "network-cellular-lte";
-            break;
-        }
+        m_cellularIcons[modem] = Modem::strengthIcon(modem->strength().get());
+        m_modemTechIcon = Modem::technologyIcon(modem->technology().get());
         // we might have changed the modem tech icon which affects the networkingIcon.
         updateNetworkingIcon();
         break;
@@ -241,8 +189,12 @@ RootState::Private::updateNetworkingIcon()
 
                 auto wifiLink = std::dynamic_pointer_cast<networking::wifi::Link>(link);
 
-                int strength = wifiLink->activeAccessPoint().get()->strength().get();
-                bool secured = wifiLink->activeAccessPoint().get()->secured();
+                int strength = -1;
+                bool secured = false;
+                if (wifiLink->activeAccessPoint().get()) {
+                    strength = wifiLink->activeAccessPoint().get()->strength().get();
+                    secured  = wifiLink->activeAccessPoint().get()->secured();
+                }
 
                 /// @todo deal with a11ydesc
 //                gchar *a11ydesc = nullptr;
@@ -327,9 +279,6 @@ RootState::Private::updateRootState()
 
         icons.push_back(m_networkingIcon);
     }
-
-    if (!m_preLabel.empty())
-        state["pre-label"] = TypedVariant<std::string>(m_preLabel);
 
     if (!m_label.empty())
         state["label"] = TypedVariant<std::string>(m_label);

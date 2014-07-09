@@ -29,6 +29,8 @@ class Section
 public:
     typedef std::shared_ptr<Section> Ptr;
 
+    virtual ~Section() {}
+
     virtual ActionGroup::Ptr actionGroup() = 0;
     virtual MenuModel::Ptr   menuModel()   = 0;
 

@@ -87,8 +87,15 @@ public:
     ~Private()
     {
         m_bus->stop();
-        if (m_ofonoWorker.joinable())
-            m_ofonoWorker.join();
+        try {
+            if (m_ofonoWorker.joinable())
+                m_ofonoWorker.join();
+        } catch(const std::system_error &e) {
+            // This is the only exception type that may be thrown.
+            // http://en.cppreference.com/w/cpp/thread/thread/join
+            std::cerr << "Error when destroying worker thread, error code " << e.code()
+                      << ", error message: " << e.what() << std::endl;
+        }
     }
 
     void ofono_appeared()

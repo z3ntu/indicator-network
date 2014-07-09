@@ -1,3 +1,14 @@
+indicator-network (0.5.1+14.10.20140709.2-0ubuntu1) utopic; urgency=low
+
+  [ Ubuntu daily release ]
+  * New rebuild forced
+
+  [ Antti Kaijanmäki ]
+  * Flight Mode support. Added virtual destructors to base classes with
+    virtual methods. Do not let exceptions escape the destructor. .
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Wed, 09 Jul 2014 10:17:57 +0000
+
 indicator-network (0.5.1+14.10.20140625-0ubuntu1) utopic; urgency=low
 
   [ Sebastien Bacher ]

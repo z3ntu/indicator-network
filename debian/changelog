@@ -1,3 +1,9 @@
+indicator-network (0.5.1+14.10.20140715-0ubuntu1) utopic; urgency=low
+
+  * New rebuild forced
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Tue, 15 Jul 2014 14:09:49 +0000
+
 indicator-network (0.5.1+14.10.20140709.2-0ubuntu1) utopic; urgency=low
 
   [ Ubuntu daily release ]

@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-05-22 11:31+0300\n"
-"PO-Revision-Date: 2014-07-15 15:24+0000\n"
-"Last-Translator: Tiago Carrondo <tiago@ubuntu-pt.org>\n"
+"PO-Revision-Date: 2014-07-18 22:02+0000\n"
+"Last-Translator: Filipe André Pinho <Unknown>\n"
 "Language-Team: Portuguese <pt@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-07-16 21:26+0000\n"
-"X-Generator: Launchpad (build 17112)\n"
+"X-Launchpad-Export-Date: 2014-07-19 06:41+0000\n"
+"X-Generator: Launchpad (build 17114)\n"
 
 #: network/quick-access-section.cpp:50
 msgid "Flight Mode"
@@ -48,6 +48,8 @@ msgid ""
 "This will be the last attempt.<br><br>If the SIM PIN is entered incorrectly, "
 "your SIM will be blocked and would require the PUK Code to unlock."
 msgstr ""
+"Esta será a ultima tentativa.<br><br>Se o PIN for inserido incorrectamente, "
+"o cartão ficará bloqueado e será necessário o código PUK para o desbloquear."
 
 #. TRANSLATORS: this string is not currently being shown on the screen. Please do not translate yet.
 #: network/sim-unlock-dialog.cpp:95
@@ -55,6 +57,8 @@ msgid ""
 "Your SIM is now blocked.<br><br>Enter the PUK Code to unlock.<br><br>You may "
 "contact your network provider for PUK Code."
 msgstr ""
+"O cartão SIM está agora bloqueado.<br><br>Insira o código PUK para o "
+"desbloquear.<br><br>Poderá contactar a sua operadora para o obter."
 
 #. TRANSLATORS: this string is not currently being shown on the screen. Please do not translate yet.
 #: network/sim-unlock-dialog.cpp:106
@@ -63,6 +67,9 @@ msgid ""
 "incorrectly, your SIM will need to be replaced.<br><br>Please contact your "
 "network provider."
 msgstr ""
+"Esta será a ultima tentativa.<br><br>Se o código PUK for inserido "
+"incorrectamente, o cartão SIM terá de ser substituído.<br><br>Por favor, "
+"contacte a sua operadora."
 
 #. TRANSLATORS: this string is not currently being shown on the screen. Please do not translate yet.
 #: network/sim-unlock-dialog.cpp:117
@@ -70,6 +77,8 @@ msgid ""
 "Your SIM is now permanently blocked and needs to be replaced.<br><br>Please "
 "contact your network provider."
 msgstr ""
+"O cartão SIM está agora permanentemente bloqueado e necessita de ser "
+"substituído.<br><br>Por favor, contacte a sua operadora."
 
 #: network/sim-unlock-dialog.cpp:183 network/sim-unlock-dialog.cpp:414
 #: network/sim-unlock-dialog.cpp:442

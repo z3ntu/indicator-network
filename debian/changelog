@@ -1,3 +1,10 @@
+indicator-network (0.5.1+14.10.20140722-0ubuntu1) utopic; urgency=low
+
+  [ Charles Kerr ]
+  * Make g++ version explicit for ABI safety
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Tue, 22 Jul 2014 21:44:56 +0000
+
 indicator-network (0.5.1+14.10.20140715-0ubuntu1) utopic; urgency=low
 
   * New rebuild forced

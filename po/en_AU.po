@@ -8,39 +8,39 @@ msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-05-22 11:31+0300\n"
-"PO-Revision-Date: 2014-07-24 04:14+0000\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"PO-Revision-Date: 2014-07-27 12:20+0000\n"
+"Last-Translator: zondayonda <Unknown>\n"
 "Language-Team: English (Australia) <en_AU@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-07-25 07:56+0000\n"
-"X-Generator: Launchpad (build 17114)\n"
+"X-Launchpad-Export-Date: 2014-07-28 06:47+0000\n"
+"X-Generator: Launchpad (build 17131)\n"
 
 #: network/quick-access-section.cpp:50
 msgid "Flight Mode"
-msgstr ""
+msgstr "Flight Mode"
 
 #: network/root-state.cpp:145
 msgid "No SIM"
-msgstr ""
+msgstr "No SIM"
 
 #: network/root-state.cpp:148
 msgid "SIM Error"
-msgstr ""
+msgstr "SIM Error"
 
 #: network/root-state.cpp:153
 msgid "SIM Locked"
-msgstr ""
+msgstr "SIM Locked"
 
 #: network/root-state.cpp:163
 msgid "No Signal"
-msgstr ""
+msgstr "No Signal"
 
 #. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
 #: network/root-state.cpp:337
 msgid "Network"
-msgstr ""
+msgstr "Network"
 
 #. TRANSLATORS: this string is not currently being shown on the screen. Please do not translate yet.
 #: network/sim-unlock-dialog.cpp:85
@@ -48,6 +48,8 @@ msgid ""
 "This will be the last attempt.<br><br>If the SIM PIN is entered incorrectly, "
 "your SIM will be blocked and would require the PUK Code to unlock."
 msgstr ""
+"This will be the last attempt.<br><br>If the SIM PIN is entered incorrectly, "
+"your SIM will be blocked and would require the PUK Code to unlock."
 
 #. TRANSLATORS: this string is not currently being shown on the screen. Please do not translate yet.
 #: network/sim-unlock-dialog.cpp:95
@@ -55,6 +57,8 @@ msgid ""
 "Your SIM is now blocked.<br><br>Enter the PUK Code to unlock.<br><br>You may "
 "contact your network provider for PUK Code."
 msgstr ""
+"Your SIM is now blocked.<br><br>Enter the PUK Code to unlock.<br><br>You may "
+"contact your network provider for PUK Code."
 
 #. TRANSLATORS: this string is not currently being shown on the screen. Please do not translate yet.
 #: network/sim-unlock-dialog.cpp:106
@@ -63,6 +67,9 @@ msgid ""
 "incorrectly, your SIM will need to be replaced.<br><br>Please contact your "
 "network provider."
 msgstr ""
+"This will be the last attempt.<br><br>If the PUK code is entered "
+"incorrectly, your SIM will need to be replaced.<br><br>Please contact your "
+"network provider."
 
 #. TRANSLATORS: this string is not currently being shown on the screen. Please do not translate yet.
 #: network/sim-unlock-dialog.cpp:117
@@ -70,83 +77,85 @@ msgid ""
 "Your SIM is now permanently blocked and needs to be replaced.<br><br>Please "
 "contact your network provider."
 msgstr ""
+"Your SIM is now permanently blocked and needs to be replaced.<br><br>Please "
+"contact your network provider."
 
 #: network/sim-unlock-dialog.cpp:183 network/sim-unlock-dialog.cpp:414
 #: network/sim-unlock-dialog.cpp:442
 msgid "Enter SIM PIN"
-msgstr ""
+msgstr "Enter SIM PIN"
 
 #: network/sim-unlock-dialog.cpp:187
 msgid "Enter PUK code"
-msgstr ""
+msgstr "Enter PUK code"
 
 #: network/sim-unlock-dialog.cpp:195
 #, c-format
 msgid "Attempt %d of %d"
-msgstr ""
+msgstr "Attempt %d of %d"
 
 #: network/sim-unlock-dialog.cpp:210 network/sim-unlock-dialog.cpp:425
 #: network/sim-unlock-dialog.cpp:435
 msgid "Enter new PIN code"
-msgstr ""
+msgstr "Enter new PIN code"
 
 #: network/sim-unlock-dialog.cpp:213 network/sim-unlock-dialog.cpp:429
 msgid "Confirm new PIN code"
-msgstr ""
+msgstr "Confirm new PIN code"
 
 #: network/sim-unlock-dialog.cpp:236
 msgid "Oops!<br>Incorrect PIN entered."
-msgstr ""
+msgstr "Oops!<br>Incorrect PIN entered."
 
 #: network/sim-unlock-dialog.cpp:254 network/sim-unlock-dialog.cpp:434
 msgid "PIN codes did not match."
-msgstr ""
+msgstr "PIN codes did not match."
 
 #: network/sim-unlock-dialog.cpp:259
 msgid "Oops!<br>Incorrect PUK entered."
-msgstr ""
+msgstr "Oops!<br>Incorrect PUK entered."
 
 #: network/sim-unlock-dialog.cpp:441
 msgid "Failed to change PIN."
-msgstr ""
+msgstr "Failed to change PIN."
 
 #: network/wifi-link-item.h:87
 msgid "Wi-Fi"
-msgstr ""
+msgstr "Wi-Fi"
 
 #: network/wifi-link-item.h:151
 msgid "Other network…"
-msgstr ""
+msgstr "Other network…"
 
 #: network/wifi-section.cpp:60
 msgid "Wi-Fi settings…"
-msgstr ""
+msgstr "Wi-Fi settings…"
 
 #: network/wwan-link-item.cpp:55
 msgid "Unlock SIM…"
-msgstr ""
+msgstr "Unlock SIM…"
 
 #: network/wwan-section.cpp:79
 msgid "Cellular settings…"
-msgstr ""
+msgstr "Mobile settings…"
 
 #: secret-agent/SecretRequest.cpp:60
 #, qt-format
 msgid "Connect to “%1”"
-msgstr ""
+msgstr "Connect to “%1”"
 
 #: secret-agent/SecretRequest.cpp:65
 msgid "WPA"
-msgstr ""
+msgstr "WPA"
 
 #: secret-agent/SecretRequest.cpp:67
 msgid "WEP"
-msgstr ""
+msgstr "WEP"
 
 #: secret-agent/SecretRequest.cpp:73
 msgid "Connect"
-msgstr ""
+msgstr "Connect"
 
 #: secret-agent/SecretRequest.cpp:74
 msgid "Cancel"
-msgstr ""
+msgstr "Cancel"

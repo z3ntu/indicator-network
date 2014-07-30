@@ -134,7 +134,6 @@ RootState::Private::updateModem(Modem::WeakPtr weakModem)
     m_cellularIcons[modem] = "";
 
     switch(modem->simStatus().get()) {
-    case Modem::SimStatus::offline:
     case Modem::SimStatus::missing:
     case Modem::SimStatus::error:
     case Modem::SimStatus::locked:
@@ -143,6 +142,11 @@ RootState::Private::updateModem(Modem::WeakPtr weakModem)
         break;
     case Modem::SimStatus::ready:
     {
+        if (!modem->online().get()) {
+            /// @todo show SIM ERROR icon as this should not happen.
+            ///       unless we are in flight mode
+        }
+
         switch (modem->status().get()) {
         case org::ofono::Interface::NetworkRegistration::Status::unregistered:
         case org::ofono::Interface::NetworkRegistration::Status::denied:

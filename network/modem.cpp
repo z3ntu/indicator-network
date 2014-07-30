@@ -22,6 +22,8 @@
 class Modem::Private
 {
 public:
+    core::Property<bool> m_online;
+
     org::ofono::Interface::Modem::Ptr m_ofonoModem;
     core::Property<Modem::SimStatus> m_simStatus;
     core::Property<Modem::PinType> m_requiredPin;
@@ -41,29 +43,21 @@ public:
 void
 Modem::Private::update()
 {
-    if (!m_ofonoModem->online.get()) {
-        m_requiredPin.set(PinType::none);
-        m_retries.set({});
-        m_operatorName.set("");
-        m_simStatus.set(SimStatus::offline);
-        m_strength.set(-1);
-        m_technology.set(org::ofono::Interface::NetworkRegistration::Technology::notAvailable);
-        return;
-    }
+    std::cout << __PRETTY_FUNCTION__ << ": " << std::endl;
 
     auto simmgr = m_ofonoModem->simManager.get();
     if (simmgr) {
+
+        std::cout << __PRETTY_FUNCTION__ << ": got simmgr" << std::endl;
 
         // update requiredPin
         switch(simmgr->pinRequired.get())
         {
         case org::ofono::Interface::SimManager::PinType::none:
             m_requiredPin.set(PinType::none);
-
             break;
         case org::ofono::Interface::SimManager::PinType::pin:
             m_requiredPin.set(PinType::pin);
-
             break;
         case org::ofono::Interface::SimManager::PinType::puk:
             m_requiredPin.set(PinType::puk);
@@ -73,6 +67,7 @@ Modem::Private::update()
                                      org::ofono::Interface::SimManager::pin2str(simmgr->pinRequired.get()) +
                                      "). Bailing out.");
         }
+        std::cout << __PRETTY_FUNCTION__ << ": requiredPin:" << static_cast<int>(m_requiredPin.get()) << std::endl;
 
         // update retries
         std::map<Modem::PinType, std::uint8_t> tmp;
@@ -80,9 +75,11 @@ Modem::Private::update()
             switch(element.first) {
             case org::ofono::Interface::SimManager::PinType::pin:
                 tmp[Modem::PinType::pin] = element.second;
+                std::cout << __PRETTY_FUNCTION__ << ": PinRetries:" << std::to_string(tmp[Modem::PinType::pin]) << std::endl;
                 break;
             case org::ofono::Interface::SimManager::PinType::puk:
                 tmp[Modem::PinType::puk] = element.second;
+                std::cout << __PRETTY_FUNCTION__ << ": PukRetries:" << std::to_string(tmp[Modem::PinType::puk]) << std::endl;
                 break;
             default:
                 // don't care
@@ -93,10 +90,13 @@ Modem::Private::update()
 
         // update simStatus
         if (!simmgr->present.get()) {
+            std::cout << __PRETTY_FUNCTION__ << ": Sim Missing." << std::endl;
             m_simStatus.set(SimStatus::missing);
         } else if (m_requiredPin == PinType::none){
             m_simStatus.set(SimStatus::ready);
+            std::cout << __PRETTY_FUNCTION__ << ": Sim Ready." << std::endl;
         } else {
+            std::cout << __PRETTY_FUNCTION__ << ": Locked." << std::endl;
             if (m_retries->count(PinType::puk) != 0 && m_retries->at(PinType::puk) == 0)
                 m_simStatus.set(SimStatus::permanentlyLocked);
             else
@@ -104,9 +104,10 @@ Modem::Private::update()
         }
 
     } else {
+        std::cout << __PRETTY_FUNCTION__ << ": Dont have simmgr." << std::endl;
         m_requiredPin.set(PinType::none);
         m_retries.set({});
-        m_simStatus.set(SimStatus::offline);
+        m_simStatus.set(SimStatus::missing);
     }
 
     auto netreg = m_ofonoModem->networkRegistration.get();
@@ -152,7 +153,9 @@ Modem::Modem(org::ofono::Interface::Modem::Ptr ofonoModem)
     d.reset(new Private);
     d->m_ofonoModem = ofonoModem;
 
-    d->m_ofonoModem->online.changed().connect(std::bind(&Private::update, d.get()));
+    d->m_ofonoModem->online.changed().connect([this](bool value){
+        d->m_online.set(value);
+    });
 
     d->simManagerChanged(d->m_ofonoModem->simManager.get());
     d->m_ofonoModem->simManager.changed().connect(std::bind(&Private::simManagerChanged, d.get(), std::placeholders::_1));
@@ -234,6 +237,12 @@ Modem::changePin(PinType type, const std::string &oldPin, const std::string &new
     }
 
     throw std::logic_error("code should not be reached.");
+}
+
+const core::Property<bool> &
+Modem::online()
+{
+    return d->m_online;
 }
 
 const core::Property<Modem::SimStatus> &

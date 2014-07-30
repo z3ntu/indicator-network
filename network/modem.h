@@ -42,7 +42,6 @@ public:
 
     enum class SimStatus
     {
-        offline,
         missing,
         error,
         locked,
@@ -70,6 +69,7 @@ public:
                    const std::string &oldPin,
                    const std::string &newPin);
 
+    const core::Property<bool> &online();
 
     const core::Property<SimStatus> &simStatus();
     const core::Property<PinType> &requiredPin();

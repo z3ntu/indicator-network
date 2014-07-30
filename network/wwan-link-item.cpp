@@ -76,17 +76,7 @@ WwanLinkItem::Private::update()
 {
     std::string simIdentifier = "";
 
-    std::cout << __PRETTY_FUNCTION__ << ": " << (int)m_modem->simStatus().get() << std::endl;
-
     switch(m_modem->simStatus().get()) {
-    case Modem::SimStatus::offline:
-        m_infoItem->setStatusIcon("airplane-mode");
-        m_infoItem->setStatusText(_("Offline"));
-        m_infoItem->setConnectivityIcon("");
-        m_infoItem->setSimIdentifierText(simIdentifier);
-        m_infoItem->setLocked(false);
-        m_infoItem->setRoaming(false);
-        break;
     case Modem::SimStatus::missing:
         m_infoItem->setStatusIcon("");
         m_infoItem->setStatusText(_("No SIM"));
@@ -121,32 +111,36 @@ WwanLinkItem::Private::update()
         m_infoItem->setRoaming(false);
 
         std::cout << (int) m_modem->status().get() << std::endl;
-        switch (m_modem->status().get()) {
-        case org::ofono::Interface::NetworkRegistration::Status::unregistered:
-            m_infoItem->setStatusText(_("Unregistered"));
-            break;
-        case org::ofono::Interface::NetworkRegistration::Status::denied:
-            m_infoItem->setStatusText(_("Denied"));
-            break;
-        case org::ofono::Interface::NetworkRegistration::Status::searching:
-            m_infoItem->setStatusText(_("Searching"));
-            break;
-        case org::ofono::Interface::NetworkRegistration::Status::roaming:
-            m_infoItem->setRoaming(true);
-            /* fallthrough */
-        case org::ofono::Interface::NetworkRegistration::Status::registered:
-            std::cout << "OPERATOR: " << m_modem->operatorName().get() << std::endl;
-            m_infoItem->setStatusText(m_modem->operatorName());
-            m_infoItem->setStatusIcon(Modem::strengthIcon(m_modem->strength().get()));
-            if (m_modem->strength().get() == 0) {
-                m_infoItem->setStatusText(_("No Signal"));
+        if (m_modem->online().get()) {
+            switch (m_modem->status().get()) {
+            case org::ofono::Interface::NetworkRegistration::Status::unregistered:
+                m_infoItem->setStatusText(_("Unregistered"));
+                break;
+            case org::ofono::Interface::NetworkRegistration::Status::denied:
+                m_infoItem->setStatusText(_("Denied"));
+                break;
+            case org::ofono::Interface::NetworkRegistration::Status::searching:
+                m_infoItem->setStatusText(_("Searching"));
+                break;
+            case org::ofono::Interface::NetworkRegistration::Status::roaming:
+                m_infoItem->setRoaming(true);
+                /* fallthrough */
+            case org::ofono::Interface::NetworkRegistration::Status::registered:
+                std::cout << "OPERATOR: " << m_modem->operatorName().get() << std::endl;
+                m_infoItem->setStatusText(m_modem->operatorName());
+                m_infoItem->setStatusIcon(Modem::strengthIcon(m_modem->strength().get()));
+                if (m_modem->strength().get() == 0) {
+                    m_infoItem->setStatusText(_("No Signal"));
+                }
+                break;
+            case org::ofono::Interface::NetworkRegistration::Status::unknown:
+                break;
             }
-            break;
-        case org::ofono::Interface::NetworkRegistration::Status::unknown:
-            break;
+        } else {
+            m_infoItem->setStatusIcon("airplane-mode");
+            m_infoItem->setStatusText(_("Offline"));
         }
 
-        m_infoItem->setConnectivityIcon(Modem::technologyIcon(m_modem->technology().get()));
         break;
     }
 }

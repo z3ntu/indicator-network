@@ -58,7 +58,7 @@ ModemInfoItem::ModemInfoItem()
     d->m_item->setAttribute("x-canonical-modem-status-label-action", TypedVariant<std::string>("indicator." + statusLabelActionId));
     d->m_item->setAttribute("x-canonical-modem-status-icon-action", TypedVariant<std::string>("indicator." + statusIconActionId));
     d->m_item->setAttribute("x-canonical-modem-connectivity-icon-action", TypedVariant<std::string>("indicator." +  connectivityIconActionId));
-    d->m_item->setAttribute("x-canonical-modem-sim-identifier-label", TypedVariant<std::string>("indicator." +  simIdentifierActionId));
+    d->m_item->setAttribute("x-canonical-modem-sim-identifier-label-action", TypedVariant<std::string>("indicator." +  simIdentifierActionId));
     d->m_item->setAttribute("x-canonical-modem-roaming-action", TypedVariant<std::string>("indicator." +  roamingActionId));
     d->m_item->setAttribute("x-canonical-modem-locked-action", TypedVariant<std::string>("indicator." +  lockedActionId));
 

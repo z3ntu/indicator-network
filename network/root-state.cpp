@@ -40,15 +40,11 @@ public:
 
     std::string m_modemTechIcon;
 
-    bool m_inFlightMode;
-    bool m_roaming;
-
     std::map<Modem::Ptr, std::string> m_cellularIcons;
 
     Private() = delete;
     Private(std::shared_ptr<networking::Manager> manager, ModemManager::Ptr modemManager);
 
-    void flightModeChanged(networking::Manager::FlightModeStatus status);
     void modemsChanged(const std::set<Modem::Ptr> &modems);
 
     void updateModem(Modem::WeakPtr weakModem);
@@ -61,32 +57,18 @@ public:
 
 RootState::Private::Private(std::shared_ptr<networking::Manager> manager, ModemManager::Ptr modemManager)
     : m_manager{manager},
-      m_modemManager{modemManager},
-      m_roaming{false}
+      m_modemManager{modemManager}
 {    
-    m_manager->flightMode().changed().connect(std::bind(&Private::flightModeChanged, this, std::placeholders::_1));
-    flightModeChanged(m_manager->flightMode().get());
+    m_manager->flightMode().changed().connect(std::bind(&Private::updateRootState, this));
 
     m_modemManager->modems().changed().connect(std::bind(&Private::modemsChanged, this, std::placeholders::_1));
     modemsChanged(m_modemManager->modems().get());
 
     m_manager->status().changed().connect(std::bind(&Private::updateNetworkingIcon, this));
     m_manager->links().changed().connect(std::bind(&Private::updateNetworkingIcon, this));
-    updateNetworkingIcon();
-}
 
-void
-RootState::Private::flightModeChanged(networking::Manager::FlightModeStatus status)
-{
-    switch(status) {
-    case networking::Manager::FlightModeStatus::off:
-        m_inFlightMode = false;
-        break;
-    case networking::Manager::FlightModeStatus::on:
-        m_inFlightMode = true;
-        break;
-    }
-    updateRootState();
+    // will also call updateRootState()
+    updateNetworkingIcon();
 }
 
 void
@@ -128,43 +110,54 @@ RootState::Private::updateModem(Modem::WeakPtr weakModem)
         return;
     }
 
-    m_roaming = false;
     m_modemTechIcon.clear();
-
     m_cellularIcons[modem] = "";
+
+    if (!modem->online().get()) {
+        // modem offline, nothing to show
+        updateRootState();
+        return;
+    }
 
     switch(modem->simStatus().get()) {
     case Modem::SimStatus::missing:
+        // no need to show anything in the panel
+        break;
     case Modem::SimStatus::error:
+        m_cellularIcons[modem] = "simcard-error";
+        break;
     case Modem::SimStatus::locked:
     case Modem::SimStatus::permanentlyLocked:
-        /// @todo show icons when they land to the archive.
+        m_cellularIcons[modem] = "simcard-locked";
         break;
     case Modem::SimStatus::ready:
     {
-        if (!modem->online().get()) {
-            /// @todo show SIM ERROR icon as this should not happen.
-            ///       unless we are in flight mode
-        }
-
         switch (modem->status().get()) {
         case org::ofono::Interface::NetworkRegistration::Status::unregistered:
-        case org::ofono::Interface::NetworkRegistration::Status::denied:
         case org::ofono::Interface::NetworkRegistration::Status::unknown:
         case org::ofono::Interface::NetworkRegistration::Status::searching:
-        case org::ofono::Interface::NetworkRegistration::Status::registered:
-            /// @todo show icons when they land to the archive.
+            m_cellularIcons[modem] = "gsm-3g-disabled";
             break;
+        case org::ofono::Interface::NetworkRegistration::Status::denied:
+            /// @todo we might need network-error for this
+            m_cellularIcons[modem] = "gsm-3g-disabled";
+            break;
+        case org::ofono::Interface::NetworkRegistration::Status::registered:
         case org::ofono::Interface::NetworkRegistration::Status::roaming:
-            /// @todo multisim
-            m_roaming = true;
+            if (modem->strength().get() != 0) {
+                m_cellularIcons[modem] = Modem::strengthIcon(modem->strength().get());
+                /// @todo need to revise this once the modems are part of the connectivity-api
+                ///       this might get us wrong results on dual-sim
+                m_modemTechIcon = Modem::technologyIcon(modem->technology().get());
+            } else {
+                m_cellularIcons[modem] = "gsm-3g-no-service";
+
+            }
+
+            // we might have changed the modem tech icon which affects the networkingIcon.
+            updateNetworkingIcon();
             break;
         }
-
-        m_cellularIcons[modem] = Modem::strengthIcon(modem->strength().get());
-        m_modemTechIcon = Modem::technologyIcon(modem->technology().get());
-        // we might have changed the modem tech icon which affects the networkingIcon.
-        updateNetworkingIcon();
         break;
     }}
 
@@ -261,15 +254,25 @@ RootState::Private::updateRootState()
     std::vector<std::string> icons;
     std::map<std::string, Variant> state;
 
-    if (m_inFlightMode)
+    switch(m_manager->flightMode().get()) {
+    case networking::Manager::FlightModeStatus::off:
+        break;
+    case networking::Manager::FlightModeStatus::on:
         icons.push_back("airplane-mode");
+        break;
+    }
 
     for (auto icon : m_cellularIcons)
         if (!icon.second.empty())
             icons.push_back(icon.second);
 
-    if (m_roaming)
-        icons.push_back("network-cellular-roaming");
+    // if any of the modems is roaming, show the roaming icon
+    for (auto modem : m_modemManager->modems().get()) {
+        if (modem->status().get() == org::ofono::Interface::NetworkRegistration::Status::roaming) {
+            icons.push_back("network-cellular-roaming");
+            break;
+        }
+    }
 
     if (!m_networkingIcon.empty()) {
 

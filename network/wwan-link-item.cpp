@@ -61,14 +61,6 @@ WwanLinkItem::Private::Private(Modem::Ptr modem, ModemManager::Ptr modemManager)
     m_modem->strength().changed().connect(std::bind(&Private::update, this));
     m_modem->technology().changed().connect(std::bind(&Private::update, this));
     update();
-
-
-//    void setStatusIcon(const std::string &name);
-//    void setStatusText(const std::string &value);
-//    void setConnectivityIcon(const std::string &name);
-//    void setSimIdentifierText(const std::string &value);
-//    void setLocked(bool value);
-//    void setRoaming(bool value);
 }
 
 void
@@ -78,7 +70,7 @@ WwanLinkItem::Private::update()
 
     switch(m_modem->simStatus().get()) {
     case Modem::SimStatus::missing:
-        m_infoItem->setStatusIcon("");
+        m_infoItem->setStatusIcon("no-simcard");
         m_infoItem->setStatusText(_("No SIM"));
         m_infoItem->setConnectivityIcon("");
         m_infoItem->setSimIdentifierText(simIdentifier);
@@ -86,7 +78,7 @@ WwanLinkItem::Private::update()
         m_infoItem->setRoaming(false);
         break;
     case Modem::SimStatus::error:
-        m_infoItem->setStatusIcon("");
+        m_infoItem->setStatusIcon("simcard-error");
         m_infoItem->setStatusText(_("SIM Error"));
         m_infoItem->setConnectivityIcon("");
         m_infoItem->setSimIdentifierText(simIdentifier);
@@ -95,7 +87,7 @@ WwanLinkItem::Private::update()
         break;
     case Modem::SimStatus::locked:
     case Modem::SimStatus::permanentlyLocked:
-        m_infoItem->setStatusIcon("");
+        m_infoItem->setStatusIcon("simcard-locked");
         m_infoItem->setStatusText(_("SIM Locked"));
         m_infoItem->setConnectivityIcon("");
         m_infoItem->setSimIdentifierText(simIdentifier);
@@ -103,33 +95,34 @@ WwanLinkItem::Private::update()
         m_infoItem->setRoaming(false);
         break;
     case Modem::SimStatus::ready:
-        m_infoItem->setStatusIcon("");
-        m_infoItem->setStatusText(m_modem->operatorName().get());
         m_infoItem->setConnectivityIcon("");
         m_infoItem->setSimIdentifierText(simIdentifier);
         m_infoItem->setLocked(false);
         m_infoItem->setRoaming(false);
 
-        std::cout << (int) m_modem->status().get() << std::endl;
         if (m_modem->online().get()) {
             switch (m_modem->status().get()) {
             case org::ofono::Interface::NetworkRegistration::Status::unregistered:
+                m_infoItem->setStatusIcon("gsm-3g-disabled");
                 m_infoItem->setStatusText(_("Unregistered"));
                 break;
             case org::ofono::Interface::NetworkRegistration::Status::denied:
+                m_infoItem->setStatusIcon("gsm-3g-disabled");
                 m_infoItem->setStatusText(_("Denied"));
                 break;
             case org::ofono::Interface::NetworkRegistration::Status::searching:
+                m_infoItem->setStatusIcon("gsm-3g-disabled");
                 m_infoItem->setStatusText(_("Searching"));
                 break;
             case org::ofono::Interface::NetworkRegistration::Status::roaming:
                 m_infoItem->setRoaming(true);
                 /* fallthrough */
             case org::ofono::Interface::NetworkRegistration::Status::registered:
-                std::cout << "OPERATOR: " << m_modem->operatorName().get() << std::endl;
-                m_infoItem->setStatusText(m_modem->operatorName());
-                m_infoItem->setStatusIcon(Modem::strengthIcon(m_modem->strength().get()));
-                if (m_modem->strength().get() == 0) {
+                if (m_modem->strength().get() != 0) {
+                    m_infoItem->setStatusIcon(Modem::strengthIcon(m_modem->strength().get()));
+                    m_infoItem->setStatusText(m_modem->operatorName());
+                } else {
+                    m_infoItem->setStatusIcon("gsm-3g-no-service");
                     m_infoItem->setStatusText(_("No Signal"));
                 }
                 break;
@@ -137,7 +130,7 @@ WwanLinkItem::Private::update()
                 break;
             }
         } else {
-            m_infoItem->setStatusIcon("airplane-mode");
+            m_infoItem->setStatusIcon("gsm-3g-disabled");
             m_infoItem->setStatusText(_("Offline"));
         }
 

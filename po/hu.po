@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-05-22 11:31+0300\n"
-"PO-Revision-Date: 2014-07-23 10:38+0000\n"
-"Last-Translator: Úr Balázs <urbalazs@gmail.com>\n"
+"PO-Revision-Date: 2014-08-03 08:57+0000\n"
+"Last-Translator: Richard Somlói <ricsipontaz@gmail.com>\n"
 "Language-Team: Hungarian <hu@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-07-24 06:35+0000\n"
-"X-Generator: Launchpad (build 17114)\n"
+"X-Launchpad-Export-Date: 2014-08-04 06:35+0000\n"
+"X-Generator: Launchpad (build 17147)\n"
 
 #: network/quick-access-section.cpp:50
 msgid "Flight Mode"
@@ -69,7 +69,8 @@ msgid ""
 "network provider."
 msgstr ""
 "Ez lesz az utolsó kísérlet.<br><br>Ha hibásan adja meg a PUK kódot, a SIM "
-"cseréje lesz szükséges.<br><br>Lépjen kapcsolatba a hálózat szolgáltatójával."
+"cseréjére lesz szüksége.<br><br>Lépjen kapcsolatba a hálózat "
+"szolgáltatójával."
 
 #. TRANSLATORS: this string is not currently being shown on the screen. Please do not translate yet.
 #: network/sim-unlock-dialog.cpp:117

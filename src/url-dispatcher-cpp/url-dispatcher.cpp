@@ -19,7 +19,7 @@
 
 #include "url-dispatcher.h"
 
-#include <url-dispatcher.h>
+#include <liburl-dispatcher-1/url-dispatcher.h>
 
 namespace
 {

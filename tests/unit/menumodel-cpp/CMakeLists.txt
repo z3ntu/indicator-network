@@ -1,3 +1,4 @@
+include_directories("${CMAKE_SOURCE_DIR}/src")
 
 set(
     MENUMODEL_CPP_UNIT_TESTS_SRC

@@ -20,8 +20,8 @@
 #ifndef ITEM_H
 #define ITEM_H
 
-#include "menumodel-cpp/action-group-merger.h"
-#include "menumodel-cpp/menu-item.h"
+#include <menumodel-cpp/action-group-merger.h>
+#include <menumodel-cpp/menu-item.h>
 
 #include <memory>
 

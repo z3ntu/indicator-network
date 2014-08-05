@@ -1,5 +1,5 @@
 
-include_directories("${CMAKE_SOURCE_DIR}/network")
+include_directories("${CMAKE_SOURCE_DIR}/src")
 
 add_library(
     test-utils

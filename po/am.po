@@ -8,18 +8,18 @@ msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-05-22 11:31+0300\n"
-"PO-Revision-Date: 2014-05-26 09:30+0000\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"PO-Revision-Date: 2014-08-04 17:42+0000\n"
+"Last-Translator: samson <Unknown>\n"
 "Language-Team: Amharic <am@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-06-02 06:12+0000\n"
-"X-Generator: Launchpad (build 17031)\n"
+"X-Launchpad-Export-Date: 2014-08-05 06:48+0000\n"
+"X-Generator: Launchpad (build 17147)\n"
 
 #: network/quick-access-section.cpp:50
 msgid "Flight Mode"
-msgstr ""
+msgstr "በ በረራ ዘዴ"
 
 #: network/root-state.cpp:145
 msgid "No SIM"
@@ -40,7 +40,7 @@ msgstr ""
 #. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
 #: network/root-state.cpp:337
 msgid "Network"
-msgstr ""
+msgstr "ኔትዎርክ"
 
 #. TRANSLATORS: this string is not currently being shown on the screen. Please do not translate yet.
 #: network/sim-unlock-dialog.cpp:85
@@ -112,15 +112,15 @@ msgstr ""
 
 #: network/wifi-link-item.h:87
 msgid "Wi-Fi"
-msgstr ""
+msgstr "ዋይ-ፋይ"
 
 #: network/wifi-link-item.h:151
 msgid "Other network…"
-msgstr ""
+msgstr "ሌሎች ኔትዎርኮች..."
 
 #: network/wifi-section.cpp:60
 msgid "Wi-Fi settings…"
-msgstr ""
+msgstr "ዋይ-ፋይ ማሰናጃዎች…"
 
 #: network/wwan-link-item.cpp:55
 msgid "Unlock SIM…"
@@ -133,11 +133,11 @@ msgstr ""
 #: secret-agent/SecretRequest.cpp:60
 #, qt-format
 msgid "Connect to “%1”"
-msgstr ""
+msgstr "መገናኛ ወደ “%1”"
 
 #: secret-agent/SecretRequest.cpp:65
 msgid "WPA"
-msgstr ""
+msgstr "WPA"
 
 #: secret-agent/SecretRequest.cpp:67
 msgid "WEP"
@@ -145,8 +145,8 @@ msgstr "WEP"
 
 #: secret-agent/SecretRequest.cpp:73
 msgid "Connect"
-msgstr ""
+msgstr "መገናኛ"
 
 #: secret-agent/SecretRequest.cpp:74
 msgid "Cancel"
-msgstr ""
+msgstr "መሰረዣ"

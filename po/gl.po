@@ -8,18 +8,18 @@ msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-05-22 11:31+0300\n"
-"PO-Revision-Date: 2014-05-26 15:28+0000\n"
+"PO-Revision-Date: 2014-07-18 00:21+0000\n"
 "Last-Translator: Marcos Lans <Unknown>\n"
 "Language-Team: Galician <gl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-06-02 06:13+0000\n"
-"X-Generator: Launchpad (build 17031)\n"
+"X-Launchpad-Export-Date: 2014-07-19 06:41+0000\n"
+"X-Generator: Launchpad (build 17114)\n"
 
 #: network/quick-access-section.cpp:50
 msgid "Flight Mode"
-msgstr "Modo vó"
+msgstr "Modo voo"
 
 #: network/root-state.cpp:145
 msgid "No SIM"
@@ -49,7 +49,7 @@ msgid ""
 "your SIM will be blocked and would require the PUK Code to unlock."
 msgstr ""
 "Este será o último intento.<br><br>Se non introduce o PIN correcto da "
-"tarxeta SIM, esta bloquearase e será preciso o código PUK para desbloqueala."
+"tarxeta SIM, esta bloquearase e precisará o código PUK para desbloqueala."
 
 #. TRANSLATORS: this string is not currently being shown on the screen. Please do not translate yet.
 #: network/sim-unlock-dialog.cpp:95
@@ -142,7 +142,7 @@ msgstr "Preferencias do móbil..."
 #: secret-agent/SecretRequest.cpp:60
 #, qt-format
 msgid "Connect to “%1”"
-msgstr "Conectarse a «%1»"
+msgstr "Conectar a «%1»"
 
 #: secret-agent/SecretRequest.cpp:65
 msgid "WPA"

@@ -1,41 +1,42 @@
 # Swedish translation for indicator-network
-# Copyright (c) 2014 Rosetta Contributors and Canonical Ltd 2014
+# Copyright © 2014 Rosetta Contributors and Canonical Ltd 2014
 # This file is distributed under the same license as the indicator-network package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2014.
+# Josef Andersson <josef.andersson@fripost.org>, 2014.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-05-22 11:31+0300\n"
-"PO-Revision-Date: 2014-05-26 09:30+0000\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: Swedish <sv@li.org>\n"
+"PO-Revision-Date: 2014-07-24 13:55+0000\n"
+"Last-Translator: Josef Andersson <Unknown>\n"
+"Language-Team: Swedish <tp-sv@listor.tp-sv.se>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-06-02 06:13+0000\n"
-"X-Generator: Launchpad (build 17031)\n"
+"X-Launchpad-Export-Date: 2014-07-25 07:56+0000\n"
+"X-Generator: Launchpad (build 17114)\n"
+"Language: sv\n"
 
 #: network/quick-access-section.cpp:50
 msgid "Flight Mode"
-msgstr ""
+msgstr "Flygläge"
 
 #: network/root-state.cpp:145
 msgid "No SIM"
-msgstr ""
+msgstr "Inget SIM"
 
 #: network/root-state.cpp:148
 msgid "SIM Error"
-msgstr ""
+msgstr "SIM-fel"
 
 #: network/root-state.cpp:153
 msgid "SIM Locked"
-msgstr ""
+msgstr "SIM låst"
 
 #: network/root-state.cpp:163
 msgid "No Signal"
-msgstr ""
+msgstr "Ingen signal"
 
 #. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
 #: network/root-state.cpp:337
@@ -48,6 +49,8 @@ msgid ""
 "This will be the last attempt.<br><br>If the SIM PIN is entered incorrectly, "
 "your SIM will be blocked and would require the PUK Code to unlock."
 msgstr ""
+"Detta är det sista försöket.<br><br>Om SIM-kortets PIN-kod matas in fel "
+"kommer det att blockeras och PUK-koden måste användas för att låsa upp det."
 
 #. TRANSLATORS: this string is not currently being shown on the screen. Please do not translate yet.
 #: network/sim-unlock-dialog.cpp:95
@@ -55,6 +58,9 @@ msgid ""
 "Your SIM is now blocked.<br><br>Enter the PUK Code to unlock.<br><br>You may "
 "contact your network provider for PUK Code."
 msgstr ""
+"Ditt SIM-kort är nu blockerat.<br><br>Skriv in PUK-koden för att låsa "
+"upp.<br><br>Du kan ta kontakt med din nätverksleverantör för att få PUK-"
+"koden."
 
 #. TRANSLATORS: this string is not currently being shown on the screen. Please do not translate yet.
 #: network/sim-unlock-dialog.cpp:106
@@ -63,6 +69,8 @@ msgid ""
 "incorrectly, your SIM will need to be replaced.<br><br>Please contact your "
 "network provider."
 msgstr ""
+"Detta är det sista försöket.<br><br>Om PUK-koden är fel, kommer ditt SIM-"
+"kort behöva bytas ut.<br><br>Kontakta din nätverksleverantör."
 
 #. TRANSLATORS: this string is not currently being shown on the screen. Please do not translate yet.
 #: network/sim-unlock-dialog.cpp:117
@@ -70,74 +78,76 @@ msgid ""
 "Your SIM is now permanently blocked and needs to be replaced.<br><br>Please "
 "contact your network provider."
 msgstr ""
+"Ditt SIM-kort är nu permanent blockerat och måste bytas ut.<br><br>Kontakta "
+"din nätverksleverantör."
 
 #: network/sim-unlock-dialog.cpp:183 network/sim-unlock-dialog.cpp:414
 #: network/sim-unlock-dialog.cpp:442
 msgid "Enter SIM PIN"
-msgstr ""
+msgstr "Ange PIN-kod"
 
 #: network/sim-unlock-dialog.cpp:187
 msgid "Enter PUK code"
-msgstr ""
+msgstr "Ange PUK-kod"
 
 #: network/sim-unlock-dialog.cpp:195
 #, c-format
 msgid "Attempt %d of %d"
-msgstr ""
+msgstr "Försök %d av %d"
 
 #: network/sim-unlock-dialog.cpp:210 network/sim-unlock-dialog.cpp:425
 #: network/sim-unlock-dialog.cpp:435
 msgid "Enter new PIN code"
-msgstr ""
+msgstr "Ange ny PIN-kod"
 
 #: network/sim-unlock-dialog.cpp:213 network/sim-unlock-dialog.cpp:429
 msgid "Confirm new PIN code"
-msgstr ""
+msgstr "Bekräfta ny PIN-kod"
 
 #: network/sim-unlock-dialog.cpp:236
 msgid "Oops!<br>Incorrect PIN entered."
-msgstr ""
+msgstr "Hoppsan!<br>Fel PIN-kod."
 
 #: network/sim-unlock-dialog.cpp:254 network/sim-unlock-dialog.cpp:434
 msgid "PIN codes did not match."
-msgstr ""
+msgstr "PIN-koderna stämmer inte överens."
 
 #: network/sim-unlock-dialog.cpp:259
 msgid "Oops!<br>Incorrect PUK entered."
-msgstr ""
+msgstr "Hoppsan!<br>Fel PUK-kod."
 
 #: network/sim-unlock-dialog.cpp:441
 msgid "Failed to change PIN."
-msgstr ""
+msgstr "Kunde inte byta PIN-kod."
 
 #: network/wifi-link-item.h:87
 msgid "Wi-Fi"
-msgstr ""
+msgstr "Wi-Fi"
 
 #: network/wifi-link-item.h:151
 msgid "Other network…"
-msgstr ""
+msgstr "Annat nätverk…"
 
 #: network/wifi-section.cpp:60
 msgid "Wi-Fi settings…"
-msgstr ""
+msgstr "Inställningar för Wi-Fi…"
 
 #: network/wwan-link-item.cpp:55
 msgid "Unlock SIM…"
-msgstr ""
+msgstr "Lås upp SIM…"
 
 #: network/wwan-section.cpp:79
 msgid "Cellular settings…"
-msgstr ""
+msgstr "Mobilinställningar…"
 
 #: secret-agent/SecretRequest.cpp:60
 #, qt-format
 msgid "Connect to “%1”"
-msgstr ""
+msgstr "Anslut till ”%1”"
 
 #: secret-agent/SecretRequest.cpp:65
 msgid "WPA"
-msgstr ""
+msgstr "WPA"
 
 #: secret-agent/SecretRequest.cpp:67
 msgid "WEP"

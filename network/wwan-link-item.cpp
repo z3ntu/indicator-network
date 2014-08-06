@@ -55,6 +55,7 @@ WwanLinkItem::Private::Private(Modem::Ptr modem, ModemManager::Ptr modemManager)
     m_actionGroupMerger->add(*m_infoItem);
     m_menu->append(*m_infoItem);
 
+    m_modem->online().changed().connect(std::bind(&Private::update, this));
     m_modem->simStatus().changed().connect(std::bind(&Private::update, this));
     m_modem->operatorName().changed().connect(std::bind(&Private::update, this));
     m_modem->status().changed().connect(std::bind(&Private::update, this));
@@ -95,7 +96,6 @@ WwanLinkItem::Private::update()
         m_infoItem->setRoaming(false);
         break;
     case Modem::SimStatus::ready:
-        m_infoItem->setConnectivityIcon("");
         m_infoItem->setSimIdentifierText(simIdentifier);
         m_infoItem->setLocked(false);
         m_infoItem->setRoaming(false);
@@ -127,6 +127,8 @@ WwanLinkItem::Private::update()
                 }
                 break;
             case org::ofono::Interface::NetworkRegistration::Status::unknown:
+                m_infoItem->setConnectivityIcon("");
+                m_infoItem->setStatusText("");
                 break;
             }
         } else {

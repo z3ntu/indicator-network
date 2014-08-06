@@ -93,6 +93,7 @@ RootState::Private::modemsChanged(const std::set<Modem::Ptr> &modems)
         m_cellularIcons.erase(modem);
 
     for (auto modem : added) {
+        modem->online().changed().connect(std::bind(&Private::updateModem, this, Modem::WeakPtr(modem)));
         modem->simStatus().changed().connect(std::bind(&Private::updateModem, this, Modem::WeakPtr(modem)));
         modem->status().changed().connect(std::bind(&Private::updateModem, this, Modem::WeakPtr(modem)));
         modem->technology().changed().connect(std::bind(&Private::updateModem, this, Modem::WeakPtr(modem)));

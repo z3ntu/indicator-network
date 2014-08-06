@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-05-22 11:31+0300\n"
-"PO-Revision-Date: 2014-06-06 19:38+0000\n"
+"PO-Revision-Date: 2014-07-15 13:02+0000\n"
 "Last-Translator: Phillip Sz <Unknown>\n"
 "Language-Team: German <de@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-06-07 06:37+0000\n"
-"X-Generator: Launchpad (build 17031)\n"
+"X-Launchpad-Export-Date: 2014-07-16 21:26+0000\n"
+"X-Generator: Launchpad (build 17112)\n"
 
 #: network/quick-access-section.cpp:50
 msgid "Flight Mode"
@@ -74,41 +74,41 @@ msgstr ""
 #: network/sim-unlock-dialog.cpp:183 network/sim-unlock-dialog.cpp:414
 #: network/sim-unlock-dialog.cpp:442
 msgid "Enter SIM PIN"
-msgstr ""
+msgstr "Geben Sie den SIM-PIN ein"
 
 #: network/sim-unlock-dialog.cpp:187
 msgid "Enter PUK code"
-msgstr ""
+msgstr "Geben Sie den PUK-Schlüssel ein"
 
 #: network/sim-unlock-dialog.cpp:195
 #, c-format
 msgid "Attempt %d of %d"
-msgstr ""
+msgstr "Versuch %d von %d"
 
 #: network/sim-unlock-dialog.cpp:210 network/sim-unlock-dialog.cpp:425
 #: network/sim-unlock-dialog.cpp:435
 msgid "Enter new PIN code"
-msgstr ""
+msgstr "Geben Sie den neuen PIN-Schlüssel ein"
 
 #: network/sim-unlock-dialog.cpp:213 network/sim-unlock-dialog.cpp:429
 msgid "Confirm new PIN code"
-msgstr ""
+msgstr "Bestätigen Sie den PIN-Schlüssel"
 
 #: network/sim-unlock-dialog.cpp:236
 msgid "Oops!<br>Incorrect PIN entered."
-msgstr ""
+msgstr "Oops!<br>Sie haben den falschen PIN eingegeben."
 
 #: network/sim-unlock-dialog.cpp:254 network/sim-unlock-dialog.cpp:434
 msgid "PIN codes did not match."
-msgstr ""
+msgstr "PIN-Schlüssel passen nicht zusammen."
 
 #: network/sim-unlock-dialog.cpp:259
 msgid "Oops!<br>Incorrect PUK entered."
-msgstr ""
+msgstr "Oops!<br>Sie haben den falschen PUK eingegeben."
 
 #: network/sim-unlock-dialog.cpp:441
 msgid "Failed to change PIN."
-msgstr ""
+msgstr "Das ändern der PIN ist fehlgeschlagen."
 
 #: network/wifi-link-item.h:87
 msgid "Wi-Fi"

@@ -1,4 +1,4 @@
-# Russian translation for indicator-network
+# Korean translation for indicator-network
 # Copyright (c) 2014 Rosetta Contributors and Canonical Ltd 2014
 # This file is distributed under the same license as the indicator-network package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2014.
@@ -8,39 +8,39 @@ msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-05-22 11:31+0300\n"
-"PO-Revision-Date: 2014-07-31 12:33+0000\n"
-"Last-Translator: Jay ZDLin <Unknown>\n"
-"Language-Team: Russian <ru@li.org>\n"
+"PO-Revision-Date: 2014-07-19 15:26+0000\n"
+"Last-Translator: MinSik CHO <Unknown>\n"
+"Language-Team: Korean <ko@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-08-01 07:16+0000\n"
-"X-Generator: Launchpad (build 17141)\n"
+"X-Launchpad-Export-Date: 2014-07-20 06:48+0000\n"
+"X-Generator: Launchpad (build 17114)\n"
 
 #: network/quick-access-section.cpp:50
 msgid "Flight Mode"
-msgstr "Режим полёта"
+msgstr "비행 중 모드"
 
 #: network/root-state.cpp:145
 msgid "No SIM"
-msgstr "Отсутствует SIM-карта"
+msgstr "SIM 카드 없음"
 
 #: network/root-state.cpp:148
 msgid "SIM Error"
-msgstr "Ошибка SIM-карты"
+msgstr "SIM 카드 오류"
 
 #: network/root-state.cpp:153
 msgid "SIM Locked"
-msgstr "SIM-карта заблокирована"
+msgstr "SIM 카드 잠김"
 
 #: network/root-state.cpp:163
 msgid "No Signal"
-msgstr "Нет сигнала"
+msgstr "신호가 없음"
 
 #. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
 #: network/root-state.cpp:337
 msgid "Network"
-msgstr "Сеть"
+msgstr "네트워크"
 
 #. TRANSLATORS: this string is not currently being shown on the screen. Please do not translate yet.
 #: network/sim-unlock-dialog.cpp:85
@@ -48,8 +48,6 @@ msgid ""
 "This will be the last attempt.<br><br>If the SIM PIN is entered incorrectly, "
 "your SIM will be blocked and would require the PUK Code to unlock."
 msgstr ""
-"Осталась последняя попытка.<br><br>Если PIN-код будет введён неверно, SIM-"
-"карта заблокируется, а для разблокировки потребуется ввести PUK-код."
 
 #. TRANSLATORS: this string is not currently being shown on the screen. Please do not translate yet.
 #: network/sim-unlock-dialog.cpp:95
@@ -57,9 +55,6 @@ msgid ""
 "Your SIM is now blocked.<br><br>Enter the PUK Code to unlock.<br><br>You may "
 "contact your network provider for PUK Code."
 msgstr ""
-"SIM-карта заблокирована.<br><br>Введите PUK-код для "
-"разблокировки.<br><br>Для получения PUK-кода попробуйте обратиться к вашему "
-"оператору."
 
 #. TRANSLATORS: this string is not currently being shown on the screen. Please do not translate yet.
 #: network/sim-unlock-dialog.cpp:106
@@ -68,8 +63,6 @@ msgid ""
 "incorrectly, your SIM will need to be replaced.<br><br>Please contact your "
 "network provider."
 msgstr ""
-"Осталась последняя попытка.<br><br>Если PUK-код будет введён неверно, SIM-"
-"карту придётся заменить.<br><br>Свяжитесь с вашим оператором."
 
 #. TRANSLATORS: this string is not currently being shown on the screen. Please do not translate yet.
 #: network/sim-unlock-dialog.cpp:117
@@ -77,47 +70,45 @@ msgid ""
 "Your SIM is now permanently blocked and needs to be replaced.<br><br>Please "
 "contact your network provider."
 msgstr ""
-"SIM-карта окончательно заблокирована и требует замены.<br><br>Свяжитесь с "
-"вашим оператором."
 
 #: network/sim-unlock-dialog.cpp:183 network/sim-unlock-dialog.cpp:414
 #: network/sim-unlock-dialog.cpp:442
 msgid "Enter SIM PIN"
-msgstr "Введите PIN-код SIM-карты"
+msgstr "SIM 카드의 PIN 코드를 입력하세요."
 
 #: network/sim-unlock-dialog.cpp:187
 msgid "Enter PUK code"
-msgstr "Введите PUK-код"
+msgstr "SIM 카드의 PUK 코드를 입력하세요."
 
 #: network/sim-unlock-dialog.cpp:195
 #, c-format
 msgid "Attempt %d of %d"
-msgstr "Попытка %d из %d"
+msgstr "%d 번째 시도 (총 %d 번 기회 중)"
 
 #: network/sim-unlock-dialog.cpp:210 network/sim-unlock-dialog.cpp:425
 #: network/sim-unlock-dialog.cpp:435
 msgid "Enter new PIN code"
-msgstr "Введите новый PIN-код"
+msgstr "새로운 PIN 코드를 입력하세요."
 
 #: network/sim-unlock-dialog.cpp:213 network/sim-unlock-dialog.cpp:429
 msgid "Confirm new PIN code"
-msgstr "Подтвердите новый PIN-код"
+msgstr "새로운 PIN 코드를 확인하세요."
 
 #: network/sim-unlock-dialog.cpp:236
 msgid "Oops!<br>Incorrect PIN entered."
-msgstr "Ой!<br>Введён неправильный PIN-код."
+msgstr "이런!<br>PIN 코드를 잘못 입력하셨습니다."
 
 #: network/sim-unlock-dialog.cpp:254 network/sim-unlock-dialog.cpp:434
 msgid "PIN codes did not match."
-msgstr "PIN-коды не совпадают."
+msgstr "PIN 코드가 일치하지 않습니다."
 
 #: network/sim-unlock-dialog.cpp:259
 msgid "Oops!<br>Incorrect PUK entered."
-msgstr "Ой!<br>Введён неправильный PUK-код."
+msgstr "이런!<br>PUK 코드를 잘못 입력하셨습니다."
 
 #: network/sim-unlock-dialog.cpp:441
 msgid "Failed to change PIN."
-msgstr "Не удалось изменить PIN-код."
+msgstr "PIN 코드 수정에 실패하였습니다."
 
 #: network/wifi-link-item.h:87
 msgid "Wi-Fi"
@@ -125,24 +116,24 @@ msgstr "Wi-Fi"
 
 #: network/wifi-link-item.h:151
 msgid "Other network…"
-msgstr "Другая сеть..."
+msgstr "다른 네트워크..."
 
 #: network/wifi-section.cpp:60
 msgid "Wi-Fi settings…"
-msgstr "Настройки Wi-Fi..."
+msgstr "Wi-Fi 설정..."
 
 #: network/wwan-link-item.cpp:55
 msgid "Unlock SIM…"
-msgstr "Разблокировать SIM-карту..."
+msgstr "SIM 카드 잠금 해제..."
 
 #: network/wwan-section.cpp:79
 msgid "Cellular settings…"
-msgstr "Настройки сотовой сети..."
+msgstr "셀룰러 네트워크 설정..."
 
 #: secret-agent/SecretRequest.cpp:60
 #, qt-format
 msgid "Connect to “%1”"
-msgstr "Подключиться к “%1”"
+msgstr "\"%1\"에 연결하기"
 
 #: secret-agent/SecretRequest.cpp:65
 msgid "WPA"
@@ -154,8 +145,8 @@ msgstr "WEP"
 
 #: secret-agent/SecretRequest.cpp:73
 msgid "Connect"
-msgstr "Подключиться"
+msgstr "접속"
 
 #: secret-agent/SecretRequest.cpp:74
 msgid "Cancel"
-msgstr "Отменить"
+msgstr "취소"

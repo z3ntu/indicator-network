@@ -7,6 +7,11 @@ include /usr/share/dpkg/default.mk
 
 export DPKG_GENSYMBOLS_CHECK_LEVEL = 4
 
+# Explicitly selecting a G{CC,++}-version here to avoid ABI breaks
+# introduced by toolchain updates. <https://wiki.ubuntu.com/cpp-11>
+export CC=$(DEB_HOST_GNU_TYPE)-gcc-4.9
+export CXX=$(DEB_HOST_GNU_TYPE)-g++-4.9
+
 %:
 	dh $@ --parallel --fail-missing --with python3
 

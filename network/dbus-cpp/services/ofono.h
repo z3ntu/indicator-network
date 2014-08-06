@@ -1083,6 +1083,7 @@ struct Interface
                     case Property::Interfaces::Type::Phonebook:
                     case Property::Interfaces::Type::PushNotification:
                     case Property::Interfaces::Type::RadioSettings:
+                        break;
                     case Property::Interfaces::Type::SimManager:
                     {
                         if (!simManager->get()) {

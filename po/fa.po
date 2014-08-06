@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-05-22 11:31+0300\n"
-"PO-Revision-Date: 2014-08-03 11:02+0000\n"
+"PO-Revision-Date: 2014-08-05 10:49+0000\n"
 "Last-Translator: Danial Behzadi <dani.behzi@gmail.com>\n"
 "Language-Team: Persian <fa@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-08-04 06:35+0000\n"
+"X-Launchpad-Export-Date: 2014-08-06 06:58+0000\n"
 "X-Generator: Launchpad (build 17147)\n"
 
 #: network/quick-access-section.cpp:50
@@ -48,6 +48,8 @@ msgid ""
 "This will be the last attempt.<br><br>If the SIM PIN is entered incorrectly, "
 "your SIM will be blocked and would require the PUK Code to unlock."
 msgstr ""
+"این آخرین تلاش شما خواهد بود.<br><br>اگر  PIN سیم‌کارت اشتباه وارد شود، سیم "
+"کارتتان قفل شده و برای باز کردن آن به PUK نیاز خواهید داشت"
 
 #. TRANSLATORS: this string is not currently being shown on the screen. Please do not translate yet.
 #: network/sim-unlock-dialog.cpp:95
@@ -55,6 +57,9 @@ msgid ""
 "Your SIM is now blocked.<br><br>Enter the PUK Code to unlock.<br><br>You may "
 "contact your network provider for PUK Code."
 msgstr ""
+"سیم کارت شما قفل شده است.<br><br> برای باز کردن قفل، PUK را  وارد "
+"نمایید.<br><br>ممکن است  لازم باشد برای دریافت PUK با فراهم کننده‌ی شبکه‌ی "
+"خود تماس بگیرید."
 
 #. TRANSLATORS: this string is not currently being shown on the screen. Please do not translate yet.
 #: network/sim-unlock-dialog.cpp:106
@@ -63,6 +68,8 @@ msgid ""
 "incorrectly, your SIM will need to be replaced.<br><br>Please contact your "
 "network provider."
 msgstr ""
+"این آخرین تلاش شما خواهد بود.<br><br>اگر  PUK اشتباه وارد شود، باید سیم کارت "
+"خود را تعویض کنید.<br><br>لطفاً با فراهم کننده‌ی شبکه‌ی خود تماس بگیرید."
 
 #. TRANSLATORS: this string is not currently being shown on the screen. Please do not translate yet.
 #: network/sim-unlock-dialog.cpp:117
@@ -70,6 +77,8 @@ msgid ""
 "Your SIM is now permanently blocked and needs to be replaced.<br><br>Please "
 "contact your network provider."
 msgstr ""
+"سیم کارت شما به صورت دائمی قفل شده است و باید تعویض شود.<br><br>لطفاً با "
+"فراهم کننده‌ی شبکه‌ی خود تماس بگیرید."
 
 #: network/sim-unlock-dialog.cpp:183 network/sim-unlock-dialog.cpp:414
 #: network/sim-unlock-dialog.cpp:442

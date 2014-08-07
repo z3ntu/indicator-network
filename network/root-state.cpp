@@ -147,7 +147,9 @@ RootState::Private::updateModem(Modem::WeakPtr weakModem)
                 m_cellularIcons[modem] = Modem::strengthIcon(modem->strength().get());
                 /// @todo need to revise this once the modems are part of the connectivity-api
                 ///       this might get us wrong results on dual-sim
-                m_modemTechIcon = Modem::technologyIcon(modem->technology().get());
+                if (modem->index() == 1) {
+                    m_modemTechIcon = Modem::technologyIcon(modem->technology().get());
+                }
             } else {
                 m_cellularIcons[modem] = "gsm-3g-no-service";
 

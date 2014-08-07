@@ -92,8 +92,6 @@ WwanSection::Private::Private(ModemManager::Ptr modemManager)
 void
 WwanSection::Private::modemsChanged(const std::set<Modem::Ptr> &modems)
 {
-    /// @todo we have to address the correct ordering of the modems
-
     std::set<Modem::Ptr> current;
     for (auto element : m_items)
         current.insert(element.first);
@@ -118,9 +116,32 @@ WwanSection::Private::modemsChanged(const std::set<Modem::Ptr> &modems)
 
     for (auto modem : added) {
         auto item = std::make_shared<WwanLinkItem>(modem, m_modemManager);
-        m_linkMenuMerger->append(*item);
-        m_actionGroupMerger->add(*item);
+
         m_items.push_back(std::make_pair(modem, item));
+        m_actionGroupMerger->add(*item);
+
+        // for now just throw everything away and rebuild
+        /// @todo add MenuMerger::insert() and ::find()
+        m_linkMenuMerger->clear();
+
+        auto compare = [](int lhs, int rhs ){
+            // make sure index() == -1 goes to the bottom of the menu
+            if (lhs == -1 && rhs == -1)
+                return true;
+            if (lhs == -1)
+                return false;
+            if (rhs == -1)
+                return true;
+            return lhs < rhs;
+        };
+        std::multimap<int, WwanLinkItem::Ptr, decltype(compare)> sorted(compare);
+
+        for (auto pair : m_items) {
+            std::cout << __PRETTY_FUNCTION__ << pair.first->index() << " " << pair.first->simIdentifier().get() << std::endl;
+            sorted.insert(std::make_pair(pair.first->index(), pair.second));
+        }
+        for (auto pair : sorted)
+            m_linkMenuMerger->append(*(pair.second));
     }
 
     if (modems.size() == 0) {
@@ -128,6 +149,15 @@ WwanSection::Private::modemsChanged(const std::set<Modem::Ptr> &modems)
     } else {
         if (m_bottomMenu->find(*m_openCellularSettings) == m_bottomMenu->end())
             m_bottomMenu->append(*m_openCellularSettings);
+    }
+
+    if (m_items.size() > 1) {
+        for(auto i : m_items)
+            i.second->showSimIdentifier(true);
+    } else {
+        for(auto m : modems)
+            for(auto i : m_items)
+                i.second->showSimIdentifier(false);
     }
 }
 

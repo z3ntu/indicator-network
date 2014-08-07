@@ -35,6 +35,8 @@ public:
 
     ModemInfoItem::Ptr m_infoItem;
 
+    core::Property<bool> m_showIdentifier;
+
     Private() = delete;
     Private(Modem::Ptr modem, ModemManager::Ptr modemManager);
 
@@ -55,26 +57,33 @@ WwanLinkItem::Private::Private(Modem::Ptr modem, ModemManager::Ptr modemManager)
     m_actionGroupMerger->add(*m_infoItem);
     m_menu->append(*m_infoItem);
 
+    m_showIdentifier.set(false);
+    m_showIdentifier.changed().connect(std::bind(&Private::update, this));
+
     m_modem->online().changed().connect(std::bind(&Private::update, this));
     m_modem->simStatus().changed().connect(std::bind(&Private::update, this));
     m_modem->operatorName().changed().connect(std::bind(&Private::update, this));
     m_modem->status().changed().connect(std::bind(&Private::update, this));
     m_modem->strength().changed().connect(std::bind(&Private::update, this));
     m_modem->technology().changed().connect(std::bind(&Private::update, this));
+    m_modem->simIdentifier().changed().connect(std::bind(&Private::update, this));
     update();
 }
 
 void
 WwanLinkItem::Private::update()
 {
-    std::string simIdentifier = "";
+    if (m_showIdentifier.get()) {
+        m_infoItem->setSimIdentifierText(m_modem->simIdentifier().get());
+    } else {
+        m_infoItem->setSimIdentifierText("");
+    }
 
     switch(m_modem->simStatus().get()) {
     case Modem::SimStatus::missing:
         m_infoItem->setStatusIcon("no-simcard");
         m_infoItem->setStatusText(_("No SIM"));
         m_infoItem->setConnectivityIcon("");
-        m_infoItem->setSimIdentifierText(simIdentifier);
         m_infoItem->setLocked(false);
         m_infoItem->setRoaming(false);
         break;
@@ -82,7 +91,6 @@ WwanLinkItem::Private::update()
         m_infoItem->setStatusIcon("simcard-error");
         m_infoItem->setStatusText(_("SIM Error"));
         m_infoItem->setConnectivityIcon("");
-        m_infoItem->setSimIdentifierText(simIdentifier);
         m_infoItem->setLocked(false);
         m_infoItem->setRoaming(false);
         break;
@@ -91,12 +99,10 @@ WwanLinkItem::Private::update()
         m_infoItem->setStatusIcon("simcard-locked");
         m_infoItem->setStatusText(_("SIM Locked"));
         m_infoItem->setConnectivityIcon("");
-        m_infoItem->setSimIdentifierText(simIdentifier);
         m_infoItem->setLocked(true);
         m_infoItem->setRoaming(false);
         break;
     case Modem::SimStatus::ready:
-        m_infoItem->setSimIdentifierText(simIdentifier);
         m_infoItem->setLocked(false);
         m_infoItem->setRoaming(false);
 
@@ -158,4 +164,10 @@ MenuModel::Ptr
 WwanLinkItem::menuModel()
 {
     return d->m_menu;
+}
+
+void
+WwanLinkItem::showSimIdentifier(bool value)
+{
+    d->m_showIdentifier.set(value);
 }

@@ -37,6 +37,8 @@ public:
     // from Section
     virtual ActionGroup::Ptr actionGroup();
     virtual MenuModel::Ptr menuModel();
+
+    void showSimIdentifier(bool value);
 };
 
 #endif // WWAN_LINK_ITEM_H

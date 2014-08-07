@@ -42,7 +42,6 @@ public:
 
     enum class SimStatus
     {
-        offline,
         missing,
         error,
         locked,
@@ -70,17 +69,56 @@ public:
                    const std::string &oldPin,
                    const std::string &newPin);
 
+    const core::Property<bool> &online();
 
     const core::Property<SimStatus> &simStatus();
     const core::Property<PinType> &requiredPin();
     const core::Property<std::map<PinType, std::uint8_t>> &retries();
-    const core::Property<std::string> &subscriberIdentity();
 
     const core::Property<std::string> &operatorName();
     const core::Property<org::ofono::Interface::NetworkRegistration::Status> &status();
     const core::Property<std::int8_t> &strength();
     const core::Property<org::ofono::Interface::NetworkRegistration::Technology> &technology();
 
+    const core::Property<std::string> &simIdentifier();
+    int index();
+
+    static const std::string strengthIcon(int8_t strength)
+    {
+        /* Using same values as used by Android, not linear (LP: #1329945)*/
+        if (strength >= 39)
+            return "gsm-3g-full";
+        else if (strength >= 26)
+            return "gsm-3g-high";
+        else if (strength >= 16)
+            return "gsm-3g-medium";
+        else if (strength >= 6)
+            return "gsm-3g-low";
+        else
+            return "gsm-3g-none";
+    }
+
+    static const std::string technologyIcon(org::ofono::Interface::NetworkRegistration::Technology tech)
+    {
+        switch (tech){
+        case org::ofono::Interface::NetworkRegistration::Technology::notAvailable:
+        case org::ofono::Interface::NetworkRegistration::Technology::gsm:
+            return "network-cellular-pre-edge";
+        case org::ofono::Interface::NetworkRegistration::Technology::edge:
+            return "network-cellular-edge";
+        case org::ofono::Interface::NetworkRegistration::Technology::umts:
+            return "network-cellular-3g";
+        case org::ofono::Interface::NetworkRegistration::Technology::hspa:
+            return "network-cellular-hspa";
+        /// @todo oFono can't tell us about hspa+ yet
+        //case org::ofono::Interface::NetworkRegistration::Technology::hspaplus:
+        //    break;
+        case org::ofono::Interface::NetworkRegistration::Technology::lte:
+            return "network-cellular-lte";
+        }
+        // shouldn't be reached
+        return "";
+    }
 };
 
 #endif

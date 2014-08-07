@@ -36,6 +36,8 @@ public:
 
     virtual ActionGroup::Ptr actionGroup();
     virtual MenuModel::Ptr menuModel();
+
+    void unlockAllModems();
 };
 
 #endif

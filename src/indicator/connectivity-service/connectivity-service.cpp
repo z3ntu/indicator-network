@@ -32,7 +32,7 @@ std::string generatePropertyIntrospectionXml()
 
     output << "<property ";
     output << "name=\"" << T::name() << "\" ";
-    output << "type=\"" << (char)core::dbus::helper::TypeMapper<typename T::ValueType>::type_value() << "\" ";
+    output << "type=\"" << core::dbus::helper::TypeMapper<typename T::ValueType>::signature() << "\" ";
 
     output << "access=\"";
     if (T::readable && T::writable)
@@ -85,11 +85,14 @@ public:
 
     core::dbus::Bus::Ptr m_bus;
     core::dbus::Service::Ptr m_service;
+
     core::dbus::Object::Ptr m_networkingStatusObject;
-
     std::shared_ptr<com::ubuntu::connectivity::Interface::NetworkingStatus> m_networkingStatus;
-
+    std::shared_ptr<core::dbus::Property<com::ubuntu::connectivity::Interface::NetworkingStatus::Property::Limitations>> m_limitations;
     std::shared_ptr<core::dbus::Property<com::ubuntu::connectivity::Interface::NetworkingStatus::Property::Status>> m_status;
+
+    core::dbus::Object::Ptr m_privateObject;
+    std::shared_ptr<com::ubuntu::connectivity::Interface::Private> m_private;
 
     Private();
     ~Private();
@@ -118,8 +121,20 @@ ConnectivityService::Private::Private()
         m_bus->send(reply);
     });
 
+    m_limitations = m_networkingStatusObject->get_property<com::ubuntu::connectivity::Interface::NetworkingStatus::Property::Limitations>();
+    m_limitations->set({"bandwith"});
+
     m_status = m_networkingStatusObject->get_property<com::ubuntu::connectivity::Interface::NetworkingStatus::Property::Status>();
-    m_status->set("foo");
+    m_status->set("online"); // offline, connecting
+
+    m_privateObject = m_service->add_object_for_path(core::dbus::types::ObjectPath(com::ubuntu::connectivity::Interface::Private::path()));
+    m_privateObject->install_method_handler<com::ubuntu::connectivity::Interface::Private::Method::UnlockAllSims>([this](const core::dbus::Message::Ptr& msg)
+    {
+        auto reply = core::dbus::Message::make_method_return(msg);
+        std::cout << "UNLOCK ALL SIMS" << std::endl;
+        m_bus->send(reply);
+    });
+
 }
 
 ConnectivityService::Private::~Private()
@@ -177,6 +192,7 @@ ConnectivityService::Private::introspectXml()
     output << header;
 
     output << "<interface name=\"" << com::ubuntu::connectivity::Interface::NetworkingStatus::name() << "\">\n";
+    output << generatePropertyIntrospectionXml<com::ubuntu::connectivity::Interface::NetworkingStatus::Property::Limitations>() << std::endl;
     output << generatePropertyIntrospectionXml<com::ubuntu::connectivity::Interface::NetworkingStatus::Property::Status>() << std::endl;
     output << "</interface>\n";
 

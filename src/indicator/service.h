@@ -154,6 +154,11 @@ public:
                                     [](std::string) { std::cout << "lost" << std::endl; },
                         m_sessionBus));
     }
+
+    void unlockAllModems()
+    {
+        m_wwanSection->unlockAllModems();
+    }
 };
 
 #endif

@@ -19,6 +19,7 @@ set(NETWORK_SERVICE_SOURCES
 
     menuitems/access-point-item.h
     menuitems/item.h
+    menuitems/modem-info-item.cpp
     menuitems/section.h
     menuitems/switch-item.h
     menuitems/text-item.h

@@ -83,8 +83,9 @@ main(int, char *[])
 
     notify_init(GETTEXT_PACKAGE);
 
-    std::unique_ptr<Service> menu {new Service};
+    std::shared_ptr<Service> menu {new Service};
     std::unique_ptr<ConnectivityService> connectivityService {new ConnectivityService};
+    connectivityService->unlockAllModems().connect([menu](){ menu->unlockAllModems(); });
 
     if (getenv("VALGRIND") != 0) {
         g_timeout_add(1000, (GSourceFunc)stop_main_loop, NULL);

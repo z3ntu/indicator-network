@@ -124,18 +124,7 @@ WwanSection::Private::modemsChanged(const std::set<Modem::Ptr> &modems)
         /// @todo add MenuMerger::insert() and ::find()
         m_linkMenuMerger->clear();
 
-        auto compare = [](int lhs, int rhs ){
-            // make sure index() == -1 goes to the bottom of the menu
-            if (lhs == -1 && rhs == -1)
-                return false;
-            if (lhs == -1)
-                return false;
-            if (rhs == -1)
-                return true;
-            return lhs < rhs;
-        };
-        std::multimap<int, WwanLinkItem::Ptr, decltype(compare)> sorted(compare);
-
+        std::multimap<int, WwanLinkItem::Ptr, Modem::Compare> sorted;
         for (auto pair : m_items) {
             sorted.insert(std::make_pair(pair.first->index(), pair.second));
         }

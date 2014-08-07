@@ -20,13 +20,15 @@
 #ifndef CONNECTIVITY_SERVICE_H
 #define CONNECTIVITY_SERVICE_H
 
-#include <core/dbus/bus.h>
+#include<core/signal.h>
 
 class ConnectivityService
 {
 public:
     ConnectivityService();
     virtual ~ConnectivityService();
+
+    core::Signal<> &unlockAllModems();
 
 private:
     class Private;

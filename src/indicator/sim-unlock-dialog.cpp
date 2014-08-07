@@ -334,6 +334,20 @@ SimUnlockDialog::unlock(Modem::Ptr modem)
         c.disconnect();
     d->m_connections.clear();
 
+    auto retries = modem->retries().get();
+    auto type = modem->requiredPin().get();
+    switch(type){
+    case Modem::PinType::none:
+        d->reset();
+        return;
+    case Modem::PinType::pin:
+        d->m_enterPinState = Private::EnterPinStates::enterPin;
+        break;
+    case Modem::PinType::puk:
+        d->m_enterPinState = Private::EnterPinStates::enterPuk;
+        break;
+    }
+
     auto c = modem->requiredPin().changed().connect(std::bind(&Private::update, d.get()));
     d->m_connections.push_back(c);
 
@@ -348,20 +362,6 @@ SimUnlockDialog::unlock(Modem::Ptr modem)
 
     c = d->m_sd->closed().connect(std::bind(&Private::closed, d.get()));
     d->m_connections.push_back(c);
-
-    auto retries = modem->retries().get();
-    auto type = modem->requiredPin().get();
-    switch(type){
-    case Modem::PinType::none:
-        d->reset();
-        return;
-    case Modem::PinType::pin:
-        d->m_enterPinState = Private::EnterPinStates::enterPin;
-        break;
-    case Modem::PinType::puk:
-        d->m_enterPinState = Private::EnterPinStates::enterPuk;
-        break;
-    }
 
     int pinRetries = -1;
     int pukRetries = -1;

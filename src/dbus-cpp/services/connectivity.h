@@ -114,10 +114,10 @@ struct Interface
 
         struct Method
         {
-            struct UnlockAllSims {
+            struct UnlockAllModems {
                 static const std::string& name()
                 {
-                    static const std::string s{"UnlockAllSims"};
+                    static const std::string s{"UnlockAllModems"};
                     return s;
                 }
 

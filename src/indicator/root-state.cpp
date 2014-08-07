@@ -261,18 +261,7 @@ RootState::Private::updateRootState()
         break;
     }
 
-    auto compare = [](int lhs, int rhs ){
-        // make sure index() == -1 goes as leftmost cellular icon
-        if (lhs == -1 && rhs == -1)
-            return false;
-        if (lhs == -1)
-            return false;
-        if (rhs == -1)
-            return true;
-        return lhs < rhs;
-    };
-    std::multimap<int, std::string, decltype(compare)> sorted(compare);
-
+    std::multimap<int, std::string, Modem::Compare> sorted;
     for (auto pair : m_cellularIcons) {
         sorted.insert(std::make_pair(pair.first->index(), pair.second));
     }

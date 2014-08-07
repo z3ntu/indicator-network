@@ -34,6 +34,9 @@ public:
     core::Property<std::int8_t> m_strength;
     core::Property<org::ofono::Interface::NetworkRegistration::Technology> m_technology;
 
+    core::Property<std::string> m_simIdentifier;
+    int m_index = -1;
+
     void networkRegistrationChanged(org::ofono::Interface::NetworkRegistration::Ptr netreg);
     void simManagerChanged(org::ofono::Interface::SimManager::Ptr simmgr);
 
@@ -43,13 +46,8 @@ public:
 void
 Modem::Private::update()
 {
-    std::cout << __PRETTY_FUNCTION__ << ": " << std::endl;
-
     auto simmgr = m_ofonoModem->simManager.get();
     if (simmgr) {
-
-        std::cout << __PRETTY_FUNCTION__ << ": got simmgr" << std::endl;
-
         // update requiredPin
         switch(simmgr->pinRequired.get())
         {
@@ -67,7 +65,6 @@ Modem::Private::update()
                                      org::ofono::Interface::SimManager::pin2str(simmgr->pinRequired.get()) +
                                      "). Bailing out.");
         }
-        std::cout << __PRETTY_FUNCTION__ << ": requiredPin:" << static_cast<int>(m_requiredPin.get()) << std::endl;
 
         // update retries
         std::map<Modem::PinType, std::uint8_t> tmp;
@@ -75,11 +72,9 @@ Modem::Private::update()
             switch(element.first) {
             case org::ofono::Interface::SimManager::PinType::pin:
                 tmp[Modem::PinType::pin] = element.second;
-                std::cout << __PRETTY_FUNCTION__ << ": PinRetries:" << std::to_string(tmp[Modem::PinType::pin]) << std::endl;
                 break;
             case org::ofono::Interface::SimManager::PinType::puk:
                 tmp[Modem::PinType::puk] = element.second;
-                std::cout << __PRETTY_FUNCTION__ << ": PukRetries:" << std::to_string(tmp[Modem::PinType::puk]) << std::endl;
                 break;
             default:
                 // don't care
@@ -90,13 +85,10 @@ Modem::Private::update()
 
         // update simStatus
         if (!simmgr->present.get()) {
-            std::cout << __PRETTY_FUNCTION__ << ": Sim Missing." << std::endl;
             m_simStatus.set(SimStatus::missing);
         } else if (m_requiredPin == PinType::none){
             m_simStatus.set(SimStatus::ready);
-            std::cout << __PRETTY_FUNCTION__ << ": Sim Ready." << std::endl;
         } else {
-            std::cout << __PRETTY_FUNCTION__ << ": Locked." << std::endl;
             if (m_retries->count(PinType::puk) != 0 && m_retries->at(PinType::puk) == 0)
                 m_simStatus.set(SimStatus::permanentlyLocked);
             else
@@ -104,7 +96,6 @@ Modem::Private::update()
         }
 
     } else {
-        std::cout << __PRETTY_FUNCTION__ << ": Dont have simmgr." << std::endl;
         m_requiredPin.set(PinType::none);
         m_retries.set({});
         m_simStatus.set(SimStatus::missing);
@@ -153,6 +144,7 @@ Modem::Modem(org::ofono::Interface::Modem::Ptr ofonoModem)
     d.reset(new Private);
     d->m_ofonoModem = ofonoModem;
 
+    d->m_online.set(d->m_ofonoModem->online.get());
     d->m_ofonoModem->online.changed().connect([this](bool value){
         d->m_online.set(value);
     });
@@ -162,6 +154,19 @@ Modem::Modem(org::ofono::Interface::Modem::Ptr ofonoModem)
 
     d->networkRegistrationChanged(d->m_ofonoModem->networkRegistration.get());
     d->m_ofonoModem->networkRegistration.changed().connect(std::bind(&Private::networkRegistrationChanged, d.get(), std::placeholders::_1));
+
+    /// @todo hook up with system-settings to allow changing the identifier.
+    ///       for now just provide the defaults
+    const auto path = ofonoModem->object->path().as_string();
+    if (path == "/ril_0") {
+        d->m_simIdentifier.set("SIM 1");
+        d->m_index = 1;
+    } else if (path == "/ril_1") {
+        d->m_simIdentifier.set("SIM 2");
+        d->m_index = 2;
+    } else {
+        d->m_simIdentifier.set(path);
+    }
 }
 
 Modem::~Modem()
@@ -286,3 +291,15 @@ Modem::technology()
 {
     return d->m_technology;
 }
+const core::Property<std::string> &
+Modem::simIdentifier()
+{
+    return d->m_simIdentifier;
+}
+
+int
+Modem::index()
+{
+    return d->m_index;
+}
+

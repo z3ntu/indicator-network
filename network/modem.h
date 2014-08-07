@@ -80,6 +80,9 @@ public:
     const core::Property<std::int8_t> &strength();
     const core::Property<org::ofono::Interface::NetworkRegistration::Technology> &technology();
 
+    const core::Property<std::string> &simIdentifier();
+    int index();
+
     static const std::string strengthIcon(int8_t strength)
     {
         /* Using same values as used by Android, not linear (LP: #1329945)*/

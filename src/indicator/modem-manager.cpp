@@ -193,6 +193,13 @@ ModemManager::unlockModem(Modem::Ptr modem)
         d->m_pendingUnlocks.push_back(modem);
 }
 
+void
+ModemManager::unlockAllModems()
+{
+    for (auto m : d->m_modems.get())
+        ;
+}
+
 
 const core::Property<std::set<Modem::Ptr>> &
 ModemManager::modems()

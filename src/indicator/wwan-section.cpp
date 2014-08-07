@@ -152,3 +152,9 @@ WwanSection::menuModel()
 {
     return d->m_topMenu;
 }
+
+void
+WwanSection::unlockAllModems()
+{
+    d->m_modemManager->unlockAllModems();
+}

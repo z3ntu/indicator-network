@@ -60,6 +60,19 @@ struct Interface
 
         struct Property
         {
+            struct Limitations {
+                static const std::string &name()
+                {
+                    static const std::string s{"Limitations"};
+                    return s;
+                }
+
+                typedef NetworkingStatus Interface;
+                typedef std::vector<std::string> ValueType;
+                static const bool readable = true;
+                static const bool writable = false;
+            };
+
             struct Status {
                 static const std::string &name()
                 {
@@ -85,6 +98,49 @@ struct Interface
         std::shared_ptr<core::dbus::Service> service;
         std::shared_ptr<core::dbus::Object>  object;
     };
+
+    struct Private
+    {
+        static const std::string& name()
+        {
+            static const std::string s{UBUNTU_CONNECTIVITY_NAME_BASE ".Private"};
+            return s;
+        }
+        static const std::string& path()
+        {
+            static const std::string s{UBUNTU_CONNECTIVITY_PATH_BASE "/Private"};
+            return s;
+        }
+
+        struct Method
+        {
+            struct UnlockAllSims {
+                static const std::string& name()
+                {
+                    static const std::string s{"UnlockAllSims"};
+                    return s;
+                }
+
+                typedef Private Interface;
+                typedef void ValueType;
+
+                static std::chrono::milliseconds default_timeout()
+                {
+                    return std::chrono::seconds{1};
+                }
+            };
+        };
+
+        Private(std::shared_ptr<core::dbus::Service> &service,
+                std::shared_ptr<core::dbus::Object> &object)
+            : service(service),
+              object(object)
+        {}
+
+        std::shared_ptr<core::dbus::Service> service;
+        std::shared_ptr<core::dbus::Object>  object;
+    };
+
 
 }; // Interface
 

@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-05-22 11:31+0300\n"
-"PO-Revision-Date: 2014-08-06 02:43+0000\n"
+"PO-Revision-Date: 2014-08-06 17:47+0000\n"
 "Last-Translator: Kentaro Kazuhama <Unknown>\n"
 "Language-Team: Japanese <ja@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-08-06 06:58+0000\n"
+"X-Launchpad-Export-Date: 2014-08-07 06:29+0000\n"
 "X-Generator: Launchpad (build 17147)\n"
 
 #: network/quick-access-section.cpp:50
@@ -120,15 +120,15 @@ msgstr ""
 
 #: network/wifi-section.cpp:60
 msgid "Wi-Fi settings…"
-msgstr ""
+msgstr "Wi-Fi設定..."
 
 #: network/wwan-link-item.cpp:55
 msgid "Unlock SIM…"
-msgstr ""
+msgstr "SIMのアンロック…"
 
 #: network/wwan-section.cpp:79
 msgid "Cellular settings…"
-msgstr ""
+msgstr "セルラー設定…"
 
 #: secret-agent/SecretRequest.cpp:60
 #, qt-format

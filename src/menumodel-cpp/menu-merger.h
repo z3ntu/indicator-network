@@ -127,7 +127,14 @@ public:
         m_startPositions.erase(*menu);
         m_gmodelToMenu.erase(*menu);
         m_menus.erase(std::remove(m_menus.begin(), m_menus.end(), menu), m_menus.end());
-        }
+    }
+
+    void clear()
+    {
+        std::vector<MenuModel::Ptr> tmp = m_menus;
+        for (auto menu : tmp)
+            remove(menu);
+    }
 
     operator GMenuModel*() { return G_MENU_MODEL(m_gmenu.get()); }
 };

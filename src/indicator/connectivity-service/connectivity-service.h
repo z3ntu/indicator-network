@@ -20,12 +20,13 @@
 #ifndef CONNECTIVITY_SERVICE_H
 #define CONNECTIVITY_SERVICE_H
 
+#include <connectivity/networking/manager.h>
 #include<core/signal.h>
 
 class ConnectivityService
 {
 public:
-    ConnectivityService();
+    ConnectivityService(std::shared_ptr<connectivity::networking::Manager> manager);
     virtual ~ConnectivityService();
 
     core::Signal<> &unlockAllModems();

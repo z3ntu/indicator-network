@@ -25,6 +25,8 @@
 
 #include <sstream>
 
+namespace networking = connectivity::networking;
+
 template<typename T>
 std::string generatePropertyIntrospectionXml()
 {
@@ -59,7 +61,8 @@ struct Introspectable
         return s;
     }
 
-    struct Method {
+    struct Method
+    {
         struct Introspect
         {
             typedef Introspectable Interface;
@@ -90,21 +93,31 @@ public:
     std::shared_ptr<com::ubuntu::connectivity::Interface::NetworkingStatus> m_networkingStatus;
     std::shared_ptr<core::dbus::Property<com::ubuntu::connectivity::Interface::NetworkingStatus::Property::Limitations>> m_limitations;
     std::shared_ptr<core::dbus::Property<com::ubuntu::connectivity::Interface::NetworkingStatus::Property::Status>> m_status;
+    core::dbus::Signal<core::dbus::interfaces::Properties::Signals::PropertiesChanged,
+                       core::dbus::interfaces::Properties::Signals::PropertiesChanged::ArgumentType>::Ptr  m_propertiesChanged;
 
     core::dbus::Object::Ptr m_privateObject;
     std::shared_ptr<com::ubuntu::connectivity::Interface::Private> m_private;
 
     core::Signal<> m_unlockAllModems;
 
-    Private();
+    std::shared_ptr<networking::Manager> m_manager;
+
+    Private() = delete;
+    Private(std::shared_ptr<networking::Manager> manager);
     ~Private();
+
+    void updateNetworkingStatus();
 
     std::string introspectXml();
 };
 
-ConnectivityService::Private::Private()
+ConnectivityService::Private::Private(std::shared_ptr<networking::Manager> manager)
+    : m_manager{manager}
 {
-    std::cout << __PRETTY_FUNCTION__ << std::endl;
+    m_manager->characteristics().changed().connect(std::bind(&Private::updateNetworkingStatus, this));
+    m_manager->status().changed().connect(std::bind(&Private::updateNetworkingStatus, this));
+
     m_bus = std::make_shared<core::dbus::Bus>(core::dbus::WellKnownBus::session);
 
     auto executor = core::dbus::asio::make_executor(m_bus);
@@ -115,6 +128,8 @@ ConnectivityService::Private::Private()
 
     m_networkingStatusObject = m_service->add_object_for_path(core::dbus::types::ObjectPath(com::ubuntu::connectivity::Interface::NetworkingStatus::path()));
     m_networkingStatus = std::make_shared<com::ubuntu::connectivity::Interface::NetworkingStatus>(m_service, m_networkingStatusObject);
+    m_propertiesChanged = m_networkingStatusObject->get_signal<core::dbus::interfaces::Properties::Signals::PropertiesChanged>();
+
 
     m_networkingStatusObject->install_method_handler<Interface::Introspectable::Method::Introspect>([this](const core::dbus::Message::Ptr& msg)
     {
@@ -124,20 +139,48 @@ ConnectivityService::Private::Private()
     });
 
     m_limitations = m_networkingStatusObject->get_property<com::ubuntu::connectivity::Interface::NetworkingStatus::Property::Limitations>();
-    m_limitations->set({"bandwith"});
-
     m_status = m_networkingStatusObject->get_property<com::ubuntu::connectivity::Interface::NetworkingStatus::Property::Status>();
-    m_status->set("online"); // offline, connecting
+
+    updateNetworkingStatus();
+
+    m_networkingStatusObject->install_method_handler<core::dbus::interfaces::Properties::GetAll>([this](const core::dbus::Message::Ptr& msg)
+    {
+
+        core::dbus::Message::Reader reader;
+        try {
+            reader = msg->reader();
+        } catch(...) {
+            m_bus->send(core::dbus::Message::make_error(msg, "need.to.add.full.properties.support.to.dbus.cpp", "invalid argument."));
+            return;
+        }
+        if (reader.type() != core::dbus::ArgumentType::string) {
+            m_bus->send(core::dbus::Message::make_error(msg, "need.to.add.full.properties.support.to.dbus.cpp", "invalid argument."));
+            return;
+        }
+        std::string interface = reader.pop_string();
+
+        if (interface != com::ubuntu::connectivity::Interface::NetworkingStatus::name()) {
+            m_bus->send(core::dbus::Message::make_error(msg, "need.to.add.full.properties.support.to.dbus.cpp", "no such interface."));
+            return;
+        }
+
+        auto reply = core::dbus::Message::make_method_return(msg);
+        std::map<std::string, core::dbus::types::Variant> props;
+        props[com::ubuntu::connectivity::Interface::NetworkingStatus::Property::Limitations::name()]
+                = core::dbus::types::TypedVariant<com::ubuntu::connectivity::Interface::NetworkingStatus::Property::Limitations::ValueType>(m_limitations->get());
+        props[com::ubuntu::connectivity::Interface::NetworkingStatus::Property::Status::name()]
+                = core::dbus::types::TypedVariant<com::ubuntu::connectivity::Interface::NetworkingStatus::Property::Status::ValueType>(m_status->get());
+        reply->writer() << props;
+        m_bus->send(reply);
+    });
 
     m_privateObject = m_service->add_object_for_path(core::dbus::types::ObjectPath(com::ubuntu::connectivity::Interface::Private::path()));
     m_privateObject->install_method_handler<com::ubuntu::connectivity::Interface::Private::Method::UnlockAllModems>([this](const core::dbus::Message::Ptr& msg)
     {
         auto reply = core::dbus::Message::make_method_return(msg);
-        std::cout << "UNLOCK ALL Modems" << std::endl;
         m_bus->send(reply);
         m_unlockAllModems();
     });
-
 }
 
 ConnectivityService::Private::~Private()
@@ -151,6 +194,55 @@ ConnectivityService::Private::~Private()
         // http://en.cppreference.com/w/cpp/thread/thread/join
         std::cerr << "Error when destroying worker thread, error code " << e.code()
                   << ", error message: " << e.what() << std::endl;
+    }
+}
+
+void
+ConnectivityService::Private::updateNetworkingStatus()
+{
+    std::vector<std::string> old_limitations = m_limitations->get();
+    std::string old_status = m_status->get();
+
+    switch(m_manager->status().get()) {
+    case networking::Manager::NetworkingStatus::offline:
+        m_status->set("offline");
+        break;
+    case networking::Manager::NetworkingStatus::connecting:
+        m_status->set("connecting");
+        break;
+    case networking::Manager::NetworkingStatus::online:
+        m_status->set("online");
+    }
+    if (old_status.empty()) {
+        // initially not set
+        old_status = m_status->get();
+    }
+
+
+    std::vector<std::string> limitations;
+    auto characteristics = m_manager->characteristics().get();
+    if ((characteristics & networking::Link::Characteristics::is_bandwidth_limited) != 0) {
+        limitations.push_back("bandwith");
+    }
+    m_limitations->set(limitations);
+
+    std::map<std::string, core::dbus::types::Variant> changed;
+    if (old_limitations != m_limitations->get()) {
+        changed[com::ubuntu::connectivity::Interface::NetworkingStatus::Property::Limitations::name()]
+                = core::dbus::types::TypedVariant<com::ubuntu::connectivity::Interface::NetworkingStatus::Property::Limitations::ValueType>(m_limitations->get());
+    }
+    if (old_status != m_status->get()) {
+        changed[com::ubuntu::connectivity::Interface::NetworkingStatus::Property::Status::name()]
+                = core::dbus::types::TypedVariant<com::ubuntu::connectivity::Interface::NetworkingStatus::Property::Status::ValueType>(m_status->get());
+    }
+
+    if (changed.size() != 0) {
+        core::dbus::interfaces::Properties::Signals::PropertiesChanged::ArgumentType args
+                (com::ubuntu::connectivity::Interface::NetworkingStatus::name(),
+                 changed,
+                 {}
+                 );
+        m_propertiesChanged->emit(args);
     }
 }
 
@@ -204,11 +296,9 @@ ConnectivityService::Private::introspectXml()
     return output.str();
 }
 
-ConnectivityService::ConnectivityService()
-    : d{new Private}
-{
-        std::cout << __PRETTY_FUNCTION__ << std::endl;
-}
+ConnectivityService::ConnectivityService(std::shared_ptr<networking::Manager> manager)
+    : d{new Private(manager)}
+{}
 
 ConnectivityService::~ConnectivityService()
 {}

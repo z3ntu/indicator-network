@@ -18,7 +18,6 @@
  */
 
 #include "service.h"
-
 #include "connectivity-service/connectivity-service.h"
 
 #include <iostream>
@@ -83,8 +82,10 @@ main(int, char *[])
 
     notify_init(GETTEXT_PACKAGE);
 
-    std::shared_ptr<Service> menu {new Service};
-    std::unique_ptr<ConnectivityService> connectivityService {new ConnectivityService};
+    std::shared_ptr<networking::Manager> manager = networking::Manager::createInstance();
+
+    std::shared_ptr<Service> menu {new Service(manager)};
+    std::unique_ptr<ConnectivityService> connectivityService {new ConnectivityService(manager)};
     connectivityService->unlockAllModems().connect([menu](){ menu->unlockAllModems(); });
 
     if (getenv("VALGRIND") != 0) {

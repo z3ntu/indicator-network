@@ -127,7 +127,7 @@ WwanSection::Private::modemsChanged(const std::set<Modem::Ptr> &modems)
         auto compare = [](int lhs, int rhs ){
             // make sure index() == -1 goes to the bottom of the menu
             if (lhs == -1 && rhs == -1)
-                return true;
+                return false;
             if (lhs == -1)
                 return false;
             if (rhs == -1)
@@ -137,7 +137,6 @@ WwanSection::Private::modemsChanged(const std::set<Modem::Ptr> &modems)
         std::multimap<int, WwanLinkItem::Ptr, decltype(compare)> sorted(compare);
 
         for (auto pair : m_items) {
-            std::cout << __PRETTY_FUNCTION__ << pair.first->index() << " " << pair.first->simIdentifier().get() << std::endl;
             sorted.insert(std::make_pair(pair.first->index(), pair.second));
         }
         for (auto pair : sorted)
@@ -155,9 +154,8 @@ WwanSection::Private::modemsChanged(const std::set<Modem::Ptr> &modems)
         for(auto i : m_items)
             i.second->showSimIdentifier(true);
     } else {
-        for(auto m : modems)
-            for(auto i : m_items)
-                i.second->showSimIdentifier(false);
+        for(auto i : m_items)
+            i.second->showSimIdentifier(false);
     }
 }
 

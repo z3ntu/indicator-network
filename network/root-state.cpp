@@ -74,8 +74,6 @@ RootState::Private::Private(std::shared_ptr<networking::Manager> manager, ModemM
 void
 RootState::Private::modemsChanged(const std::set<Modem::Ptr> &modems)
 {
-    /// @todo we have to address the correct ordering of the modems
-
     std::set<Modem::Ptr> current;
     for (auto element : m_cellularIcons)
         current.insert(element.first);
@@ -263,9 +261,25 @@ RootState::Private::updateRootState()
         break;
     }
 
-    for (auto icon : m_cellularIcons)
-        if (!icon.second.empty())
-            icons.push_back(icon.second);
+    auto compare = [](int lhs, int rhs ){
+        // make sure index() == -1 goes as leftmost cellular icon
+        if (lhs == -1 && rhs == -1)
+            return false;
+        if (lhs == -1)
+            return false;
+        if (rhs == -1)
+            return true;
+        return lhs < rhs;
+    };
+    std::multimap<int, std::string, decltype(compare)> sorted(compare);
+
+    for (auto pair : m_cellularIcons) {
+        sorted.insert(std::make_pair(pair.first->index(), pair.second));
+    }
+    for (auto pair : sorted) {
+        if (!pair.second.empty())
+            icons.push_back(pair.second);
+    }
 
     // if any of the modems is roaming, show the roaming icon
     for (auto modem : m_modemManager->modems().get()) {

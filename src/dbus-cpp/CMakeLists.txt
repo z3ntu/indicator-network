@@ -1,5 +1,6 @@
 
 set(DBUS_CPP_SERVICES
+    services/connectivity.h
     services/ofono.h
 )
 

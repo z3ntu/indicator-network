@@ -61,7 +61,7 @@ class ActionGroupMerger
             // then they will override each other in GActionGroup so let's catch that
             // early on.
             if (name_iter->second != action) {
-                std::cerr << "Conflicting action names." << std::endl;
+                std::cerr << "Conflicting action names. \"" << action->name() << "\"" << std::endl;
                 /// @todo thow something.
                 return;
             }

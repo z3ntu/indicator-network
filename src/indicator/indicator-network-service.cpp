@@ -19,6 +19,8 @@
 
 #include "service.h"
 
+#include "connectivity-service/connectivity-service.h"
+
 #include <iostream>
 #include <memory>
 
@@ -82,6 +84,7 @@ main(int, char *[])
     notify_init(GETTEXT_PACKAGE);
 
     std::unique_ptr<Service> menu {new Service};
+    std::unique_ptr<ConnectivityService> connectivityService {new ConnectivityService};
 
     if (getenv("VALGRIND") != 0) {
         g_timeout_add(1000, (GSourceFunc)stop_main_loop, NULL);

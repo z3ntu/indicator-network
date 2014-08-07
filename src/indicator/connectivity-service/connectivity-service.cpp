@@ -94,6 +94,8 @@ public:
     core::dbus::Object::Ptr m_privateObject;
     std::shared_ptr<com::ubuntu::connectivity::Interface::Private> m_private;
 
+    core::Signal<> m_unlockAllModems;
+
     Private();
     ~Private();
 
@@ -128,11 +130,12 @@ ConnectivityService::Private::Private()
     m_status->set("online"); // offline, connecting
 
     m_privateObject = m_service->add_object_for_path(core::dbus::types::ObjectPath(com::ubuntu::connectivity::Interface::Private::path()));
-    m_privateObject->install_method_handler<com::ubuntu::connectivity::Interface::Private::Method::UnlockAllSims>([this](const core::dbus::Message::Ptr& msg)
+    m_privateObject->install_method_handler<com::ubuntu::connectivity::Interface::Private::Method::UnlockAllModems>([this](const core::dbus::Message::Ptr& msg)
     {
         auto reply = core::dbus::Message::make_method_return(msg);
-        std::cout << "UNLOCK ALL SIMS" << std::endl;
+        std::cout << "UNLOCK ALL Modems" << std::endl;
         m_bus->send(reply);
+        m_unlockAllModems();
     });
 
 }
@@ -209,3 +212,10 @@ ConnectivityService::ConnectivityService()
 
 ConnectivityService::~ConnectivityService()
 {}
+
+core::Signal<> &
+ConnectivityService::unlockAllModems()
+{
+    return d->m_unlockAllModems;
+}
+

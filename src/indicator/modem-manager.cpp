@@ -196,8 +196,15 @@ ModemManager::unlockModem(Modem::Ptr modem)
 void
 ModemManager::unlockAllModems()
 {
-    for (auto m : d->m_modems.get())
-        ;
+    std::cout << __PRETTY_FUNCTION__ << std::endl;
+    std::multimap<int, Modem::Ptr, Modem::Compare> sorted;
+    for (auto m : d->m_modems.get()) {
+        sorted.insert(std::make_pair(m->index(), m));
+    }
+    for (auto pair : sorted) {
+        std::cout << "Unlocking " << pair.second->simIdentifier().get() << std::endl;
+        unlockModem(pair.second);
+    }
 }
 
 

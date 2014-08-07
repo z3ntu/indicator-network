@@ -1,3 +1,10 @@
+indicator-network (0.5.1+14.10.20140807-0ubuntu1) utopic; urgency=low
+
+  [ Antti Kaijanmäki ]
+  * Add ModemInfoItem. (LP: #1315144)
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Thu, 07 Aug 2014 01:46:51 +0000
+
 indicator-network (0.5.1+14.10.20140805-0ubuntu1) utopic; urgency=low
 
   [ Antti Kaijanmäki ]

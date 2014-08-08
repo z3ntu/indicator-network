@@ -78,19 +78,19 @@ WwanLinkItem::Private::update()
     } else {
         m_infoItem->setSimIdentifierText("");
     }
+    /// @todo implement me.
+    m_infoItem->setConnectivityIcon("");
 
     switch(m_modem->simStatus().get()) {
     case Modem::SimStatus::missing:
         m_infoItem->setStatusIcon("no-simcard");
         m_infoItem->setStatusText(_("No SIM"));
-        m_infoItem->setConnectivityIcon("");
         m_infoItem->setLocked(false);
         m_infoItem->setRoaming(false);
         break;
     case Modem::SimStatus::error:
         m_infoItem->setStatusIcon("simcard-error");
         m_infoItem->setStatusText(_("SIM Error"));
-        m_infoItem->setConnectivityIcon("");
         m_infoItem->setLocked(false);
         m_infoItem->setRoaming(false);
         break;
@@ -98,7 +98,6 @@ WwanLinkItem::Private::update()
     case Modem::SimStatus::permanentlyLocked:
         m_infoItem->setStatusIcon("simcard-locked");
         m_infoItem->setStatusText(_("SIM Locked"));
-        m_infoItem->setConnectivityIcon("");
         m_infoItem->setLocked(true);
         m_infoItem->setRoaming(false);
         break;
@@ -111,6 +110,10 @@ WwanLinkItem::Private::update()
             case org::ofono::Interface::NetworkRegistration::Status::unregistered:
                 m_infoItem->setStatusIcon("gsm-3g-disabled");
                 m_infoItem->setStatusText(_("Unregistered"));
+                break;
+            case org::ofono::Interface::NetworkRegistration::Status::unknown:
+                m_infoItem->setStatusIcon("gsm-3g-disabled");
+                m_infoItem->setStatusText(_("Unknown"));
                 break;
             case org::ofono::Interface::NetworkRegistration::Status::denied:
                 m_infoItem->setStatusIcon("gsm-3g-disabled");
@@ -131,10 +134,6 @@ WwanLinkItem::Private::update()
                     m_infoItem->setStatusIcon("gsm-3g-no-service");
                     m_infoItem->setStatusText(_("No Signal"));
                 }
-                break;
-            case org::ofono::Interface::NetworkRegistration::Status::unknown:
-                m_infoItem->setConnectivityIcon("");
-                m_infoItem->setStatusText("");
                 break;
             }
         } else {

@@ -144,7 +144,7 @@ RootState::Private::updateModem(Modem::WeakPtr weakModem)
         case org::ofono::Interface::NetworkRegistration::Status::roaming:
             if (modem->strength().get() != 0) {
                 m_cellularIcons[modem] = Modem::strengthIcon(modem->strength().get());
-                m_modemTechIcons[(modem->index()] = Modem::technologyIcon(modem->technology().get());
+                m_modemTechIcons[modem->index()] = Modem::technologyIcon(modem->technology().get());
             } else {
                 m_cellularIcons[modem] = "gsm-3g-no-service";
 

@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-05-22 11:31+0300\n"
-"PO-Revision-Date: 2014-08-06 17:47+0000\n"
-"Last-Translator: Kentaro Kazuhama <Unknown>\n"
+"PO-Revision-Date: 2014-08-07 08:14+0000\n"
+"Last-Translator: Mitsuya Shibata <mty.shibata@gmail.com>\n"
 "Language-Team: Japanese <ja@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-08-07 06:29+0000\n"
-"X-Generator: Launchpad (build 17147)\n"
+"X-Launchpad-Export-Date: 2014-08-08 07:10+0000\n"
+"X-Generator: Launchpad (build 17156)\n"
 
 #: network/quick-access-section.cpp:50
 msgid "Flight Mode"
@@ -31,11 +31,11 @@ msgstr "SIMエラー"
 
 #: network/root-state.cpp:153
 msgid "SIM Locked"
-msgstr ""
+msgstr "SIMがロックされています"
 
 #: network/root-state.cpp:163
 msgid "No Signal"
-msgstr ""
+msgstr "信号なし"
 
 #. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
 #: network/root-state.cpp:337
@@ -48,6 +48,7 @@ msgid ""
 "This will be the last attempt.<br><br>If the SIM PIN is entered incorrectly, "
 "your SIM will be blocked and would require the PUK Code to unlock."
 msgstr ""
+"最後のチャンスです。<br><br>間違ったSIM PINを入力した場合、SIMがブロックされ、アンロックするためにPUKコードが必要になります。"
 
 #. TRANSLATORS: this string is not currently being shown on the screen. Please do not translate yet.
 #: network/sim-unlock-dialog.cpp:95
@@ -55,6 +56,8 @@ msgid ""
 "Your SIM is now blocked.<br><br>Enter the PUK Code to unlock.<br><br>You may "
 "contact your network provider for PUK Code."
 msgstr ""
+"SIMがブロックされました。<br><br>アンロックするためにはPUKコードを入力してください。<br><br>PUKコードを入手するにはネットワークプ"
+"ロバイダーに問い合わせる必要があるかもしれません。"
 
 #. TRANSLATORS: this string is not currently being shown on the screen. Please do not translate yet.
 #: network/sim-unlock-dialog.cpp:106
@@ -63,13 +66,15 @@ msgid ""
 "incorrectly, your SIM will need to be replaced.<br><br>Please contact your "
 "network provider."
 msgstr ""
+"最後のチャンスです。<br><br>間違ったPUKコードを入力した場合、SIMを交換する必要があります。<br><br>ネットワークプロバイダーに問い合わ"
+"せてください。"
 
 #. TRANSLATORS: this string is not currently being shown on the screen. Please do not translate yet.
 #: network/sim-unlock-dialog.cpp:117
 msgid ""
 "Your SIM is now permanently blocked and needs to be replaced.<br><br>Please "
 "contact your network provider."
-msgstr ""
+msgstr "SIMは完全にブロックされました。SIMを交換する必要があります。<br><br>ネットワークプロバイダーに問い合わせてください。"
 
 #: network/sim-unlock-dialog.cpp:183 network/sim-unlock-dialog.cpp:414
 #: network/sim-unlock-dialog.cpp:442
@@ -108,7 +113,7 @@ msgstr ""
 
 #: network/sim-unlock-dialog.cpp:441
 msgid "Failed to change PIN."
-msgstr ""
+msgstr "PINの変更に失敗しました。"
 
 #: network/wifi-link-item.h:87
 msgid "Wi-Fi"
@@ -116,7 +121,7 @@ msgstr "Wi-Fi"
 
 #: network/wifi-link-item.h:151
 msgid "Other network…"
-msgstr ""
+msgstr "その他のネットワーク..."
 
 #: network/wifi-section.cpp:60
 msgid "Wi-Fi settings…"
@@ -133,11 +138,11 @@ msgstr "セルラー設定…"
 #: secret-agent/SecretRequest.cpp:60
 #, qt-format
 msgid "Connect to “%1”"
-msgstr ""
+msgstr "\"%1\"へ接続"
 
 #: secret-agent/SecretRequest.cpp:65
 msgid "WPA"
-msgstr ""
+msgstr "WPA"
 
 #: secret-agent/SecretRequest.cpp:67
 msgid "WEP"

@@ -7,56 +7,40 @@ msgid ""
 msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2014-05-22 11:31+0300\n"
+"POT-Creation-Date: 2014-08-08 15:33+0300\n"
 "PO-Revision-Date: 2014-08-04 17:42+0000\n"
 "Last-Translator: samson <Unknown>\n"
 "Language-Team: Amharic <am@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-08-05 06:48+0000\n"
-"X-Generator: Launchpad (build 17147)\n"
+"X-Launchpad-Export-Date: 2014-08-09 05:51+0000\n"
+"X-Generator: Launchpad (build 17156)\n"
 
-#: network/quick-access-section.cpp:50
+#: network/quick-access-section.cpp:48
 msgid "Flight Mode"
 msgstr "በ በረራ ዘዴ"
 
-#: network/root-state.cpp:145
-msgid "No SIM"
-msgstr ""
-
-#: network/root-state.cpp:148
-msgid "SIM Error"
-msgstr ""
-
-#: network/root-state.cpp:153
-msgid "SIM Locked"
-msgstr ""
-
-#: network/root-state.cpp:163
-msgid "No Signal"
-msgstr ""
-
 #. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
-#: network/root-state.cpp:337
+#: network/root-state.cpp:307
 msgid "Network"
 msgstr "ኔትዎርክ"
 
-#. TRANSLATORS: this string is not currently being shown on the screen. Please do not translate yet.
+#. TRANSLATORS: this string is not currently being shown on the screen. This message might be subject to change.
 #: network/sim-unlock-dialog.cpp:85
 msgid ""
 "This will be the last attempt.<br><br>If the SIM PIN is entered incorrectly, "
 "your SIM will be blocked and would require the PUK Code to unlock."
 msgstr ""
 
-#. TRANSLATORS: this string is not currently being shown on the screen. Please do not translate yet.
+#. TRANSLATORS: this string is not currently being shown on the screen. This message might be subject to change.
 #: network/sim-unlock-dialog.cpp:95
 msgid ""
 "Your SIM is now blocked.<br><br>Enter the PUK Code to unlock.<br><br>You may "
 "contact your network provider for PUK Code."
 msgstr ""
 
-#. TRANSLATORS: this string is not currently being shown on the screen. Please do not translate yet.
+#. TRANSLATORS: this string is not currently being shown on the screen. This message might be subject to change.
 #: network/sim-unlock-dialog.cpp:106
 msgid ""
 "This will be the last attempt.<br><br>If the PUK code is entered "
@@ -64,7 +48,7 @@ msgid ""
 "network provider."
 msgstr ""
 
-#. TRANSLATORS: this string is not currently being shown on the screen. Please do not translate yet.
+#. TRANSLATORS: this string is not currently being shown on the screen. This message might be subject to change.
 #: network/sim-unlock-dialog.cpp:117
 msgid ""
 "Your SIM is now permanently blocked and needs to be replaced.<br><br>Please "
@@ -122,31 +106,63 @@ msgstr "ሌሎች ኔትዎርኮች..."
 msgid "Wi-Fi settings…"
 msgstr "ዋይ-ፋይ ማሰናጃዎች…"
 
-#: network/wwan-link-item.cpp:55
-msgid "Unlock SIM…"
+#: network/wwan-link-item.cpp:87
+msgid "No SIM"
+msgstr ""
+
+#: network/wwan-link-item.cpp:93
+msgid "SIM Error"
+msgstr ""
+
+#: network/wwan-link-item.cpp:100
+msgid "SIM Locked"
+msgstr ""
+
+#: network/wwan-link-item.cpp:112
+msgid "Unregistered"
+msgstr ""
+
+#: network/wwan-link-item.cpp:116
+msgid "Unknown"
+msgstr ""
+
+#: network/wwan-link-item.cpp:120
+msgid "Denied"
+msgstr ""
+
+#: network/wwan-link-item.cpp:124
+msgid "Searching"
+msgstr ""
+
+#: network/wwan-link-item.cpp:135
+msgid "No Signal"
+msgstr ""
+
+#: network/wwan-link-item.cpp:141
+msgid "Offline"
 msgstr ""
 
 #: network/wwan-section.cpp:79
 msgid "Cellular settings…"
 msgstr ""
 
-#: secret-agent/SecretRequest.cpp:60
+#: secret-agent/SecretRequest.cpp:62
 #, qt-format
 msgid "Connect to “%1”"
 msgstr "መገናኛ ወደ “%1”"
 
-#: secret-agent/SecretRequest.cpp:65
+#: secret-agent/SecretRequest.cpp:67
 msgid "WPA"
 msgstr "WPA"
 
-#: secret-agent/SecretRequest.cpp:67
+#: secret-agent/SecretRequest.cpp:69
 msgid "WEP"
 msgstr "WEP"
 
-#: secret-agent/SecretRequest.cpp:73
+#: secret-agent/SecretRequest.cpp:75
 msgid "Connect"
 msgstr "መገናኛ"
 
-#: secret-agent/SecretRequest.cpp:74
+#: secret-agent/SecretRequest.cpp:76
 msgid "Cancel"
 msgstr "መሰረዣ"

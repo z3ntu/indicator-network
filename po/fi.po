@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-08-08 15:33+0300\n"
-"PO-Revision-Date: 2014-05-27 08:06+0000\n"
+"PO-Revision-Date: 2014-08-11 09:09+0000\n"
 "Last-Translator: Jiri Grönroos <Unknown>\n"
 "Language-Team: Finnish <fi@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-08-09 05:51+0000\n"
+"X-Launchpad-Export-Date: 2014-08-12 06:47+0000\n"
 "X-Generator: Launchpad (build 17156)\n"
 "Language: fi\n"
 
@@ -129,19 +129,19 @@ msgstr "SIM lukittu"
 
 #: network/wwan-link-item.cpp:112
 msgid "Unregistered"
-msgstr ""
+msgstr "Rekisteröitymätön"
 
 #: network/wwan-link-item.cpp:116
 msgid "Unknown"
-msgstr ""
+msgstr "Tuntematon"
 
 #: network/wwan-link-item.cpp:120
 msgid "Denied"
-msgstr ""
+msgstr "Estetty"
 
 #: network/wwan-link-item.cpp:124
 msgid "Searching"
-msgstr ""
+msgstr "Etsitään"
 
 #: network/wwan-link-item.cpp:135
 msgid "No Signal"
@@ -149,7 +149,7 @@ msgstr "Ei signaalia"
 
 #: network/wwan-link-item.cpp:141
 msgid "Offline"
-msgstr ""
+msgstr "Ei verkossa"
 
 #: network/wwan-section.cpp:79
 msgid "Cellular settings…"

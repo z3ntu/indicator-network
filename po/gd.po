@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-08-08 15:33+0300\n"
-"PO-Revision-Date: 2014-05-26 17:48+0000\n"
+"PO-Revision-Date: 2014-08-13 00:18+0000\n"
 "Last-Translator: Akerbeltz <fios@akerbeltz.org>\n"
 "Language-Team: Gaelic; Scottish <gd@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-08-09 05:51+0000\n"
+"X-Launchpad-Export-Date: 2014-08-13 06:58+0000\n"
 "X-Generator: Launchpad (build 17156)\n"
 
 #: network/quick-access-section.cpp:48
@@ -131,19 +131,19 @@ msgstr "SIM glaiste"
 
 #: network/wwan-link-item.cpp:112
 msgid "Unregistered"
-msgstr ""
+msgstr "Gun chlàradh"
 
 #: network/wwan-link-item.cpp:116
 msgid "Unknown"
-msgstr ""
+msgstr "Neo-aithnichte"
 
 #: network/wwan-link-item.cpp:120
 msgid "Denied"
-msgstr ""
+msgstr "Air a dhiùltadh"
 
 #: network/wwan-link-item.cpp:124
 msgid "Searching"
-msgstr ""
+msgstr "'Ga lorg"
 
 #: network/wwan-link-item.cpp:135
 msgid "No Signal"
@@ -151,7 +151,7 @@ msgstr "Gun siognal"
 
 #: network/wwan-link-item.cpp:141
 msgid "Offline"
-msgstr ""
+msgstr "Far loidhne"
 
 #: network/wwan-section.cpp:79
 msgid "Cellular settings…"

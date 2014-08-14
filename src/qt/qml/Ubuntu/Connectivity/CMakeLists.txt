@@ -16,7 +16,7 @@ include_directories(${CMAKE_SOURCE_DIR}/src/qt/include)
 add_library(connectivity-qml SHARED
 ${CORE_SRCS}
 )
-target_link_libraries(connectivity-qml connectivity-qt)
+target_link_libraries(connectivity-qml ${CONECTIVITY_QT_LIB_TARGET})
 
 qt5_use_modules(connectivity-qml Qml)
 

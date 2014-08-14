@@ -4,6 +4,7 @@ cmake_minimum_required(VERSION 2.8.9)
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" "${CMAKE_MODULE_PATH}")
 
 find_package(PkgConfig REQUIRED)
+include(EnableCoverageReport)
 include(GNUInstallDirs)
 include(Coverage)
 include(UseGSettings)
@@ -103,7 +104,23 @@ configure_file(
   "config.h"
 )
 
+#####################################################################
+# Enable code coverage calculation with gcov/gcovr/lcov
+# Usage:
+#  * Switch build type to coverage (use ccmake or cmake-gui)
+#  * Invoke make, make test, make coverage
+#  * Find html report in subdir coveragereport
+#  * Find xml report feasible for jenkins in coverage.xml
+#####################################################################
+IF(CMAKE_BUILD_TYPE MATCHES [cC][oO][vV][eE][rR][aA][gG][eE])
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftest-coverage -fprofile-arcs" )
+  SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -ftest-coverage -fprofile-arcs" )
+  SET(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -ftest-coverage -fprofile-arcs" )
+  SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -ftest-coverage -fprofile-arcs" )
+ENDIF(CMAKE_BUILD_TYPE MATCHES [cC][oO][vV][eE][rR][aA][gG][eE])
+
 add_subdirectory(data)
+add_subdirectory(doc)
 add_subdirectory(src)
 add_subdirectory(po)
 
@@ -115,3 +132,5 @@ ADD_CUSTOM_TARGET(
         ${CMAKE_CTEST_COMMAND} --force-new-ctest-process --output-on-failure
 )
 
+#enable_coverage_report(TARGETS connectivity-cpp
+#                       FILTER ${CMAKE_SOURCE_DIR}/tests/* ${CMAKE_BINARY_DIR}/*)

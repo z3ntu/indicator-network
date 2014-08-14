@@ -1,0 +1,37 @@
+/*!
+\page index.html overview
+\title Unity Action API
+
+\contentspage {Unity Action API} {Contents}
+
+\part Introduction
+
+Unity Action API offers a way to easily integrate with the Unity components outside of the application such as the Launcher, HUD, AppMenu and MessagingMenu.
+
+Applications have internally different types of actions with different life-cycles. Some actions are application wide that are relevant and
+available throughout the whole life-cycle of the application. Other actions are context specific and only available when the application is in
+certain visual state, such as in image editing mode. See  for more details.
+
+Application can define application wide actions dynamically during runtime and as offline (jumplist) actions that are available even if the
+application is not running. Activating an offline action will launch the application when necessary.
+
+Unity Action API can be used with three ways:
+\list
+    \li - using the Qt C++ API (see the C++ documentation)
+    \li - Using this QML API directly
+\endlist
+
+\part Reporting Bugs
+If you find any problems with the or this documentation,
+please file a bug in Unity Action API \l {https://bugs.launchpad.net/unity-action-api} {Launchpad page}
+
+\part Components
+Available through:
+\code
+    import Ubuntu.Connectivity 1.0
+\endcode
+
+\part Items
+\annotatedlist connectivity
+
+*/

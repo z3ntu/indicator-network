@@ -103,12 +103,12 @@ Description: Unity Action QML Components
  .
  This package contains the qtdeclarative bindings for Ubuntu connectivity API.
 
-#Package: connectivity-doc
-#Section: doc
-#Architecture: all
-#Depends: ${misc:Depends},
-#         ${shlibs:Depends},
-#Description: Unity Action API - documentation
-# Ubuntu Connectivity API
-# .
-# This package contains developer documentation.
+Package: connectivity-doc
+Section: doc
+Architecture: all
+Depends: ${misc:Depends},
+         ${shlibs:Depends},
+Description: Unity Action API - documentation
+ Ubuntu Connectivity API
+ .
+ This package contains developer documentation.

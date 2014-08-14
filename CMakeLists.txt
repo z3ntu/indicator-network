@@ -119,6 +119,10 @@ IF(CMAKE_BUILD_TYPE MATCHES [cC][oO][vV][eE][rR][aA][gG][eE])
   SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -ftest-coverage -fprofile-arcs" )
 ENDIF(CMAKE_BUILD_TYPE MATCHES [cC][oO][vV][eE][rR][aA][gG][eE])
 
+
+set(CONNECTIVITY_QT_VERSION_MAJOR 1)
+set(CONNECTIVITY_QT_VERSION_MINOR 0)
+set(CONNECTIVITY_QT_LIB_TARGET connectivity-qt${CONNECTIVITY_QT_VERSION_MAJOR})
 add_subdirectory(data)
 #add_subdirectory(doc)
 add_subdirectory(src)

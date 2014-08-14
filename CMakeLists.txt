@@ -120,7 +120,7 @@ IF(CMAKE_BUILD_TYPE MATCHES [cC][oO][vV][eE][rR][aA][gG][eE])
 ENDIF(CMAKE_BUILD_TYPE MATCHES [cC][oO][vV][eE][rR][aA][gG][eE])
 
 add_subdirectory(data)
-add_subdirectory(doc)
+#add_subdirectory(doc)
 add_subdirectory(src)
 add_subdirectory(po)
 

@@ -198,7 +198,7 @@ struct Interface
         }
 
         typedef std::shared_ptr<NetworkRegistration> Ptr;
-        NetworkRegistration(const std::shared_ptr<core::dbus::Object>& object)
+        explicit NetworkRegistration(const std::shared_ptr<core::dbus::Object>& object)
             : object(object),
               propertyChanged(object->get_signal<Signal::PropertyChanged>())
         {
@@ -722,7 +722,7 @@ struct Interface
         }
 
         typedef std::shared_ptr<SimManager> Ptr;
-        SimManager(const std::shared_ptr<core::dbus::Object>& object)
+        explicit SimManager(const std::shared_ptr<core::dbus::Object>& object)
             : object(object),
               propertyChanged(object->get_signal<Signal::PropertyChanged>())
         {
@@ -1296,7 +1296,7 @@ struct Service
     }
 
 
-    Service(const core::dbus::Bus::Ptr& bus)
+    explicit Service(const core::dbus::Bus::Ptr& bus)
     {
         auto service = core::dbus::Service::use_service<Service>(bus);
         auto object = service->object_for_path(core::dbus::types::ObjectPath(OFONO_MANAGER_PATH));
@@ -1307,7 +1307,7 @@ struct Service
     {
         std::shared_ptr<Interface::Manager> manager;
 
-        Mock(const core::dbus::Bus::Ptr& bus)
+        explicit Mock(const core::dbus::Bus::Ptr& bus)
         {
             auto service = core::dbus::Service::add_service<Service>(bus);
             auto object = service->add_object_for_path(core::dbus::types::ObjectPath(OFONO_MANAGER_PATH));

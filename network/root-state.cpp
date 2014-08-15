@@ -232,7 +232,7 @@ RootState::Private::updateNetworkingIcon()
 Variant
 RootState::Private::createIcon(const std::string name)
 {
-    GError *error = NULL;
+    GError *error = nullptr;
     auto gicon = g_icon_new_for_string(name.c_str(), &error);
     if (error) {
         g_error_free(error);

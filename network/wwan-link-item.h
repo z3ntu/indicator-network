@@ -32,7 +32,7 @@ public:
     typedef std::shared_ptr<WwanLinkItem> Ptr;
     WwanLinkItem() = delete;
     WwanLinkItem(Modem::Ptr, ModemManager::Ptr modemManager);
-    ~WwanLinkItem();
+    virtual ~WwanLinkItem();
 
     // from Section
     virtual ActionGroup::Ptr actionGroup();

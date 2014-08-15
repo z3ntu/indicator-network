@@ -1,3 +1,10 @@
 *.autosave
 CMakeLists.txt.user
 CMakeLists.txt.user.3.0-pre1
+/.cproject
+/.project
+/.pydevproject
+/.settings
+/build
+/buildclang
+

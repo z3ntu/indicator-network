@@ -36,7 +36,7 @@ public:
 
     typedef std::shared_ptr<SimUnlock> Ptr;
 
-    SimUnlock(const std::string &title = "",
+    explicit SimUnlock(const std::string &title = "",
               const std::string &body = "",
               std::pair<std::uint8_t, std::uint8_t> pinMinMax = {0, -0});
     ~SimUnlock();

@@ -56,7 +56,7 @@ public:
             g_idle_add_full(G_PRIORITY_HIGH,
                             GSourceFunc(GMainLoopSync::dispatch_cb),
                             this,
-                            NULL);
+                            nullptr);
             if (m_cv.wait_for(lk, std::chrono::seconds(3)) == std::cv_status::timeout) {
                 std::cerr << "Timeout when waiting for GMainLoop sync." << std::endl;
             }
@@ -143,13 +143,13 @@ public:
 
     SessionBus()
     {
-        GError *error = NULL;
+        GError *error = nullptr;
 
         gchar *address = g_dbus_address_get_for_bus_sync(G_BUS_TYPE_SESSION,
-                                                         NULL, &error);
+                                                         nullptr, &error);
         if (!address)
         {
-            g_assert(error != NULL);
+            g_assert(error != nullptr);
             if (error->domain != G_IO_ERROR
                     || error->code != G_IO_ERROR_CANCELLED)
             {
@@ -160,20 +160,20 @@ public:
             return;
         }
 
-        error = NULL;
+        error = nullptr;
         m_bus.reset(
                 g_dbus_connection_new_for_address_sync(
                         address,
                         (GDBusConnectionFlags) (G_DBUS_CONNECTION_FLAGS_AUTHENTICATION_CLIENT
                                 | G_DBUS_CONNECTION_FLAGS_MESSAGE_BUS_CONNECTION),
-                        NULL,
-                        NULL,
+                        nullptr,
+                        nullptr,
                         &error),
                 GObjectDeleter());
         g_free(address);
 
         if (!m_bus) {
-            g_assert(error != NULL);
+            g_assert(error != nullptr);
             if (error->domain != G_IO_ERROR || error->code != G_IO_ERROR_CANCELLED) {
                 std::cerr << "Error getting the bus: " << error->message;
             }
@@ -236,7 +236,7 @@ public:
                                          (GBusNameAcquiredCallback)nameAcquired,
                                          (GBusNameLostCallback)nameLost,
                                          this,
-                                         NULL);
+                                         nullptr);
 
     }
     ~BusName()

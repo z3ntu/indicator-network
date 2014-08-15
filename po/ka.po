@@ -1,4 +1,4 @@
-# Luxembourgish translation for indicator-network
+# Georgian translation for indicator-network
 # Copyright (c) 2014 Rosetta Contributors and Canonical Ltd 2014
 # This file is distributed under the same license as the indicator-network package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2014.
@@ -8,9 +8,9 @@ msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-08-08 15:33+0300\n"
-"PO-Revision-Date: 2014-05-26 09:30+0000\n"
+"PO-Revision-Date: 2014-08-08 11:48+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: Luxembourgish <lb@li.org>\n"
+"Language-Team: Georgian <ka@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -24,7 +24,7 @@ msgstr ""
 #. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
 #: network/root-state.cpp:307
 msgid "Network"
-msgstr "Netzwierk"
+msgstr ""
 
 #. TRANSLATORS: this string is not currently being shown on the screen. This message might be subject to change.
 #: network/sim-unlock-dialog.cpp:85
@@ -157,12 +157,12 @@ msgstr ""
 
 #: secret-agent/SecretRequest.cpp:69
 msgid "WEP"
-msgstr "WEP"
+msgstr ""
 
 #: secret-agent/SecretRequest.cpp:75
 msgid "Connect"
-msgstr "Verbannen"
+msgstr ""
 
 #: secret-agent/SecretRequest.cpp:76
 msgid "Cancel"
-msgstr "Ofbriechen"
+msgstr ""

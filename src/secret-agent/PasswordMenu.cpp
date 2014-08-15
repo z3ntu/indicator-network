@@ -28,8 +28,8 @@ static const QString PASSWORD_MENU_PATH("/menu/%1");
 class PasswordMenuPriv {
 public:
 	PasswordMenuPriv() :
-			m_connection(g_bus_get_sync(G_BUS_TYPE_SESSION, NULL,
-			NULL)), m_exportedActionGroupId(0), m_exportedMenuModelId(0) {
+			m_connection(g_bus_get_sync(G_BUS_TYPE_SESSION, nullptr,
+			nullptr)), m_exportedActionGroupId(0), m_exportedMenuModelId(0) {
 	}
 
 	~PasswordMenuPriv() {
@@ -104,7 +104,7 @@ PasswordMenu::PasswordMenu() :
 		exportrev++;
 		p->m_actionPath = PASSWORD_ACTION_PATH.arg(exportrev);
 		p->m_exportedActionGroupId = g_dbus_connection_export_action_group(
-				p->m_connection, p->m_actionPath.toUtf8().data(), actions, NULL);
+				p->m_connection, p->m_actionPath.toUtf8().data(), actions, nullptr);
 	} while (p->m_exportedActionGroupId == 0 && exportrev < 128);
 
 	/* Export the menu.  If we can't get a name, keep trying to
@@ -116,7 +116,7 @@ PasswordMenu::PasswordMenu() :
 		p->m_menuPath = PASSWORD_MENU_PATH.arg(exportrev);
 		p->m_exportedMenuModelId = g_dbus_connection_export_menu_model(
 				p->m_connection, p->m_menuPath.toUtf8().data(),
-				G_MENU_MODEL(menu), NULL);
+				G_MENU_MODEL(menu), nullptr);
 	} while (p->m_exportedMenuModelId == 0 && exportrev < 128);
 
 	/* Unref the objects as a reference is maintained by the fact that they're

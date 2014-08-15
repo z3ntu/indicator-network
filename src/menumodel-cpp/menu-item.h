@@ -64,13 +64,13 @@ public:
         return menu;
     }
 
-    MenuItem(const std::string &label  = "",
+    explicit MenuItem(const std::string &label  = "",
              const std::string &action = "")
         : m_label{label},
           m_action{action}
     {
         /// @todo validate that action is valid
-        m_gmenuitem = make_gmenuitem_ptr(g_menu_item_new(NULL, NULL));
+        m_gmenuitem = make_gmenuitem_ptr(g_menu_item_new(nullptr, nullptr));
         if (!label.empty()) {
             g_menu_item_set_label(m_gmenuitem.get(), label.c_str());
         }
@@ -136,7 +136,7 @@ public:
         assert(!attribute.empty());
         std::lock_guard<std::recursive_mutex> lg(m_mutex);
         m_attributes.erase(attribute);
-        g_menu_item_set_attribute(m_gmenuitem.get(), attribute.c_str(), NULL);
+        g_menu_item_set_attribute(m_gmenuitem.get(), attribute.c_str(), nullptr);
         m_changed();
     }
 

@@ -1,6 +1,8 @@
 project(indicator-network C CXX)
 cmake_minimum_required(VERSION 2.8.9)
 
+string(TOLOWER "${CMAKE_BUILD_TYPE}" build_type_lower)
+
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" "${CMAKE_MODULE_PATH}")
 
 find_package(PkgConfig REQUIRED)
@@ -89,8 +91,7 @@ find_package(GObjectIntrospection 0.9.12)
 include_directories(${CMAKE_BINARY_DIR})
 
 set(COMMON_FLAGS "-Wall -Wextra -Wpedantic -fno-permissive")
-string(TOLOWER "${CMAKE_BUILD_TYPE}" BUILD_TYPE)
-if(NOT BUILD_TYPE MATCHES debug)
+if(NOT build_type_lower MATCHES debug)
     set(COMMON_FLAGS "${COMMON_FLAGS} -Werror")
 endif()
 
@@ -112,7 +113,7 @@ configure_file(
 #  * Find html report in subdir coveragereport
 #  * Find xml report feasible for jenkins in coverage.xml
 #####################################################################
-IF(BUILD_TYPE MATCHES coverage)
+IF(build_type_lower MATCHES coverage)
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftest-coverage -fprofile-arcs" )
   SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -ftest-coverage -fprofile-arcs" )
   SET(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -ftest-coverage -fprofile-arcs" )

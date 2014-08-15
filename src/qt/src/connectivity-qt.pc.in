@@ -2,9 +2,9 @@ libdir=@libdir@
 includedir=@includedir@
 
 Cflags: -I${includedir}/
-Requires: hud-2 Qt5Core
+Requires: Qt5DBus
 Libs: @ABSOLUTE_SO_FILE@
 
-Name: unity-action-qt
-Description: Unity Common Action API
-Version: @API_VERSION_MAJOR@.@API_VERSION_MINOR@
+Name: connectivity-qt1
+Description: Ubuntu Connectivity API
+Version: @CONNECTIVITY_QT_VERSION_MAJOR@.@CONNECTIVITY_QT_VERSION_MINOR@

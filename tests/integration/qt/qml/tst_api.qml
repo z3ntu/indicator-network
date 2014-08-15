@@ -33,6 +33,8 @@ Item {
         id: networkingStatus
         onStatusChanged: {}
         onLimitationsChanged: {}
+        onOnlineChanged: {}
+        onLimitedBandwithChanged: {}
     }
 
     TestCase {
@@ -40,6 +42,8 @@ Item {
         id: test_api
 
         property int status : networkingStatus.status
+        property int online : networkingStatus.online
+        property int limitedBandwith : networkingStatus.limitedBandwith
 
         function test_api() {
             // just make sure this file can be loaded properly by the QmlEngine.

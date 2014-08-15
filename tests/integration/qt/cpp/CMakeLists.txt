@@ -10,7 +10,7 @@ set(testCommand dbus-test-runner -t ${CMAKE_CURRENT_BINARY_DIR}/cpptest
     -p -o -p -,txt)
 
 add_executable(cpptest ${TEST_SRCS})
-target_link_libraries(cpptest connectivity-qt)
+target_link_libraries(cpptest ${CONNECTIVITY_QT_LIB_TARGET})
 qt5_use_modules(cpptest Core Test)
 
-add_test(NAME cpp COMMAND ${testCommand})
+add_test(qtcpptests ${testCommand})

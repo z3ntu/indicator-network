@@ -25,9 +25,13 @@
 
 #include <ubuntu/connectivity/NetworkingStatus>
 
-class NetworkingStatus : public ubuntu::connectivity::NetworkingStatus
+class Q_DECL_EXPORT NetworkingStatus : public ubuntu::connectivity::NetworkingStatus
 {
     Q_OBJECT
+
+    Q_PROPERTY(bool online
+               READ online
+               NOTIFY onlineChanged)
 
     Q_PROPERTY(bool limitedBandwith
                READ limitedBandwith
@@ -37,9 +41,11 @@ public:
     explicit NetworkingStatus(QObject *parent = 0);
     virtual ~NetworkingStatus();
 
+    bool online() const;
     bool limitedBandwith() const;
 
 Q_SIGNALS:
+    void onlineChanged(bool value);
     void limitedBandwithChanged(bool value);
 };
 

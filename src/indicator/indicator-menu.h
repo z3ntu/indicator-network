@@ -62,8 +62,6 @@ public:
         m_rootMenu->append(m_rootItem);
     }
 
-    virtual ~IndicatorMenu() {}
-
     virtual void
     addSection(Section::Ptr section)
     {

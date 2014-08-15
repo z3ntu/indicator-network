@@ -67,7 +67,7 @@ Description: Autopilot tests for the network indicator for Ubuntu
  The Indicator-network service is responsible for exporting the system settings
  menu through dbus.  This package contains its autopilot tests.
 
-Package: libconnectivity-qt0
+Package: libconnectivity-qt1
 Architecture: any
 Pre-Depends: ${misc:Pre-Depends}
 Multi-Arch: same
@@ -76,14 +76,14 @@ Depends: ${misc:Depends},
 Description: Unity Action Qt API
  Ubuntu Connectivity API - Qt bindings
 
-Package: libconnectivity-qt0-dev
+Package: libconnectivity-qt1-dev
 Section: libdevel
 Architecture: any
 Pre-Depends: ${misc:Pre-Depends}
 Multi-Arch: same
 Depends: ${misc:Depends},
          ${shlibs:Depends},
-         libconnectivity-qt0 (= ${binary:Version}),
+         libconnectivity-qt1 (= ${binary:Version}),
          qtbase5-dev
 Suggests: unity-action-doc,
 Description: Unity Action Qt API - development files
@@ -97,7 +97,7 @@ Pre-Depends: ${misc:Pre-Depends}
 Multi-Arch: same
 Depends: ${misc:Depends},
          ${shlibs:Depends},
-         libconnectivity-qt0 (= ${binary:Version}),
+         libconnectivity-qt1 (= ${binary:Version}),
 Description: Unity Action QML Components
  Ubuntu Connectivity API - QML bindings
  .

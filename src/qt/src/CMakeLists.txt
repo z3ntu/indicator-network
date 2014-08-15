@@ -1,7 +1,5 @@
-set(CONNECTIVITY_QT_VERSION_MAJOR 1)
-set(CONNECTIVITY_QT_VERSION_MINOR 0)
 
-set(CONNECTIVITY_QT_INCLUDE_DIR "${CMAKE_INSTALL_FULL_INCLUDEDIR}/connectivity-api/qt${API_VERSION_MAJOR}")
+set(CONNECTIVITY_QT_INCLUDE_DIR "${CMAKE_INSTALL_FULL_INCLUDEDIR}/connectivity-api/qt${CONNECTIVITY_QT_VERSION_MAJOR}")
 
 set(PUBLIC_HEADER_DIR "${CMAKE_SOURCE_DIR}/src/qt/include/ubuntu/connectivity")
 set(PUBLIC_HEADERS
@@ -19,15 +17,15 @@ set(CORE_SRCS
     dbus-properties-interface.cpp
 )
 
-add_library(connectivity-qt SHARED
+add_library(${CONNECTIVITY_QT_LIB_TARGET} SHARED
     ${CORE_SRCS}
     ${PUBLIC_HEADERS} # public headers have to be included here for Q_DECL_EXPORT to work properly
 )
 
-qt5_use_modules(connectivity-qt Core DBus)
+qt5_use_modules(${CONNECTIVITY_QT_LIB_TARGET} Core DBus)
 
 install(
-  TARGETS connectivity-qt
+  TARGETS ${CONNECTIVITY_QT_LIB_TARGET}
   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
@@ -35,14 +33,14 @@ install(
 
 set(SO_VERSION ${CONNECTIVITY_QT_VERSION_MAJOR})
 
-set_target_properties(connectivity-qt PROPERTIES
+set_target_properties(${CONNECTIVITY_QT_LIB_TARGET} PROPERTIES
                       SOVERSION ${SO_VERSION}
 )
 
-set(PC_FILE_TARGET "${CMAKE_CURRENT_BINARY_DIR}/connectivity-qt${API_VERSION_MAJOR}.pc")
+set(PC_FILE_TARGET "${CMAKE_CURRENT_BINARY_DIR}/${CONNECTIVITY_QT_LIB_TARGET}.pc")
 set(libdir "${CMAKE_INSTALL_FULL_LIBDIR}")
 set(includedir "${CCONNECTIVITY_QT_INCLUDE_DIR}")
-set(ABSOLUTE_SO_FILE "${CMAKE_INSTALL_FULL_LIBDIR}/libconnectivity-qt${API_VERSION_MAJOR}.so.${SO_VERSION}")
+set(ABSOLUTE_SO_FILE "${CMAKE_INSTALL_FULL_LIBDIR}/${CONNECTIVITY_QT_LIB_TARGET}.so.${SO_VERSION}")
 configure_file("connectivity-qt.pc.in" ${PC_FILE_TARGET} @ONLY)
 install(
   FILES ${PC_FILE_TARGET}

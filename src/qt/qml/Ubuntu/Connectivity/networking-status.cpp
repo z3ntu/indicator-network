@@ -22,13 +22,22 @@
 NetworkingStatus::NetworkingStatus(QObject *parent)
         : ubuntu::connectivity::NetworkingStatus(parent)
 {
+    connect(this, &NetworkingStatus::statusChanged, [this](Status value){
+        value == Status::Online ? Q_EMIT onlineChanged(true) : Q_EMIT onlineChanged(false);
+    });
 }
 
 NetworkingStatus::~NetworkingStatus()
 {}
 
 bool
+NetworkingStatus::online() const
+{
+    return status() == Status::Online;
+}
+
+bool
 NetworkingStatus::limitedBandwith() const
 {
-    return limitations().contains(ubuntu::connectivity::NetworkingStatus::Limitations::Bandwith);
+    return limitations().contains(Limitations::Bandwith);
 }

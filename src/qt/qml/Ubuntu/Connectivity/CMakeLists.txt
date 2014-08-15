@@ -1,9 +1,5 @@
 # Find includes in corresponding build directories
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-# Instruct CMake to run moc automatically when needed.
-set(CMAKE_AUTOMOC ON)
-
-add_definitions(-DQT_NO_KEYWORDS)
 
 find_package(Qt5Quick REQUIRED)
 
@@ -14,9 +10,9 @@ set(CORE_SRCS
 include_directories(${CMAKE_SOURCE_DIR}/src/qt/include)
 
 add_library(connectivity-qml SHARED
-${CORE_SRCS}
+    ${CORE_SRCS}
 )
-target_link_libraries(connectivity-qml connectivity-qt)
+target_link_libraries(connectivity-qml ${CONNECTIVITY_QT_LIB_TARGET})
 
 qt5_use_modules(connectivity-qml Qml)
 

@@ -34,7 +34,7 @@ static class MainLoop
 {
     GMainLoop *ptr;
 public:
-    MainLoop() { ptr = g_main_loop_new(NULL, FALSE); }
+    MainLoop() { ptr = g_main_loop_new(nullptr, FALSE); }
    ~MainLoop() { g_main_loop_unref(ptr);             }
 
     void run()  { g_main_loop_run(ptr);  }
@@ -84,12 +84,12 @@ main(int, char *[])
     std::unique_ptr<Service> menu {new Service};
 
     if (getenv("VALGRIND") != 0) {
-        g_timeout_add(1000, (GSourceFunc)stop_main_loop, NULL);
+        g_timeout_add(1000, (GSourceFunc)stop_main_loop, nullptr);
         mainloop.run();
 
         menu.reset();
         // give gio time to do cleanup.
-        g_timeout_add(500, (GSourceFunc)stop_main_loop, NULL);
+        g_timeout_add(500, (GSourceFunc)stop_main_loop, nullptr);
         mainloop.run();
     } else {
         mainloop.run();

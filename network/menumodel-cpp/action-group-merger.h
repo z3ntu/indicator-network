@@ -96,7 +96,7 @@ class ActionGroupMerger
 public:
     typedef std::shared_ptr<ActionGroupMerger> Ptr;
 
-    ActionGroupMerger(const std::string &prefix = "")
+    explicit ActionGroupMerger(const std::string &prefix = "")
         : m_prefix {prefix}
     {
         m_actionGroup = std::make_shared<ActionGroup>(m_prefix);

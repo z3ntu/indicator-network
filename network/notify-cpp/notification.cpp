@@ -57,13 +57,13 @@ Notification::Notification(const std::string &summary,
     d->disconnectId = g_signal_connect(d->notification.get(), "closed", G_CALLBACK(Private::closed_cb), d.get());
 
     d->summary.changed().connect([this](const std::string &value){
-        g_object_set(d->notification.get(), "summary", value.c_str(), NULL);
+        g_object_set(d->notification.get(), "summary", value.c_str(), nullptr);
     });
     d->body.changed().connect([this](const std::string &value){
-        g_object_set(d->notification.get(), "body", value.c_str(), NULL);
+        g_object_set(d->notification.get(), "body", value.c_str(), nullptr);
     });
     d->icon.changed().connect([this](const std::string &value){
-        g_object_set(d->notification.get(), "icon", value.c_str(), NULL);
+        g_object_set(d->notification.get(), "icon", value.c_str(), nullptr);
     });
 
 }

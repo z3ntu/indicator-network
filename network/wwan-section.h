@@ -31,8 +31,8 @@ class WwanSection : public Section
 public:
     typedef std::shared_ptr<WwanSection> Ptr;
     WwanSection() = delete;
-    WwanSection(ModemManager::Ptr modemManager);
-    ~WwanSection();
+    explicit WwanSection(ModemManager::Ptr modemManager);
+    virtual ~WwanSection();
 
     virtual ActionGroup::Ptr actionGroup();
     virtual MenuModel::Ptr menuModel();

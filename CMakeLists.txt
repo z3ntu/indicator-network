@@ -6,7 +6,6 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" "${CMAKE_MODULE_PATH}")
 find_package(PkgConfig REQUIRED)
 include(EnableCoverageReport)
 include(GNUInstallDirs)
-include(Coverage)
 include(UseGSettings)
 
 set(GETTEXT_PACKAGE indicator-network)
@@ -132,5 +131,5 @@ ADD_CUSTOM_TARGET(
         ${CMAKE_CTEST_COMMAND} --force-new-ctest-process --output-on-failure
 )
 
-#enable_coverage_report(TARGETS connectivity-cpp
-#                       FILTER ${CMAKE_SOURCE_DIR}/tests/* ${CMAKE_BINARY_DIR}/*)
+enable_coverage_report(TARGETS connectivity-qt1 menumodel_cpp indicator-secret-agent
+                       FILTER ${CMAKE_SOURCE_DIR}/tests/* ${CMAKE_BINARY_DIR}/*)

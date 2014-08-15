@@ -35,7 +35,7 @@ using namespace ubuntu::connectivity;
 #define SERVICE_PATH "/com/ubuntu/connectivity1/NetworkingStatus"
 
 
-class NetworkingStatus::Private : public QObject
+class Q_DECL_HIDDEN NetworkingStatus::Private : public QObject
 {
     Q_OBJECT
 
@@ -97,7 +97,7 @@ public:
         if (m_limitations == tmp)
             return;
         m_limitations = tmp;
-        emit q->limitationsChanged();
+        Q_EMIT q->limitationsChanged();
     }
 
     void updateStatus(QString value)
@@ -117,7 +117,7 @@ public:
         if (m_status == tmp)
             return;
         m_status = tmp;
-        emit q->statusChanged(m_status);
+        Q_EMIT q->statusChanged(m_status);
     }
 
     void reset()

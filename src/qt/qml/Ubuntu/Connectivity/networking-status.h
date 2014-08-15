@@ -25,7 +25,7 @@
 
 #include <ubuntu/connectivity/NetworkingStatus>
 
-class NetworkingStatus : public ubuntu::connectivity::NetworkingStatus
+class Q_DECL_EXPORT NetworkingStatus : public ubuntu::connectivity::NetworkingStatus
 {
     Q_OBJECT
 

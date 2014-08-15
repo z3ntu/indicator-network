@@ -88,7 +88,12 @@ find_package(GObjectIntrospection 0.9.12)
 
 include_directories(${CMAKE_BINARY_DIR})
 
-set(COMMON_FLAGS "-Wall -Wextra -Wpedantic -Werror -fno-permissive")
+set(COMMON_FLAGS "-Wall -Wextra -Wpedantic -fno-permissive")
+string(TOLOWER "${CMAKE_BUILD_TYPE}" BUILD_TYPE)
+if(NOT BUILD_TYPE MATCHES debug)
+    set(COMMON_FLAGS "${COMMON_FLAGS} -Werror")
+endif()
+
 # "nice bug" in cmake... http://www.cmake.org/Bug/view.php?id=15058
 # let's not set C_FLAGS as it will break pthreads detection \o/
 #set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11 ${COMMON_FLAGS}")
@@ -107,12 +112,12 @@ configure_file(
 #  * Find html report in subdir coveragereport
 #  * Find xml report feasible for jenkins in coverage.xml
 #####################################################################
-IF(CMAKE_BUILD_TYPE MATCHES [cC][oO][vV][eE][rR][aA][gG][eE])
+IF(BUILD_TYPE MATCHES coverage)
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftest-coverage -fprofile-arcs" )
   SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -ftest-coverage -fprofile-arcs" )
   SET(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -ftest-coverage -fprofile-arcs" )
   SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -ftest-coverage -fprofile-arcs" )
-ENDIF(CMAKE_BUILD_TYPE MATCHES [cC][oO][vV][eE][rR][aA][gG][eE])
+ENDIF()
 
 
 set(CONNECTIVITY_QT_VERSION_MAJOR 1)

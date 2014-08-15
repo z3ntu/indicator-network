@@ -28,7 +28,7 @@ namespace ubuntu {
 namespace connectivity {
 
 
-class NetworkingStatus : public QObject
+class Q_DECL_EXPORT NetworkingStatus : public QObject
 {
     Q_OBJECT
     Q_DISABLE_COPY(NetworkingStatus)
@@ -71,7 +71,6 @@ private:
 
 }
 }
-
 
 Q_DECLARE_METATYPE(ubuntu::connectivity::NetworkingStatus::Limitations)
 Q_DECLARE_METATYPE(QVector<ubuntu::connectivity::NetworkingStatus::Limitations>)

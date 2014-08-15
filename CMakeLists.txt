@@ -83,21 +83,16 @@ include_directories(${QMENUMODEL_INCLUDE_DIRS})
 pkg_check_modules(GIO REQUIRED gio-2.0>=${GLIB_REQUIRED_VERSION})
 include_directories(${GIO_INCLUDE_DIRS})
 
-set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 find_package(GObjectIntrospection 0.9.12)
 
 include_directories(${CMAKE_BINARY_DIR})
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+set(COMMON_FLAGS "-Wall -Wextra -Wpedantic -Werror -fvisibility=hidden -fno-permissive")
 
-add_definitions(
-    -Wall
-    -Wextra
-    -Wpedantic
-)
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11 ${COMMON_FLAGS}")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 ${COMMON_FLAGS}")
 
 configure_file(
   "config.h.in"

@@ -13,4 +13,4 @@ add_executable(cpptest ${TEST_SRCS})
 target_link_libraries(cpptest ${CONNECTIVITY_QT_LIB_TARGET})
 qt5_use_modules(cpptest Core Test)
 
-add_test(NAME cpp COMMAND ${testCommand})
+add_test(qtcpptests ${testCommand})

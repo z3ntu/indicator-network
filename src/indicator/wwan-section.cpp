@@ -109,7 +109,7 @@ WwanSection::Private::modemsChanged(const std::set<Modem::Ptr> &modems)
         for (auto iter = m_items.begin(); iter != m_items.end(); ++iter) {
             m_linkMenuMerger->remove(*(*iter).second);
             m_actionGroupMerger->remove(*(*iter).second);
-            m_items.erase(iter);
+            iter = m_items.erase(iter);
             --iter;
         }
     }

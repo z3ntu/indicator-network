@@ -38,9 +38,8 @@ public:
     /// @todo multiple adapters etc..
     std::string m_networkingIcon;
 
-    std::string m_modemTechIcon;
-
     std::map<Modem::Ptr, std::string> m_cellularIcons;
+    std::map<int, std::string>        m_modemTechIcons;
 
     Private() = delete;
     Private(std::shared_ptr<networking::Manager> manager, ModemManager::Ptr modemManager);
@@ -109,7 +108,7 @@ RootState::Private::updateModem(Modem::WeakPtr weakModem)
         return;
     }
 
-    m_modemTechIcon.clear();
+    m_modemTechIcons.erase(modem->index());
     m_cellularIcons[modem] = "";
 
     if (!modem->online().get()) {
@@ -145,9 +144,7 @@ RootState::Private::updateModem(Modem::WeakPtr weakModem)
         case org::ofono::Interface::NetworkRegistration::Status::roaming:
             if (modem->strength().get() != 0) {
                 m_cellularIcons[modem] = Modem::strengthIcon(modem->strength().get());
-                /// @todo need to revise this once the modems are part of the connectivity-api
-                ///       this might get us wrong results on dual-sim
-                m_modemTechIcon = Modem::technologyIcon(modem->technology().get());
+                m_modemTechIcons[modem->index()] = Modem::technologyIcon(modem->technology().get());
             } else {
                 m_cellularIcons[modem] = "gsm-3g-no-service";
 
@@ -220,10 +217,11 @@ RootState::Private::updateNetworkingIcon()
         }
 
         if (m_networkingIcon.empty()) {
-            /// @todo fix this once modems are part of connectivity-api
             // seems we don't have an active wifi connection..
             // it must be a cellular one then.
-            m_networkingIcon = m_modemTechIcon;
+            /// @todo need to revise this once the modems are part of the connectivity-api
+            ///       this might get us wrong results on dual-sim
+            m_networkingIcon = m_modemTechIcons[1];
         }
         break;
     }
@@ -234,7 +232,7 @@ RootState::Private::updateNetworkingIcon()
 Variant
 RootState::Private::createIcon(const std::string name)
 {
-    GError *error = NULL;
+    GError *error = nullptr;
     auto gicon = g_icon_new_for_string(name.c_str(), &error);
     if (error) {
         g_error_free(error);

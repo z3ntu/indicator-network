@@ -140,7 +140,7 @@ struct Codec<std::string>
     {
         assert(variant);
         assert(g_variant_is_of_type(variant, G_VARIANT_TYPE_STRING));
-        value = g_variant_get_string(variant, NULL);
+        value = g_variant_get_string(variant, nullptr);
     }
 };
 

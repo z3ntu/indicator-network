@@ -7,42 +7,26 @@ msgid ""
 msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2014-05-22 11:31+0300\n"
-"PO-Revision-Date: 2014-05-26 17:48+0000\n"
+"POT-Creation-Date: 2014-08-08 15:33+0300\n"
+"PO-Revision-Date: 2014-08-13 00:18+0000\n"
 "Last-Translator: Akerbeltz <fios@akerbeltz.org>\n"
 "Language-Team: Gaelic; Scottish <gd@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-06-02 06:13+0000\n"
-"X-Generator: Launchpad (build 17031)\n"
+"X-Launchpad-Export-Date: 2014-08-13 06:58+0000\n"
+"X-Generator: Launchpad (build 17156)\n"
 
-#: network/quick-access-section.cpp:50
+#: network/quick-access-section.cpp:48
 msgid "Flight Mode"
 msgstr "Modh iteil"
 
-#: network/root-state.cpp:145
-msgid "No SIM"
-msgstr "Gun SIM"
-
-#: network/root-state.cpp:148
-msgid "SIM Error"
-msgstr "Mearachd SIM"
-
-#: network/root-state.cpp:153
-msgid "SIM Locked"
-msgstr "SIM glaiste"
-
-#: network/root-state.cpp:163
-msgid "No Signal"
-msgstr "Gun siognal"
-
 #. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
-#: network/root-state.cpp:337
+#: network/root-state.cpp:307
 msgid "Network"
 msgstr "Lìonra"
 
-#. TRANSLATORS: this string is not currently being shown on the screen. Please do not translate yet.
+#. TRANSLATORS: this string is not currently being shown on the screen. This message might be subject to change.
 #: network/sim-unlock-dialog.cpp:85
 msgid ""
 "This will be the last attempt.<br><br>If the SIM PIN is entered incorrectly, "
@@ -52,7 +36,7 @@ msgstr ""
 "steach a-rithist, thèid an SIM agad a ghlasadh agus bidh feum agad air a' "
 "PUK gus a' ghlas a thoirt dheth."
 
-#. TRANSLATORS: this string is not currently being shown on the screen. Please do not translate yet.
+#. TRANSLATORS: this string is not currently being shown on the screen. This message might be subject to change.
 #: network/sim-unlock-dialog.cpp:95
 msgid ""
 "Your SIM is now blocked.<br><br>Enter the PUK Code to unlock.<br><br>You may "
@@ -62,7 +46,7 @@ msgstr ""
 "a thoirt dheth.<br><br>Faodaidh gum bi agad ri faighneachd de sholaraiche an "
 "lìonraidh agad dè am PUK agad."
 
-#. TRANSLATORS: this string is not currently being shown on the screen. Please do not translate yet.
+#. TRANSLATORS: this string is not currently being shown on the screen. This message might be subject to change.
 #: network/sim-unlock-dialog.cpp:106
 msgid ""
 "This will be the last attempt.<br><br>If the PUK code is entered "
@@ -73,7 +57,7 @@ msgstr ""
 "steach a-rithist, bidh feum agad air SIM ùr.<br><br>Cuir fios gu solaraiche "
 "an lìonraidh agad."
 
-#. TRANSLATORS: this string is not currently being shown on the screen. Please do not translate yet.
+#. TRANSLATORS: this string is not currently being shown on the screen. This message might be subject to change.
 #: network/sim-unlock-dialog.cpp:117
 msgid ""
 "Your SIM is now permanently blocked and needs to be replaced.<br><br>Please "
@@ -133,31 +117,66 @@ msgstr "Lìonra eile..."
 msgid "Wi-Fi settings…"
 msgstr "Roghainnean WiFi…"
 
-#: network/wwan-link-item.cpp:55
-msgid "Unlock SIM…"
-msgstr "Neo-glais SIM…"
+#: network/wwan-link-item.cpp:87
+msgid "No SIM"
+msgstr "Gun SIM"
+
+#: network/wwan-link-item.cpp:93
+msgid "SIM Error"
+msgstr "Mearachd SIM"
+
+#: network/wwan-link-item.cpp:100
+msgid "SIM Locked"
+msgstr "SIM glaiste"
+
+#: network/wwan-link-item.cpp:112
+msgid "Unregistered"
+msgstr "Gun chlàradh"
+
+#: network/wwan-link-item.cpp:116
+msgid "Unknown"
+msgstr "Neo-aithnichte"
+
+#: network/wwan-link-item.cpp:120
+msgid "Denied"
+msgstr "Air a dhiùltadh"
+
+#: network/wwan-link-item.cpp:124
+msgid "Searching"
+msgstr "'Ga lorg"
+
+#: network/wwan-link-item.cpp:135
+msgid "No Signal"
+msgstr "Gun siognal"
+
+#: network/wwan-link-item.cpp:141
+msgid "Offline"
+msgstr "Far loidhne"
 
 #: network/wwan-section.cpp:79
 msgid "Cellular settings…"
 msgstr "Roghainnean ceangal fòn-làimhe..."
 
-#: secret-agent/SecretRequest.cpp:60
+#: secret-agent/SecretRequest.cpp:62
 #, qt-format
 msgid "Connect to “%1”"
 msgstr "Ceangail ri \"%1\""
 
-#: secret-agent/SecretRequest.cpp:65
+#: secret-agent/SecretRequest.cpp:67
 msgid "WPA"
 msgstr "WPA"
 
-#: secret-agent/SecretRequest.cpp:67
+#: secret-agent/SecretRequest.cpp:69
 msgid "WEP"
 msgstr "WEP"
 
-#: secret-agent/SecretRequest.cpp:73
+#: secret-agent/SecretRequest.cpp:75
 msgid "Connect"
 msgstr "Ceangail"
 
-#: secret-agent/SecretRequest.cpp:74
+#: secret-agent/SecretRequest.cpp:76
 msgid "Cancel"
 msgstr "Sguir dheth"
+
+#~ msgid "Unlock SIM…"
+#~ msgstr "Neo-glais SIM…"

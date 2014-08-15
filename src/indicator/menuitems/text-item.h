@@ -33,6 +33,7 @@ public:
     typedef std::shared_ptr<TextItem> Ptr;
 
     TextItem() = delete;
+    virtual ~TextItem() = default;
     TextItem(const std::string &label, const std::string &prefix, const std::string &name)
     {
         std::string action_name = prefix + "." + name;

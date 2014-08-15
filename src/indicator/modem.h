@@ -67,7 +67,7 @@ public:
     };
 
     Modem() = delete;
-    Modem(org::ofono::Interface::Modem::Ptr ofonoModem);
+    explicit Modem(org::ofono::Interface::Modem::Ptr ofonoModem);
     virtual ~Modem();
 
     org::ofono::Interface::Modem::Ptr ofonoModem() const;

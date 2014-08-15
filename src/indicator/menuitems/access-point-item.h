@@ -40,7 +40,7 @@ public:
     typedef std::shared_ptr<AccessPointItem> Ptr;
 
     AccessPointItem() = delete;
-    AccessPointItem(networking::wifi::AccessPoint::Ptr accessPoint, bool isActive = false)
+    explicit AccessPointItem(networking::wifi::AccessPoint::Ptr accessPoint, bool isActive = false)
         : m_accessPoint{accessPoint},
           m_isActive{isActive}
     {

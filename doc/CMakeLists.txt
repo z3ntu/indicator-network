@@ -1,5 +1,4 @@
-string(TOLOWER "${CMAKE_BUILD_TYPE}" typelower)
-if("${typelower}" STREQUAL "debug")
+if(build_type_lower MATCHES debug)
     option(BUILD_DOC "Build documentation by default" FALSE)
 else()
     option(BUILD_DOC "Build documentation by default" TRUE)

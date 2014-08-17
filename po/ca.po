@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-08-08 15:33+0300\n"
-"PO-Revision-Date: 2014-06-14 10:02+0000\n"
-"Last-Translator: JoanColl <Unknown>\n"
+"PO-Revision-Date: 2014-08-17 04:00+0000\n"
+"Last-Translator: David Planella <david.planella@ubuntu.com>\n"
 "Language-Team: Catalan <ca@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-08-09 05:51+0000\n"
+"X-Launchpad-Export-Date: 2014-08-17 06:45+0000\n"
 "X-Generator: Launchpad (build 17156)\n"
 
 #: network/quick-access-section.cpp:48
@@ -120,19 +120,19 @@ msgstr "SIM blocada"
 
 #: network/wwan-link-item.cpp:112
 msgid "Unregistered"
-msgstr ""
+msgstr "No registrat"
 
 #: network/wwan-link-item.cpp:116
 msgid "Unknown"
-msgstr ""
+msgstr "Desconegut"
 
 #: network/wwan-link-item.cpp:120
 msgid "Denied"
-msgstr ""
+msgstr "Denegat"
 
 #: network/wwan-link-item.cpp:124
 msgid "Searching"
-msgstr ""
+msgstr "S'està cercant"
 
 #: network/wwan-link-item.cpp:135
 msgid "No Signal"
@@ -140,7 +140,7 @@ msgstr "Sense senyal"
 
 #: network/wwan-link-item.cpp:141
 msgid "Offline"
-msgstr ""
+msgstr "Fora de línia"
 
 #: network/wwan-section.cpp:79
 msgid "Cellular settings…"

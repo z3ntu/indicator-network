@@ -1,4 +1,4 @@
-# Japanese translation for indicator-network
+# Khmer translation for indicator-network
 # Copyright (c) 2014 Rosetta Contributors and Canonical Ltd 2014
 # This file is distributed under the same license as the indicator-network package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2014.
@@ -8,9 +8,9 @@ msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-08-08 15:33+0300\n"
-"PO-Revision-Date: 2014-08-17 13:03+0000\n"
-"Last-Translator: Mitsuya Shibata <mty.shibata@gmail.com>\n"
-"Language-Team: Japanese <ja@li.org>\n"
+"PO-Revision-Date: 2014-08-18 04:01+0000\n"
+"Last-Translator: Sok Sophea <sksophea@gmail.com>\n"
+"Language-Team: Khmer <km@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -19,12 +19,12 @@ msgstr ""
 
 #: network/quick-access-section.cpp:48
 msgid "Flight Mode"
-msgstr "機内モード"
+msgstr "របៀប​ជិះ​យន្តហោះ"
 
 #. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
 #: network/root-state.cpp:307
 msgid "Network"
-msgstr "ネットワーク"
+msgstr "បណ្តាញ"
 
 #. TRANSLATORS: this string is not currently being shown on the screen. This message might be subject to change.
 #: network/sim-unlock-dialog.cpp:85
@@ -32,7 +32,9 @@ msgid ""
 "This will be the last attempt.<br><br>If the SIM PIN is entered incorrectly, "
 "your SIM will be blocked and would require the PUK Code to unlock."
 msgstr ""
-"最後のチャンスです。<br><br>間違ったSIM PINを入力した場合、SIMがブロックされ、アンロックするためにPUKコードが必要になります。"
+"នេះ​ជា​ការ​ព្យាយាម​លើក​ចុងក្រោយ។<br><br>បើ​អ្នក​បញ្ចូល​លេខ​កូដ PIN ស៊ីម​ខុស, "
+"ស៊ីម​របស់​អ្នក​នឹង​ត្រូវ​បាន​បិទ ហើយ​វា​នឹង​ត្រូវ​ទាមទារ​លេខ​កូដ PUK "
+"ដើម្បី​បើក​ឡើងវិញ។"
 
 #. TRANSLATORS: this string is not currently being shown on the screen. This message might be subject to change.
 #: network/sim-unlock-dialog.cpp:95
@@ -40,8 +42,9 @@ msgid ""
 "Your SIM is now blocked.<br><br>Enter the PUK Code to unlock.<br><br>You may "
 "contact your network provider for PUK Code."
 msgstr ""
-"SIMがブロックされました。<br><br>アンロックするためにはPUKコードを入力してください。<br><br>PUKコードを入手するにはネットワークプ"
-"ロバイダーに問い合わせる必要があるかもしれません。"
+"ឥឡូវនេះ​ស៊ីម​របស់​អ្នក​ត្រូវ​បាន​បិទ។<br><br>បញ្ចូល​លេខ​កូដ PUK "
+"ដើម្បី​បើក។<br><br>អ្នក​អាច​ទាក់ទង​ក្រុមហ៊ុន​ផ្ដល់​សេវា​របស់​អ្នក​សម្រាប់​លេខ"
+"​កូដ PUK ។"
 
 #. TRANSLATORS: this string is not currently being shown on the screen. This message might be subject to change.
 #: network/sim-unlock-dialog.cpp:106
@@ -50,111 +53,114 @@ msgid ""
 "incorrectly, your SIM will need to be replaced.<br><br>Please contact your "
 "network provider."
 msgstr ""
-"最後のチャンスです。<br><br>間違ったPUKコードを入力した場合、SIMを交換する必要があります。<br><br>ネットワークプロバイダーに問い合わ"
-"せてください。"
+"នេះ​ជា​ការ​ព្យាយាម​លើក​ចុងក្រោយ។<br><br>បើ​អ្នក​បញ្ចូល​លេខ​កូដ PUK ខុស, "
+"ស៊ីម​របស់​អ្នក​នឹង​ចាំបាច់​ត្រូវតែ​ប្ដូរ។<br><br>សូម​ទាក់ទង​ក្រុមហ៊ុន​ផ្ដល់​ស"
+"េវា​របស់​អ្នក​។"
 
 #. TRANSLATORS: this string is not currently being shown on the screen. This message might be subject to change.
 #: network/sim-unlock-dialog.cpp:117
 msgid ""
 "Your SIM is now permanently blocked and needs to be replaced.<br><br>Please "
 "contact your network provider."
-msgstr "SIMは完全にブロックされました。SIMを交換する必要があります。<br><br>ネットワークプロバイダーに問い合わせてください。"
+msgstr ""
+"ឥឡូវនេះ​ស៊ីម​របស់​អ្នក​ត្រូវ​បាន​បិទ​ជា​អចិន្ត្រៃយ៍ "
+"ហើយ​ចាំបាច់​ត្រូវតែ​ប្ដូរ។<br><br>សូម​ទាក់ទង​ក្រុមហ៊ុន​ផ្ដល់​សេវា​របស់​អ្នក​។"
 
 #: network/sim-unlock-dialog.cpp:183 network/sim-unlock-dialog.cpp:414
 #: network/sim-unlock-dialog.cpp:442
 msgid "Enter SIM PIN"
-msgstr "SIM PINの入力"
+msgstr "បញ្ចូល​លេខ​កូដ PIN ស៊ីម"
 
 #: network/sim-unlock-dialog.cpp:187
 msgid "Enter PUK code"
-msgstr "PUKコードの入力"
+msgstr "បញ្ចូល​លេខ​កូដ PUK"
 
 #: network/sim-unlock-dialog.cpp:195
 #, c-format
 msgid "Attempt %d of %d"
-msgstr "%d回目の試行（最大%d回）"
+msgstr "បាន​ព្យាយាម %d នៃ %d"
 
 #: network/sim-unlock-dialog.cpp:210 network/sim-unlock-dialog.cpp:425
 #: network/sim-unlock-dialog.cpp:435
 msgid "Enter new PIN code"
-msgstr "新しいPINコードの入力"
+msgstr "បញ្ចូល​លេខកូដ PIN ថ្មី"
 
 #: network/sim-unlock-dialog.cpp:213 network/sim-unlock-dialog.cpp:429
 msgid "Confirm new PIN code"
-msgstr "新しいPINコードの確認"
+msgstr "បញ្ជាក់​លេខ​កូដ PIN"
 
 #: network/sim-unlock-dialog.cpp:236
 msgid "Oops!<br>Incorrect PIN entered."
-msgstr "PINコードが間違っているようです。"
+msgstr "អ្ហូ!<br>បាន​បញ្ចូល​លេខ​កូដ PIN ខុស។"
 
 #: network/sim-unlock-dialog.cpp:254 network/sim-unlock-dialog.cpp:434
 msgid "PIN codes did not match."
-msgstr "PINコードが一致しませんでした。"
+msgstr "លេខ​កូដ PIN មិន​ផ្គូផ្គង។"
 
 #: network/sim-unlock-dialog.cpp:259
 msgid "Oops!<br>Incorrect PUK entered."
-msgstr "PUKコードが間違っているようです。"
+msgstr "អ្ហូ!<br>បាន​បញ្ចូល​លេខ​កូដ PUK ខុស។"
 
 #: network/sim-unlock-dialog.cpp:441
 msgid "Failed to change PIN."
-msgstr "PINの変更に失敗しました。"
+msgstr "ការ​ប្ដូរ​លេខ​កូដ PIN បាន​បរាជ័យ។"
 
 #: network/wifi-link-item.h:87
 msgid "Wi-Fi"
-msgstr "Wi-Fi"
+msgstr "វ៉ាយហ្វាយ"
 
 #: network/wifi-link-item.h:151
 msgid "Other network…"
-msgstr "その他のネットワーク..."
+msgstr "បណ្ដាញ​ផ្សេងទៀត..."
 
 #: network/wifi-section.cpp:60
 msgid "Wi-Fi settings…"
-msgstr "Wi-Fi設定..."
+msgstr "ការ​កំណត់​វ៉ាយហ្វាយ..."
 
 #: network/wwan-link-item.cpp:87
 msgid "No SIM"
-msgstr "SIMなし"
+msgstr "គ្មាន​ស៊ីម"
 
 #: network/wwan-link-item.cpp:93
 msgid "SIM Error"
-msgstr "SIMエラー"
+msgstr "បញ្ហា​ស៊ីម"
 
 #: network/wwan-link-item.cpp:100
 msgid "SIM Locked"
-msgstr "SIMがロックされています"
+msgstr "ស៊ីម​បាន​ចាក់សោ"
 
 #: network/wwan-link-item.cpp:112
 msgid "Unregistered"
-msgstr "未登録"
+msgstr "មិន​បាន​ចុះឈ្មោះ"
 
 #: network/wwan-link-item.cpp:116
 msgid "Unknown"
-msgstr "不明"
+msgstr "មិន​ស្គាល់"
 
 #: network/wwan-link-item.cpp:120
 msgid "Denied"
-msgstr "拒否"
+msgstr "បាន​បដិសេធ"
 
 #: network/wwan-link-item.cpp:124
 msgid "Searching"
-msgstr "検索中"
+msgstr "ស្វែងរក"
 
 #: network/wwan-link-item.cpp:135
 msgid "No Signal"
-msgstr "信号なし"
+msgstr "គ្មាន​សញ្ញា"
 
 #: network/wwan-link-item.cpp:141
 msgid "Offline"
-msgstr "オフライン"
+msgstr "ក្រៅ​បណ្តាញ"
 
 #: network/wwan-section.cpp:79
 msgid "Cellular settings…"
-msgstr "セルラー設定…"
+msgstr "ការ​កំណត់​ទូរស័ព្ទ​ដៃ"
 
 #: secret-agent/SecretRequest.cpp:62
 #, qt-format
 msgid "Connect to “%1”"
-msgstr "\"%1\"へ接続"
+msgstr "តភ្ជាប់​ទៅ “%1”"
 
 #: secret-agent/SecretRequest.cpp:67
 msgid "WPA"
@@ -166,11 +172,8 @@ msgstr "WEP"
 
 #: secret-agent/SecretRequest.cpp:75
 msgid "Connect"
-msgstr "接続"
+msgstr "តភ្ជាប់"
 
 #: secret-agent/SecretRequest.cpp:76
 msgid "Cancel"
-msgstr "キャンセル"
-
-#~ msgid "Unlock SIM…"
-#~ msgstr "SIMのアンロック…"
+msgstr "បោះបង់"

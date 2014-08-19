@@ -30,6 +30,9 @@ import QtQuick 2.0
  and provides two utility properties online and limitedBandwith for easier
  QML usage.
 
+ \b{note:}
+ Using this component in confined application requires \e{connectivity} policy group.
+
  \quotefile example_networking_status.qml
  */
 

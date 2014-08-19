@@ -1,3 +1,5 @@
+set(INSTALL_DOCDIR ${CMAKE_INSTALL_DATAROOTDIR}/doc/connectivity-api
+
 if(build_type_lower MATCHES debug)
     option(BUILD_DOC "Build documentation by default" FALSE)
 else()
@@ -21,5 +23,5 @@ add_dependencies(doc cppdoc qmldoc)
 
 install(
     DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/dbus/
-    DESTINATION ${CMAKE_INSTALL_DOCDIR}/dbus/
+    DESTINATION ${INSTALL_DOCDIR}/dbus/
 )

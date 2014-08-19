@@ -1,0 +1,23 @@
+/*!
+\page using-cpp Using the C++ API
+
+Install the development headers:
+
+\code{.txt}
+sudo apt-get install libconnectivity-cpp-dev
+\endcode
+
+Enable c++11 and use pkg-config to get the necessary compilation flags:
+
+\code{.txt}
+$ g++ myapp.cpp -std=c++11 `pkg-config --cflags --libs connectivity-cpp` -o myapp
+\endcode
+
+The headers can then be included as:
+
+\code{.cpp}
+// includes the com::ubuntu::networking::connectivity::Manager class
+#include <com/ubuntu/connectivity/networking/manager.h>
+\endcode
+
+*/

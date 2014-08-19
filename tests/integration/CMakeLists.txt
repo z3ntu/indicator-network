@@ -1,4 +1,3 @@
-add_subdirectory(qt)
 add_subdirectory(connectivity-cpp)
 
 add_definitions(-DNETWORK_SERVICE_BIN="${CMAKE_BINARY_DIR}/network/indicator-network-service")

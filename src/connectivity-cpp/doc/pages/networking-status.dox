@@ -1,0 +1,31 @@
+/*!
+\page networking-status Networking Status
+
+Applications needing to access the overall system networking status can access the
+top level com::ubuntu::connectivity::networking::Manager class. The class has properties
+for the networking status and connection characteristics of the system networking.
+
+\section Setup
+
+Manager is accessed by including the appropriate header:
+\snippet example_networking_status.cpp include
+
+and then creating an instance of the manager:
+\snippet example_networking_status.cpp create manager
+
+\section sec_networking_status Networking Status
+
+The status of the system networking can be accessed through the Manager::status property:
+\snippet example_networking_status.cpp subscribe networking status changes
+
+\section sec_characteristics Networking Characteristics
+
+The characteristics can be accessed through the Manager::characteristics property
+as a bitfield:
+\snippet example_networking_status.cpp subscribe characteristics changes
+
+---
+The complete example (found in <i>examples/example_networking_status.cpp</i>):
+\include example_networking_status.cpp
+
+*/

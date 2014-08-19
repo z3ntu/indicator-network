@@ -120,14 +120,8 @@ IF(build_type_lower MATCHES coverage)
   SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -ftest-coverage -fprofile-arcs" )
 ENDIF()
 
-
-set(CONNECTIVITY_QT_VERSION_MAJOR 1)
-set(CONNECTIVITY_QT_VERSION_MINOR 0)
-set(CONNECTIVITY_QT_LIB_TARGET connectivity-qt${CONNECTIVITY_QT_VERSION_MAJOR})
-add_subdirectory(data)
 add_subdirectory(src)
 add_subdirectory(po)
-add_subdirectory(doc)
 
 enable_testing()
 add_subdirectory(tests)

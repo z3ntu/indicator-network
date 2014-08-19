@@ -27,7 +27,17 @@
 namespace ubuntu {
 namespace connectivity {
 
-
+/**
+ * @brief Overall system networking status.
+ *
+ * This is the top-level class for accessing networking information.
+ *
+ * * For system networking status, see NetworkingStatus::status.
+ * * For connection limitations, see NetworkingStatus::limitations.
+ *
+ * Examples:
+ * - @ref networking-status "Getting the networking status."
+ */
 class Q_DECL_EXPORT NetworkingStatus : public QObject
 {
     Q_OBJECT
@@ -36,9 +46,28 @@ class Q_DECL_EXPORT NetworkingStatus : public QObject
     Q_ENUMS(Limitations)
     Q_ENUMS(Status)
 
+    /**
+     * limitations of the overall system networking
+     *
+     * @initvalue {}
+     * @accessors limitations()
+     * @notify limitationsChanged()
+     *
+     * \snippet example_networking_status.cpp limitations
+     */
     Q_PROPERTY(QVector<Limitations> limitations
                READ limitations
                NOTIFY limitationsChanged)
+
+    /**
+     * status of the overall system networking
+     *
+     * @initvalue NetworkingStatus::Online
+     * @accessors status()
+     * @notify statusChanged()
+     *
+     * \snippet example_networking_status.cpp status
+     */
     Q_PROPERTY(Status status
                READ status
                NOTIFY statusChanged)
@@ -47,21 +76,42 @@ public:
     explicit NetworkingStatus(QObject *parent = 0);
     virtual ~NetworkingStatus();
 
+    /**
+      * @brief enum for networking limitations
+      *
+      * Networking limitations may be accessed through the NetworkingStatus::limitations property.
+      */
     enum Limitations {
+        /**
+         * indicates that the bandwith of the Internet connection has limitations.
+         * Applications should minimize their bandwith usage if possible.
+         */
         Bandwith
     };
 
+    /**
+      * @brief enum for networking status
+      *
+      * Networking status may be accessed through the NetworkingStatus::status property.
+      */
     enum Status {
-        Offline,
-        Connecting,
-        Online
+        Offline,     /**< No Internet connection available.            */
+        Connecting,  /**< System is actively establising a connection. */
+        Online       /**< System is connected to the Internet.         */
     };
 
+
+    /** @see NetworkingStatus::limitations */
     QVector<Limitations> limitations() const;
+
+    /** @see NetworkingStatus::status */
     Status status() const;
 
 Q_SIGNALS:
+    /** @see NetworkingStatus::limitations */
     void limitationsChanged();
+
+    /** @see NetworkingStatus::status */
     void statusChanged(Status value);
 
 private:

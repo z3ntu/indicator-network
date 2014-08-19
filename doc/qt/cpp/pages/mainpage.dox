@@ -7,11 +7,6 @@
 
 Ubuntu API offers a way to access the connectivity related information of the system.
 
-\subsection sec_thread_safety Note on thread safety
-
-The API implementation uses a worker thread. The property changes may be dispatched from this thread and thus the
-user of this API must make sure to handle necessary threading issues.
-
 \section sec_general General Topics
 
  - \ref using-cpp "Using this C++ API"

@@ -35,17 +35,12 @@ main(int argc, char *argv[])
     QScopedPointer<NetworkingStatus> ns(new NetworkingStatus());
     //! [create networkingstatus]
 
-    // normal getters
-    //! [normal getters]
+    //! [status]
+    // normal getter
     if (ns->status() == NetworkingStatus::Online)
         qDebug() << "We are online.";
 
-    if (ns->limitations().isEmpty())
-        qDebug() << "No limitations";
-    //! [normal getters]
-
     // Subscribe to system networking changes
-    //! [subscribe networking status changes]
     QObject::connect(ns.data(),
                      &NetworkingStatus::statusChanged,
                      [](NetworkingStatus::Status value)
@@ -62,10 +57,14 @@ main(int argc, char *argv[])
             break;
         }
     });
-    //! [subscribe networking status changes]
+    //! [status]
+
+    //! [limitations]
+    // normal getter
+    if (ns->limitations().isEmpty())
+        qDebug() << "No limitations";
 
     // Subscribe to limitation changes
-    //! [subscribe limitation changes]
     QObject::connect(ns.data(),
                      &NetworkingStatus::limitationsChanged,
                      [&ns](){
@@ -79,7 +78,7 @@ main(int argc, char *argv[])
             qDebug() << "    - Bandwith";
         }
     });
-    //! [subscribe limitation changes]
+    //! [limitations]
 
     app.exec();
 

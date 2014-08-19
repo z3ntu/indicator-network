@@ -1,5 +1,9 @@
-project = Ubuntu Connectivity QML API
-description = Ubuntu Connectivity API
+project = Connectivity
+description = Ubuntu Connectivity QML API
+version = CONNECTIVITY_QT_VERSION_MAJOR@.@CONNECTIVITY_QT_VERSION_MINOR@
+
+outputencoding = UTF-8
+sourceencoding = UTF-8
 
 # Bug in Qt5.2 qdoc, does not support absolute paths
 # just have to hack this over and copy the files to BINARY_DIR

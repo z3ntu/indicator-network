@@ -1,86 +1,81 @@
+/*
+ * Copyright © 2014 Canonical Ltd.
+ *
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Authors:
+ *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
+ */
+
 import QtQuick 2.0
 
 /*!
+ \qmltype NetworkingStatus
+ \ingroup connectivity
+ \brief Overall system networking status.
 
-\qmltype NetworkingStatus
-\ingroup connectivity
-\brief
+ This is the top-level class for accessing networking information.
 
-ActionManager exports the application actions to the external components.
-*/
+ This class inherits the Qt C++ ubuntu::connectivity::NetworkingStatus
+ and provides two utility properties online and limitedBandwith for easier
+ QML usage.
 
-Item {
+ \quotefile example_networking_status.qml
+ */
 
-        /*!
-           \qmlproperty int  NetworkingStatus::globalContext
+QtObject {
 
-           The globalContext of the Application.
+    /*!
+       \qmlproperty bool NetworkingStatus::online
+       \b{true} if system has Internet connection.
 
-           \note Setting the ActionContext::active on the global context has no effect;
-         */
-        property int globalContext
+       shorthand for C++:
+       \code
+           networkingStatus->status() == NetworkingStatus::Online
+       \endcode
+     */
+    property bool online
 
-//    /*!
-//       \qmlproperty ActionContext  ActionManager::globalContext
+    /*!
+       \qmlproperty bool NetworkingStatus::limitedBandwith
+       \b{true} if Internet connection is bandwith limited.
 
-//       The globalContext of the Application.
+       shorthand for C++:
+       \code
+           networkingStatus->limitations().contains(NetworkingStatus::Limitations::Bandwith)
+       \endcode
+     */
+    property bool limitedBandwith
 
-//       \note Setting the ActionContext::active on the global context has no effect;
-//     */
-//    property ActionContext globalContext
+    /*!
+       \qmlproperty list<Limitations> NetworkingStatus::limitations
+     */
+    property list<Limitations> limitations
 
-//    /*!
-//      \qmlproperty list<Action> ActionManager::actions
-//      \default
-//      List of Actions in manager's globalContext.
+    /*!
+       \qmlproperty NetworkingStatus::Status status
+       status property of the base C++ class.
 
-//      This is the default property of ActionManager.
-//     */
-//    property list<Action> actions
-
-//    /*!
-//      \qmlproperty list<ActionContext> ActionManager::localContexts
-
-//      List of localContexts.
-//     */
-//    property list<ActionContext> localContexts
-
-
-//    /*!
-//     this is a shorthand for
-//     \qml
-//        manager.globalContext.addAction(action);
-//     \endqml
-
-//     \sa ActionContext::addAction()
-//     */
-//    function addAction(action) {}
-
-//    /*!
-//     this is a shorthand for
-//     \qml
-//        manager.globalContext.removeAction(action);
-//     \endqml
-
-//     \sa ActionContext::removeAction()
-//     */
-//    function removeAction(action) {}
-
-//    /*!
-//     Adds a local context.
-
-//     Calling this function multiple times with the same context
-//     does not have any side effects; the context gets added only once.
-//    */
-//    function addLocalContext(context) {}
-
-//    /*!
-//     Removes a local context.
-
-//     Calling this function multiple times with the same context
-//     does not have any side effects; the context gets removed only if
-//     it was previously added with addLocalContext().
-//    */
-//    function removeLocalContext(context) {}
-
+       \code
+       onStatusChanged: {
+           if (status === NetworkingStatus::Offline)
+               ;
+           else if (status === NetworkingStatus::Connecting)
+               ;
+           else if (status === NetworkingStatus::Online)
+               ;
+       }
+       \endcode
+     */
+    property Status status
 }

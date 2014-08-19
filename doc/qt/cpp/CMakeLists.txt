@@ -1,3 +1,5 @@
+add_subdirectory(examples)
+
 set(EXTRACT_PRIVATE NO)
 set(INTERNAL_DOCS NO)
 set(SOURCE_DIRS "${CMAKE_SOURCE_DIR}/src/qt/include ${CMAKE_CURRENT_SOURCE_DIR}")

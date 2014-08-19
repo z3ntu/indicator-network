@@ -19,7 +19,7 @@
 
 #include "tst_networking.h"
 
-#include <ubuntu/connectivity/NetworkingStatus>
+#include <ubuntu/connectivity/networking-status.h>
 
 #include <QtTest/QtTest>
 

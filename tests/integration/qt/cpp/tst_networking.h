@@ -19,9 +19,6 @@
 
 #include <QObject>
 
-#include <ubuntu/connectivity/NetworkingStatus>
-
-
 class TestNetworking : public QObject
 {
     Q_OBJECT

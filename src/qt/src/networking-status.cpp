@@ -17,7 +17,7 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#include <ubuntu/connectivity/NetworkingStatus>
+#include <ubuntu/connectivity/networking-status.h>
 #include "dbus-properties-interface.h"
 
 #include <QDBusConnection>

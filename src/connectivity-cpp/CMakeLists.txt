@@ -54,7 +54,7 @@ set(DBUS_INTERFACES
 add_custom_target(QtCreatorHeaderHack2 SOURCES ${DBUS_INTERFACES})
 
 add_subdirectory(data)
-add_subdirectory(doc)
+#add_subdirectory(doc)
 add_subdirectory(examples)
 add_subdirectory(src)
 

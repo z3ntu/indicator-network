@@ -19,8 +19,8 @@ configure_file(
 	connectivity-cpp.pc.in connectivity-cpp.pc @ONLY
 )
 
-install(
-	FILES ${CMAKE_CURRENT_BINARY_DIR}/connectivity-cpp.pc
-	DESTINATION lib/pkgconfig
-)
+#install(
+#	FILES ${CMAKE_CURRENT_BINARY_DIR}/connectivity-cpp.pc
+#	DESTINATION lib/pkgconfig
+#)
 

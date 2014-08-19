@@ -17,6 +17,12 @@ qt5_use_modules(
     Test
 )
 
+include_directories(
+    ${CMAKE_CURRENT_BINARY_DIR}
+    ${CMAKE_SOURCE_DIR}/src/connectivity-cpp/include
+    ${CMAKE_SOURCE_DIR}/src/connectivity-cpp/dbus-cpp
+)
+
 target_link_libraries(
     menuitems-cpp-unit-tests
     test-utils

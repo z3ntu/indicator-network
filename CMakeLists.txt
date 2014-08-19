@@ -54,12 +54,6 @@ pkg_check_modules(
 )
 include_directories(${NOTIFY_INCLUDE_DIRS})
 
-pkg_check_modules(
-    CONNECTIVITY_CPP REQUIRED
-    connectivity-cpp
-)
-include_directories(${CONNECTIVITY_CPP_INCLUDE_DIRS})
-
 find_package(Qt5Core REQUIRED)
 include_directories(${Qt5Core_INCLUDE_DIRS})
 
@@ -120,6 +114,7 @@ IF(build_type_lower MATCHES coverage)
   SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -ftest-coverage -fprofile-arcs" )
 ENDIF()
 
+add_subdirectory(data)
 add_subdirectory(src)
 add_subdirectory(po)
 

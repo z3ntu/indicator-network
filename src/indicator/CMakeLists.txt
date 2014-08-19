@@ -27,20 +27,21 @@ set(NETWORK_SERVICE_SOURCES
     menuitems/text-item.h
 )
 
-# get std::thread working...
-# http://gcc.gnu.org/bugzilla/show_bug.cgi?id=52681
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
-
 add_executable(
   indicator-network-service
   ${NETWORK_SERVICE_SOURCES}
+)
+
+include_directories(
+    ${CMAKE_SOURCE_DIR}/src/connectivity-cpp/include
+    ${CMAKE_SOURCE_DIR}/src/connectivity-cpp/dbus-cpp
 )
 target_link_libraries(
     indicator-network-service
     menumodel_cpp
     notify_cpp
     url_dispatcher_cpp
-    ${CONNECTIVITY_CPP_LDFLAGS}
+    connectivity-cpp
     ${GLIB_LIBRARIES}
     ${GIO_LIBRARIES}
     ${NOTIFY_LIBRARIES}

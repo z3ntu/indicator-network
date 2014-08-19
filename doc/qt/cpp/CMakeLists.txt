@@ -32,7 +32,9 @@ if(DOXYGEN_FOUND)
     install(
         DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html
         DESTINATION ${INSTALL_DOCDIR}/cpp/
+    )
     install(
         DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/xml
         DESTINATION ${INSTALL_DOCDIR}/cpp/
+    )
 endif(DOXYGEN_FOUND)

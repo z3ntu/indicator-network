@@ -57,6 +57,3 @@ add_subdirectory(data)
 #add_subdirectory(doc)
 add_subdirectory(examples)
 add_subdirectory(src)
-
-enable_coverage_report(TARGETS connectivity-cpp
-                       FILTER ${CMAKE_SOURCE_DIR}/tests/* ${CMAKE_BINARY_DIR}/*)

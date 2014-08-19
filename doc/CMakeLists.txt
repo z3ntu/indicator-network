@@ -1,4 +1,4 @@
-set(INSTALL_DOCDIR ${CMAKE_INSTALL_DATAROOTDIR}/doc/connectivity-api
+set(INSTALL_DOCDIR ${CMAKE_INSTALL_DATAROOTDIR}/doc/connectivity-api)
 
 if(build_type_lower MATCHES debug)
     option(BUILD_DOC "Build documentation by default" FALSE)

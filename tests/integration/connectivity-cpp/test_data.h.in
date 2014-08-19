@@ -24,85 +24,14 @@ namespace core
 namespace testing
 {
 
-const char* session_bus_configuration_file()
+constexpr const char* session_bus_configuration_file()
 {
-    return "@CMAKE_SOURCE_DIR@/data/session.conf";
+    return "@CMAKE_SOURCE_DIR@/src/connectivity-cpp/data/session.conf";
 }
 
-const char* system_bus_configuration_file()
+constexpr const char* system_bus_configuration_file()
 {
-    return "@CMAKE_SOURCE_DIR@/data/system.conf";
-}
-
-namespace com
-{
-namespace canonical
-{
-const char* user_metrics_introspection_file()
-{
-    return "@CMAKE_CURRENT_SOURCE_DIR@/data/com.canonical.UserMetrics.xml";
-}
-
-const char* url_dispatcher_introspection_file()
-{
-    return "@CMAKE_CURRENT_SOURCE_DIR@/data/com.canonical.URLDispatcher.xml";
-}
-}
-}
-
-namespace org
-{
-namespace freedesktop
-{
-namespace modem_manager
-{
-namespace modem
-{
-constexpr const char* cdma_introspection_file()
-{
-    return "@CMAKE_CURRENT_SOURCE_DIR@/data/org.freedesktop.ModemManager.Modem.Cdma.xml";
-}
-
-constexpr const char* firmware_introspection_file()
-{
-    return "@CMAKE_CURRENT_SOURCE_DIR@/data/org.freedesktop.ModemManager.Modem.Firmware.xml";
-}
-
-namespace gsm
-{
-constexpr const char* card_introspection_file()
-{
-    return "@CMAKE_CURRENT_SOURCE_DIR@/data/org.freedesktop.ModemManager.Modem.Gsm.Card.xml";
-}
-
-constexpr const char* contact_introspection_file()
-{
-    return "@CMAKE_CURRENT_SOURCE_DIR@/data/org.freedesktop.ModemManager.Modem.Gsm.Contacts.xml";
-}
-
-constexpr const char* hso_introspection_file()
-{
-    return "@CMAKE_CURRENT_SOURCE_DIR@/data/org.freedesktop.ModemManager.Modem.Gsm.Hso.xml";
-}
-
-constexpr const char* network_introspection_file()
-{
-    return "@CMAKE_CURRENT_SOURCE_DIR@/data/org.freedesktop.ModemManager.Modem.Gsm.Network.xml";
-}
-
-constexpr const char* sms_introspection_file()
-{
-    return "@CMAKE_CURRENT_SOURCE_DIR@/data/org.freedesktop.ModemManager.Modem.Gsm.SMS.xml";
-}
-
-constexpr const char* ussd_introspection_file()
-{
-    return "@CMAKE_CURRENT_SOURCE_DIR@/data/org.freedesktop.ModemManager.Modem.Gsm.Ussd.xml";
-}
-}
-}
-}
-}
+    return "@CMAKE_SOURCE_DIR@/src/connectivity-cpp/data/system.conf";
 }
 }
 }

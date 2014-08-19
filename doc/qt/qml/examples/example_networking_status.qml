@@ -1,16 +1,28 @@
+/*
+ * Copyright (C) 2014 Canonical Ltd.
+ *
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License version 3,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+
 import QtQuick 2.0
 import Ubuntu.Components 0.1
 import Ubuntu.Connectivity 1.0
 
-/*!
-    brief MainView with a Label and Button elements.
-*/
-
 MainView {
     id: root
-    // objectName for functional testing purposes (autopilot-qt5)
     objectName: "mainView"
-    applicationName: "CurrencyConverter"
+    applicationName: "NetworkingStatus"
 
     width: units.gu(100)
     height: units.gu(75)
@@ -18,8 +30,12 @@ MainView {
     property real margins: units.gu(2)
     property real buttonWidth: units.gu(9)
 
+    // create the NetworkingStatus object
     NetworkingStatus {
         id: networkingStatus
+
+        // full status can be retrieved from the base C++ class
+        // status property
         onStatusChanged: {
             if (status === NetworkingStatus.Offline)
                 console.log("Status: Offline")
@@ -31,18 +47,20 @@ MainView {
     }
 
     Page {
-        title: i18n.tr("Currency Converter")
+        title: i18n.tr("Networking Status")
 
-        Label {
+        Column {
             anchors.centerIn: parent
-            text: networkingStatus.status === NetworkingStatus.Online ? "Online" : "Not online"
-            fontSize: "large"
+            Label {
+                // use the online property
+                text: networkingStatus.online ? "Online" : "Not online"
+                fontSize: "large"
+            }
+            Label {
+                // use the limitedBandwith property
+                text: networkingStatus.limitedBandwith ? "Bandwith limited" : "Bandwith not limited"
+                fontSize: "large"
+            }
         }
-//        Label {
-//            anchors.centerIn: parent
-//            text: "Hello, world!"
-//            fontSize: "large"
-//        }
-
     }
 }

@@ -54,12 +54,6 @@ pkg_check_modules(
 )
 include_directories(${NOTIFY_INCLUDE_DIRS})
 
-pkg_check_modules(
-    CONNECTIVITY_CPP REQUIRED
-    connectivity-cpp
-)
-include_directories(${CONNECTIVITY_CPP_INCLUDE_DIRS})
-
 find_package(Qt5Core REQUIRED)
 include_directories(${Qt5Core_INCLUDE_DIRS})
 
@@ -90,7 +84,7 @@ find_package(GObjectIntrospection 0.9.12)
 
 include_directories(${CMAKE_BINARY_DIR})
 
-set(COMMON_FLAGS "-Wall -Wextra -Wpedantic -fno-permissive")
+set(COMMON_FLAGS "-Wall -Wextra -Wpedantic -fno-permissive -fPIC -fvisibility=hidden -pthread")
 if(NOT build_type_lower MATCHES debug)
     set(COMMON_FLAGS "${COMMON_FLAGS} -Werror")
 endif()
@@ -98,7 +92,7 @@ endif()
 # "nice bug" in cmake... http://www.cmake.org/Bug/view.php?id=15058
 # let's not set C_FLAGS as it will break pthreads detection \o/
 #set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11 ${COMMON_FLAGS}")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 ${COMMON_FLAGS}")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 ${COMMON_FLAGS} -fno-strict-aliasing -fvisibility-inlines-hidden")
 
 configure_file(
   "config.h.in"
@@ -120,14 +114,9 @@ IF(build_type_lower MATCHES coverage)
   SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -ftest-coverage -fprofile-arcs" )
 ENDIF()
 
-
-set(CONNECTIVITY_QT_VERSION_MAJOR 1)
-set(CONNECTIVITY_QT_VERSION_MINOR 0)
-set(CONNECTIVITY_QT_LIB_TARGET connectivity-qt${CONNECTIVITY_QT_VERSION_MAJOR})
 add_subdirectory(data)
 add_subdirectory(src)
 add_subdirectory(po)
-add_subdirectory(doc)
 
 enable_testing()
 add_subdirectory(tests)
@@ -137,5 +126,5 @@ ADD_CUSTOM_TARGET(
         ${CMAKE_CTEST_COMMAND} --force-new-ctest-process --output-on-failure
 )
 
-enable_coverage_report(TARGETS connectivity-qt1 menumodel_cpp indicator-secret-agent
+enable_coverage_report(TARGETS menumodel_cpp connectivity-cpp indicator-secret-agent
                        FILTER ${CMAKE_SOURCE_DIR}/tests/* ${CMAKE_BINARY_DIR}/*)

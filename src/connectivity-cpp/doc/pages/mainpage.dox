@@ -1,0 +1,23 @@
+/*!
+\mainpage Ubuntu Connectivity API
+
+\tableofcontents
+
+\section sec_introduction Introduction
+
+Ubuntu API offers a way to access the connectivity related information of the system.
+
+\subsection sec_thread_safety Note on thread safety
+
+The API implementation uses a worker thread. The property changes may be dispatched from this thread and thus the
+user of this API must make sure to handle necessary threading issues.
+
+\section sec_general General Topics
+
+ - \ref using-cpp "Using this C++ API"
+ - \ref networking-status "Getting the networking status."
+
+\section sec_bug_reports Reporting Bugs
+If you find any problems with the or this documentation,
+please file a bug in Connectivity API [Launchpad page](https://bugs.launchpad.net/connectivity-api).
+*/

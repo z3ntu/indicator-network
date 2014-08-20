@@ -1,0 +1,11 @@
+prefix=@CMAKE_INSTALL_PREFIX@
+exec_prefix=${prefix}
+libdir=${exec_prefix}/@CMAKE_INSTALL_LIBDIR@
+includedir=${exec_prefix}/include
+ 
+Name: @CMAKE_PROJECT_NAME@
+Description: 
+Version: @CONNECTIVITY_CPP_VERSION_MAJOR@.@CONNECTIVITY_CPP_VERSION_MINOR@.@CONNECTIVITY_CPP_VERSION_PATCH@
+Cflags: -I${includedir}/connectivity-cpp-@CONNECTIVITY_CPP_VERSION_MAJOR@
+Libs: -L${libdir} -lconnectivity-cpp
+Requires: dbus-cpp properties-cpp

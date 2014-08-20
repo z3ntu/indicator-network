@@ -1,3 +1,21 @@
+indicator-network (0.5.1+14.10.20140820.6-0ubuntu1) utopic; urgency=low
+
+  [ Ubuntu daily release ]
+  * New rebuild forced
+
+  [ Antti Kaijanmäki ]
+  * Restructured the source tree to separate the different components
+    better.
+  * Add Connectivity Service. (LP: #1302049)
+  * Connectivity Service Qt and QML bindings. (LP: #1341548)
+  * Documentation for the connectivity Qt C++ and QML API Also fix
+    licensing information. (LP: #1341548)
+  * Move in connectivity-cpp from lp:connectivity-api. Move out
+    libconnectivity-qt and qtdeclarative5-connectivity-plugin. to
+    lp:connectivity-api (LP: #1341548)
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Wed, 20 Aug 2014 22:31:54 +0000
+
 indicator-network (0.5.1+14.10.20140808.2-0ubuntu1) utopic; urgency=low
 
   [ CI bot ]

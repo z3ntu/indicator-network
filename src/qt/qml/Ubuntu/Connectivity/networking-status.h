@@ -23,7 +23,7 @@
 #include <QObject>
 #include <QThread>
 
-#include <ubuntu/connectivity/NetworkingStatus>
+#include <ubuntu/connectivity/networking-status.h>
 
 class Q_DECL_EXPORT NetworkingStatus : public ubuntu::connectivity::NetworkingStatus
 {

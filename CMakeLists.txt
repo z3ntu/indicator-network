@@ -4,8 +4,8 @@ cmake_minimum_required(VERSION 2.8.9)
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" "${CMAKE_MODULE_PATH}")
 
 find_package(PkgConfig REQUIRED)
+include(EnableCoverageReport)
 include(GNUInstallDirs)
-include(Coverage)
 include(UseGSettings)
 
 set(GETTEXT_PACKAGE indicator-network)
@@ -82,28 +82,49 @@ include_directories(${QMENUMODEL_INCLUDE_DIRS})
 pkg_check_modules(GIO REQUIRED gio-2.0>=${GLIB_REQUIRED_VERSION})
 include_directories(${GIO_INCLUDE_DIRS})
 
-set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 find_package(GObjectIntrospection 0.9.12)
 
 include_directories(${CMAKE_BINARY_DIR})
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+set(COMMON_FLAGS "-Wall -Wextra -Wpedantic -fno-permissive")
+string(TOLOWER "${CMAKE_BUILD_TYPE}" BUILD_TYPE)
+if(NOT BUILD_TYPE MATCHES debug)
+    set(COMMON_FLAGS "${COMMON_FLAGS} -Werror")
+endif()
 
-add_definitions(
-    -Wall
-    -Wextra
-    -Wpedantic
-)
+# "nice bug" in cmake... http://www.cmake.org/Bug/view.php?id=15058
+# let's not set C_FLAGS as it will break pthreads detection \o/
+#set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11 ${COMMON_FLAGS}")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 ${COMMON_FLAGS}")
 
 configure_file(
   "config.h.in"
   "config.h"
 )
 
+#####################################################################
+# Enable code coverage calculation with gcov/gcovr/lcov
+# Usage:
+#  * Switch build type to coverage (use ccmake or cmake-gui)
+#  * Invoke make, make test, make coverage
+#  * Find html report in subdir coveragereport
+#  * Find xml report feasible for jenkins in coverage.xml
+#####################################################################
+IF(BUILD_TYPE MATCHES coverage)
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftest-coverage -fprofile-arcs" )
+  SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -ftest-coverage -fprofile-arcs" )
+  SET(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -ftest-coverage -fprofile-arcs" )
+  SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -ftest-coverage -fprofile-arcs" )
+ENDIF()
+
+
+set(CONNECTIVITY_QT_VERSION_MAJOR 1)
+set(CONNECTIVITY_QT_VERSION_MINOR 0)
+set(CONNECTIVITY_QT_LIB_TARGET connectivity-qt${CONNECTIVITY_QT_VERSION_MAJOR})
 add_subdirectory(data)
+#add_subdirectory(doc)
 add_subdirectory(src)
 add_subdirectory(po)
 
@@ -115,3 +136,5 @@ ADD_CUSTOM_TARGET(
         ${CMAKE_CTEST_COMMAND} --force-new-ctest-process --output-on-failure
 )
 
+enable_coverage_report(TARGETS connectivity-qt1 menumodel_cpp indicator-secret-agent
+                       FILTER ${CMAKE_SOURCE_DIR}/tests/* ${CMAKE_BINARY_DIR}/*)

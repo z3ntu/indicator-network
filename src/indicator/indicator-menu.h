@@ -33,6 +33,8 @@ public:
     typedef std::shared_ptr<IndicatorMenu> Ptr;
 
     IndicatorMenu() = delete;
+    virtual ~IndicatorMenu() = default;
+
     IndicatorMenu(RootState::Ptr rootState, const std::string &prefix)
         : m_rootState{rootState},
           m_prefix{prefix}
@@ -59,8 +61,6 @@ public:
         m_rootItem->setAttribute("x-canonical-type", TypedVariant<std::string>("com.canonical.indicator.root"));
         m_rootMenu->append(m_rootItem);
     }
-
-    virtual ~IndicatorMenu() {}
 
     virtual void
     addSection(Section::Ptr section)

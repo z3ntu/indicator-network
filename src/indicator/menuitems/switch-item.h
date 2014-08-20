@@ -31,6 +31,7 @@ public:
     typedef std::shared_ptr<SwitchItem> Ptr;
 
     SwitchItem() = delete;
+    virtual  ~SwitchItem() = default;
     SwitchItem(const std::string &label, const std::string &prefix, const std::string &name)
     {
         m_state.changed().connect([this](bool value){

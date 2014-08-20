@@ -71,6 +71,7 @@ public:
     typedef std::shared_ptr<WifiLinkItem> Ptr;
 
     WifiLinkItem() = delete;
+    virtual ~WifiLinkItem() = default;
     WifiLinkItem(networking::wifi::Link::Ptr link)
         : m_link {link}
     {

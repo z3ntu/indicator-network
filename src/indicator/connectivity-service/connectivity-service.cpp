@@ -32,7 +32,7 @@ std::string generatePropertyIntrospectionXml()
 {
     std::ostringstream output;
 
-    output << "<property ";
+    output << "        <property ";
     output << "name=\"" << T::name() << "\" ";
     output << "type=\"" << core::dbus::helper::TypeMapper<typename T::ValueType>::signature() << "\" ";
 
@@ -252,46 +252,48 @@ ConnectivityService::Private::introspectXml()
     std::ostringstream output;
 
     static const std::string header(
-                "<!DOCTYPE node PUBLIC \"-//freedesktop//DTD D-BUS Object Introspection 1.0//EN\n"
-                "\"http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd\">\n"
-                "<node>\n"
+                "<!DOCTYPE node PUBLIC \"-//freedesktop//DTD D-BUS Object Introspection 1.0//EN\"\n"
+                "\"http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd\">\n");
+
+    static const std::string introspectable_interface(
                 "    <interface name=\"org.freedesktop.DBus.Introspectable\">\n"
                 "        <method name=\"Introspect\">\n"
-                "            <arg name=\"data\" direction=\"out\" type=\"s\"/>\n"
+                "            <arg name=\"xml_data\" direction=\"out\" type=\"s\"/>\n"
                 "        </method>\n"
-                "    </interface>\n"
+                "    </interface>\n");
+
+    static const std::string dbus_properties_interface(
                 "    <interface name=\"org.freedesktop.DBus.Properties\">\n"
                 "        <method name=\"Get\">\n"
-                "            <arg name=\"interface\" direction=\"in\" type=\"s\"/>\n"
-                "            <arg name=\"propname\" direction=\"in\" type=\"s\"/>\n"
+                "            <arg name=\"interface_name\" direction=\"in\" type=\"s\"/>\n"
+                "            <arg name=\"property_name\" direction=\"in\" type=\"s\"/>\n"
                 "            <arg name=\"value\" direction=\"out\" type=\"v\"/>\n"
                 "        </method>\n"
                 "        <method name=\"Set\">\n"
-                "             <arg name=\"interface\" direction=\"in\" type=\"s\"/>\n"
-                "             <arg name=\"propname\" direction=\"in\" type=\"s\"/>\n"
+                "             <arg name=\"interface_name\" direction=\"in\" type=\"s\"/>\n"
+                "             <arg name=\"property_name\" direction=\"in\" type=\"s\"/>\n"
                 "             <arg name=\"value\" direction=\"in\" type=\"v\"/>\n"
                 "        </method>\n"
                 "        <method name=\"GetAll\">\n"
-                "            <arg name=\"interface\" direction=\"in\" type=\"s\"/>\n"
+                "            <arg name=\"interface_name\" direction=\"in\" type=\"s\"/>\n"
                 "            <arg name=\"props\" direction=\"out\" type=\"a{sv}\"/>\n"
                 "        </method>\n"
-                "        <signal name=\"PropertiesChanged\"\n>"
+                "        <signal name=\"PropertiesChanged\">\n"
                 "            <arg type=\"s\" name=\"interface_name\"/>\n"
                 "            <arg type=\"a{sv}\" name=\"changed_properties\"/>\n"
                 "            <arg type=\"as\" name=\"invalidated_properties\"/>\n"
-                "            </signal>\n"
+                "        </signal>\n"
                 "    </interface>\n");
 
-    static const std::string footer("</node>\n");
-
     output << header;
-
-    output << "<interface name=\"" << com::ubuntu::connectivity::Interface::NetworkingStatus::name() << "\">\n";
+    output << "<node name=\"" << com::ubuntu::connectivity::Interface::NetworkingStatus::path() << "\">\n";
+    output << introspectable_interface;
+    output << dbus_properties_interface;
+    output << "    <interface name=\"" << com::ubuntu::connectivity::Interface::NetworkingStatus::name() << "\">\n";
     output << generatePropertyIntrospectionXml<com::ubuntu::connectivity::Interface::NetworkingStatus::Property::Limitations>() << std::endl;
     output << generatePropertyIntrospectionXml<com::ubuntu::connectivity::Interface::NetworkingStatus::Property::Status>() << std::endl;
-    output << "</interface>\n";
-
-    output << footer;
+    output << "    </interface>\n";
+    output << "</node>\n";
 
     return output.str();
 }

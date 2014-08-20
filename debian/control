@@ -9,6 +9,7 @@ Build-Depends: cmake,
                g++-4.9,
                debhelper (>= 9.0.0),
                google-mock (>= 1.6.0+svn437),
+               dbus-test-runner,
                libconnectivity-cpp-dev (>=0.0.1+14.10.20140709),
                libdbus-cpp-dev (>= 4.0.0),
                libglib2.0-dev,
@@ -24,7 +25,13 @@ Build-Depends: cmake,
                pkg-config,
                python3-dbusmock,
                python3-setuptools,
+               qt5-default,
                qtbase5-dev,
+               qtbase5-dev-tools,
+               qtdeclarative5-dev,
+               qtdeclarative5-dev-tools,
+               qtdeclarative5-qtquick2-plugin,
+               qtdeclarative5-test-plugin,
                valgrind [amd64 armhf i386 powerpc],
 Standards-Version: 3.9.3
 # If you aren't a member of ~indicator-applet-developers but need to upload
@@ -60,3 +67,49 @@ Depends: ${misc:Depends},
 Description: Autopilot tests for the network indicator for Ubuntu
  The Indicator-network service is responsible for exporting the system settings
  menu through dbus.  This package contains its autopilot tests.
+
+Package: libconnectivity-qt1
+Architecture: any
+Pre-Depends: ${misc:Pre-Depends}
+Multi-Arch: same
+Depends: ${misc:Depends},
+         ${shlibs:Depends},
+Description: Unity Action Qt API
+ Ubuntu Connectivity API - Qt bindings
+
+Package: libconnectivity-qt1-dev
+Section: libdevel
+Architecture: any
+Pre-Depends: ${misc:Pre-Depends}
+Multi-Arch: same
+Depends: ${misc:Depends},
+         ${shlibs:Depends},
+         libconnectivity-qt1 (= ${binary:Version}),
+         qtbase5-dev
+Suggests: unity-action-doc,
+Description: Unity Action Qt API - development files
+ Ubuntu Connectivity API - Qt bindings
+ .
+ This package contains development files to develop against the Qt library.
+
+Package: qtdeclarative5-connectivity-plugin
+Architecture: any
+Pre-Depends: ${misc:Pre-Depends}
+Multi-Arch: same
+Depends: ${misc:Depends},
+         ${shlibs:Depends},
+         libconnectivity-qt1 (= ${binary:Version}),
+Description: Unity Action QML Components
+ Ubuntu Connectivity API - QML bindings
+ .
+ This package contains the qtdeclarative bindings for Ubuntu connectivity API.
+
+#Package: connectivity-doc
+#Section: doc
+#Architecture: all
+#Depends: ${misc:Depends},
+#         ${shlibs:Depends},
+#Description: Unity Action API - documentation
+# Ubuntu Connectivity API
+# .
+# This package contains developer documentation.

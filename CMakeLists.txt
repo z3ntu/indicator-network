@@ -104,8 +104,7 @@ configure_file(
 )
 
 add_subdirectory(data)
-add_subdirectory(network)
-add_subdirectory(secret-agent)
+add_subdirectory(src)
 add_subdirectory(po)
 
 enable_testing()

@@ -133,36 +133,36 @@ TEST_F(Service, wifiLink)
             // add just one AP initially
             aps.push_back(ap1.object->path());
 
-            services_ready.try_signal_ready_for(std::chrono::milliseconds{5000});
-            EXPECT_EQ(1, client_ready.wait_for_signal_ready_for(std::chrono::milliseconds{5000}));
+            services_ready.try_signal_ready_for(std::chrono::milliseconds{10000});
+            EXPECT_EQ(1, client_ready.wait_for_signal_ready_for(std::chrono::milliseconds{10000}));
 
             NM::Interface::AccessPoint::Signal::PropertiesChanged::ArgumentType properties;
 
-            stage1.try_signal_ready_for(std::chrono::milliseconds{5000});
+            stage1.try_signal_ready_for(std::chrono::milliseconds{10000});
 
             // add second ap
             aps.push_back(ap2.object->path());
             ap_added->emit(ap2.object->path());
 
-            sleep(1);
+            sleep(5);
 
-            stage2.try_signal_ready_for(std::chrono::milliseconds{5000});
+            stage2.try_signal_ready_for(std::chrono::milliseconds{10000});
 
             // remove second ap
             aps.clear();
             aps.push_back(ap1.object->path());
             ap_removed->emit(ap2.object->path());
 
-            sleep(1);
+            sleep(5);
 
-            stage3.try_signal_ready_for(std::chrono::milliseconds{5000});
+            stage3.try_signal_ready_for(std::chrono::milliseconds{10000});
 
             aps.clear();
             ap_removed->emit(ap1.object->path());
 
-            sleep(1);
+            sleep(5);
 
-            stage4.try_signal_ready_for(std::chrono::milliseconds{5000});
+            stage4.try_signal_ready_for(std::chrono::milliseconds{10000});
 
             bus->stop();
 
@@ -174,7 +174,7 @@ TEST_F(Service, wifiLink)
 
         auto client = [&, this]()
         {
-            EXPECT_EQ(1, services_ready.wait_for_signal_ready_for(std::chrono::milliseconds{5000}));
+            EXPECT_EQ(1, services_ready.wait_for_signal_ready_for(std::chrono::milliseconds{10000}));
             std::unique_ptr<connectivity::networking::Manager> mgr;
             mgr = connectivity::networking::Manager::createInstance();
 
@@ -206,31 +206,31 @@ TEST_F(Service, wifiLink)
             auto aps = wifilink->accessPoints().get();
             EXPECT_EQ(aps.size(), 1);
             EXPECT_EQ((*aps.begin())->strength().get(), 60);
-            sleep(1);
+            sleep(5);
 
-            EXPECT_EQ(1, stage1.wait_for_signal_ready_for(std::chrono::milliseconds{5000}));
+            EXPECT_EQ(1, stage1.wait_for_signal_ready_for(std::chrono::milliseconds{10000}));
 
             aps = wifilink->accessPoints().get();
             EXPECT_EQ(aps.size(), 1);
             EXPECT_EQ((*aps.begin())->strength().get(), 90);
 
 
-            EXPECT_EQ(1, stage2.wait_for_signal_ready_for(std::chrono::milliseconds{5000}));
+            EXPECT_EQ(1, stage2.wait_for_signal_ready_for(std::chrono::milliseconds{10000}));
 
-            sleep(1);
+            sleep(5);
 
             aps = wifilink->accessPoints().get();
             EXPECT_EQ(aps.size(), 1);
             EXPECT_EQ((*aps.begin())->strength().get(), 60);
 
-            EXPECT_EQ(1, stage3.wait_for_signal_ready_for(std::chrono::milliseconds{5000}));
+            EXPECT_EQ(1, stage3.wait_for_signal_ready_for(std::chrono::milliseconds{10000}));
 
-            sleep(1);
+            sleep(5);
 
             aps = wifilink->accessPoints().get();
             EXPECT_EQ(aps.size(), 0);
 
-            EXPECT_EQ(1, stage4.wait_for_signal_ready_for(std::chrono::milliseconds{5000}));
+            EXPECT_EQ(1, stage4.wait_for_signal_ready_for(std::chrono::milliseconds{10000}));
 
             return ::testing::Test::HasFailure() ? core::posix::exit::Status::failure : core::posix::exit::Status::success;
         };

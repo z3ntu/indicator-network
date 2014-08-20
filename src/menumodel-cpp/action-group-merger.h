@@ -61,7 +61,7 @@ class ActionGroupMerger
             // then they will override each other in GActionGroup so let's catch that
             // early on.
             if (name_iter->second != action) {
-                std::cerr << "Conflicting action names." << std::endl;
+                std::cerr << __PRETTY_FUNCTION__ << ": Conflicting action names. \"" << action->name() << "\"" << std::endl;
                 /// @todo thow something.
                 return;
             }
@@ -107,7 +107,7 @@ public:
         auto iter = m_groups.find(group);
         if (iter != m_groups.end()) {
             /// @todo throw something.
-            std::cerr << "Trying to add action group which was already added before." << std::endl;
+            std::cerr << __PRETTY_FUNCTION__ << ": Trying to add action group which was already added before." << std::endl;
             return;
         }
 
@@ -128,7 +128,7 @@ public:
         auto iter = m_groups.find(group);
         if (iter == m_groups.end()) {
             /// @todo throw something.
-            std::cerr << "Trying to remove action group which was not added before." << std::endl;
+            std::cerr << __PRETTY_FUNCTION__ << ": Trying to remove action group which was not added before." << std::endl;
             return;
         }
         m_groups.erase(group);

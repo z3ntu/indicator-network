@@ -18,6 +18,7 @@
  */
 
 #include "service.h"
+#include "connectivity-service/connectivity-service.h"
 
 #include <iostream>
 #include <memory>
@@ -81,7 +82,11 @@ main(int, char *[])
 
     notify_init(GETTEXT_PACKAGE);
 
-    std::unique_ptr<Service> menu {new Service};
+    std::shared_ptr<networking::Manager> manager = networking::Manager::createInstance();
+
+    std::shared_ptr<Service> menu {new Service(manager)};
+    std::unique_ptr<ConnectivityService> connectivityService {new ConnectivityService(manager)};
+    connectivityService->unlockAllModems().connect([menu](){ menu->unlockAllModems(); });
 
     if (getenv("VALGRIND") != 0) {
         g_timeout_add(1000, (GSourceFunc)stop_main_loop, NULL);

@@ -17,6 +17,8 @@ set(NETWORK_SERVICE_SOURCES
     wwan-link-item.cpp
     wwan-section.cpp
 
+    connectivity-service/connectivity-service.cpp
+
     menuitems/access-point-item.h
     menuitems/item.h
     menuitems/modem-info-item.cpp
@@ -24,8 +26,6 @@ set(NETWORK_SERVICE_SOURCES
     menuitems/switch-item.h
     menuitems/text-item.h
 )
-
-#include_directories(include)
 
 # get std::thread working...
 # http://gcc.gnu.org/bugzilla/show_bug.cgi?id=52681

@@ -85,11 +85,12 @@ class Service
     std::unique_ptr<BusName> m_busName;
 
 public:
-    Service()
+    Service() = delete;
+    Service(std::shared_ptr<connectivity::networking::Manager> manager)
+        : m_manager{manager}
     {
         m_sessionBus.reset(new SessionBus());
 
-        m_manager = networking::Manager::createInstance();
         m_modemManager = std::make_shared<ModemManager>();
 
         m_rootState = std::make_shared<RootState>(m_manager, m_modemManager);
@@ -153,6 +154,11 @@ public:
                                     },
                                     [](std::string) { std::cout << "lost" << std::endl; },
                         m_sessionBus));
+    }
+
+    void unlockAllModems()
+    {
+        m_wwanSection->unlockAllModems();
     }
 };
 

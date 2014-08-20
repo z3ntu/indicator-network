@@ -17,27 +17,23 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#ifndef WWAN_SECTION_H
-#define WWAN_SECTION_H
+#ifndef CONNECTIVITY_SERVICE_H
+#define CONNECTIVITY_SERVICE_H
 
-#include "menuitems/section.h"
-#include "modem-manager.h"
+#include <connectivity/networking/manager.h>
+#include<core/signal.h>
 
-class WwanSection : public Section
+class ConnectivityService
 {
+public:
+    ConnectivityService(std::shared_ptr<connectivity::networking::Manager> manager);
+    virtual ~ConnectivityService();
+
+    core::Signal<> &unlockAllModems();
+
+private:
     class Private;
     std::unique_ptr<Private> d;
-
-public:
-    typedef std::shared_ptr<WwanSection> Ptr;
-    WwanSection() = delete;
-    WwanSection(ModemManager::Ptr modemManager);
-    ~WwanSection();
-
-    virtual ActionGroup::Ptr actionGroup();
-    virtual MenuModel::Ptr menuModel();
-
-    void unlockAllModems();
 };
 
 #endif

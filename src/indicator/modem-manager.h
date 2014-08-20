@@ -38,6 +38,7 @@ public:
     ~ModemManager();
 
     void unlockModem(Modem::Ptr modem);
+    void unlockAllModems();
 
     const core::Property<std::set<Modem::Ptr>> &modems();
 };

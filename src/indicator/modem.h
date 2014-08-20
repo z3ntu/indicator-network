@@ -52,6 +52,20 @@ public:
     typedef std::shared_ptr<Modem> Ptr;
     typedef std::weak_ptr<Modem> WeakPtr;
 
+    struct Compare
+    {
+        bool operator()(int lhs, int rhs)
+        {
+            if (lhs == -1 && rhs == -1)
+                return false;
+            if (lhs == -1)
+                return false;
+            if (rhs == -1)
+                return true;
+            return lhs < rhs;
+        }
+    };
+
     Modem() = delete;
     Modem(org::ofono::Interface::Modem::Ptr ofonoModem);
     virtual ~Modem();

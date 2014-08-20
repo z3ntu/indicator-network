@@ -1,12 +1,5 @@
 
-add_subdirectory(menumodel-cpp)
-
-include_directories(notify-cpp)
-
-set(NOTIFY_CPP_SOURCES
-    notify-cpp/notification.cpp
-    notify-cpp/snapdecision/sim-unlock.cpp
-)
+include_directories("${CMAKE_SOURCE_DIR}/src/")
 
 set(NETWORK_SERVICE_SOURCES
     indicator-network-service.cpp
@@ -24,18 +17,12 @@ set(NETWORK_SERVICE_SOURCES
     wwan-link-item.cpp
     wwan-section.cpp
 
-    dbus-cpp/services/ofono.h
-
     menuitems/access-point-item.h
     menuitems/item.h
     menuitems/modem-info-item.cpp
     menuitems/section.h
     menuitems/switch-item.h
     menuitems/text-item.h
-
-    ${NOTIFY_CPP_SOURCES}
-
-    url-dispatcher-cpp/url-dispatcher.cpp
 )
 
 #include_directories(include)
@@ -51,6 +38,8 @@ add_executable(
 target_link_libraries(
     indicator-network-service
     menumodel_cpp
+    notify_cpp
+    url_dispatcher_cpp
     ${CONNECTIVITY_CPP_LDFLAGS}
     ${GLIB_LIBRARIES}
     ${GIO_LIBRARIES}
@@ -58,10 +47,6 @@ target_link_libraries(
     ${OFONO_LIBRARIES}
 )
 
-#target_link_libraries(
-#  indicator-network-service
-#  network
-#)
 
 ###########################
 # Installation

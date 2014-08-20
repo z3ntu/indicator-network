@@ -1,8 +1,8 @@
 
-include_directories("${CMAKE_SOURCE_DIR}/secret-agent")
-include_directories("${CMAKE_BINARY_DIR}/secret-agent")
+include_directories("${CMAKE_SOURCE_DIR}/src/secret-agent")
+include_directories("${CMAKE_BINARY_DIR}/src/secret-agent")
 
-add_definitions(-DSECRET_AGENT_BIN="${CMAKE_BINARY_DIR}/secret-agent/indicator-secret-agent")
+add_definitions(-DSECRET_AGENT_BIN="${CMAKE_BINARY_DIR}/src/secret-agent/indicator-secret-agent")
 
 set(
     SECRET_AGENT_UNIT_TESTS_SRC

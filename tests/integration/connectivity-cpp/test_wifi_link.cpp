@@ -154,7 +154,7 @@ TEST_F(Service, wifiLink)
             aps.push_back(ap2.object->path());
             ap_added->emit(ap2.object->path());
 
-            sleep(1);
+            sleep(5);
 
             properties["Strength"] = dbus::types::Variant::encode<std::int8_t>(5);
             ap1_pc->emit(properties);
@@ -179,14 +179,14 @@ TEST_F(Service, wifiLink)
             ap2_pc->emit(properties);
             ap2_pc->emit(properties);
 
-            stage2.try_signal_ready_for(std::chrono::milliseconds{5000});
+            stage2.try_signal_ready_for(std::chrono::milliseconds{10000});
 
             // remove the first ap
             aps.clear();
             aps.push_back(ap2.object->path());
             ap_removed->emit(ap1.object->path());
 
-            sleep(1);
+            sleep(5);
 
             properties["Strength"] = dbus::types::Variant::encode<std::int8_t>(95);
             ap2_pc->emit(properties);
@@ -199,13 +199,13 @@ TEST_F(Service, wifiLink)
             properties["Strength"] = dbus::types::Variant::encode<std::int8_t>(91);
             ap2_pc->emit(properties);
 
-            stage3.try_signal_ready_for(std::chrono::milliseconds{5000});
+            stage3.try_signal_ready_for(std::chrono::milliseconds{10000});
 
             // add the first ap back
             aps.push_back(ap1.object->path());
             ap_added->emit(ap1.object->path());
 
-            sleep(1);
+            sleep(5);
 
             properties["Strength"] = dbus::types::Variant::encode<std::int8_t>(10);
             ap1_pc->emit(properties);
@@ -241,7 +241,7 @@ TEST_F(Service, wifiLink)
 
         auto client = [&, this]()
         {
-            EXPECT_EQ(1, services_ready.wait_for_signal_ready_for(std::chrono::milliseconds{5000}));
+            EXPECT_EQ(1, services_ready.wait_for_signal_ready_for(std::chrono::milliseconds{10000}));
             std::unique_ptr<connectivity::networking::Manager> mgr;
             mgr = connectivity::networking::Manager::createInstance();
 
@@ -286,7 +286,7 @@ TEST_F(Service, wifiLink)
 
             client_ready.try_signal_ready_for(std::chrono::milliseconds{2000});
 
-            sleep(1);
+            sleep(5);
 
             EXPECT_EQ(values_abc.size(), 5);
             EXPECT_EQ(values_123.size(), 0);
@@ -299,9 +299,9 @@ TEST_F(Service, wifiLink)
 
             values_abc.clear();
             values_123.clear();
-            EXPECT_EQ(1, stage1.wait_for_signal_ready_for(std::chrono::milliseconds{5000}));
+            EXPECT_EQ(1, stage1.wait_for_signal_ready_for(std::chrono::milliseconds{10000}));
 
-            sleep(1);
+            sleep(5);
 
             EXPECT_EQ(values_abc.size(), 5);
             EXPECT_EQ(values_123.size(), 5);
@@ -320,9 +320,9 @@ TEST_F(Service, wifiLink)
 
             values_abc.clear();
             values_123.clear();
-            EXPECT_EQ(1, stage2.wait_for_signal_ready_for(std::chrono::milliseconds{5000}));
+            EXPECT_EQ(1, stage2.wait_for_signal_ready_for(std::chrono::milliseconds{10000}));
 
-            sleep(1);
+            sleep(5);
 
             EXPECT_EQ(values_abc.size(), 0);
             EXPECT_EQ(values_123.size(), 5);
@@ -335,9 +335,9 @@ TEST_F(Service, wifiLink)
 
             values_abc.clear();
             values_123.clear();
-            EXPECT_EQ(1, stage3.wait_for_signal_ready_for(std::chrono::milliseconds{5000}));
+            EXPECT_EQ(1, stage3.wait_for_signal_ready_for(std::chrono::milliseconds{10000}));
 
-            sleep(1);
+            sleep(5);
 
             EXPECT_EQ(values_abc.size(), 5);
             EXPECT_EQ(values_123.size(), 5);

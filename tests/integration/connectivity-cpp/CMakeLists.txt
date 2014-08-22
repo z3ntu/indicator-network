@@ -89,7 +89,6 @@ target_link_libraries(
     connectivity-cpp
     connectivity-gtest
     ${PROCESS_CPP_LIBRARIES}
-    ${GLIB_LIBRARIES}
 )
 
 target_link_libraries(
@@ -97,7 +96,6 @@ target_link_libraries(
     connectivity-cpp
     connectivity-gtest
     ${PROCESS_CPP_LIBRARIES}
-    ${GLIB_LIBRARIES}
 )
 
 target_link_libraries(
@@ -105,7 +103,6 @@ target_link_libraries(
     connectivity-cpp
     connectivity-gtest
     ${PROCESS_CPP_LIBRARIES}
-    ${GLIB_LIBRARIES}
 )
 
 target_link_libraries(
@@ -113,7 +110,6 @@ target_link_libraries(
     connectivity-cpp
     connectivity-gtest
     ${PROCESS_CPP_LIBRARIES}
-    ${GLIB_LIBRARIES}
 )
 
 target_link_libraries(
@@ -121,7 +117,6 @@ target_link_libraries(
     connectivity-cpp
     connectivity-gtest
     ${PROCESS_CPP_LIBRARIES}
-    ${GLIB_LIBRARIES}
 )
 
 target_link_libraries(
@@ -129,7 +124,6 @@ target_link_libraries(
     connectivity-cpp
     connectivity-gtest
     ${PROCESS_CPP_LIBRARIES}
-    ${GLIB_LIBRARIES}
 )
 
 add_test(test_networking_status ${CMAKE_CURRENT_BINARY_DIR}/test_networking_status)

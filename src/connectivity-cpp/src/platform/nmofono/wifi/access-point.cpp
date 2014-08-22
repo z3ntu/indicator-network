@@ -33,9 +33,10 @@ AccessPoint::AccessPoint(const org::freedesktop::NetworkManager::Interface::Acce
     m_adhoc = m_ap.mode->get() != NM_802_11_MODE_INFRA;
 
     std::string ssid;
+    // Note: raw_ssid is _not_ guaranteed to be null terminated.
     const std::vector<std::int8_t> &raw_ssid = m_ap.ssid->get();
     if(g_utf8_validate((const char*)(&raw_ssid[0]), raw_ssid.size(), nullptr)) {
-        m_ssid = std::string(raw_ssid.begin(), raw_ssid.end());
+        ssid = std::string(raw_ssid.begin(), raw_ssid.end());
     } else {
         for (auto c : m_ap.ssid->get()) {
             if (isprint(c)) {
@@ -47,6 +48,7 @@ AccessPoint::AccessPoint(const org::freedesktop::NetworkManager::Interface::Acce
             }
         }
     }
+    m_ssid = ssid;
 
     m_strength.set(m_ap.strength->get());
     m_ap.properties_changed->connect([this](org::freedesktop::NetworkManager::Interface::AccessPoint::Signal::PropertiesChanged::ArgumentType map){

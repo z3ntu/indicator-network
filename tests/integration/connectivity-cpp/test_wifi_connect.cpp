@@ -106,7 +106,10 @@ TEST_F(Service, wifiLink)
                 auto reply = dbus::Message::make_method_return(msg);
                 std::map<std::string, std::map<std::string, core::dbus::types::Variant>> conf;
                 std::map<std::string, dbus::types::Variant> wireless_conf;
-                wireless_conf["ssid"] = dbus::types::Variant::encode<std::vector<std::int8_t>>({(char)0xC3, (char)0xA4, 0x62, 0x63}); // äbc
+                wireless_conf["ssid"] = dbus::types::Variant::encode<std::vector<std::int8_t>>({static_cast<std::int8_t>(0xC3),
+                                                                                                static_cast<std::int8_t>(0xA4),
+                                                                                                static_cast<std::int8_t>(0x62),
+                                                                                                static_cast<std::int8_t>(0x63)}); // äbc
                 conf["802-11-wireless"] = wireless_conf;
                 reply->writer() << conf;
                 bus->send(reply);
@@ -186,7 +189,10 @@ TEST_F(Service, wifiLink)
             // SSID name is äbc to test that utf-8 in names works.
             // The casts are because the underlying datatype is
             // signed char (should be unsigned) and 0x63 > 127.
-            ap1.ssid->set({(char)0xC3, (char)0xA4, 0x62, 0x63});
+            ap1.ssid->set({static_cast<std::int8_t>(0xC3),
+                           static_cast<std::int8_t>(0xA4),
+                           static_cast<std::int8_t>(0x62),
+                           static_cast<std::int8_t>(0x63)});
             ap1.strength->set(90);
 
             auto ap1_pc = ap1.properties_changed;

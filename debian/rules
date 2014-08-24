@@ -17,15 +17,7 @@ export CXX=$(DEB_HOST_GNU_TYPE)-g++-4.9
 
 # tests are flaky on these platforms which
 # we don't really care about anyway
-ifeq ($(DEB_HOST_ARCH),powerpc)
-override_dh_auto_test:
-	dh_auto_test || true
-endif
-ifeq ($(DEB_HOST_ARCH),arm64)
-override_dh_auto_test:
-	dh_auto_test || true
-endif
-ifeq ($(DEB_HOST_ARCH),ppc64el)
+ifneq (,filter(arm64 powerpc ppc64el ,$(DEB_HOST_ARCH)))
 override_dh_auto_test:
 	dh_auto_test || true
 endif

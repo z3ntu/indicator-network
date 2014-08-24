@@ -15,9 +15,9 @@ export CXX=$(DEB_HOST_GNU_TYPE)-g++-4.9
 %:
 	dh $@ --parallel --fail-missing --with python3
 
-ifeq ($(DEB_HOST_ARCH),powerpc)
-# TestAccessPointItem.ExportBasicActionsAndMenu fails on powerpc, but we
-# don't care all that much right now.
+# tests are flaky on these platforms which
+# we don't really care about anyway
+ifneq (,filter(arm64 powerpc ppc64el ,$(DEB_HOST_ARCH)))
 override_dh_auto_test:
 	dh_auto_test || true
 endif

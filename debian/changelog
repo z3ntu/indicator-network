@@ -1,3 +1,19 @@
+indicator-network (0.5.1+14.10.20140824-0ubuntu1) utopic; urgency=low
+
+  [ Martin Pitt ]
+  * Mark for using language packs.
+
+  [ Jussi Pakkanen ]
+  * Support accented characters in access point names.
+
+  [ Antti Kaijanmäki ]
+  * Support accented characters in access point names.
+
+  [ Ubuntu daily release ]
+  * New rebuild forced
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Sun, 24 Aug 2014 08:42:49 +0000
+
 indicator-network (0.5.1+14.10.20140820.6-0ubuntu1) utopic; urgency=low
 
   [ Ubuntu daily release ]

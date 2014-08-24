@@ -38,4 +38,5 @@ add_library(platform_nmofono STATIC ${NMOFONO_PLATFORM_SOURCES})
 target_link_libraries(
     platform_nmofono
     ${DBUSCPP_LIBRARIES}
+    ${GLIB_LIBRARIES}
 )

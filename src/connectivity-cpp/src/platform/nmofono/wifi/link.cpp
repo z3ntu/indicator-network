@@ -379,6 +379,7 @@ Link::connect_to(std::shared_ptr<networking::wifi::AccessPoint> accessPoint)
             ac = std::get<1>(ret);
         }
     } catch(const std::exception &e) {
+        // @bug default timeout expired: LP(#1361642)
         // If this happens, indicator-network is in an unknown state with no clear way of
         // recovering. The only reasonable way out is a graceful exit.
         std::cerr << __PRETTY_FUNCTION__ << " Failed to activate connection: " << e.what() << std::endl;

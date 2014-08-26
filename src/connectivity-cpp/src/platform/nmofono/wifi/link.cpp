@@ -359,23 +359,31 @@ Link::connect_to(std::shared_ptr<networking::wifi::AccessPoint> accessPoint)
     /// @todo oh, and check more parameters than just the ssid
 
     core::dbus::types::ObjectPath ac;
-    if (found) {
-        ac = p->nm.activate_connection(found->object->path(),
-                p->dev.object->path(),
-                ap->object_path());
-    } else {
-        std::map<std::string, std::map<std::string, dbus::types::Variant> > conf;
+    try {
+        if (found) {
+            ac = p->nm.activate_connection(found->object->path(),
+                    p->dev.object->path(),
+                    ap->object_path());
+        } else {
+            std::map<std::string, std::map<std::string, dbus::types::Variant> > conf;
 
-        /// @todo getting the ssid multiple times over dbus is stupid.
+            /// @todo getting the ssid multiple times over dbus is stupid.
 
-        std::map<std::string, dbus::types::Variant> wireless_conf;
-        wireless_conf["ssid"] = dbus::types::Variant::encode<std::vector<std::int8_t>>(ap->get_ap().ssid->get());
+            std::map<std::string, dbus::types::Variant> wireless_conf;
+            wireless_conf["ssid"] = dbus::types::Variant::encode<std::vector<std::int8_t>>(ap->get_ap().ssid->get());
 
-        conf["802-11-wireless"] = wireless_conf;
-        auto ret = p->nm.add_and_activate_connection(conf,
-                p->dev.object->path(),
-                ap->object_path());
-        ac = std::get<1>(ret);
+            conf["802-11-wireless"] = wireless_conf;
+            auto ret = p->nm.add_and_activate_connection(conf,
+                    p->dev.object->path(),
+                    ap->object_path());
+            ac = std::get<1>(ret);
+        }
+    } catch(const std::exception &e) {
+        // @bug default timeout expired: LP(#1361642)
+        // If this happens, indicator-network is in an unknown state with no clear way of
+        // recovering. The only reasonable way out is a graceful exit.
+        std::cerr << __PRETTY_FUNCTION__ << " Failed to activate connection: " << e.what() << std::endl;
+        exit(0);
     }
     updateActiveConnection(ac);
     p->connecting = false;

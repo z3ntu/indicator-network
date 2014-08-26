@@ -358,8 +358,8 @@ Link::connect_to(std::shared_ptr<networking::wifi::AccessPoint> accessPoint)
     /// @todo check the timestamps as there might be multiple ones that are suitable.
     /// @todo oh, and check more parameters than just the ssid
 
+    core::dbus::types::ObjectPath ac;
     try {
-        core::dbus::types::ObjectPath ac;
         if (found) {
             ac = p->nm.activate_connection(found->object->path(),
                     p->dev.object->path(),
@@ -378,12 +378,14 @@ Link::connect_to(std::shared_ptr<networking::wifi::AccessPoint> accessPoint)
                     ap->object_path());
             ac = std::get<1>(ret);
         }
-        updateActiveConnection(ac);
-        p->connecting = false;
     } catch(const std::exception &e) {
-        std::cerr << "Failed to activate connection:" << e.what() << std::endl;
+        // If this happens, indicator-network is in an unknown state with no clear way of
+        // recovering. The only reasonable way out is a graceful exit.
+        std::cerr << __PRETTY_FUNCTION__ << " Failed to activate connection: " << e.what() << std::endl;
         exit(0);
     }
+    updateActiveConnection(ac);
+    p->connecting = false;
 }
 
 const Property<std::shared_ptr<networking::wifi::AccessPoint> >&

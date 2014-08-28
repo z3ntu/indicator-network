@@ -72,7 +72,15 @@ Manager::State::State()
     m_bus->install_executor(executor);
     worker = std::move(std::thread([this]()
     {
-        m_bus->run();
+        try {
+            m_bus->run();
+        } catch(std::exception &e) {
+            // @bug default timeout expired: LP(#1361642)
+           // If this happens, indicator-network is in an unknown state with no clear way of
+           // recovering. The only reasonable way out is a graceful exit.
+           std::cerr << __PRETTY_FUNCTION__ << " Failed to run dbus service: " << e.what() << std::endl;
+           exit(0);
+        }
     }));
     location::set_name_for_thread(
                 worker,

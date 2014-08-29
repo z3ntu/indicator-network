@@ -52,7 +52,17 @@ public:
 
         auto executor = core::dbus::asio::make_executor(m_bus);
         m_bus->install_executor(executor);
-        m_ofonoWorker = std::move(std::thread([this](){ m_bus->run(); }));
+        m_ofonoWorker = std::move(std::thread([this](){
+            try {
+                m_bus->run();
+            } catch(std::exception &e) {
+                /// @bug dbus-cpp internal logic exploded
+                // If this happens, indicator-network is in an unknown state with no clear way of
+                // recovering. The only reasonable way out is a graceful exit.
+                std::cerr << __PRETTY_FUNCTION__ << " Failed to run dbus service: " << e.what() << std::endl;
+                exit(0);
+            }
+        }));
 
         m_dbus.reset(new core::dbus::DBus(m_bus));
 

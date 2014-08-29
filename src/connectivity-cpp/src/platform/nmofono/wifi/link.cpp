@@ -324,42 +324,42 @@ Link::accessPoints() const {
 void
 Link::connect_to(std::shared_ptr<networking::wifi::AccessPoint> accessPoint)
 {
-    p->connecting = true;
-    std::vector<int8_t> ssid;
-    std::shared_ptr<GroupedAccessPoint> ap = std::dynamic_pointer_cast<GroupedAccessPoint>(accessPoint);
-    // The accesspoint interface does not provide this property so we need to coax it out of
-    // derived classes.
-    if(ap) {
-        ssid = ap->get_ap().ssid->get();
-    } else {
-        std::shared_ptr<AccessPoint> bap = std::dynamic_pointer_cast<AccessPoint>(accessPoint);
-        assert(bap);
-        ssid = bap->get_ap().ssid->get();
-    }
-    NM::Interface::Connection *found = nullptr;
-    auto connections = p->dev.get_available_connections();
-    for (auto &con : connections) {
-        for (auto map : con.get_settings()) {
-            if (map.first == "802-11-wireless") {
-                for (auto conf : map.second) {
-                    if (conf.first == "ssid") {
-                        std::vector<int8_t> value;
-                        value = conf.second.as<std::vector<std::int8_t>>();
-                        if (value == ap->get_ap().ssid->get()) {
-                            found = &con;
-                            break;
+    try {
+        p->connecting = true;
+        std::vector<int8_t> ssid;
+        std::shared_ptr<GroupedAccessPoint> ap = std::dynamic_pointer_cast<GroupedAccessPoint>(accessPoint);
+        // The accesspoint interface does not provide this property so we need to coax it out of
+        // derived classes.
+        if(ap) {
+            ssid = ap->get_ap().ssid->get();
+        } else {
+            std::shared_ptr<AccessPoint> bap = std::dynamic_pointer_cast<AccessPoint>(accessPoint);
+            assert(bap);
+            ssid = bap->get_ap().ssid->get();
+        }
+        NM::Interface::Connection *found = nullptr;
+        auto connections = p->dev.get_available_connections();
+        for (auto &con : connections) {
+            for (auto map : con.get_settings()) {
+                if (map.first == "802-11-wireless") {
+                    for (auto conf : map.second) {
+                        if (conf.first == "ssid") {
+                            std::vector<int8_t> value;
+                            value = conf.second.as<std::vector<std::int8_t>>();
+                            if (value == ap->get_ap().ssid->get()) {
+                                found = &con;
+                                break;
+                            }
                         }
                     }
                 }
             }
         }
-    }
 
-    /// @todo check the timestamps as there might be multiple ones that are suitable.
-    /// @todo oh, and check more parameters than just the ssid
+        /// @todo check the timestamps as there might be multiple ones that are suitable.
+        /// @todo oh, and check more parameters than just the ssid
 
-    core::dbus::types::ObjectPath ac;
-    try {
+        core::dbus::types::ObjectPath ac;
         if (found) {
             ac = p->nm.activate_connection(found->object->path(),
                     p->dev.object->path(),
@@ -378,6 +378,8 @@ Link::connect_to(std::shared_ptr<networking::wifi::AccessPoint> accessPoint)
                     ap->object_path());
             ac = std::get<1>(ret);
         }
+        updateActiveConnection(ac);
+        p->connecting = false;
     } catch(const std::exception &e) {
         // @bug default timeout expired: LP(#1361642)
         // If this happens, indicator-network is in an unknown state with no clear way of
@@ -385,8 +387,6 @@ Link::connect_to(std::shared_ptr<networking::wifi::AccessPoint> accessPoint)
         std::cerr << __PRETTY_FUNCTION__ << " Failed to activate connection: " << e.what() << std::endl;
         exit(0);
     }
-    updateActiveConnection(ac);
-    p->connecting = false;
 }
 
 const Property<std::shared_ptr<networking::wifi::AccessPoint> >&

@@ -8,23 +8,23 @@ msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-08-08 15:33+0300\n"
-"PO-Revision-Date: 2014-05-26 09:30+0000\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"PO-Revision-Date: 2014-08-30 09:31+0000\n"
+"Last-Translator: Данило Шеган <Unknown>\n"
 "Language-Team: Serbian <sr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-08-09 05:51+0000\n"
-"X-Generator: Launchpad (build 17156)\n"
+"X-Launchpad-Export-Date: 2014-08-31 07:34+0000\n"
+"X-Generator: Launchpad (build 17176)\n"
 
 #: network/quick-access-section.cpp:48
 msgid "Flight Mode"
-msgstr ""
+msgstr "Режим за летове"
 
 #. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
 #: network/root-state.cpp:307
 msgid "Network"
-msgstr ""
+msgstr "Мрежа"
 
 #. TRANSLATORS: this string is not currently being shown on the screen. This message might be subject to change.
 #: network/sim-unlock-dialog.cpp:85
@@ -32,6 +32,9 @@ msgid ""
 "This will be the last attempt.<br><br>If the SIM PIN is entered incorrectly, "
 "your SIM will be blocked and would require the PUK Code to unlock."
 msgstr ""
+"Ово ће бити последњи покушај.<br><br>Ако се унесе погрешан ПИН код СИМ "
+"картице, ваша СИМ картица ће бити блокирана и захтеваће ПУК код за "
+"откључавање."
 
 #. TRANSLATORS: this string is not currently being shown on the screen. This message might be subject to change.
 #: network/sim-unlock-dialog.cpp:95
@@ -39,6 +42,8 @@ msgid ""
 "Your SIM is now blocked.<br><br>Enter the PUK Code to unlock.<br><br>You may "
 "contact your network provider for PUK Code."
 msgstr ""
+"Ваша СИМ картица је сада блокирана.<br><br>Унесите ПУК код да "
+"откључате.<br><br>Можете се распитати код вашег оператера за ПУК код."
 
 #. TRANSLATORS: this string is not currently being shown on the screen. This message might be subject to change.
 #: network/sim-unlock-dialog.cpp:106
@@ -47,6 +52,8 @@ msgid ""
 "incorrectly, your SIM will need to be replaced.<br><br>Please contact your "
 "network provider."
 msgstr ""
+"Ово ће бити последњи покушај.<br><br>Ако се унесе погрешан ПУК код, ваша СИМ "
+"картица ће морати да се замени.<br><br>Ступите у везу са вашим оператером."
 
 #. TRANSLATORS: this string is not currently being shown on the screen. This message might be subject to change.
 #: network/sim-unlock-dialog.cpp:117
@@ -54,115 +61,117 @@ msgid ""
 "Your SIM is now permanently blocked and needs to be replaced.<br><br>Please "
 "contact your network provider."
 msgstr ""
+"Ваша СИМ картица је сада трајно блокирана и мора да се "
+"замени.<br><br>Ступите у везу са вашим оператером."
 
 #: network/sim-unlock-dialog.cpp:183 network/sim-unlock-dialog.cpp:414
 #: network/sim-unlock-dialog.cpp:442
 msgid "Enter SIM PIN"
-msgstr ""
+msgstr "Унесите ПИН код за картицу"
 
 #: network/sim-unlock-dialog.cpp:187
 msgid "Enter PUK code"
-msgstr ""
+msgstr "Унесите ПУК код"
 
 #: network/sim-unlock-dialog.cpp:195
 #, c-format
 msgid "Attempt %d of %d"
-msgstr ""
+msgstr "%d. од %d покушаја"
 
 #: network/sim-unlock-dialog.cpp:210 network/sim-unlock-dialog.cpp:425
 #: network/sim-unlock-dialog.cpp:435
 msgid "Enter new PIN code"
-msgstr ""
+msgstr "Унесите нови ПИН код"
 
 #: network/sim-unlock-dialog.cpp:213 network/sim-unlock-dialog.cpp:429
 msgid "Confirm new PIN code"
-msgstr ""
+msgstr "Потврдите нови ПИН код"
 
 #: network/sim-unlock-dialog.cpp:236
 msgid "Oops!<br>Incorrect PIN entered."
-msgstr ""
+msgstr "Упс!<br>Унет погрешан ПИН."
 
 #: network/sim-unlock-dialog.cpp:254 network/sim-unlock-dialog.cpp:434
 msgid "PIN codes did not match."
-msgstr ""
+msgstr "ПИН код није тачан."
 
 #: network/sim-unlock-dialog.cpp:259
 msgid "Oops!<br>Incorrect PUK entered."
-msgstr ""
+msgstr "Упс!<br>Унет погрешан ПУК."
 
 #: network/sim-unlock-dialog.cpp:441
 msgid "Failed to change PIN."
-msgstr ""
+msgstr "Неуспешна промена ПИН кода."
 
 #: network/wifi-link-item.h:87
 msgid "Wi-Fi"
-msgstr ""
+msgstr "Бежична"
 
 #: network/wifi-link-item.h:151
 msgid "Other network…"
-msgstr ""
+msgstr "Друга мрежа..."
 
 #: network/wifi-section.cpp:60
 msgid "Wi-Fi settings…"
-msgstr ""
+msgstr "Бежична подешавања..."
 
 #: network/wwan-link-item.cpp:87
 msgid "No SIM"
-msgstr ""
+msgstr "Без СИМ картице"
 
 #: network/wwan-link-item.cpp:93
 msgid "SIM Error"
-msgstr ""
+msgstr "Грешка СИМ картице"
 
 #: network/wwan-link-item.cpp:100
 msgid "SIM Locked"
-msgstr ""
+msgstr "СИМ картица је закључана"
 
 #: network/wwan-link-item.cpp:112
 msgid "Unregistered"
-msgstr ""
+msgstr "Непријављен"
 
 #: network/wwan-link-item.cpp:116
 msgid "Unknown"
-msgstr ""
+msgstr "Непознат"
 
 #: network/wwan-link-item.cpp:120
 msgid "Denied"
-msgstr ""
+msgstr "Одбијен"
 
 #: network/wwan-link-item.cpp:124
 msgid "Searching"
-msgstr ""
+msgstr "Тражим"
 
 #: network/wwan-link-item.cpp:135
 msgid "No Signal"
-msgstr ""
+msgstr "Без сигнала"
 
 #: network/wwan-link-item.cpp:141
 msgid "Offline"
-msgstr ""
+msgstr "Неповезан"
 
 #: network/wwan-section.cpp:79
 msgid "Cellular settings…"
-msgstr ""
+msgstr "Мобилна подешавања..."
 
 #: secret-agent/SecretRequest.cpp:62
 #, qt-format
 msgid "Connect to “%1”"
-msgstr ""
+msgstr "Повежи се на „%1“"
 
 #: secret-agent/SecretRequest.cpp:67
 msgid "WPA"
-msgstr ""
+msgstr "WPA"
 
 #: secret-agent/SecretRequest.cpp:69
 msgid "WEP"
-msgstr ""
+msgstr "WEP"
 
 #: secret-agent/SecretRequest.cpp:75
 msgid "Connect"
-msgstr ""
+msgstr "Повежи"
 
 #: secret-agent/SecretRequest.cpp:76
 msgid "Cancel"
-msgstr ""
+msgstr "Откажи"

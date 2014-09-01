@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-08-08 15:33+0300\n"
-"PO-Revision-Date: 2014-08-12 13:39+0000\n"
+"PO-Revision-Date: 2014-08-31 17:38+0000\n"
 "Last-Translator: samson <Unknown>\n"
 "Language-Team: Amharic <am@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-08-13 06:58+0000\n"
-"X-Generator: Launchpad (build 17156)\n"
+"X-Launchpad-Export-Date: 2014-09-01 08:26+0000\n"
+"X-Generator: Launchpad (build 17176)\n"
 
 #: network/quick-access-section.cpp:48
 msgid "Flight Mode"
@@ -58,11 +58,11 @@ msgstr ""
 #: network/sim-unlock-dialog.cpp:183 network/sim-unlock-dialog.cpp:414
 #: network/sim-unlock-dialog.cpp:442
 msgid "Enter SIM PIN"
-msgstr ""
+msgstr "ሲም ፒን ያስገቡ"
 
 #: network/sim-unlock-dialog.cpp:187
 msgid "Enter PUK code"
-msgstr ""
+msgstr "ፑክ ኮድ ያስገቡ"
 
 #: network/sim-unlock-dialog.cpp:195
 #, c-format
@@ -72,27 +72,27 @@ msgstr "ሙከራ %d ከ %d"
 #: network/sim-unlock-dialog.cpp:210 network/sim-unlock-dialog.cpp:425
 #: network/sim-unlock-dialog.cpp:435
 msgid "Enter new PIN code"
-msgstr ""
+msgstr "አዲስ የ ፒን ኮድ ያስገቡ"
 
 #: network/sim-unlock-dialog.cpp:213 network/sim-unlock-dialog.cpp:429
 msgid "Confirm new PIN code"
-msgstr ""
+msgstr "አዲስ የ ፒን ኮድ ማረጋገጫ"
 
 #: network/sim-unlock-dialog.cpp:236
 msgid "Oops!<br>Incorrect PIN entered."
-msgstr ""
+msgstr "ውይ!<br>ያስገቡት  የተሳሳተ ፒን ነው"
 
 #: network/sim-unlock-dialog.cpp:254 network/sim-unlock-dialog.cpp:434
 msgid "PIN codes did not match."
-msgstr ""
+msgstr "የ ፒን ኮዶቹ አይመሳሰሉም"
 
 #: network/sim-unlock-dialog.cpp:259
 msgid "Oops!<br>Incorrect PUK entered."
-msgstr ""
+msgstr "ውይ!<br>ያስገቡት የተሳሳተ ፑክ ነው"
 
 #: network/sim-unlock-dialog.cpp:441
 msgid "Failed to change PIN."
-msgstr ""
+msgstr "ፒን መቀየር አልተሳካም"
 
 #: network/wifi-link-item.h:87
 msgid "Wi-Fi"
@@ -108,15 +108,15 @@ msgstr "ዋይ-ፋይ ማሰናጃዎች…"
 
 #: network/wwan-link-item.cpp:87
 msgid "No SIM"
-msgstr ""
+msgstr "ሲም አልተገኘም"
 
 #: network/wwan-link-item.cpp:93
 msgid "SIM Error"
-msgstr ""
+msgstr "የ ሲም ስህተት"
 
 #: network/wwan-link-item.cpp:100
 msgid "SIM Locked"
-msgstr ""
+msgstr "ሲም ተቆልፏል"
 
 #: network/wwan-link-item.cpp:112
 msgid "Unregistered"
@@ -136,7 +136,7 @@ msgstr "በ መፈለግ ላይ"
 
 #: network/wwan-link-item.cpp:135
 msgid "No Signal"
-msgstr ""
+msgstr "ምልክት የለም"
 
 #: network/wwan-link-item.cpp:141
 msgid "Offline"
@@ -144,7 +144,7 @@ msgstr "ከመስመር ውጪ"
 
 #: network/wwan-section.cpp:79
 msgid "Cellular settings…"
-msgstr ""
+msgstr "ሴሉላር ማሰናጃዎች…"
 
 #: secret-agent/SecretRequest.cpp:62
 #, qt-format

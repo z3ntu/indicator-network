@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-08-08 15:33+0300\n"
-"PO-Revision-Date: 2014-08-11 15:21+0000\n"
+"PO-Revision-Date: 2014-08-30 18:21+0000\n"
 "Last-Translator: rob <linuxned@gmail.com>\n"
 "Language-Team: Dutch <nl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-08-12 06:47+0000\n"
-"X-Generator: Launchpad (build 17156)\n"
+"X-Launchpad-Export-Date: 2014-08-31 07:34+0000\n"
+"X-Generator: Launchpad (build 17176)\n"
 
 #: network/quick-access-section.cpp:48
 msgid "Flight Mode"
@@ -32,9 +32,9 @@ msgid ""
 "This will be the last attempt.<br><br>If the SIM PIN is entered incorrectly, "
 "your SIM will be blocked and would require the PUK Code to unlock."
 msgstr ""
-"Dit zal uw laatste poging worden!<br><br>Indien de SIM-pincode nu opnieuw "
-"onjuist wordt ingevoerd, zal uw SIM-kaart geblokkeerd worden en dient u de "
-"PUK-code in te voeren om de SIM-kaart te deblokkeren."
+"Dit zal uw laatste poging worden!<br><br>Indien de simpincode nu opnieuw "
+"onjuist wordt ingevoerd, zal uw simkaart geblokkeerd worden en dient u de "
+"PUK-code in te voeren om de simkaart te deblokkeren."
 
 #. TRANSLATORS: this string is not currently being shown on the screen. This message might be subject to change.
 #: network/sim-unlock-dialog.cpp:95
@@ -42,9 +42,9 @@ msgid ""
 "Your SIM is now blocked.<br><br>Enter the PUK Code to unlock.<br><br>You may "
 "contact your network provider for PUK Code."
 msgstr ""
-"Uw SIM-kaart is nu geblokkeerd.<br><br>Voer de PUK-code in om de SIM-kaart "
-"te deblokkeren.<br><br>U kunt contact opnemen met uw telefoonprovider voor "
-"de PUK-code."
+"Uw simkaart is nu geblokkeerd.<br><br>Voer de PUK-code in om de simkaart te "
+"deblokkeren.<br><br>U kunt contact opnemen met uw telefoonprovider voor de "
+"PUK-code."
 
 #. TRANSLATORS: this string is not currently being shown on the screen. This message might be subject to change.
 #: network/sim-unlock-dialog.cpp:106
@@ -54,7 +54,7 @@ msgid ""
 "network provider."
 msgstr ""
 "Dit zal uw laatste poging worden!<br><br>Indien de PUK-code nu opnieuw "
-"onjuist wordt ingevoerd, zal uw SIM-kaart vervangen dienen te "
+"onjuist wordt ingevoerd, zal uw simkaart vervangen dienen te "
 "worden.<br><br>Neem a.u.b. contact op met uw telefoonprovider."
 
 #. TRANSLATORS: this string is not currently being shown on the screen. This message might be subject to change.
@@ -63,13 +63,13 @@ msgid ""
 "Your SIM is now permanently blocked and needs to be replaced.<br><br>Please "
 "contact your network provider."
 msgstr ""
-"Uw SIM-kaart is nu definitief geblokkeerd en dient vervangen te "
+"Uw simkaart is nu definitief geblokkeerd en dient vervangen te "
 "worden.<br><br>Neem a.u.b. contact op met uw telefoonprovider."
 
 #: network/sim-unlock-dialog.cpp:183 network/sim-unlock-dialog.cpp:414
 #: network/sim-unlock-dialog.cpp:442
 msgid "Enter SIM PIN"
-msgstr "Voer SIM-pincode in"
+msgstr "Voer simpincode in"
 
 #: network/sim-unlock-dialog.cpp:187
 msgid "Enter PUK code"
@@ -119,15 +119,15 @@ msgstr "Wi-Fi-instellingen…"
 
 #: network/wwan-link-item.cpp:87
 msgid "No SIM"
-msgstr "Geen SIM-kaart"
+msgstr "Geen simkaart"
 
 #: network/wwan-link-item.cpp:93
 msgid "SIM Error"
-msgstr "SIM-kaartfout"
+msgstr "Simkaartfout"
 
 #: network/wwan-link-item.cpp:100
 msgid "SIM Locked"
-msgstr "SIM-kaart geblokkeerd"
+msgstr "Simkaart geblokkeerd"
 
 #: network/wwan-link-item.cpp:112
 msgid "Unregistered"

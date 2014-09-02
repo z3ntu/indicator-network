@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-08-08 15:33+0300\n"
-"PO-Revision-Date: 2014-07-04 14:05+0000\n"
+"PO-Revision-Date: 2014-08-31 09:38+0000\n"
 "Last-Translator: ivarela <ivarela@ubuntu.com>\n"
 "Language-Team: Asturian <ast@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-08-09 05:51+0000\n"
-"X-Generator: Launchpad (build 17156)\n"
+"X-Launchpad-Export-Date: 2014-09-01 08:26+0000\n"
+"X-Generator: Launchpad (build 17176)\n"
 
 #: network/quick-access-section.cpp:48
 msgid "Flight Mode"
@@ -129,19 +129,19 @@ msgstr "SIM bloquiada"
 
 #: network/wwan-link-item.cpp:112
 msgid "Unregistered"
-msgstr ""
+msgstr "Ensin rexistrar"
 
 #: network/wwan-link-item.cpp:116
 msgid "Unknown"
-msgstr ""
+msgstr "Desconocíu"
 
 #: network/wwan-link-item.cpp:120
 msgid "Denied"
-msgstr ""
+msgstr "Denegáu"
 
 #: network/wwan-link-item.cpp:124
 msgid "Searching"
-msgstr ""
+msgstr "Guetando"
 
 #: network/wwan-link-item.cpp:135
 msgid "No Signal"
@@ -149,7 +149,7 @@ msgstr "Nun hai señal"
 
 #: network/wwan-link-item.cpp:141
 msgid "Offline"
-msgstr ""
+msgstr "Fuera de llinia"
 
 #: network/wwan-section.cpp:79
 msgid "Cellular settings…"

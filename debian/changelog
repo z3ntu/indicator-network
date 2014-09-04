@@ -1,3 +1,13 @@
+indicator-network (0.5.1+14.10.20140904-0ubuntu1) utopic; urgency=low
+
+  [ CI bot ]
+  * Resync trunk
+
+  [ Jussi Pakkanen ]
+  * More try/catch wrapping for dbus-cpp explosions. (LP: #1348789)
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Thu, 04 Sep 2014 13:09:29 +0000
+
 indicator-network (0.5.1+14.10.20140829-0ubuntu1) utopic; urgency=low
 
   [ Jussi Pakkanen ]

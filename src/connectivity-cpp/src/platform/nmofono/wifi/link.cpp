@@ -156,25 +156,33 @@ Link::~Link()
 
 void Link::ap_added(const dbus::types::ObjectPath &path)
 {
-    for (auto ap : p->rawAccessPoints.get()) {
-        if (std::dynamic_pointer_cast<AccessPoint>(ap)->object_path() == path) {
-            // already in the list
-            return;
+    try {
+        for (auto ap : p->rawAccessPoints.get()) {
+            if (std::dynamic_pointer_cast<AccessPoint>(ap)->object_path() == path) {
+                // already in the list
+                return;
+            }
         }
-    }
-    auto list = p->rawAccessPoints.get();
-    NM::Interface::AccessPoint ap(p->nm.service->object_for_path(path));
-    auto shap = std::make_shared<platform::nmofono::wifi::AccessPoint>(ap);
-    list.insert(shap);
-    p->rawAccessPoints.set(list);
+        auto list = p->rawAccessPoints.get();
+        NM::Interface::AccessPoint ap(p->nm.service->object_for_path(path));
+        auto shap = std::make_shared<platform::nmofono::wifi::AccessPoint>(ap);
+        list.insert(shap);
+        p->rawAccessPoints.set(list);
 
-    auto k = build_key(shap);
-    if(p->grouper.find(k) != p->grouper.end()) {
-        p->grouper[k]->add_ap(shap);
-    } else {
-        p->grouper[k] = std::make_shared<GroupedAccessPoint>(shap);        
+        auto k = build_key(shap);
+        if(p->grouper.find(k) != p->grouper.end()) {
+            p->grouper[k]->add_ap(shap);
+        } else {
+            p->grouper[k] = std::make_shared<GroupedAccessPoint>(shap);
+        }
+        update_grouped();
+    } catch(const std::exception &e) {
+        /// @bug dbus-cpp internal logic exploded
+        // If this happens, indicator-network is in an unknown state with no clear way of
+        // recovering. The only reasonable way out is a graceful exit.
+        std::cerr << __PRETTY_FUNCTION__ << " Failed to run dbus service: " << e.what() << std::endl;
+        exit(0);
     }
-    update_grouped();
 }
 
 void Link::ap_removed(const dbus::types::ObjectPath &path)

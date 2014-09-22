@@ -1,0 +1,168 @@
+# Occitan (post 1500) translation for indicator-network
+# Copyright (c) 2014 Rosetta Contributors and Canonical Ltd 2014
+# This file is distributed under the same license as the indicator-network package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2014.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: indicator-network\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2014-08-08 15:33+0300\n"
+"PO-Revision-Date: 2014-09-21 11:53+0000\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Occitan (post 1500) <oc@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2014-09-22 07:55+0000\n"
+"X-Generator: Launchpad (build 17196)\n"
+
+#: network/quick-access-section.cpp:48
+msgid "Flight Mode"
+msgstr "Mòde avion"
+
+#. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
+#: network/root-state.cpp:307
+msgid "Network"
+msgstr "Ret"
+
+#. TRANSLATORS: this string is not currently being shown on the screen. This message might be subject to change.
+#: network/sim-unlock-dialog.cpp:85
+msgid ""
+"This will be the last attempt.<br><br>If the SIM PIN is entered incorrectly, "
+"your SIM will be blocked and would require the PUK Code to unlock."
+msgstr ""
+
+#. TRANSLATORS: this string is not currently being shown on the screen. This message might be subject to change.
+#: network/sim-unlock-dialog.cpp:95
+msgid ""
+"Your SIM is now blocked.<br><br>Enter the PUK Code to unlock.<br><br>You may "
+"contact your network provider for PUK Code."
+msgstr ""
+
+#. TRANSLATORS: this string is not currently being shown on the screen. This message might be subject to change.
+#: network/sim-unlock-dialog.cpp:106
+msgid ""
+"This will be the last attempt.<br><br>If the PUK code is entered "
+"incorrectly, your SIM will need to be replaced.<br><br>Please contact your "
+"network provider."
+msgstr ""
+
+#. TRANSLATORS: this string is not currently being shown on the screen. This message might be subject to change.
+#: network/sim-unlock-dialog.cpp:117
+msgid ""
+"Your SIM is now permanently blocked and needs to be replaced.<br><br>Please "
+"contact your network provider."
+msgstr ""
+
+#: network/sim-unlock-dialog.cpp:183 network/sim-unlock-dialog.cpp:414
+#: network/sim-unlock-dialog.cpp:442
+msgid "Enter SIM PIN"
+msgstr ""
+
+#: network/sim-unlock-dialog.cpp:187
+msgid "Enter PUK code"
+msgstr "Picatz lo còde PUK"
+
+#: network/sim-unlock-dialog.cpp:195
+#, c-format
+msgid "Attempt %d of %d"
+msgstr "Temptativa %d sus %d"
+
+#: network/sim-unlock-dialog.cpp:210 network/sim-unlock-dialog.cpp:425
+#: network/sim-unlock-dialog.cpp:435
+msgid "Enter new PIN code"
+msgstr "Picatz lo novèl còde PIN"
+
+#: network/sim-unlock-dialog.cpp:213 network/sim-unlock-dialog.cpp:429
+msgid "Confirm new PIN code"
+msgstr ""
+
+#: network/sim-unlock-dialog.cpp:236
+msgid "Oops!<br>Incorrect PIN entered."
+msgstr ""
+
+#: network/sim-unlock-dialog.cpp:254 network/sim-unlock-dialog.cpp:434
+msgid "PIN codes did not match."
+msgstr ""
+
+#: network/sim-unlock-dialog.cpp:259
+msgid "Oops!<br>Incorrect PUK entered."
+msgstr ""
+
+#: network/sim-unlock-dialog.cpp:441
+msgid "Failed to change PIN."
+msgstr ""
+
+#: network/wifi-link-item.h:87
+msgid "Wi-Fi"
+msgstr "Wi-Fi"
+
+#: network/wifi-link-item.h:151
+msgid "Other network…"
+msgstr "Autra ret..."
+
+#: network/wifi-section.cpp:60
+msgid "Wi-Fi settings…"
+msgstr "Paramètres Wi-Fi…"
+
+#: network/wwan-link-item.cpp:87
+msgid "No SIM"
+msgstr "Pas de SIM"
+
+#: network/wwan-link-item.cpp:93
+msgid "SIM Error"
+msgstr "Error SIM"
+
+#: network/wwan-link-item.cpp:100
+msgid "SIM Locked"
+msgstr "SIM varr."
+
+#: network/wwan-link-item.cpp:112
+msgid "Unregistered"
+msgstr "Pas enregistrat"
+
+#: network/wwan-link-item.cpp:116
+msgid "Unknown"
+msgstr "Desconegut"
+
+#: network/wwan-link-item.cpp:120
+msgid "Denied"
+msgstr "Refusat"
+
+#: network/wwan-link-item.cpp:124
+msgid "Searching"
+msgstr "Recèrca en cors"
+
+#: network/wwan-link-item.cpp:135
+msgid "No Signal"
+msgstr ""
+
+#: network/wwan-link-item.cpp:141
+msgid "Offline"
+msgstr "Fòra linha"
+
+#: network/wwan-section.cpp:79
+msgid "Cellular settings…"
+msgstr "Paramètres mobil…"
+
+#: secret-agent/SecretRequest.cpp:62
+#, qt-format
+msgid "Connect to “%1”"
+msgstr "Connectat a “%1”"
+
+#: secret-agent/SecretRequest.cpp:67
+msgid "WPA"
+msgstr "WPA"
+
+#: secret-agent/SecretRequest.cpp:69
+msgid "WEP"
+msgstr "WEP"
+
+#: secret-agent/SecretRequest.cpp:75
+msgid "Connect"
+msgstr "Se connectar"
+
+#: secret-agent/SecretRequest.cpp:76
+msgid "Cancel"
+msgstr "Abandonar"

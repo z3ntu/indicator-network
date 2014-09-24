@@ -65,10 +65,19 @@ QuickAccessSection::Private::Private(std::shared_ptr<networking::Manager> manage
         }
     });
     m_flightModeSwitch->activated().connect([this](){
-        if (m_flightModeSwitch->state().get())
-            m_manager->enableFlightMode();
-        else
-            m_manager->disableFlightMode();
+        if (m_flightModeSwitch->state().get()) {
+            try {
+                m_manager->enableFlightMode();
+            } catch (const std::exception &e) {
+                std::cout << e.what() << std::endl;
+            }
+        } else {
+            try {
+                m_manager->disableFlightMode();
+            } catch (const std::exception &e) {
+                std::cout << e.what() << std::endl;
+            }
+        }
     });
 
     m_actionGroupMerger->add(*m_flightModeSwitch);

@@ -55,6 +55,31 @@ struct Manager::Private {
     core::Property<connectivity::networking::Manager::NetworkingStatus> m_status;
     core::Property<std::uint32_t> m_characteristics;
     std::unique_ptr<State> m_state;
+
+    core::Property<bool> m_hasWifi;
+    core::Property<bool> m_wifiEnabled  ;
+    std::shared_ptr<KillSwitch> m_wifiKillSwitch;
+
+    void updateHasWifi()
+    {
+        if (m_wifiKillSwitch->state().get() != KillSwitch::State::not_available) {
+            m_hasWifi.set(true);
+            if (m_wifiKillSwitch->state().get() == KillSwitch::State::unblocked)
+                m_wifiEnabled.set(true);
+            else
+                m_wifiEnabled.set(false);
+            return;
+        }
+
+        // ok, killswitch not supported, but we still might have wifi devices
+        bool haswifi = false;
+        for (auto link : m_links.get()) {
+            if (link->type() == networking::Link::Type::wifi)
+                haswifi = true;
+        }
+        m_hasWifi.set(haswifi);
+        m_wifiEnabled.set(haswifi);
+    }
 };
 }
 }
@@ -143,6 +168,10 @@ Manager::Manager() : p(new Manager::Private())
     /// @todo offload the initialization to a thread or something
     /// @todo those Id() thingies
 
+    p->m_wifiKillSwitch = std::make_shared<KillSwitch>(p->urfkill,
+                                                       p->urfkill->switches[fdo::URfkill::Interface::Killswitch::Type::wlan]);
+    p->m_wifiKillSwitch->state().changed().connect(std::bind(&Private::updateHasWifi, p.get()));
+
     p->nm->device_added->connect([this](const dbus::types::ObjectPath &path){
         std::cout << "Device Added:" << path.as_string() << std::endl;
         auto links = p->m_links.get();
@@ -158,10 +187,11 @@ Manager::Manager() : p(new Manager::Private())
         if (dev.type() == NM::Interface::Device::Type::wifi) {
             links.insert(std::make_shared<wifi::Link>(dev,
                                                       *p->nm.get(),
-                                                      std::make_shared<KillSwitch>(p->urfkill,
-                                                                                   p->urfkill->switches[fdo::URfkill::Interface::Killswitch::Type::wlan])));
+                                                       p->m_wifiKillSwitch));
             p->m_links.set(links);
         }
+
+        p->updateHasWifi();
     });
     p->nm->device_removed->connect([this](const dbus::types::ObjectPath &path){
         std::cout << "Device Removed:" << path.as_string() << std::endl;
@@ -173,6 +203,8 @@ Manager::Manager() : p(new Manager::Private())
             }
         }
         p->m_links.set(links);
+
+        p->updateHasWifi();
     });
     std::set<std::shared_ptr<networking::Link> > links;
     for(auto dev : p->nm->get_devices()) {
@@ -219,6 +251,8 @@ Manager::Manager() : p(new Manager::Private())
 
     /// @todo set by the default connections.
     p->m_characteristics.set(networking::Link::Characteristics::empty);
+
+    p->updateHasWifi();
 }
 
 void
@@ -269,3 +303,61 @@ Manager::characteristics() const
 {
     return p->m_characteristics;
 }
+
+const core::Property<bool>&
+Manager::hasWifi() const
+{
+    return p->m_hasWifi;
+}
+
+const core::Property<bool>&
+Manager::wifiEnabled() const
+{
+    return p->m_wifiEnabled;
+}
+
+
+bool
+Manager::enableWifi()
+{
+    if (!p->m_hasWifi.get())
+        return false;
+
+    try {
+        if (p->m_wifiKillSwitch->state() == KillSwitch::State::soft_blocked) {
+            // try to unblock. throws if fails.
+            p->m_wifiKillSwitch->unblock();
+        }
+        p->nm->wireless_enabled->set(true);
+    } catch(std::runtime_error &e) {
+        /// @todo when toggling enable()/disable() rapidly the default timeout of
+        ///       1 second in dbus::core::Property is not long enough..
+        ///       just ignore for now and get dbus-cpp to have larger timeout.
+        std::cerr << __PRETTY_FUNCTION__ << ": " << e.what() << std::endl;
+        return false;
+    }
+    return true;
+}
+
+bool
+Manager::disableWifi()
+{
+    if (!p->m_hasWifi.get())
+        return false;
+
+    try {
+        if (p->m_wifiKillSwitch->state() == KillSwitch::State::unblocked) {
+            // block the device. that will disable it also
+            p->m_wifiKillSwitch->block();
+        }
+        p->nm->wireless_enabled->set(false);
+    } catch(std::runtime_error &e) {
+        /// @todo when toggling enable()/disable() rapidly the default timeout of
+        ///       1 second in dbus::core::Property is not long enough..
+        ///       just ignore for now and get dbus-cpp to have larger timeout.
+        std::cerr << __PRETTY_FUNCTION__ << ": " << e.what() << std::endl;
+        return false;
+    }
+    return true;
+}
+

@@ -428,6 +428,7 @@ Link::updateDeviceState(std::uint32_t new_state)
         case KillSwitch::State::soft_blocked:
             p->status_.set(Status::disabled);
             break;
+        case KillSwitch::State::not_available:
         case KillSwitch::State::unblocked:
             p->status_.set(Status::offline);
         }

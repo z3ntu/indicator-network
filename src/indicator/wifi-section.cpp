@@ -32,6 +32,8 @@ public:
     Menu::Ptr m_menu;
     Menu::Ptr m_settingsMenu;
 
+    SwitchItem::Ptr m_switch;
+
     WifiLinkItem::Ptr m_wifiLink;
     TextItem::Ptr m_openWifiSettings;
 
@@ -43,6 +45,32 @@ public:
         m_menu = std::make_shared<Menu>();
         m_settingsMenu = std::make_shared<Menu>();
 
+
+        m_switch = std::make_shared<SwitchItem>(_("Wi-Fi"), "wifi", "enable");
+
+        /// @todo don't now really care about actully being able to detach the whole
+        ///       wifi chipset. on touch devices we always have wifi.
+        if (m_manager->hasWifi().get()) {
+            m_actionGroupMerger->add(*m_switch);
+            m_menu->append(*m_switch);
+            m_settingsMenu->append(*m_switch);
+        }
+
+        m_switch->state().set(m_manager->wifiEnabled().get());
+        m_manager->wifiEnabled().changed().connect([this](bool value) {
+            m_switch->state().set(value);
+        });
+        m_switch->activated().connect([this](){
+            if (m_switch->state().get()) {
+                if (!m_manager->enableWifi()) {
+                    /// try to work around the switch getting out of state on unity8 side
+                    m_switch->state().set(false);
+                }
+            } else {
+                if (!m_manager->disableWifi())
+                    m_switch->state().set(true);
+            }
+        });
 
         for (auto link : m_manager->links().get()) {
             auto wifi_link = std::dynamic_pointer_cast<networking::wifi::Link>(link);

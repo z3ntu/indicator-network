@@ -128,6 +128,11 @@ public:
      */
     virtual const core::Property<std::uint32_t>& characteristics() const = 0;
 
+    virtual const core::Property<bool>& hasWifi() const = 0;
+    virtual const core::Property<bool>& wifiEnabled() const = 0;
+    virtual bool enableWifi() = 0;
+    virtual bool disableWifi() = 0;
+
 protected:
     /**
      * @brief The default constructor is protected.

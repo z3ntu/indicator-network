@@ -63,19 +63,21 @@ public:
             return;
         }
 
+
+        auto group = m_gSimpleActionGroup;
         GMainLoopDispatch([=](){
             for (auto action : actionGroup->actions()) {
-                g_action_map_add_action(G_ACTION_MAP(m_gSimpleActionGroup.get()), action->gaction().get());
+                g_action_map_add_action(G_ACTION_MAP(group.get()), action->gaction().get());
             }
         });
-        actionGroup->actionAdded().connect([this](Action::Ptr action){
+        actionGroup->actionAdded().connect([=](Action::Ptr action){
             GMainLoopDispatch([=](){
-                g_action_map_add_action(G_ACTION_MAP(m_gSimpleActionGroup.get()), action->gaction().get());
+                g_action_map_add_action(G_ACTION_MAP(group.get()), action->gaction().get());
             });
         });
-        actionGroup->actionRemoved().connect([this](Action::Ptr action){
+        actionGroup->actionRemoved().connect([=](Action::Ptr action){
             GMainLoopDispatch([=](){
-                g_action_map_remove_action(G_ACTION_MAP(m_gSimpleActionGroup.get()),
+                g_action_map_remove_action(G_ACTION_MAP(group.get()),
                                            action->name().c_str());
             });
         });

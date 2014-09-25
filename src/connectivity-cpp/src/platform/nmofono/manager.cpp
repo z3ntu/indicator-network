@@ -214,8 +214,7 @@ Manager::Manager() : p(new Manager::Private())
             std::shared_ptr<networking::Link> link;
             link.reset(new wifi::Link(dev,
                                       *p->nm.get(),
-                                      std::make_shared<KillSwitch>(p->urfkill,
-                                                                   p->urfkill->switches[fdo::URfkill::Interface::Killswitch::Type::wlan])));
+                                      p->m_wifiKillSwitch));
             links.insert(link);
             break;
         }

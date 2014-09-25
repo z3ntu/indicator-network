@@ -72,18 +72,9 @@ public:
             }
         });
 
-        for (auto link : m_manager->links().get()) {
-            auto wifi_link = std::dynamic_pointer_cast<networking::wifi::Link>(link);
-            m_wifiLink = std::make_shared<WifiLinkItem>(wifi_link);
 
-            m_actionGroupMerger->add(*m_wifiLink);
-            m_menu->append(*m_wifiLink);
-            m_settingsMenu->append(*m_wifiLink);
-
-            // just take the first one now.
-            /// @todo multiple links and links()->changed()
-            break;
-        }
+        m_manager->links().changed().connect(std::bind(&Private::updateLinks, this));
+        updateLinks();
 
         m_openWifiSettings = std::make_shared<TextItem>(_("Wi-Fi settings…"), "wifi", "settings");
         m_openWifiSettings->activated().connect([](){
@@ -95,6 +86,29 @@ public:
 
         m_actionGroupMerger->add(*m_openWifiSettings);
         m_menu->append(*m_openWifiSettings);
+    }
+
+    void updateLinks()
+    {
+        // remove all and recreate. we have top 1 now anyway
+        if (m_wifiLink) {
+            m_actionGroupMerger->remove(*m_wifiLink);
+            m_menu->removeAll(*m_wifiLink);
+            m_settingsMenu->removeAll(*m_wifiLink);
+            m_wifiLink.reset();
+        }
+
+        for (auto link : m_manager->links().get()) {
+            auto wifi_link = std::dynamic_pointer_cast<networking::wifi::Link>(link);
+            m_wifiLink = std::make_shared<WifiLinkItem>(wifi_link);
+
+            m_actionGroupMerger->add(*m_wifiLink);
+            m_menu->append(*m_wifiLink);
+            m_settingsMenu->append(*m_wifiLink);
+
+            // just take the first one
+            break;
+        }
     }
 
 public:

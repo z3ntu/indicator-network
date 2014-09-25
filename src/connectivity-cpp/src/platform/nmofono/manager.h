@@ -52,7 +52,7 @@ public:
     const core::Property<connectivity::networking::Manager::FlightModeStatus>& flightMode() const override;
 
     const core::Property<bool>& hasWifi() const override;
-    virtual const core::Property<bool>& wifiEnabled() const override;
+    const core::Property<bool>& wifiEnabled() const override;
 
     bool enableWifi() override;
     bool disableWifi() override;

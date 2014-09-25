@@ -1,4 +1,4 @@
-# Galician translation for indicator-network
+# Kurdish translation for indicator-network
 # Copyright (c) 2014 Rosetta Contributors and Canonical Ltd 2014
 # This file is distributed under the same license as the indicator-network package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2014.
@@ -8,9 +8,9 @@ msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-08-08 15:33+0300\n"
-"PO-Revision-Date: 2014-09-24 18:18+0000\n"
-"Last-Translator: Marcos Lans <Unknown>\n"
-"Language-Team: Galician <gl@li.org>\n"
+"PO-Revision-Date: 2014-09-24 12:58+0000\n"
+"Last-Translator: Amed Çeko Jiyan <amedcj@gmail.com>\n"
+"Language-Team: Kurdish <ku@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -19,12 +19,12 @@ msgstr ""
 
 #: network/quick-access-section.cpp:48
 msgid "Flight Mode"
-msgstr "Modo avión"
+msgstr "Moda Firê"
 
 #. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
 #: network/root-state.cpp:307
 msgid "Network"
-msgstr "Rede"
+msgstr "Tor"
 
 #. TRANSLATORS: this string is not currently being shown on the screen. This message might be subject to change.
 #: network/sim-unlock-dialog.cpp:85
@@ -32,8 +32,8 @@ msgid ""
 "This will be the last attempt.<br><br>If the SIM PIN is entered incorrectly, "
 "your SIM will be blocked and would require the PUK Code to unlock."
 msgstr ""
-"Este será o último intento.<br><br>Se non introduce o PIN correcto da "
-"tarxeta SIM, esta bloquearase e precisará o código PUK para desbloqueala."
+"Ev ê bibe ceribandina dawiyê..<br><br>Eger tu PINa SIMê çewt binivîsî, SIMa "
+"te dê bê astengkirin û dê Koda PUKê pêwîst be."
 
 #. TRANSLATORS: this string is not currently being shown on the screen. This message might be subject to change.
 #: network/sim-unlock-dialog.cpp:95
@@ -41,9 +41,9 @@ msgid ""
 "Your SIM is now blocked.<br><br>Enter the PUK Code to unlock.<br><br>You may "
 "contact your network provider for PUK Code."
 msgstr ""
-"A tarxeta SIM está bloqueada.<br><br>Introduza o código PUK para "
-"desbloqueala.<br><br>Pode contactar co provedor de rede para obter o código "
-"PUK."
+"SIMa te niha hat astengkirin..<br><br>Ji bo vekirinê Koda PUKê "
+"binivîse..<br><br>Dibe ku ji bo Koda PUKê pêwîst be bi dabînkera torê re "
+"têkiliyê daynî."
 
 #. TRANSLATORS: this string is not currently being shown on the screen. This message might be subject to change.
 #: network/sim-unlock-dialog.cpp:106
@@ -52,8 +52,9 @@ msgid ""
 "incorrectly, your SIM will need to be replaced.<br><br>Please contact your "
 "network provider."
 msgstr ""
-"Este será o último intento.<br><br>Se non introduce o código PUK correcto "
-"deberá substituír a tarxeta SIM.<br><br>Contacte co provedor de rede."
+"Ev ê bibe ceribandina dawiyê.<br><br>Eger tu Koda PUKê çewt binivîsî, dê "
+"pêwîst be ku SIMê ji telefonê derxî û dîsa bêxiyê.<br><br>Tika ye bi "
+"dabînkera xwe ya torê re têkiliyê dayne."
 
 #. TRANSLATORS: this string is not currently being shown on the screen. This message might be subject to change.
 #: network/sim-unlock-dialog.cpp:117
@@ -61,104 +62,104 @@ msgid ""
 "Your SIM is now permanently blocked and needs to be replaced.<br><br>Please "
 "contact your network provider."
 msgstr ""
-"A tarxeta SIM está bloqueada de xeito permanente e debe "
-"substituíla.<br><br>Contacte co seu provedor de rede."
+"SIMa te niha astengkirî ye û pêwîst e ku SIMê ji telefonê derxî û dîsa "
+"bêxiyê.<br><br>Tika ye bi dabînkera xwe ya torê re têkiliyê dayne."
 
 #: network/sim-unlock-dialog.cpp:183 network/sim-unlock-dialog.cpp:414
 #: network/sim-unlock-dialog.cpp:442
 msgid "Enter SIM PIN"
-msgstr "Introduza o PIN da SIM"
+msgstr "PINa SIMê binivîse"
 
 #: network/sim-unlock-dialog.cpp:187
 msgid "Enter PUK code"
-msgstr "Introduza o código PUK"
+msgstr "Koda PUKê binivîse"
 
 #: network/sim-unlock-dialog.cpp:195
 #, c-format
 msgid "Attempt %d of %d"
-msgstr "Intento %d de %d"
+msgstr "Ceribandin %d/%d"
 
 #: network/sim-unlock-dialog.cpp:210 network/sim-unlock-dialog.cpp:425
 #: network/sim-unlock-dialog.cpp:435
 msgid "Enter new PIN code"
-msgstr "Introduza o novo código PIN"
+msgstr "Koda PINê ya nû binivîse"
 
 #: network/sim-unlock-dialog.cpp:213 network/sim-unlock-dialog.cpp:429
 msgid "Confirm new PIN code"
-msgstr "Confirme o novo código PIN"
+msgstr "Koda PINê ya nû piştrast bike"
 
 #: network/sim-unlock-dialog.cpp:236
 msgid "Oops!<br>Incorrect PIN entered."
-msgstr "Epa!<br>O PIN introducido é incorrecto."
+msgstr "Ha hoo!<br>Te PIN çewt nivîsand."
 
 #: network/sim-unlock-dialog.cpp:254 network/sim-unlock-dialog.cpp:434
 msgid "PIN codes did not match."
-msgstr "Os códigos PIN non coinciden"
+msgstr "Kodên PINê hev nagirin."
 
 #: network/sim-unlock-dialog.cpp:259
 msgid "Oops!<br>Incorrect PUK entered."
-msgstr "Epa!<br>O PUK introducido é incorrecto."
+msgstr "Ha hoo!<br>Te PUK çewt nivîsand."
 
 #: network/sim-unlock-dialog.cpp:441
 msgid "Failed to change PIN."
-msgstr "O cambio do PIN fallou."
+msgstr "Guhertina PINê bi ser neket."
 
 #: network/wifi-link-item.h:87
 msgid "Wi-Fi"
-msgstr "Wifi"
+msgstr "Wi-Fi"
 
 #: network/wifi-link-item.h:151
 msgid "Other network…"
-msgstr "Outra rede..."
+msgstr "Tora din…"
 
 #: network/wifi-section.cpp:60
 msgid "Wi-Fi settings…"
-msgstr "Axustes da wifi..."
+msgstr "Eyarên Wi-Fiyê…"
 
 #: network/wwan-link-item.cpp:87
 msgid "No SIM"
-msgstr "Sen SIM"
+msgstr "SIM nîne"
 
 #: network/wwan-link-item.cpp:93
 msgid "SIM Error"
-msgstr "Erro da SIM"
+msgstr "Çewtiya SIMê"
 
 #: network/wwan-link-item.cpp:100
 msgid "SIM Locked"
-msgstr "SIM bloqueada"
+msgstr "SIM kilîd bû"
 
 #: network/wwan-link-item.cpp:112
 msgid "Unregistered"
-msgstr "Non rexistrado"
+msgstr "Tomarnekirî"
 
 #: network/wwan-link-item.cpp:116
 msgid "Unknown"
-msgstr "Descoñecido"
+msgstr "Nenas"
 
 #: network/wwan-link-item.cpp:120
 msgid "Denied"
-msgstr "Rexeitado"
+msgstr "Hat redkirin"
 
 #: network/wwan-link-item.cpp:124
 msgid "Searching"
-msgstr "Buscando"
+msgstr "Lê digere"
 
 #: network/wwan-link-item.cpp:135
 msgid "No Signal"
-msgstr "Sen sinal"
+msgstr "Sînyal nîne"
 
 #: network/wwan-link-item.cpp:141
 msgid "Offline"
-msgstr "Desconectado"
+msgstr "Negirêdayî"
 
 #: network/wwan-section.cpp:79
 msgid "Cellular settings…"
-msgstr "Axustes do móbil..."
+msgstr "Eyarên şanikî…"
 
 #: secret-agent/SecretRequest.cpp:62
 #, qt-format
 msgid "Connect to “%1”"
-msgstr "Conectar a «%1»"
+msgstr "Bi  “%1”ê girêbide"
 
 #: secret-agent/SecretRequest.cpp:67
 msgid "WPA"
@@ -170,11 +171,8 @@ msgstr "WEP"
 
 #: secret-agent/SecretRequest.cpp:75
 msgid "Connect"
-msgstr "Conectar"
+msgstr "Girêbide"
 
 #: secret-agent/SecretRequest.cpp:76
 msgid "Cancel"
-msgstr "Cancelar"
-
-#~ msgid "Unlock SIM…"
-#~ msgstr "Desbloquear SIM..."
+msgstr "Betal bike"

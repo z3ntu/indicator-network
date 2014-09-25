@@ -330,9 +330,6 @@ Manager::enableWifi()
         }
         p->nm->wireless_enabled->set(true);
     } catch(std::runtime_error &e) {
-        /// @todo when toggling enable()/disable() rapidly the default timeout of
-        ///       1 second in dbus::core::Property is not long enough..
-        ///       just ignore for now and get dbus-cpp to have larger timeout.
         std::cerr << __PRETTY_FUNCTION__ << ": " << e.what() << std::endl;
         return false;
     }
@@ -352,9 +349,6 @@ Manager::disableWifi()
         }
         p->nm->wireless_enabled->set(false);
     } catch(std::runtime_error &e) {
-        /// @todo when toggling enable()/disable() rapidly the default timeout of
-        ///       1 second in dbus::core::Property is not long enough..
-        ///       just ignore for now and get dbus-cpp to have larger timeout.
         std::cerr << __PRETTY_FUNCTION__ << ": " << e.what() << std::endl;
         return false;
     }

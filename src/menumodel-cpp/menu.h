@@ -51,14 +51,18 @@ public:
     virtual ~Menu()
     {
         std::lock_guard<std::recursive_mutex> lg(m_mutex);
+        clear();
+        GMainLoopSync([]{});
     }
 
     void append(MenuItem::Ptr item)
     {
         std::lock_guard<std::recursive_mutex> lg(m_mutex);
         m_items.push_back(item);
+        // prevent this-> from being captured
+        auto menu = m_gmenu;
         GMainLoopDispatch([=](){
-            g_menu_append_item(m_gmenu.get(), item->gmenuitem());
+            g_menu_append_item(menu.get(), item->gmenuitem());
         });
         if (std::count(m_items.begin(), m_items.end(), item) == 1) {
             /// @todo disconenct
@@ -66,9 +70,11 @@ public:
                 int index = 0;
                 for (auto iter = m_items.begin(); iter != m_items.end(); ++iter) {
                     if (*iter == item) {
+                        // prevent this-> from being captured
+                        auto menu = m_gmenu;
                         GMainLoopDispatch([=](){
-                            g_menu_remove(m_gmenu.get(), index);
-                            g_menu_insert_item(m_gmenu.get(), index, item->gmenuitem());
+                            g_menu_remove(menu.get(), index);
+                            g_menu_insert_item(menu.get(), index, item->gmenuitem());
                         });
                     }
                     ++index;
@@ -88,8 +94,11 @@ public:
             ++index;
             ++iter;
         }
+
+        // prevent this-> from being captured
+        auto menu = m_gmenu;
         GMainLoopDispatch([=](){
-            g_menu_insert_item(m_gmenu.get(), index, item->gmenuitem());
+            g_menu_insert_item(menu.get(), index, item->gmenuitem());
         });
         m_items.insert(position, item);
     }
@@ -132,8 +141,10 @@ public:
         if (iter == m_items.end())
          return;
 
+        // prevent this-> from being captured
+        auto menu = m_gmenu;
         GMainLoopDispatch([=](){
-            g_menu_remove(m_gmenu.get(), index);
+            g_menu_remove(menu.get(), index);
         });
         m_items.erase(item);
     }
@@ -147,9 +158,11 @@ public:
         // work reversed so that GMenu positions match tbe m_items positions
         int index = m_items.size()-1;
         for (auto iter = m_items.rbegin(); iter != m_items.rend(); ++iter) {
+            // prevent this-> from being captured
+            auto menu = m_gmenu;
             if (*iter == item) {
                 GMainLoopDispatch([=](){
-                    g_menu_remove(m_gmenu.get(), index);
+                    g_menu_remove(menu.get(), index);
                 });
             }
             --index;
@@ -201,8 +214,10 @@ public:
     void clear()
     {
         std::lock_guard<std::recursive_mutex> lg(m_mutex);
+        // prevent this-> from being captured
+        auto menu = m_gmenu;
         GMainLoopDispatch([=](){
-            g_menu_remove_all(m_gmenu.get());
+            g_menu_remove_all(menu.get());
         });
         m_items.clear();
     }

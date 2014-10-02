@@ -111,7 +111,7 @@ RootState::Private::updateModem(Modem::WeakPtr weakModem)
     m_modemTechIcons.erase(modem->index());
     m_cellularIcons[modem] = "";
 
-    if (!modem->online().get()) {
+    if (modem->simStatus() == Modem::SimStatus::not_available || !modem->online().get()) {
         // modem offline, nothing to show
         updateRootState();
         return;

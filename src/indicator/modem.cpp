@@ -85,7 +85,7 @@ Modem::Private::update()
 
         // update simStatus
         if (!simmgr->present.get()) {
-            m_simStatus.set(SimStatus::missing);
+            m_simStatus.set(SimStatus::not_available);
         } else if (m_requiredPin == PinType::none){
             m_simStatus.set(SimStatus::ready);
         } else {

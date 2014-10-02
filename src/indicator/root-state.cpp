@@ -155,7 +155,12 @@ RootState::Private::updateModem(Modem::WeakPtr weakModem)
             break;
         }
         break;
-    }}
+    }
+
+    case Modem::SimStatus::not_available:
+        // no need to show anything in the panel
+        break;
+    }
 
     updateRootState();
 }

@@ -111,7 +111,7 @@ RootState::Private::updateModem(Modem::WeakPtr weakModem)
     m_modemTechIcons.erase(modem->index());
     m_cellularIcons[modem] = "";
 
-    if (modem->simStatus() == Modem::SimStatus::not_available || !modem->online().get()) {
+    if (!modem->online().get()) {
         // modem offline, nothing to show
         updateRootState();
         return;
@@ -156,7 +156,6 @@ RootState::Private::updateModem(Modem::WeakPtr weakModem)
         }
         break;
     }
-
     case Modem::SimStatus::not_available:
         // no need to show anything in the panel
         break;

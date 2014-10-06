@@ -84,9 +84,7 @@ Modem::Private::update()
         m_retries.set(tmp);
 
         // update simStatus
-        if (!simmgr) {
-            m_simStatus.set(SimStatus::not_available);
-        } else if (!simmgr->present.get()) {
+        if (!simmgr->present.get()) {
             m_simStatus.set(SimStatus::missing);
         } else if (m_requiredPin == PinType::none){
             m_simStatus.set(SimStatus::ready);
@@ -100,7 +98,7 @@ Modem::Private::update()
     } else {
         m_requiredPin.set(PinType::none);
         m_retries.set({});
-        m_simStatus.set(SimStatus::missing);
+        m_simStatus.set(SimStatus::not_available);
     }
 
     auto netreg = m_ofonoModem->networkRegistration.get();

@@ -1,3 +1,12 @@
+indicator-network (0.5.1+14.10.20141007.1-0ubuntu1) utopic; urgency=low
+
+  [ Jussi Pakkanen ]
+  * Dbus-cpp crash fix. (LP: #1343341)
+  * Mark modem as unavailable if modem manager is missing. (LP:
+    #1356200)
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Tue, 07 Oct 2014 12:48:40 +0000
+
 indicator-network (0.5.1+14.10.20141006-0ubuntu1) utopic; urgency=low
 
   [ Charles Kerr ]

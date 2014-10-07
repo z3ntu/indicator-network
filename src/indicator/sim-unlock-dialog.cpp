@@ -53,9 +53,9 @@ std::string __argumentSubstitute(int depth, const std::string &format, T value, 
 
 /// substitute variables in strings by index
 /// only accepts std::string as input for now
-/// argumentSubstitute("First: %{1}, Second %{2}", std::string{"foo"}, std::string{"bar});
+/// argumentSubstitute("First: %{1}, Second %{2}", std::string{"foo"}, std::string{"bar"});
 ///     --> "First: foo, Second bar"
-/// argumentSubstitute("First: %{2}, Second %{1}", std::string{"foo"}, std::string{"bar});
+/// argumentSubstitute("First: %{2}, Second %{1}", std::string{"foo"}, std::string{"bar"});
 ///     --> "First: bar, Second: foor"
 template<typename... Targs>
 std::string argumentSubstitute(const std::string &format, Targs... Fargs)
@@ -254,7 +254,7 @@ SimUnlockDialog::Private::update()
             // we are done.
             return;
         case Modem::PinType::pin:
-            title = ubuntu::i18n::argumentSubstitute(_("Enter ${1} PIN"),
+            title = ubuntu::i18n::argumentSubstitute(_("Enter %{1} PIN"),
                                                      m_showSimIdentifiers.get() ?
                                                          m_modem->simIdentifier().get()
                                                        : "SIM");

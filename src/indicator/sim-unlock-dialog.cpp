@@ -147,6 +147,7 @@ public:
                                                        m_modem->simIdentifier().get()
                                                      : "SIM");
         output << _("This will be your last attempt.");
+        output << " ";
         output << ubuntu::i18n::argumentSubstitute(_("If %{1} PIN is entered incorrectly you will require your PUK code to unlock."),
                                                    m_showSimIdentifiers.get() ?
                                                        m_modem->simIdentifier().get()
@@ -162,6 +163,7 @@ public:
                                                        m_modem->simIdentifier().get()
                                                      : "SIM");
         output << _("Please enter your PUK code to unblock SIM card.");
+        output << " ";
         output << _("You may need to contact your network provider for PUK code.");
 
         m_sd->showPopup(output.str(), closed);
@@ -171,8 +173,11 @@ public:
     {
         std::stringstream output;
         output << _("Sorry, incorrect PUK.");
+        output << " ";
         output << _("This will be your last attempt.");
+        output << " ";
         output << _("If PUK code is entered incorrectly, your SIM card will be blocked and needs replacement.");
+        output << " ";
         output << _("Please contact your network provider.");
 
         m_sd->showPopup(output.str(), closed);
@@ -182,7 +187,9 @@ public:
     {
         std::stringstream output;
         output << _("Sorry, incorrect PUK.");
+        output << " ";
         output << _("Your SIM card is now permanently blocked and needs replacement.");
+        output << " ";
         output << _("Please contact your service provider.");
 
         m_sd->showPopup(output.str(), closed);

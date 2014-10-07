@@ -36,13 +36,12 @@ template<typename T, typename... Targs>
 std::string __argumentSubstitute(int depth, const std::string &format, T value, Targs... Fargs)
 {
     std::string tmp = __argumentSubstitute(depth+1, format, Fargs...);
-
     std::string subs = "%{" + std::to_string(depth) + "}";
 
     const std::string val {value};
     for (auto it = std::search(tmp.begin(), tmp.end(), subs.begin(), subs.end());
          it != tmp.end();
-         it = std::search(it, tmp.end(), subs.begin(), subs.end()))
+         it = std::search(tmp.begin(), tmp.end(), subs.begin(), subs.end()))
     {
         auto pos = it;
         pos = tmp.erase(pos, pos+subs.length());
@@ -101,7 +100,7 @@ public:
 
     core::Property<bool> m_showSimIdentifiers;
 
-    void sendEnterPin(std::string pin)
+    bool sendEnterPin(std::string pin)
     {
         int retries = -1;
         auto retriesMap = m_modem->retries().get();
@@ -110,14 +109,18 @@ public:
             retries = retriesMap[Modem::PinType::pin];
         }
 
-        if (!m_modem->enterPin(Modem::PinType::pin, pin)) {
-            --retries;
-            if (retries == 1) {
-                showLastPinAttemptPopup();
-            } else if (retries == 0) {
-                showPinBlockedPopup();
-            }
+        if (m_modem->enterPin(Modem::PinType::pin, pin))
+            return true;
+
+        m_sd->showError(_("Sorry, incorrect PIN"));
+        --retries;
+        if (retries == 1) {
+            showLastPinAttemptPopup();
+        } else if (retries == 0) {
+            showPinBlockedPopup();
         }
+
+        return false;
     }
 
     void sendResetPin(std::string puk, std::string newPin)
@@ -146,6 +149,7 @@ public:
                                                    m_showSimIdentifiers.get() ?
                                                        m_modem->simIdentifier().get()
                                                      : "SIM");
+        output << " ";
         output << _("This will be your last attempt.");
         output << " ";
         output << ubuntu::i18n::argumentSubstitute(_("If %{1} PIN is entered incorrectly you will require your PUK code to unlock."),
@@ -162,6 +166,7 @@ public:
                                                    m_showSimIdentifiers.get() ?
                                                        m_modem->simIdentifier().get()
                                                      : "SIM");
+        output << " ";
         output << _("Please enter your PUK code to unblock SIM card.");
         output << " ";
         output << _("You may need to contact your network provider for PUK code.");
@@ -313,9 +318,7 @@ SimUnlockDialog::Private::pinEntered(std::string pin)
         assert(0);
         return;
     case EnterPinStates::enterPin:
-        if (!m_modem->enterPin(Modem::PinType::pin, pin)) {
-            m_sd->showError(_("Sorry, incorrect PIN"));
-        } else {
+        if (sendEnterPin(pin)) {
             m_sd->close();
             reset();
             return;
@@ -335,7 +338,7 @@ SimUnlockDialog::Private::pinEntered(std::string pin)
             m_enterPinState = EnterPinStates::enterNewPin;
             m_newPin.clear();
         } else {
-            if (!m_modem->resetPin(Modem::PinType::pin, m_pukCode, pin)) {
+            if (!m_modem->resetPin(Modem::PinType::puk, m_pukCode, pin)) {
                 m_sd->showError(_("Sorry, incorrect PUK"));
                 m_enterPinState = EnterPinStates::enterPuk;
                 m_pukCode.clear();

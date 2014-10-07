@@ -123,7 +123,7 @@ public:
         return false;
     }
 
-    void sendResetPin(std::string puk, std::string newPin)
+    bool sendResetPin(std::string puk, std::string newPin)
     {
         int retries = -1;
         auto retriesMap = m_modem->retries().get();
@@ -132,14 +132,17 @@ public:
             retries = retriesMap[Modem::PinType::puk];
         }
 
-        if (!m_modem->resetPin(Modem::PinType::pin, puk, newPin)) {
+        if (!m_modem->resetPin(Modem::PinType::puk, puk, newPin)) {
+            m_sd->showError(_("Sorry, incorrect PUK"));
             --retries;
             if (retries == 1) {
-                showLastPinAttemptPopup();
+                showLastPukAttemptPopup();
             } else if (retries == 0) {
-                showPinBlockedPopup([this](){ m_sd->close(); });
+                showSimPermanentlyBlockedPopup([this](){ m_sd->close(); });
             }
+            return false;
         }
+        return true;
     }
 
     void showLastPinAttemptPopup(std::function<void()> closed = std::function<void()>())
@@ -338,16 +341,14 @@ SimUnlockDialog::Private::pinEntered(std::string pin)
             m_enterPinState = EnterPinStates::enterNewPin;
             m_newPin.clear();
         } else {
-            if (!m_modem->resetPin(Modem::PinType::puk, m_pukCode, pin)) {
-                m_sd->showError(_("Sorry, incorrect PUK"));
-                m_enterPinState = EnterPinStates::enterPuk;
-                m_pukCode.clear();
-                m_newPin.clear();
-            } else {
+            if (sendResetPin(m_pukCode, pin)) {
                 m_sd->close();
                 reset();
                 return;
             }
+            m_enterPinState = EnterPinStates::enterPuk;
+            m_pukCode.clear();
+            m_newPin.clear();
         }
         break;
     }

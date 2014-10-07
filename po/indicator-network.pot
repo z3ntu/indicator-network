@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-10-07 12:41+0300\n"
+"POT-Creation-Date: 2014-10-07 17:04+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -27,25 +27,25 @@ msgstr ""
 msgid "Network"
 msgstr ""
 
-#: src/indicator/sim-unlock-dialog.cpp:147
+#: src/indicator/sim-unlock-dialog.cpp:145
 msgid "Sorry, incorrect %{1} PIN."
 msgstr ""
 
-#: src/indicator/sim-unlock-dialog.cpp:151
-#: src/indicator/sim-unlock-dialog.cpp:176
+#: src/indicator/sim-unlock-dialog.cpp:149
+#: src/indicator/sim-unlock-dialog.cpp:177
 msgid "This will be your last attempt."
 msgstr ""
 
-#: src/indicator/sim-unlock-dialog.cpp:152
+#: src/indicator/sim-unlock-dialog.cpp:151
 msgid ""
 "If %{1} PIN is entered incorrectly you will require your PUK code to unlock."
 msgstr ""
 
-#: src/indicator/sim-unlock-dialog.cpp:162
+#: src/indicator/sim-unlock-dialog.cpp:161
 msgid "Sorry, your %{1} is now blocked."
 msgstr ""
 
-#: src/indicator/sim-unlock-dialog.cpp:166
+#: src/indicator/sim-unlock-dialog.cpp:165
 msgid "Please enter your PUK code to unblock SIM card."
 msgstr ""
 
@@ -54,83 +54,83 @@ msgid "You may need to contact your network provider for PUK code."
 msgstr ""
 
 #: src/indicator/sim-unlock-dialog.cpp:175
-#: src/indicator/sim-unlock-dialog.cpp:186
+#: src/indicator/sim-unlock-dialog.cpp:189
 msgid "Sorry, incorrect PUK."
 msgstr ""
 
-#: src/indicator/sim-unlock-dialog.cpp:177
+#: src/indicator/sim-unlock-dialog.cpp:179
 msgid ""
 "If PUK code is entered incorrectly, your SIM card will be blocked and needs "
 "replacement."
 msgstr ""
 
-#: src/indicator/sim-unlock-dialog.cpp:178
+#: src/indicator/sim-unlock-dialog.cpp:181
 msgid "Please contact your network provider."
 msgstr ""
 
-#: src/indicator/sim-unlock-dialog.cpp:187
+#: src/indicator/sim-unlock-dialog.cpp:191
 msgid "Your SIM card is now permanently blocked and needs replacement."
 msgstr ""
 
-#: src/indicator/sim-unlock-dialog.cpp:188
+#: src/indicator/sim-unlock-dialog.cpp:193
 msgid "Please contact your service provider."
 msgstr ""
 
-#: src/indicator/sim-unlock-dialog.cpp:252
-msgid "Enter ${1} PIN"
+#: src/indicator/sim-unlock-dialog.cpp:257
+msgid "Enter %{1} PIN"
 msgstr ""
 
-#: src/indicator/sim-unlock-dialog.cpp:259
+#: src/indicator/sim-unlock-dialog.cpp:264
 msgid "Enter PUK code"
 msgstr ""
 
-#: src/indicator/sim-unlock-dialog.cpp:261
+#: src/indicator/sim-unlock-dialog.cpp:266
 msgid "Enter PUK code for %{1}"
 msgstr ""
 
-#: src/indicator/sim-unlock-dialog.cpp:269
+#: src/indicator/sim-unlock-dialog.cpp:274
 #, c-format
 msgid "1 attempt remaining"
 msgid_plural "%d attempts remaining"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/indicator/sim-unlock-dialog.cpp:280
+#: src/indicator/sim-unlock-dialog.cpp:285
 msgid "Enter new %{1} PIN"
 msgstr ""
 
-#: src/indicator/sim-unlock-dialog.cpp:288
+#: src/indicator/sim-unlock-dialog.cpp:293
 msgid "Confirm new %{1} PIN"
 msgstr ""
 
-#: src/indicator/sim-unlock-dialog.cpp:312
+#: src/indicator/sim-unlock-dialog.cpp:317
 msgid "Sorry, incorrect PIN"
 msgstr ""
 
-#: src/indicator/sim-unlock-dialog.cpp:329
-#: src/indicator/sim-unlock-dialog.cpp:506
+#: src/indicator/sim-unlock-dialog.cpp:334
+#: src/indicator/sim-unlock-dialog.cpp:511
 msgid "PIN codes did not match."
 msgstr ""
 
-#: src/indicator/sim-unlock-dialog.cpp:334
+#: src/indicator/sim-unlock-dialog.cpp:339
 msgid "Sorry, incorrect PUK"
 msgstr ""
 
-#: src/indicator/sim-unlock-dialog.cpp:486
-#: src/indicator/sim-unlock-dialog.cpp:514
+#: src/indicator/sim-unlock-dialog.cpp:491
+#: src/indicator/sim-unlock-dialog.cpp:519
 msgid "Enter SIM PIN"
 msgstr ""
 
-#: src/indicator/sim-unlock-dialog.cpp:497
-#: src/indicator/sim-unlock-dialog.cpp:507
+#: src/indicator/sim-unlock-dialog.cpp:502
+#: src/indicator/sim-unlock-dialog.cpp:512
 msgid "Enter new PIN code"
 msgstr ""
 
-#: src/indicator/sim-unlock-dialog.cpp:501
+#: src/indicator/sim-unlock-dialog.cpp:506
 msgid "Confirm new PIN code"
 msgstr ""
 
-#: src/indicator/sim-unlock-dialog.cpp:513
+#: src/indicator/sim-unlock-dialog.cpp:518
 msgid "Failed to change PIN."
 msgstr ""
 

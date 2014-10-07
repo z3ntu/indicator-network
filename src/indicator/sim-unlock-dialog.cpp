@@ -27,7 +27,7 @@
 namespace ubuntu {
 namespace i18n{
 
-std::string __argumentSubstitute(int depth, const std::string &format) // base function
+std::string __argumentSubstitute(int /*depth*/, const std::string &format) // base function
 {
     return format;
 }
@@ -38,8 +38,6 @@ std::string __argumentSubstitute(int depth, const std::string &format, T value, 
     std::string tmp = __argumentSubstitute(depth+1, format, Fargs...);
 
     std::string subs = "%{" + std::to_string(depth) + "}";
-
-    std::cout << "SUBS: " << subs << std::endl;
 
     const std::string val {value};
     for (auto it = std::search(tmp.begin(), tmp.end(), subs.begin(), subs.end());

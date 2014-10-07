@@ -24,6 +24,49 @@
 
 #include <functional>
 
+namespace ubuntu {
+namespace i18n{
+
+std::string __argumentSubstitute(int depth, const std::string &format) // base function
+{
+    return format;
+}
+
+template<typename T, typename... Targs>
+std::string __argumentSubstitute(int depth, const std::string &format, T value, Targs... Fargs)
+{
+    std::string tmp = __argumentSubstitute(depth+1, format, Fargs...);
+
+    std::string subs = "%{" + std::to_string(depth) + "}";
+
+    std::cout << "SUBS: " << subs << std::endl;
+
+    const std::string val {value};
+    for (auto it = std::search(tmp.begin(), tmp.end(), subs.begin(), subs.end());
+         it != tmp.end();
+         it = std::search(it, tmp.end(), subs.begin(), subs.end()))
+    {
+        auto pos = it;
+        pos = tmp.erase(pos, pos+subs.length());
+        tmp.insert(pos, val.begin(), val.end());
+    }
+    return tmp;
+}
+
+/// substitute variables in strings by index
+/// only accepts std::string as input for now
+/// argumentSubstitute("First: %{1}, Second %{2}", std::string{"foo"}, std::string{"bar});
+///     --> "First: foo, Second bar"
+/// argumentSubstitute("First: %{2}, Second %{1}", std::string{"foo"}, std::string{"bar});
+///     --> "First: bar, Second: foor"
+template<typename... Targs>
+std::string argumentSubstitute(const std::string &format, Targs... Fargs)
+{
+    return __argumentSubstitute(1, format, Fargs...);
+}
+}
+}
+
 class SimUnlockDialog::Private
 {
 public:
@@ -57,6 +100,8 @@ public:
     std::recursive_mutex m_updateMutex;
 
     std::vector<core::Connection> m_connections;
+
+    core::Property<bool> m_showSimIdentifiers;
 
     void sendEnterPin(std::string pin)
     {
@@ -96,46 +141,53 @@ public:
         }
     }
 
-
     void showLastPinAttemptPopup(std::function<void()> closed = std::function<void()>())
     {
-        // TRANSLATORS: this string is not currently being shown on the screen. This message might be subject to change.
-        m_sd->showPopup(_("This will be the last attempt.<br>"
-                          "<br>"
-                          "If the SIM PIN is entered incorrectly, your SIM "
-                          "will be blocked and would require the PUK Code to unlock."),
-                        closed);
+        std::stringstream output;
+        output << ubuntu::i18n::argumentSubstitute(_("Sorry, incorrect %{1} PIN."),
+                                                   m_showSimIdentifiers.get() ?
+                                                       m_modem->simIdentifier().get()
+                                                     : "SIM");
+        output << _("This will be your last attempt.");
+        output << ubuntu::i18n::argumentSubstitute(_("If %{1} PIN is entered incorrectly you will require your PUK code to unlock."),
+                                                   m_showSimIdentifiers.get() ?
+                                                       m_modem->simIdentifier().get()
+                                                     : "SIM");
+        m_sd->showPopup(output.str(), closed);
     }
 
     void showPinBlockedPopup(std::function<void()> closed = std::function<void()>())
     {
-        // TRANSLATORS: this string is not currently being shown on the screen. This message might be subject to change.
-        m_sd->showPopup(_("Your SIM is now blocked.<br>"
-                          "<br>"
-                          "Enter the PUK Code to unlock.<br>"
-                          "<br>"
-                          "You may contact your network provider for PUK Code."),
-                        closed);
+        std::stringstream output;
+        output << ubuntu::i18n::argumentSubstitute(std::string{_("Sorry, your %{1} is now blocked.")},
+                                                   m_showSimIdentifiers.get() ?
+                                                       m_modem->simIdentifier().get()
+                                                     : "SIM");
+        output << _("Please enter your PUK code to unblock SIM card.");
+        output << _("You may need to contact your network provider for PUK code.");
+
+        m_sd->showPopup(output.str(), closed);
     }
 
     void showLastPukAttemptPopup(std::function<void()> closed = std::function<void()>())
     {
-        // TRANSLATORS: this string is not currently being shown on the screen. This message might be subject to change.
-        m_sd->showPopup(_("This will be the last attempt.<br>"
-                          "<br>"
-                          "If the PUK code is entered incorrectly, your SIM will need to be replaced.<br>"
-                          "<br>"
-                          "Please contact your network provider."),
-                        closed);
+        std::stringstream output;
+        output << _("Sorry, incorrect PUK.");
+        output << _("This will be your last attempt.");
+        output << _("If PUK code is entered incorrectly, your SIM card will be blocked and needs replacement.");
+        output << _("Please contact your network provider.");
+
+        m_sd->showPopup(output.str(), closed);
     }
 
     void showSimPermanentlyBlockedPopup(std::function<void()> closed = std::function<void()>())
     {
-        // TRANSLATORS: this string is not currently being shown on the screen. This message might be subject to change.
-        m_sd->showPopup(_("Your SIM is now permanently blocked and needs to be replaced.<br>"
-                          "<br>"
-                          "Please contact your network provider."),
-                        closed);
+        std::stringstream output;
+        output << _("Sorry, incorrect PUK.");
+        output << _("Your SIM card is now permanently blocked and needs replacement.");
+        output << _("Please contact your service provider.");
+
+        m_sd->showPopup(output.str(), closed);
     }
 
     Private();
@@ -153,13 +205,13 @@ public:
 SimUnlockDialog::Private::Private()
 {
     m_sd = std::make_shared<notify::snapdecision::SimUnlock>();
+    m_showSimIdentifiers.set(false);
     reset();
 }
 
 void
 SimUnlockDialog::Private::update()
 {
-    std::cout << __PRETTY_FUNCTION__ << std::endl;
     std::lock_guard<std::recursive_mutex> lock(m_updateMutex);
 
     if (!m_modem || !m_sd)
@@ -197,43 +249,51 @@ SimUnlockDialog::Private::update()
             // we are done.
             return;
         case Modem::PinType::pin:
-            /// @todo add SIM identifier
-            title = _("Enter SIM PIN");
+            title = ubuntu::i18n::argumentSubstitute(_("Enter ${1} PIN"),
+                                                     m_showSimIdentifiers.get() ?
+                                                         m_modem->simIdentifier().get()
+                                                       : "SIM");
             break;
         case Modem::PinType::puk:
-            /// @todo add SIM identifier
-            title = _("Enter PUK code");
+            if (!m_showSimIdentifiers.get())
+                title = _("Enter PUK code");
+            else
+                title = ubuntu::i18n::argumentSubstitute(_("Enter PUK code for %{1}"),
+                                                           m_modem->simIdentifier().get());
             break;
         }
         m_sd->pinMinMax().set(lengths[type]);
 
         std::string attempts;
         if (retries.find(type) != retries.end()) {
-            auto attempt = maxRetries[type] - retries[type] + 1;
-            gchar *tmp = g_strdup_printf(_("Attempt %d of %d"), attempt, maxRetries[type]);
+            gchar *tmp = g_strdup_printf(ngettext("1 attempt remaining", "%d attempts remaining", retries[type]), retries[type]);
             attempts = {tmp};
             g_free(tmp);
         }
 
-        /// @todo get a proper unlock dialog API..
-        if (attempts.empty()) {
-            m_sd->title().set(title);
-        } else {
-            m_sd->title().set("<b>" + title + "</b><br>" + attempts);
-        }
-        std::cout << m_sd->title().get() << std::endl;
+        m_sd->title().set(title);
+        m_sd->body().set(attempts);
         break;
     }
     case EnterPinStates::enterNewPin:
-        m_sd->title().set(_("Enter new PIN code"));
+        m_sd->body().set("Create new PIN");
+        m_sd->title().set(ubuntu::i18n::argumentSubstitute(_("Enter new %{1} PIN"),
+                                                           m_showSimIdentifiers.get() ?
+                                                               m_modem->simIdentifier().get()
+                                                             : "SIM"));
+        m_sd->pinMinMax().set(lengths[Modem::PinType::pin]);
         break;
     case EnterPinStates::confirmNewPin:
-        m_sd->title().set(_("Confirm new PIN code"));
+        m_sd->body().set("Create new PIN");
+        m_sd->title().set(ubuntu::i18n::argumentSubstitute(_("Confirm new %{1} PIN"),
+                                                           m_showSimIdentifiers.get() ?
+                                                               m_modem->simIdentifier().get()
+                                                             : "SIM"));
+        m_sd->pinMinMax().set(lengths[Modem::PinType::pin]);
         break;
     }
 
     /// @todo should be able to see cleartext puk and pin when entering puk or changing pin.
-    /// @todo add phone number or IMSI or something to the body
     m_sd->update();
     m_sd->show();
 }
@@ -241,8 +301,6 @@ SimUnlockDialog::Private::update()
 void
 SimUnlockDialog::Private::pinEntered(std::string pin)
 {
-    std::cout << __PRETTY_FUNCTION__ << std::endl;
-
     std::lock_guard<std::recursive_mutex> lock(m_updateMutex);
     switch (m_enterPinState) {
     case EnterPinStates::initial:
@@ -251,9 +309,8 @@ SimUnlockDialog::Private::pinEntered(std::string pin)
         return;
     case EnterPinStates::enterPin:
         if (!m_modem->enterPin(Modem::PinType::pin, pin)) {
-            m_sd->showError(_("Oops!<br>Incorrect PIN entered."));
+            m_sd->showError(_("Sorry, incorrect PIN"));
         } else {
-            std::cout << "Correct PIN entered." << std::endl;
             m_sd->close();
             reset();
             return;
@@ -274,12 +331,11 @@ SimUnlockDialog::Private::pinEntered(std::string pin)
             m_newPin.clear();
         } else {
             if (!m_modem->resetPin(Modem::PinType::pin, m_pukCode, pin)) {
-                m_sd->showError(_("Oops!<br>Incorrect PUK entered."));
+                m_sd->showError(_("Sorry, incorrect PUK"));
                 m_enterPinState = EnterPinStates::enterPuk;
                 m_pukCode.clear();
                 m_newPin.clear();
             } else {
-                std::cout << "ResetPin succesfull." << std::endl;
                 m_sd->close();
                 reset();
                 return;
@@ -293,21 +349,18 @@ SimUnlockDialog::Private::pinEntered(std::string pin)
 void
 SimUnlockDialog::Private::cancelled()
 {
-    std::cout << "SIM notification cancelled" << std::endl;
     m_sd->close();
 }
 
 void
 SimUnlockDialog::Private::closed()
 {
-    std::cout << __PRETTY_FUNCTION__ << std::endl;
     reset();
 }
 
 void
 SimUnlockDialog::Private::reset()
 {
-    std::cout << __PRETTY_FUNCTION__ << std::endl;
     /** @todo
      * bug in dbus-cpp :/
      * can't disconnect here as the reset() is called from pinEnterer() and
@@ -410,6 +463,7 @@ SimUnlockDialog::unlock(Modem::Ptr modem)
 void
 SimUnlockDialog::changePin(Modem::Ptr modem)
 {
+    /// @todo do we need this?
     if (d->m_modem)
         throw std::logic_error("Unlocking already in progress.");
 
@@ -485,3 +539,8 @@ SimUnlockDialog::state()
     return d->m_state;
 }
 
+core::Property<bool> &
+SimUnlockDialog::showSimIdentifiers()
+{
+    return d->m_showSimIdentifiers;
+}

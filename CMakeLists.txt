@@ -5,6 +5,11 @@ string(TOLOWER "${CMAKE_BUILD_TYPE}" build_type_lower)
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" "${CMAKE_MODULE_PATH}")
 
+option(trace_messages "Print debug trace messages.")
+if(${trace_messages})
+  add_definitions(-DINDICATOR_NETWORK_TRACE_MESSAGES)
+endif()
+
 find_package(PkgConfig REQUIRED)
 include(EnableCoverageReport)
 include(GNUInstallDirs)

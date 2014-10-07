@@ -230,8 +230,9 @@ struct Interface
             } else if (property == Property::Technology::name()) {
                 technology.set(str2technology(value.as<Property::Technology::ValueType>()));
             } else {
-                //throw std::runtime_error(std::string(__PRETTY_FUNCTION__) + ": unexpected property change: " + property);
+#ifdef INDICATOR_NETWORK_TRACE_MESSAGES
                 std::cout << std::string(__PRETTY_FUNCTION__) + ": unhandled property change: " + property << std::endl;
+#endif
             }
         }
 
@@ -774,7 +775,9 @@ struct Interface
             } else if (property == Property::SubscriberIdentity::name()) {
                 subscriberIdentity.set(value.as<Property::SubscriberIdentity::ValueType>());
             } else {
-                //std::cout << std::string(__PRETTY_FUNCTION__) + ": unhandled property change: " + property << std::endl;
+#ifdef INDICATOR_NETWORK_TRACE_MESSAGES
+                std::cout << std::string(__PRETTY_FUNCTION__) + ": unhandled property change: " + property << std::endl;
+#endif
             }
         }
 
@@ -1153,7 +1156,9 @@ struct Interface
             } else if (property == Property::Type::name()) {
                 type.set(str2type(value.as<Property::Type::ValueType>()));
             } else {
-                //std::cout << std::string(__PRETTY_FUNCTION__) + ": unhandled property change: " + property << std::endl;
+#ifdef INDICATOR_NETWORK_TRACE_MESSAGES
+                std::cout << std::string(__PRETTY_FUNCTION__) + ": unhandled property change: " + property << std::endl;
+#endif
             }
         }
 

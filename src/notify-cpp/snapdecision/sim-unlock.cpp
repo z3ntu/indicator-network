@@ -47,6 +47,7 @@ public:
 
     Action::Ptr m_notifyAction;
     Action::Ptr m_pinMinMaxAction;
+    Action::Ptr m_popupAction;
     Action::Ptr m_errorAction;
     ActionGroup::Ptr m_actionGroup;
     ActionGroupExporter::Ptr m_actionGroupExporter;
@@ -54,6 +55,9 @@ public:
     Menu::Ptr m_menu;
     MenuItem::Ptr m_menuItem;
     MenuExporter::Ptr m_menuExporter;
+
+    std::function<void()> m_pendingErrorClosed;
+    std::function<void()> m_pendingPopupClosed;
 
     Private(const std::string &title,
             const std::string &body,
@@ -75,8 +79,6 @@ public:
         modelActions["notifications"] = TypedVariant<std::string>(actionPath);
 
         std::map<std::string, Variant> modelPaths;
-        /// @todo hack!
-        // modelPaths["busName"] = TypedVariant<std::string>("com.canonical.indicator.network");
         modelPaths["busName"] = TypedVariant<std::string>(m_sessionBus->address());
         modelPaths["menuPath"] = TypedVariant<std::string>(menuPath);
         modelPaths["actions"] = TypedVariant<std::map<std::string, Variant>>(modelActions);
@@ -84,9 +86,8 @@ public:
         m_menu = std::make_shared<Menu>();
         m_menuItem = std::make_shared<MenuItem>("", "notifications.simunlock");
         m_menuItem->setAttribute("x-canonical-type", TypedVariant<std::string>("com.canonical.snapdecision.pinlock"));
-        /// @todo we need both min and max.
-        m_menuItem->setAttribute("x-canonical-pin-length", TypedVariant<std::int32_t>(pinMinMax.first));
         m_menuItem->setAttribute("x-canonical-pin-min-max", TypedVariant<std::string>("notifications.pinMinMax"));
+        m_menuItem->setAttribute("x-canonical-pin-popup", TypedVariant<std::string>("notifications.popup"));
         m_menuItem->setAttribute("x-canonical-pin-error", TypedVariant<std::string>("notifications.error"));
         m_menu->append(m_menuItem);
 
@@ -104,26 +105,36 @@ public:
         });
         m_actionGroup->add(m_notifyAction);
 
-#if 0
         m_pinMinMaxAction = std::make_shared<Action>("pinMinMax",
                                                      nullptr,
-                                                     TypedVariant<std::vector<std::int32_t>>(m_pinMinMax),
-                                                     [this](Variant state)
-        {
+                                                     TypedVariant<std::vector<std::int32_t>>({m_pinMinMax.get().first, m_pinMinMax.get().second}),
+                                                     [this](Variant)
+        {});
+        m_actionGroup->add(m_pinMinMaxAction);
+
+        m_popupAction = std::make_shared<Action>("popup",
+                                                  nullptr,
+                                                  TypedVariant<std::string>(""),
+                                                  [this](Variant)
+        {});
+        m_popupAction->activated().connect([this](Variant){
+            m_popupAction->setState(TypedVariant<std::string>(""));
+            if (m_pendingPopupClosed)
+                m_pendingPopupClosed();
+            m_pendingPopupClosed = std::function<void()>();
         });
-        m_actionGroup->add(m_pinMinMaxrAction);
-#endif
+        m_actionGroup->add(m_popupAction);
+
         m_errorAction = std::make_shared<Action>("error",
                                                   nullptr,
                                                   TypedVariant<std::string>(""),
-                                                  [this](Variant state)
-        {
-            auto tmp = state.as<std::string>();
-            if (tmp.empty()) {
-                // ack from the dialog side.
-                // find the error and call the cb
-            } else {
-            }
+                                                  [this](Variant)
+        {});
+        m_errorAction->activated().connect([this](Variant){
+            m_errorAction->setState(TypedVariant<std::string>(""));
+            if (m_pendingErrorClosed)
+                m_pendingErrorClosed();
+            m_pendingErrorClosed = std::function<void()>();
         });
         m_actionGroup->add(m_errorAction);
 
@@ -137,16 +148,13 @@ public:
         m_notification->closed().connect([this](){ m_closed(); });
 
         m_title.changed().connect([this](const std::string &value){
-            /// @todo we need both min and max.
             m_notification->summary().set(value);
         });
         m_body.changed().connect([this](const std::string &value){
             m_notification->body().set(value);
         });
         m_pinMinMax.changed().connect([this](std::pair<std::uint8_t, uint8_t> value) {
-            /// @todo assert min <= max, also upon construction
-            m_menuItem->setAttribute("x-canonical-pin-length",
-                                     TypedVariant<std::int32_t>(value.first));
+            m_pinMinMaxAction->setState(TypedVariant<std::vector<std::int32_t>>({value.first, value.second}));
         });
     }
 };
@@ -220,15 +228,20 @@ SimUnlock::close()
 void
 SimUnlock::showError(std::string message, std::function<void()> closed)
 {
-    std::cerr << __PRETTY_FUNCTION__ << ": " << message << std::endl;
-    if (closed)
-        closed();
+    d->m_errorAction->setState(TypedVariant<std::string>(message));
+    if (d->m_pendingErrorClosed)
+        d->m_pendingErrorClosed();
+    d->m_pendingErrorClosed = closed;
 }
 
 void
 SimUnlock::showPopup(std::string message, std::function<void()> closed)
 {
-    std::cerr << __PRETTY_FUNCTION__ << ": " << message << std::endl;
+    d->m_popupAction->setState(TypedVariant<std::string>(message));
+    if (d->m_pendingPopupClosed)
+        d->m_pendingPopupClosed();
+    d->m_pendingPopupClosed = closed;
+
     if (closed)
         closed();
 }

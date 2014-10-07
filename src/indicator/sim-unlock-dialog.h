@@ -55,6 +55,7 @@ public:
     Modem::Ptr modem();
 
     core::Property<State> &state();
+    core::Property<bool> &showSimIdentifiers();
 };
 
 #endif

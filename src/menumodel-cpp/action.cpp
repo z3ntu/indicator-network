@@ -85,6 +85,7 @@ Action::~Action()
     g_signal_handler_disconnect(m_gaction.get(), m_activateHandlerId);
     if (m_changeStateHandlerId)
         g_signal_handler_disconnect(m_gaction.get(), m_changeStateHandlerId);
+    GMainLoopSync([]{});
 }
 
 std::string
@@ -99,8 +100,9 @@ Action::setState(const Variant &value)
 {
     std::lock_guard<std::recursive_mutex> lg(m_mutex);
     m_state = value;
+    auto action = m_gaction;
     GMainLoopDispatch([=](){
-      g_simple_action_set_state(G_SIMPLE_ACTION(m_gaction.get()), value);
+      g_simple_action_set_state(G_SIMPLE_ACTION(action.get()), value);
     });
     /// @todo state changes don't work properly. We probably need to make the
     ///       state a Property to be able to get signals on change.

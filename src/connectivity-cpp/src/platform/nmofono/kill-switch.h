@@ -61,6 +61,7 @@ public:
 
     enum class State
     {
+        not_available,
         unblocked,
         soft_blocked,
         hard_blocked

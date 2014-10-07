@@ -38,6 +38,8 @@ struct KillSwitch::Private
     {
         switch(value) {
         case URfkill::Interface::Killswitch::State::not_available:
+            state.set(KillSwitch::State::not_available);
+            break;
         case URfkill::Interface::Killswitch::State::unblocked:
             state.set(KillSwitch::State::unblocked);
             break;

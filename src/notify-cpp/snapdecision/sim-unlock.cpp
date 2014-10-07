@@ -241,7 +241,4 @@ SimUnlock::showPopup(std::string message, std::function<void()> closed)
     if (d->m_pendingPopupClosed)
         d->m_pendingPopupClosed();
     d->m_pendingPopupClosed = closed;
-
-    if (closed)
-        closed();
 }

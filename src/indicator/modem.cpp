@@ -98,7 +98,7 @@ Modem::Private::update()
     } else {
         m_requiredPin.set(PinType::none);
         m_retries.set({});
-        m_simStatus.set(SimStatus::missing);
+        m_simStatus.set(SimStatus::not_available);
     }
 
     auto netreg = m_ofonoModem->networkRegistration.get();

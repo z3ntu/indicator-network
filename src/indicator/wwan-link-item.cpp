@@ -142,6 +142,12 @@ WwanLinkItem::Private::update()
         }
 
         break;
+    case Modem::SimStatus::not_available:
+        m_infoItem->setStatusIcon("gsm-3g-disabled");
+        m_infoItem->setStatusText(_("Offline"));
+        m_infoItem->setLocked(false);
+        m_infoItem->setRoaming(false);
+        break;
     }
 }
 

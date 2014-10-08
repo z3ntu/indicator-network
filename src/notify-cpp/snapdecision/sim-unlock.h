@@ -38,7 +38,7 @@ public:
 
     explicit SimUnlock(const std::string &title = "",
               const std::string &body = "",
-              std::pair<std::uint8_t, std::uint8_t> pinMinMax = {0, -0});
+              std::pair<std::uint8_t, std::uint8_t> pinMinMax = {0, 0});
     ~SimUnlock();
 
     core::Signal<std::string> &pinEntered();

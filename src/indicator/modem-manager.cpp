@@ -160,6 +160,8 @@ public:
             currentModems.insert(std::make_shared<Modem>(ofonoModem));
         }
 
+
+        m_unlockDialog->showSimIdentifiers().set(currentModems.size() > 1);
         m_modems.set(currentModems);
     }
 
@@ -177,14 +179,11 @@ public:
 
 ModemManager::ModemManager()
 {
-    std::cout << __PRETTY_FUNCTION__ << std::endl;
     d.reset(new Private);
 }
 
 ModemManager::~ModemManager()
-{
-    std::cout << __PRETTY_FUNCTION__ << std::endl;
-}
+{}
 
 void
 ModemManager::unlockModem(Modem::Ptr modem)

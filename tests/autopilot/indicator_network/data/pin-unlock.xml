@@ -242,7 +242,7 @@
     <set name="PIN2VALUE" value="5678"/>
 
     <!-- Value of the PUK that is required -->
-    <set name="PUKVALUE" value="1234567890"/>
+    <set name="PUKVALUE" value="12345678"/>
 
     <!-- Value of the PUK2 that is required -->
     <set name="PUK2VALUE" value="01010101"/>

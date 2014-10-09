@@ -383,7 +383,9 @@ namespace NetworkManager
                             continue;
                         }
                         else {
-                            std::cerr << "Unexpected Connection.Active update: " << entry.first << std::endl;
+#ifdef INDICATOR_NETWORK_TRACE_MESSAGES
+                            std::cout << "Unexpected Connection.Active update: " << entry.first << std::endl;
+#endif
                         }
                     }
                 });

@@ -56,7 +56,7 @@ GroupedAccessPoint::Private::~Private() {
             disconnect(i);
         }
     } catch(...) {
-        std::cout << "Problem in destructor " << __PRETTY_FUNCTION__ << std::endl;
+        std::cerr << "Problem in destructor " << __PRETTY_FUNCTION__ << std::endl;
     }
 }
 

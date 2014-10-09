@@ -383,7 +383,7 @@ namespace NetworkManager
                             continue;
                         }
                         else {
-                            std::cout << "Unexpected Connection.Active update: " << entry.first << std::endl;
+                            std::cerr << "Unexpected Connection.Active update: " << entry.first << std::endl;
                         }
                     }
                 });

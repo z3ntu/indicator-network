@@ -1003,7 +1003,9 @@ struct Interface
                         newInterfaces.push_back(iter->second);
                     } else {
                         // custom interface, we don't care
+#ifdef INDICATOR_NETWORK_TRACE_MESSAGES
                         std::cout << "Unknown Interface: " << interface << std::endl;
+#endif
                     }
                 }
 

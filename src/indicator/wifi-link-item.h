@@ -42,8 +42,6 @@ class WifiLinkItem : public Item
     /// @todo do something with me...
     Action::Ptr m_actionBusy;
 
-    SwitchItem::Ptr m_switch;
-
     networking::wifi::AccessPoint::Ptr m_activeAccessPoint;
     std::map<networking::wifi::AccessPoint::Ptr, AccessPointItem::Ptr> m_accessPoints;
 
@@ -85,40 +83,6 @@ public:
 
         m_rootMerger = std::make_shared<MenuMerger>();
 
-        m_switch = std::make_shared<SwitchItem>(_("Wi-Fi"), "wifi", "enable");
-        m_actionGroupMerger->add(*m_switch);
-        switch (m_link->status().get()) {
-        case networking::Link::Status::disabled:
-            m_switch->state().set(false);
-            break;
-        case networking::Link::Status::offline:
-        case networking::Link::Status::connecting:
-        case networking::Link::Status::connected:
-        case networking::Link::Status::online:
-            m_switch->state().set(true);
-            break;
-        }
-        m_link->status().changed().connect([this](networking::Link::Status value){
-            switch (value) {
-            case networking::Link::Status::disabled:
-                m_switch->state().set(false);
-                break;
-            case networking::Link::Status::offline:
-            case networking::Link::Status::connecting:
-            case networking::Link::Status::connected:
-            case networking::Link::Status::online:
-                m_switch->state().set(true);
-                break;
-            }
-        });
-        m_switch->activated().connect([this](){
-            if (m_switch->state().get()) {
-                m_link->enable();
-            } else {
-                m_link->disable();
-            }
-        });
-
         m_accessPointCompare = [](MenuItem::Ptr a, MenuItem::Ptr b){
             // order alphabetically by SSID
 
@@ -152,7 +116,6 @@ public:
         m_otherNetwork = std::make_shared<TextItem>(_("Other network…"), "wifi", "othernetwork");
         //m_actionGroupMerger->add(*m_otherNetwork);
 
-        m_topMenu->append(*m_switch);
         m_rootMerger->append(m_topMenu);
 
         m_apsMerger->append(m_connectedBeforeApsMenu);

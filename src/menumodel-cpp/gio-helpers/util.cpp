@@ -20,7 +20,7 @@
 #include "util.h"
 
 std::mutex GMainLoopDispatch::_lock;
-std::vector<GMainLoopDispatch::Func *> GMainLoopDispatch::_funcs;
+std::list<GMainLoopDispatch::Func *> GMainLoopDispatch::_funcs;
 
 gboolean
 GMainLoopDispatch::dispatch_cb(gpointer)
@@ -37,7 +37,12 @@ GMainLoopDispatch::dispatch_cb(gpointer)
 GMainLoopDispatch::GMainLoopDispatch(std::function<void()> func)
 {
     if (g_main_context_acquire(g_main_context_default())) {
-        func();
+        if (_funcs.empty())
+            func();
+        else {
+            std::function<void()> *funcPtr = new std::function<void()>(func);
+            _funcs.push_back(funcPtr);
+        }
         g_main_context_release(g_main_context_default());
     } else {
         std::lock_guard<std::mutex> lock(_lock);

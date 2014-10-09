@@ -51,6 +51,12 @@ public:
     void disableFlightMode() override;
     const core::Property<connectivity::networking::Manager::FlightModeStatus>& flightMode() const override;
 
+    const core::Property<bool>& hasWifi() const override;
+    const core::Property<bool>& wifiEnabled() const override;
+
+    bool enableWifi() override;
+    bool disableWifi() override;
+
     const core::Property<std::set<std::shared_ptr<connectivity::networking::Link>>>& links() const;
     const core::Property<std::set<std::shared_ptr<connectivity::networking::Service>>>&services() const override;
     const core::Property<connectivity::networking::Manager::NetworkingStatus> & status() const override;

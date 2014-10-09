@@ -46,7 +46,8 @@ public:
         error,
         locked,
         permanentlyLocked,
-        ready
+        ready,
+        not_available
     };
 
     typedef std::shared_ptr<Modem> Ptr;

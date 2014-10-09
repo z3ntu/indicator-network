@@ -98,7 +98,7 @@ Modem::Private::update()
     } else {
         m_requiredPin.set(PinType::none);
         m_retries.set({});
-        m_simStatus.set(SimStatus::missing);
+        m_simStatus.set(SimStatus::not_available);
     }
 
     auto netreg = m_ofonoModem->networkRegistration.get();
@@ -211,8 +211,8 @@ Modem::resetPin(PinType type, const std::string &puk, const std::string &pin)
     switch(type) {
     case PinType::none:
         return true;
-    case PinType::pin:
-        return d->m_ofonoModem->simManager.get()->resetPin(org::ofono::Interface::SimManager::PinType::pin,
+    case PinType::puk:
+        return d->m_ofonoModem->simManager.get()->resetPin(org::ofono::Interface::SimManager::PinType::puk,
                                                            puk,
                                                            pin);
     default:

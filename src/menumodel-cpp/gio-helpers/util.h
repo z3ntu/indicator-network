@@ -28,6 +28,7 @@
 #include <condition_variable>
 #include <iostream>
 #include <vector>
+#include <list>
 
 struct GMainLoopSync
 {
@@ -72,8 +73,8 @@ struct GMainLoopDispatch
 public:
     typedef std::function<void()> Func;
     static std::mutex _lock;
-    // vector keeps the order of the functions
-    static std::vector<Func *> _funcs;
+    // list keeps the order of the functions
+    static std::list<Func *> _funcs;
 
     //GMainLoopDispatch() = delete;
     GMainLoopDispatch(std::function<void()> func);

@@ -206,6 +206,34 @@ struct Codec<std::map<std::string, Variant>>
 };
 
 template<>
+struct Codec<std::vector<std::int32_t>>
+{
+    inline static GVariant *encode_argument(const std::vector<std::int32_t> &values)
+    {
+        GVariantBuilder builder;
+        g_variant_builder_init(&builder, G_VARIANT_TYPE("ai"));
+        for (auto value : values) {
+            std::int32_t tmp = value;
+            g_variant_builder_add(&builder,
+                                  "i",
+                                  tmp);
+        }
+        return g_variant_builder_end(&builder);
+    }
+    inline static void decode_argument(const Variant &variant, std::vector<std::int32_t> &values)
+    {
+        assert(variant);
+        assert(g_variant_is_of_type(variant, G_VARIANT_TYPE("ai")));
+        GVariantIter iter;
+        std::int32_t *val = 0;
+        g_variant_iter_init (&iter, variant);
+        while (g_variant_iter_loop (&iter, "i", &val)) {
+            values.push_back(*val);
+        }
+    }
+};
+
+template<>
 struct Codec<std::vector<Variant>>
 {
     inline static GVariant *encode_argument(const std::vector<Variant> &values)

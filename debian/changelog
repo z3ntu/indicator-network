@@ -1,3 +1,29 @@
+indicator-network (0.5.1+14.10.20141008-0ubuntu1) utopic; urgency=low
+
+  [ Ubuntu daily release ]
+  * New rebuild forced
+
+  [ Antti Kaijanmäki ]
+  * Finish the dual sim unlocking.
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Wed, 08 Oct 2014 09:46:11 +0000
+
+indicator-network (0.5.1+14.10.20141007.2-0ubuntu1) utopic; urgency=low
+
+  [ Antti Kaijanmäki ]
+  * Fix wifi toggle on krillin. (LP: #1368523)
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Tue, 07 Oct 2014 17:33:59 +0000
+
+indicator-network (0.5.1+14.10.20141007.1-0ubuntu1) utopic; urgency=low
+
+  [ Jussi Pakkanen ]
+  * Dbus-cpp crash fix. (LP: #1343341)
+  * Mark modem as unavailable if modem manager is missing. (LP:
+    #1356200)
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Tue, 07 Oct 2014 12:48:40 +0000
+
 indicator-network (0.5.1+14.10.20141006-0ubuntu1) utopic; urgency=low
 
   [ Charles Kerr ]

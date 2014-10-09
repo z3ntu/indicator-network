@@ -32,6 +32,8 @@ public:
     Menu::Ptr m_menu;
     Menu::Ptr m_settingsMenu;
 
+    SwitchItem::Ptr m_switch;
+
     WifiLinkItem::Ptr m_wifiLink;
     TextItem::Ptr m_openWifiSettings;
 
@@ -44,18 +46,35 @@ public:
         m_settingsMenu = std::make_shared<Menu>();
 
 
-        for (auto link : m_manager->links().get()) {
-            auto wifi_link = std::dynamic_pointer_cast<networking::wifi::Link>(link);
-            m_wifiLink = std::make_shared<WifiLinkItem>(wifi_link);
+        m_switch = std::make_shared<SwitchItem>(_("Wi-Fi"), "wifi", "enable");
 
-            m_actionGroupMerger->add(*m_wifiLink);
-            m_menu->append(*m_wifiLink);
-            m_settingsMenu->append(*m_wifiLink);
-
-            // just take the first one now.
-            /// @todo multiple links and links()->changed()
-            break;
+        /// @todo don't now really care about actully being able to detach the whole
+        ///       wifi chipset. on touch devices we always have wifi.
+        if (m_manager->hasWifi().get()) {
+            m_actionGroupMerger->add(*m_switch);
+            m_menu->append(*m_switch);
+            m_settingsMenu->append(*m_switch);
         }
+
+        m_switch->state().set(m_manager->wifiEnabled().get());
+        m_manager->wifiEnabled().changed().connect([this](bool value) {
+            m_switch->state().set(value);
+        });
+        m_switch->activated().connect([this](){
+            if (m_switch->state().get()) {
+                if (!m_manager->enableWifi()) {
+                    /// try to work around the switch getting out of state on unity8 side
+                    m_switch->state().set(false);
+                }
+            } else {
+                if (!m_manager->disableWifi())
+                    m_switch->state().set(true);
+            }
+        });
+
+
+        m_manager->links().changed().connect(std::bind(&Private::updateLinks, this));
+        updateLinks();
 
         m_openWifiSettings = std::make_shared<TextItem>(_("Wi-Fi settings…"), "wifi", "settings");
         m_openWifiSettings->activated().connect([](){
@@ -67,6 +86,29 @@ public:
 
         m_actionGroupMerger->add(*m_openWifiSettings);
         m_menu->append(*m_openWifiSettings);
+    }
+
+    void updateLinks()
+    {
+        // remove all and recreate. we have top 1 now anyway
+        if (m_wifiLink) {
+            m_actionGroupMerger->remove(*m_wifiLink);
+            m_menu->removeAll(*m_wifiLink);
+            m_settingsMenu->removeAll(*m_wifiLink);
+            m_wifiLink.reset();
+        }
+
+        for (auto link : m_manager->links().get()) {
+            auto wifi_link = std::dynamic_pointer_cast<networking::wifi::Link>(link);
+            m_wifiLink = std::make_shared<WifiLinkItem>(wifi_link);
+
+            m_actionGroupMerger->add(*m_wifiLink);
+            m_menu->append(*m_wifiLink);
+            m_settingsMenu->append(*m_wifiLink);
+
+            // just take the first one
+            break;
+        }
     }
 
 public:

@@ -7,165 +7,215 @@ msgid ""
 msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2014-08-08 15:33+0300\n"
+"POT-Creation-Date: 2014-10-07 20:43+0300\n"
 "PO-Revision-Date: 2014-07-16 18:07+0000\n"
 "Last-Translator: Volkan Gezer <Unknown>\n"
 "Language-Team: Turkish <tr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2014-08-09 05:51+0000\n"
-"X-Generator: Launchpad (build 17156)\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Launchpad-Export-Date: 2014-10-09 06:40+0000\n"
+"X-Generator: Launchpad (build 17196)\n"
 
-#: network/quick-access-section.cpp:48
+#: src/indicator/quick-access-section.cpp:48
 msgid "Flight Mode"
 msgstr "Uçuş Kipi"
 
 #. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
-#: network/root-state.cpp:307
+#: src/indicator/root-state.cpp:296
 msgid "Network"
 msgstr "Ağ"
 
-#. TRANSLATORS: this string is not currently being shown on the screen. This message might be subject to change.
-#: network/sim-unlock-dialog.cpp:85
-msgid ""
-"This will be the last attempt.<br><br>If the SIM PIN is entered incorrectly, "
-"your SIM will be blocked and would require the PUK Code to unlock."
+#: src/indicator/sim-unlock-dialog.cpp:115
+msgid "Sorry, incorrect PIN"
 msgstr ""
 
-#. TRANSLATORS: this string is not currently being shown on the screen. This message might be subject to change.
-#: network/sim-unlock-dialog.cpp:95
-msgid ""
-"Your SIM is now blocked.<br><br>Enter the PUK Code to unlock.<br><br>You may "
-"contact your network provider for PUK Code."
+#: src/indicator/sim-unlock-dialog.cpp:136
+msgid "Sorry, incorrect PUK"
 msgstr ""
 
-#. TRANSLATORS: this string is not currently being shown on the screen. This message might be subject to change.
-#: network/sim-unlock-dialog.cpp:106
-msgid ""
-"This will be the last attempt.<br><br>If the PUK code is entered "
-"incorrectly, your SIM will need to be replaced.<br><br>Please contact your "
-"network provider."
+#: src/indicator/sim-unlock-dialog.cpp:151
+msgid "Sorry, incorrect %{1} PIN."
 msgstr ""
 
-#. TRANSLATORS: this string is not currently being shown on the screen. This message might be subject to change.
-#: network/sim-unlock-dialog.cpp:117
-msgid ""
-"Your SIM is now permanently blocked and needs to be replaced.<br><br>Please "
-"contact your network provider."
+#: src/indicator/sim-unlock-dialog.cpp:156
+#: src/indicator/sim-unlock-dialog.cpp:185
+msgid "This will be your last attempt."
 msgstr ""
 
-#: network/sim-unlock-dialog.cpp:183 network/sim-unlock-dialog.cpp:414
-#: network/sim-unlock-dialog.cpp:442
-msgid "Enter SIM PIN"
-msgstr "SIM PIN'ini girin"
+#: src/indicator/sim-unlock-dialog.cpp:158
+msgid ""
+"If %{1} PIN is entered incorrectly you will require your PUK code to unlock."
+msgstr ""
 
-#: network/sim-unlock-dialog.cpp:187
+#: src/indicator/sim-unlock-dialog.cpp:168
+msgid "Sorry, your %{1} is now blocked."
+msgstr ""
+
+#: src/indicator/sim-unlock-dialog.cpp:173
+msgid "Please enter your PUK code to unblock SIM card."
+msgstr ""
+
+#: src/indicator/sim-unlock-dialog.cpp:175
+msgid "You may need to contact your network provider for PUK code."
+msgstr ""
+
+#: src/indicator/sim-unlock-dialog.cpp:183
+#: src/indicator/sim-unlock-dialog.cpp:197
+msgid "Sorry, incorrect PUK."
+msgstr ""
+
+#: src/indicator/sim-unlock-dialog.cpp:187
+msgid ""
+"If PUK code is entered incorrectly, your SIM card will be blocked and needs "
+"replacement."
+msgstr ""
+
+#: src/indicator/sim-unlock-dialog.cpp:189
+msgid "Please contact your network provider."
+msgstr ""
+
+#: src/indicator/sim-unlock-dialog.cpp:199
+msgid "Your SIM card is now permanently blocked and needs replacement."
+msgstr ""
+
+#: src/indicator/sim-unlock-dialog.cpp:201
+msgid "Please contact your service provider."
+msgstr ""
+
+#: src/indicator/sim-unlock-dialog.cpp:265
+msgid "Enter %{1} PIN"
+msgstr ""
+
+#: src/indicator/sim-unlock-dialog.cpp:272
 msgid "Enter PUK code"
 msgstr "PUK kodunu girin"
 
-#: network/sim-unlock-dialog.cpp:195
+#: src/indicator/sim-unlock-dialog.cpp:274
+msgid "Enter PUK code for %{1}"
+msgstr ""
+
+#: src/indicator/sim-unlock-dialog.cpp:282
 #, c-format
-msgid "Attempt %d of %d"
-msgstr "Deneme %d/%d"
+msgid "1 attempt remaining"
+msgid_plural "%d attempts remaining"
+msgstr[0] ""
+msgstr[1] ""
 
-#: network/sim-unlock-dialog.cpp:210 network/sim-unlock-dialog.cpp:425
-#: network/sim-unlock-dialog.cpp:435
-msgid "Enter new PIN code"
-msgstr "Yeni PIN'i girin"
+#: src/indicator/sim-unlock-dialog.cpp:293
+msgid "Enter new %{1} PIN"
+msgstr ""
 
-#: network/sim-unlock-dialog.cpp:213 network/sim-unlock-dialog.cpp:429
-msgid "Confirm new PIN code"
-msgstr "Yeni PIN'i doğrulayın"
+#: src/indicator/sim-unlock-dialog.cpp:301
+msgid "Confirm new %{1} PIN"
+msgstr ""
 
-#: network/sim-unlock-dialog.cpp:236
-msgid "Oops!<br>Incorrect PIN entered."
-msgstr "Olamaz!<br>Geçersiz PIN girildi."
-
-#: network/sim-unlock-dialog.cpp:254 network/sim-unlock-dialog.cpp:434
+#: src/indicator/sim-unlock-dialog.cpp:340
+#: src/indicator/sim-unlock-dialog.cpp:515
 msgid "PIN codes did not match."
 msgstr "PIN kodları eşleşmedi."
 
-#: network/sim-unlock-dialog.cpp:259
-msgid "Oops!<br>Incorrect PUK entered."
-msgstr "Olamaz!<br>Geçersiz PUK girildi."
+#: src/indicator/sim-unlock-dialog.cpp:495
+#: src/indicator/sim-unlock-dialog.cpp:523
+msgid "Enter SIM PIN"
+msgstr "SIM PIN'ini girin"
 
-#: network/sim-unlock-dialog.cpp:441
+#: src/indicator/sim-unlock-dialog.cpp:506
+#: src/indicator/sim-unlock-dialog.cpp:516
+msgid "Enter new PIN code"
+msgstr "Yeni PIN'i girin"
+
+#: src/indicator/sim-unlock-dialog.cpp:510
+msgid "Confirm new PIN code"
+msgstr "Yeni PIN'i doğrulayın"
+
+#: src/indicator/sim-unlock-dialog.cpp:522
 msgid "Failed to change PIN."
 msgstr "PIN değiştirme başarısız."
 
-#: network/wifi-link-item.h:87
+#: src/indicator/wifi-link-item.h:88
 msgid "Wi-Fi"
 msgstr "Kablosuz (Wi-Fi)"
 
-#: network/wifi-link-item.h:151
+#: src/indicator/wifi-link-item.h:152
 msgid "Other network…"
 msgstr "Diğer ağ..."
 
-#: network/wifi-section.cpp:60
+#: src/indicator/wifi-section.cpp:60
 msgid "Wi-Fi settings…"
 msgstr "Wi-Fi ayarları..."
 
-#: network/wwan-link-item.cpp:87
+#: src/indicator/wwan-link-item.cpp:87
 msgid "No SIM"
 msgstr "SIM Yok"
 
-#: network/wwan-link-item.cpp:93
+#: src/indicator/wwan-link-item.cpp:93
 msgid "SIM Error"
 msgstr "SIM Hatası"
 
-#: network/wwan-link-item.cpp:100
+#: src/indicator/wwan-link-item.cpp:100
 msgid "SIM Locked"
 msgstr "SIM Kilitli"
 
-#: network/wwan-link-item.cpp:112
+#: src/indicator/wwan-link-item.cpp:112
 msgid "Unregistered"
 msgstr ""
 
-#: network/wwan-link-item.cpp:116
+#: src/indicator/wwan-link-item.cpp:116
 msgid "Unknown"
 msgstr ""
 
-#: network/wwan-link-item.cpp:120
+#: src/indicator/wwan-link-item.cpp:120
 msgid "Denied"
 msgstr ""
 
-#: network/wwan-link-item.cpp:124
+#: src/indicator/wwan-link-item.cpp:124
 msgid "Searching"
 msgstr ""
 
-#: network/wwan-link-item.cpp:135
+#: src/indicator/wwan-link-item.cpp:135
 msgid "No Signal"
 msgstr "Sİnyal Yok"
 
-#: network/wwan-link-item.cpp:141
+#: src/indicator/wwan-link-item.cpp:141
 msgid "Offline"
 msgstr ""
 
-#: network/wwan-section.cpp:79
+#: src/indicator/wwan-section.cpp:79
 msgid "Cellular settings…"
 msgstr "Hücresel ayarlar..."
 
-#: secret-agent/SecretRequest.cpp:62
+#: src/secret-agent/SecretRequest.cpp:62
 #, qt-format
 msgid "Connect to “%1”"
 msgstr "“%1” bağlantısını yap"
 
-#: secret-agent/SecretRequest.cpp:67
+#: src/secret-agent/SecretRequest.cpp:67
 msgid "WPA"
 msgstr "WPA"
 
-#: secret-agent/SecretRequest.cpp:69
+#: src/secret-agent/SecretRequest.cpp:69
 msgid "WEP"
 msgstr "WEP"
 
-#: secret-agent/SecretRequest.cpp:75
+#: src/secret-agent/SecretRequest.cpp:75
 msgid "Connect"
 msgstr "Bağlan"
 
-#: secret-agent/SecretRequest.cpp:76
+#: src/secret-agent/SecretRequest.cpp:76
 msgid "Cancel"
 msgstr "İptal"
 
 #~ msgid "Unlock SIM…"
 #~ msgstr "SIM Kilidini Aç..."
+
+#, c-format
+#~ msgid "Attempt %d of %d"
+#~ msgstr "Deneme %d/%d"
+
+#~ msgid "Oops!<br>Incorrect PUK entered."
+#~ msgstr "Olamaz!<br>Geçersiz PUK girildi."
+
+#~ msgid "Oops!<br>Incorrect PIN entered."
+#~ msgstr "Olamaz!<br>Geçersiz PIN girildi."

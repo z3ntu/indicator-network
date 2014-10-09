@@ -5,7 +5,15 @@ string(TOLOWER "${CMAKE_BUILD_TYPE}" build_type_lower)
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" "${CMAKE_MODULE_PATH}")
 
-option(trace_messages "Print debug trace messages.")
+
+if("${build_type_lower}" STREQUAL debug)
+  set(TRACE_DEFAULT TRUE)
+else()
+  set(TRACE_DEFAULT FALSE)
+endif()
+
+option(trace_messages "Print debug trace messages." ${TRACE_DEFAULT})
+
 if(${trace_messages})
   add_definitions(-DINDICATOR_NETWORK_TRACE_MESSAGES)
 endif()

@@ -150,9 +150,16 @@ public:
                                                             "indicator"));
 
         m_busName.reset(new BusName("com.canonical.indicator.network",
-                                    [](std::string) { std::cout << "acquired" << std::endl;
+                                    [](std::string) {
+#ifdef INDICATOR_NETWORK_TRACE_MESSAGES
+            std::cout << "acquired" << std::endl;
+#endif
                                     },
-                                    [](std::string) { std::cout << "lost" << std::endl; },
+                                    [](std::string) {
+#ifdef INDICATOR_NETWORK_TRACE_MESSAGES
+                                        std::cout << "lost" << std::endl;
+#endif
+                                    },
                         m_sessionBus));
     }
 

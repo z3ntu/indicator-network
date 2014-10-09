@@ -69,13 +69,13 @@ QuickAccessSection::Private::Private(std::shared_ptr<networking::Manager> manage
             try {
                 m_manager->enableFlightMode();
             } catch (const std::exception &e) {
-                std::cout << e.what() << std::endl;
+                std::cerr << e.what() << std::endl;
             }
         } else {
             try {
                 m_manager->disableFlightMode();
             } catch (const std::exception &e) {
-                std::cout << e.what() << std::endl;
+                std::cerr << e.what() << std::endl;
             }
         }
     });

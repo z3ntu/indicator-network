@@ -200,7 +200,7 @@ void Link::ap_removed(const dbus::types::ObjectPath &path)
         }
     }
     if (!shap) {
-        std::cout << "Tried to remove access point " << path.as_string() << " that has not been added." << std::endl;
+        std::cerr << "Tried to remove access point " << path.as_string() << " that has not been added." << std::endl;
         return;
     }
     p->rawAccessPoints.set(list);
@@ -230,7 +230,9 @@ void Link::update_grouped() {
 void
 Link::enable()
 {
+#ifdef INDICATOR_NETWORK_TRACE_MESSAGES
     std::cout << "Link::enable()" << std::endl;
+#endif
 
     try {
         if (p->killSwitch->state() != KillSwitch::State::unblocked) {
@@ -265,7 +267,9 @@ Link::enable()
 void
 Link::disable()
 {
+#ifdef INDICATOR_NETWORK_TRACE_MESSAGES
     std::cout << "Link::disable()" << std::endl;
+#endif
 
     /// @todo for now just disable wireless completely.
     ///        this only works properly when there is one wifi adapter on the system

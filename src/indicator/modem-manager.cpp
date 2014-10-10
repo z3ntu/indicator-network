@@ -205,13 +205,17 @@ ModemManager::unlockModem(Modem::Ptr modem)
 void
 ModemManager::unlockAllModems()
 {
+#ifdef INDICATOR_NETWORK_TRACE_MESSAGES
     std::cout << __PRETTY_FUNCTION__ << std::endl;
+#endif
     std::multimap<int, Modem::Ptr, Modem::Compare> sorted;
     for (auto m : d->m_modems.get()) {
         sorted.insert(std::make_pair(m->index(), m));
     }
     for (auto pair : sorted) {
+#ifdef INDICATOR_NETWORK_TRACE_MESSAGES
         std::cout << "Unlocking " << pair.second->simIdentifier().get() << std::endl;
+#endif
         unlockModem(pair.second);
     }
 }

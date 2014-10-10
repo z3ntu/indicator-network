@@ -2,22 +2,23 @@
 # Copyright (c) 2014 Rosetta Contributors and Canonical Ltd 2014
 # This file is distributed under the same license as the indicator-network package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2014.
-#
+# GunChleoc <fios@foramnagaidhlig.net>, 2014.
 msgid ""
 msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-10-07 20:43+0300\n"
-"PO-Revision-Date: 2014-08-13 00:18+0000\n"
-"Last-Translator: Akerbeltz <fios@akerbeltz.org>\n"
-"Language-Team: Gaelic; Scottish <gd@li.org>\n"
+"PO-Revision-Date: 2014-10-09 18:09+0000\n"
+"Last-Translator: GunChleoc <Unknown>\n"
+"Language-Team: Fòram na Gàidhlig\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=4; plural=(n==1 || n==11) ? 0 : (n==2 || n==12) ? 1 : "
 "(n > 2 && n < 20) ? 2 : 3;\n"
-"X-Launchpad-Export-Date: 2014-10-09 06:40+0000\n"
+"X-Launchpad-Export-Date: 2014-10-10 05:45+0000\n"
 "X-Generator: Launchpad (build 17196)\n"
+"Language: gd\n"
 
 #: src/indicator/quick-access-section.cpp:48
 msgid "Flight Mode"
@@ -30,64 +31,72 @@ msgstr "Lìonra"
 
 #: src/indicator/sim-unlock-dialog.cpp:115
 msgid "Sorry, incorrect PIN"
-msgstr ""
+msgstr "Duilich ach tha a' PIN cearr"
 
 #: src/indicator/sim-unlock-dialog.cpp:136
 msgid "Sorry, incorrect PUK"
-msgstr ""
+msgstr "Duilich ach tha a' PUK cearr"
 
 #: src/indicator/sim-unlock-dialog.cpp:151
 msgid "Sorry, incorrect %{1} PIN."
-msgstr ""
+msgstr "Duilich ach tha a' PIN airson %{1} cearr."
 
 #: src/indicator/sim-unlock-dialog.cpp:156
 #: src/indicator/sim-unlock-dialog.cpp:185
 msgid "This will be your last attempt."
-msgstr ""
+msgstr "Seo an oidhirp mu dheireadh agad."
 
 #: src/indicator/sim-unlock-dialog.cpp:158
 msgid ""
 "If %{1} PIN is entered incorrectly you will require your PUK code to unlock."
 msgstr ""
+"Mur cuir thu a' PIN airson %{1} a-steach mar bu chòir, bidh feum agad air a' "
+"PUK agad gus a' ghlas a thoirt dheth."
 
 #: src/indicator/sim-unlock-dialog.cpp:168
 msgid "Sorry, your %{1} is now blocked."
-msgstr ""
+msgstr "Duilich ach tha a' %{1} agad glaiste a-nis."
 
 #: src/indicator/sim-unlock-dialog.cpp:173
 msgid "Please enter your PUK code to unblock SIM card."
 msgstr ""
+"Cuir a-steach an còd PUK agad gus a' ghlas a thoirt far na cairt SIM."
 
 #: src/indicator/sim-unlock-dialog.cpp:175
 msgid "You may need to contact your network provider for PUK code."
 msgstr ""
+"Dh'fhaoidte gum feum thu fios a chur gu solaraiche an lìonraidh agad airson "
+"a' chòd PUK agad."
 
 #: src/indicator/sim-unlock-dialog.cpp:183
 #: src/indicator/sim-unlock-dialog.cpp:197
 msgid "Sorry, incorrect PUK."
-msgstr ""
+msgstr "Duilich ach tha a' PUK cearr."
 
 #: src/indicator/sim-unlock-dialog.cpp:187
 msgid ""
 "If PUK code is entered incorrectly, your SIM card will be blocked and needs "
 "replacement."
 msgstr ""
+"Mur cuir thu an còd PUK a-steach mar bu chòir, thèid a' chairt SIM agad a "
+"ghlasadh 's feumaidh tu tè ùr fhaighinn."
 
 #: src/indicator/sim-unlock-dialog.cpp:189
 msgid "Please contact your network provider."
-msgstr ""
+msgstr "Cuir fios gu solaraiche an lìonraidh agad."
 
 #: src/indicator/sim-unlock-dialog.cpp:199
 msgid "Your SIM card is now permanently blocked and needs replacement."
 msgstr ""
+"Tha a' chairt SIM agad glaiste gu buan a-nis 's feumaidh tu tè ùr fhaighinn."
 
 #: src/indicator/sim-unlock-dialog.cpp:201
 msgid "Please contact your service provider."
-msgstr ""
+msgstr "Cuir fios gu solaraiche an t-seirbheis agad."
 
 #: src/indicator/sim-unlock-dialog.cpp:265
 msgid "Enter %{1} PIN"
-msgstr ""
+msgstr "Cuir a-steach a' PIN airson %{1}"
 
 #: src/indicator/sim-unlock-dialog.cpp:272
 msgid "Enter PUK code"
@@ -95,22 +104,24 @@ msgstr "Cuir a-steach an còd PUK"
 
 #: src/indicator/sim-unlock-dialog.cpp:274
 msgid "Enter PUK code for %{1}"
-msgstr ""
+msgstr "Cuir a-steach an còd PUK airson %{1}"
 
 #: src/indicator/sim-unlock-dialog.cpp:282
 #, c-format
 msgid "1 attempt remaining"
 msgid_plural "%d attempts remaining"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%d oidhirp air fhàgail"
+msgstr[1] "%d oidhirp air fhàgail"
+msgstr[2] "%d oidhirpean air fhàgail"
+msgstr[3] "%d oidhirp air fhàgail"
 
 #: src/indicator/sim-unlock-dialog.cpp:293
 msgid "Enter new %{1} PIN"
-msgstr ""
+msgstr "Cuir a-steach a' PIN ùr airson %{1}"
 
 #: src/indicator/sim-unlock-dialog.cpp:301
 msgid "Confirm new %{1} PIN"
-msgstr ""
+msgstr "Dearbhaich a' PIN ùr airson %{1}"
 
 #: src/indicator/sim-unlock-dialog.cpp:340
 #: src/indicator/sim-unlock-dialog.cpp:515

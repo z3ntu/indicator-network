@@ -173,7 +173,9 @@ Manager::Manager() : p(new Manager::Private())
     p->m_wifiKillSwitch->state().changed().connect(std::bind(&Private::updateHasWifi, p.get()));
 
     p->nm->device_added->connect([this](const dbus::types::ObjectPath &path){
+#ifdef INDICATOR_NETWORK_TRACE_MESSAGES
         std::cout << "Device Added:" << path.as_string() << std::endl;
+#endif
         auto links = p->m_links.get();
         for (const auto &dev : links) {
             if (std::dynamic_pointer_cast<wifi::Link>(dev)->device_path() == path) {
@@ -194,7 +196,9 @@ Manager::Manager() : p(new Manager::Private())
         p->updateHasWifi();
     });
     p->nm->device_removed->connect([this](const dbus::types::ObjectPath &path){
+#ifdef INDICATOR_NETWORK_TRACE_MESSAGES
         std::cout << "Device Removed:" << path.as_string() << std::endl;
+#endif
         auto links = p->m_links.get();
         for (const auto &dev : links) {
             if (std::dynamic_pointer_cast<wifi::Link>(dev)->device_path() == path) {
@@ -257,7 +261,9 @@ Manager::Manager() : p(new Manager::Private())
 void
 Manager::enableFlightMode()
 {
+#ifdef INDICATOR_NETWORK_TRACE_MESSAGES
     std::cout << __PRETTY_FUNCTION__ << std::endl;
+#endif
     if (!p->urfkill->flightMode(true))
         throw std::runtime_error("Failed to enable flightmode.");
 }
@@ -265,7 +271,9 @@ Manager::enableFlightMode()
 void
 Manager::disableFlightMode()
 {
+#ifdef INDICATOR_NETWORK_TRACE_MESSAGES
     std::cout << __PRETTY_FUNCTION__ << std::endl;
+#endif
     if (!p->urfkill->flightMode(false))
         throw std::runtime_error("Failed to disable flightmode");
 }

@@ -122,7 +122,13 @@ ConnectivityService::Private::Private(std::shared_ptr<networking::Manager> manag
 
     auto executor = core::dbus::asio::make_executor(m_bus);
     m_bus->install_executor(executor);
-    m_connectivityServiceWorker = std::move(std::thread([this](){ m_bus->run(); }));
+    m_connectivityServiceWorker = std::move(std::thread([this](){ try {
+        m_bus->run();
+    } catch(const std::exception &e) {
+        std::cerr << __PRETTY_FUNCTION__ << "dbus-cpp crashed: " << e.what() << "\n";
+        exit(0);
+    }
+    }));
 
     m_service = core::dbus::Service::add_service<com::ubuntu::connectivity::Service>(m_bus);
 

@@ -188,18 +188,27 @@ ModemManager::~ModemManager()
 void
 ModemManager::unlockModem(Modem::Ptr modem)
 {
-    auto modems = d->m_modems.get();
+    try {
+        auto modems = d->m_modems.get();
 
-    if (std::count(modems.begin(), modems.end(), modem) == 0
-            || d->m_unlockDialog->modem() == modem
-            || std::count(d->m_pendingUnlocks.begin(), d->m_pendingUnlocks.end(), modem) != 0)
-        return;
+        if (std::count(modems.begin(), modems.end(), modem) == 0
+                || d->m_unlockDialog->modem() == modem
+                || std::count(d->m_pendingUnlocks.begin(), d->m_pendingUnlocks.end(), modem) != 0)
+            return;
 
-    if (d->m_unlockDialog->state().get() == SimUnlockDialog::State::ready
-            && d->m_pendingUnlocks.size() == 0)
-        d->m_unlockDialog->unlock(modem);
-    else
-        d->m_pendingUnlocks.push_back(modem);
+        if (d->m_unlockDialog->state().get() == SimUnlockDialog::State::ready
+                && d->m_pendingUnlocks.size() == 0)
+            d->m_unlockDialog->unlock(modem);
+        else
+            d->m_pendingUnlocks.push_back(modem);
+    } catch(const std::exception &e) {
+        // Something unexpected has happened. As an example, unity8 might have
+        // crashed taking the notification server with it. There is no graceful
+        // and reliable way to recover so die and get restarted.
+        // See also https://bugs.launchpad.net/unity-notifications/+bug/1238990
+        std::cerr << __PRETTY_FUNCTION__ << " sim unlocking failed: " << e.what() << "\n";
+        exit(0);
+    }
 }
 
 void

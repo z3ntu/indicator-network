@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Launchpad-Export-Date: 2014-10-10 05:44+0000\n"
+"X-Launchpad-Export-Date: 2014-10-11 05:15+0000\n"
 "X-Generator: Launchpad (build 17196)\n"
 
 #: src/indicator/quick-access-section.cpp:48
@@ -206,41 +206,3 @@ msgstr "መገናኛ"
 #: src/secret-agent/SecretRequest.cpp:76
 msgid "Cancel"
 msgstr "መሰረዣ"
-
-#, c-format
-#~ msgid "Attempt %d of %d"
-#~ msgstr "ሙከራ %d ከ %d"
-
-#~ msgid "Oops!<br>Incorrect PIN entered."
-#~ msgstr "ውይ!<br>ያስገቡት  የተሳሳተ ፒን ነው"
-
-#~ msgid "Oops!<br>Incorrect PUK entered."
-#~ msgstr "ውይ!<br>ያስገቡት የተሳሳተ ፑክ ነው"
-
-#~ msgid ""
-#~ "Your SIM is now permanently blocked and needs to be replaced.<br><br>Please "
-#~ "contact your network provider."
-#~ msgstr ""
-#~ "የ እርስዎ ሲም አሁን በቋሚነት ተቆልፏል እና መቀየር አለበት<br><br> እባክዎን የ ኔትዎርክ አቅራቢውን ያማክሩ"
-
-#~ msgid ""
-#~ "This will be the last attempt.<br><br>If the SIM PIN is entered incorrectly, "
-#~ "your SIM will be blocked and would require the PUK Code to unlock."
-#~ msgstr ""
-#~ "ይህ የ መጨረሻ ሙከራ ነው<br><br>የተሳሳተ የ ሲም ፒን ካስገቡ የ እርስዎ ሲም ይቆለፋል እና ለ መክፈት የ ፑክ ኮድ "
-#~ "ያስፈልጋል"
-
-#~ msgid ""
-#~ "This will be the last attempt.<br><br>If the PUK code is entered "
-#~ "incorrectly, your SIM will need to be replaced.<br><br>Please contact your "
-#~ "network provider."
-#~ msgstr ""
-#~ "ይህ የ መጨረሻ ሙከራ ነው<br><br>የተሳሳተ የ ፑክ ኮድ ካስገቡ የ እርስዎን ሲም መቀየር "
-#~ "አይቻልም<br><br>እባክዎን የ ኔትዎርክ አቅራቢውን ያማክሩ"
-
-#~ msgid ""
-#~ "Your SIM is now blocked.<br><br>Enter the PUK Code to unlock.<br><br>You may "
-#~ "contact your network provider for PUK Code."
-#~ msgstr ""
-#~ "የ እርስዎ ሲም አሁን ተቆልፏል<br><br>ለ መክፈት የ ፑክ ኮድ ያስገቡ<br><br>የ ፑክ ኮድ ለማግኘት እባክዎን የ "
-#~ "ኔትዎርክ አቅራቢውን ያማክሩ"

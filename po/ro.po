@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-10-07 20:43+0300\n"
-"PO-Revision-Date: 2014-08-09 05:59+0000\n"
+"PO-Revision-Date: 2014-10-10 09:02+0000\n"
 "Last-Translator: Marian Vasile <marianvasile1972@gmail.com>\n"
 "Language-Team: Romanian <ro@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n == 1 ? 0: (((n % 100 > 19) || ((n % 100 "
 "== 0) && (n != 0))) ? 2: 1));\n"
-"X-Launchpad-Export-Date: 2014-10-09 06:40+0000\n"
+"X-Launchpad-Export-Date: 2014-10-11 05:15+0000\n"
 "X-Generator: Launchpad (build 17196)\n"
 
 #: src/indicator/quick-access-section.cpp:48
@@ -30,64 +30,69 @@ msgstr "Rețea"
 
 #: src/indicator/sim-unlock-dialog.cpp:115
 msgid "Sorry, incorrect PIN"
-msgstr ""
+msgstr "Cod PIN incorect"
 
 #: src/indicator/sim-unlock-dialog.cpp:136
 msgid "Sorry, incorrect PUK"
-msgstr ""
+msgstr "Cod PUK incorect"
 
 #: src/indicator/sim-unlock-dialog.cpp:151
 msgid "Sorry, incorrect %{1} PIN."
-msgstr ""
+msgstr "Cod PIN %{1} incorect."
 
 #: src/indicator/sim-unlock-dialog.cpp:156
 #: src/indicator/sim-unlock-dialog.cpp:185
 msgid "This will be your last attempt."
-msgstr ""
+msgstr "Aceasta va fi ultima încercare"
 
 #: src/indicator/sim-unlock-dialog.cpp:158
 msgid ""
 "If %{1} PIN is entered incorrectly you will require your PUK code to unlock."
 msgstr ""
+"Dacă PIN %{1} este introdus greșit, va trebui să utilizați codul PUK pentru "
+"deblocare."
 
 #: src/indicator/sim-unlock-dialog.cpp:168
 msgid "Sorry, your %{1} is now blocked."
-msgstr ""
+msgstr "Dispozitivul dumneavoastră %{1} a fost blocat."
 
 #: src/indicator/sim-unlock-dialog.cpp:173
 msgid "Please enter your PUK code to unblock SIM card."
-msgstr ""
+msgstr "Pentru deblocarea cardului SIM introduceți codul PUK ."
 
 #: src/indicator/sim-unlock-dialog.cpp:175
 msgid "You may need to contact your network provider for PUK code."
 msgstr ""
+"Dacă nu cunoașteți codul PUK contactați furnizorul dumneavoastră de servicii."
 
 #: src/indicator/sim-unlock-dialog.cpp:183
 #: src/indicator/sim-unlock-dialog.cpp:197
 msgid "Sorry, incorrect PUK."
-msgstr ""
+msgstr "Cod PUK incorect."
 
 #: src/indicator/sim-unlock-dialog.cpp:187
 msgid ""
 "If PUK code is entered incorrectly, your SIM card will be blocked and needs "
 "replacement."
 msgstr ""
+"Dacă veți introduce un cod PUK incorect, cardul SIM va fi blocat permanent "
+"și va trebui să-l înlocuiți."
 
 #: src/indicator/sim-unlock-dialog.cpp:189
 msgid "Please contact your network provider."
-msgstr ""
+msgstr "Contactați furnizorul de servicii."
 
 #: src/indicator/sim-unlock-dialog.cpp:199
 msgid "Your SIM card is now permanently blocked and needs replacement."
-msgstr ""
+msgstr "Cardul SIM a fost blocat și va trebui înlocuit."
 
 #: src/indicator/sim-unlock-dialog.cpp:201
 msgid "Please contact your service provider."
-msgstr ""
+msgstr "Contactați furnizorul de servicii."
 
 #: src/indicator/sim-unlock-dialog.cpp:265
 msgid "Enter %{1} PIN"
-msgstr ""
+msgstr "Introduceți PIN %{1}"
 
 #: src/indicator/sim-unlock-dialog.cpp:272
 msgid "Enter PUK code"
@@ -95,22 +100,23 @@ msgstr "Introduceți codul PUK"
 
 #: src/indicator/sim-unlock-dialog.cpp:274
 msgid "Enter PUK code for %{1}"
-msgstr ""
+msgstr "Introduceți codul PUK pentru %{1}"
 
 #: src/indicator/sim-unlock-dialog.cpp:282
 #, c-format
 msgid "1 attempt remaining"
 msgid_plural "%d attempts remaining"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "1 încercare disponibilă"
+msgstr[1] "%d încercări disponibile"
+msgstr[2] "%d de încercări disponibile"
 
 #: src/indicator/sim-unlock-dialog.cpp:293
 msgid "Enter new %{1} PIN"
-msgstr ""
+msgstr "Introduceți noul PIN %{1}"
 
 #: src/indicator/sim-unlock-dialog.cpp:301
 msgid "Confirm new %{1} PIN"
-msgstr ""
+msgstr "Confirmați noul PIN %{1}"
 
 #: src/indicator/sim-unlock-dialog.cpp:340
 #: src/indicator/sim-unlock-dialog.cpp:515
@@ -207,48 +213,6 @@ msgstr "Conectare"
 #: src/secret-agent/SecretRequest.cpp:76
 msgid "Cancel"
 msgstr "Renunță"
-
-#~ msgid "Oops!<br>Incorrect PUK entered."
-#~ msgstr "Hopa!<br>Codul PUK introdus este eronat."
-
-#~ msgid "Oops!<br>Incorrect PIN entered."
-#~ msgstr "Hopa!<br>Codul PIN introdus este eronat."
-
-#~ msgid ""
-#~ "Your SIM is now permanently blocked and needs to be replaced.<br><br>Please "
-#~ "contact your network provider."
-#~ msgstr ""
-#~ "SIM-ul este blocat definitiv și trebuie înlocuit. <br><br>Contactați "
-#~ "furnizorul de servicii."
-
-#~ msgid ""
-#~ "This will be the last attempt.<br><br>If the SIM PIN is entered incorrectly, "
-#~ "your SIM will be blocked and would require the PUK Code to unlock."
-#~ msgstr ""
-#~ "Aceasta va fi ultima încercare permisă. <br><br>Dacă introduceți un PIN "
-#~ "greșit pentru SIM, acesta va fi blocat și veți avea nevoie de codul PUK "
-#~ "pentru a-l debloca."
-
-#~ msgid ""
-#~ "This will be the last attempt.<br><br>If the PUK code is entered "
-#~ "incorrectly, your SIM will need to be replaced.<br><br>Please contact your "
-#~ "network provider."
-#~ msgstr ""
-#~ "Aceasta va fi ultima încercare permisă. <br><br>Dacă introduceți un cod PUK "
-#~ "incorect, va trebui să înlocuiți SIM-ul.<br><br>Contactați furnizorul de "
-#~ "servicii."
-
-#~ msgid ""
-#~ "Your SIM is now blocked.<br><br>Enter the PUK Code to unlock.<br><br>You may "
-#~ "contact your network provider for PUK Code."
-#~ msgstr ""
-#~ "SIM-ul este blocat. <br><br>Introduceți codul PUK pentru a-l "
-#~ "debloca.<br><br>Puteți contacta furnizorul de servicii pentru a obține codul "
-#~ "PUK."
-
-#, c-format
-#~ msgid "Attempt %d of %d"
-#~ msgstr "Încercarea %d din %d"
 
 #~ msgid "Unlock SIM…"
 #~ msgstr "Deblocare SIM..."

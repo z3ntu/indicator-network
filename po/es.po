@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-10-07 20:43+0300\n"
-"PO-Revision-Date: 2014-08-12 06:50+0000\n"
-"Last-Translator: Adolfo Jayme <fitoschido@gmail.com>\n"
+"PO-Revision-Date: 2014-10-10 18:25+0000\n"
+"Last-Translator: Víctor R. Ruiz <Unknown>\n"
 "Language-Team: Spanish <es@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2014-10-09 06:40+0000\n"
+"X-Launchpad-Export-Date: 2014-10-11 05:15+0000\n"
 "X-Generator: Launchpad (build 17196)\n"
 
 #: src/indicator/quick-access-section.cpp:48
@@ -42,7 +42,7 @@ msgstr ""
 #: src/indicator/sim-unlock-dialog.cpp:156
 #: src/indicator/sim-unlock-dialog.cpp:185
 msgid "This will be your last attempt."
-msgstr ""
+msgstr "Este será su último intento."
 
 #: src/indicator/sim-unlock-dialog.cpp:158
 msgid ""
@@ -55,11 +55,12 @@ msgstr ""
 
 #: src/indicator/sim-unlock-dialog.cpp:173
 msgid "Please enter your PUK code to unblock SIM card."
-msgstr ""
+msgstr "Por favor Introduzca el código PUK para desbloquear la tarjeta SIM."
 
 #: src/indicator/sim-unlock-dialog.cpp:175
 msgid "You may need to contact your network provider for PUK code."
 msgstr ""
+"Es posible que deba contactar con su operador para obtener el código PUK."
 
 #: src/indicator/sim-unlock-dialog.cpp:183
 #: src/indicator/sim-unlock-dialog.cpp:197
@@ -71,6 +72,8 @@ msgid ""
 "If PUK code is entered incorrectly, your SIM card will be blocked and needs "
 "replacement."
 msgstr ""
+"Si se introduce el código PUK de forma incorrecta, se bloqueará la tarjeta "
+"SIM y tendrá que reemplazarla."
 
 #: src/indicator/sim-unlock-dialog.cpp:189
 msgid "Please contact your network provider."
@@ -79,6 +82,8 @@ msgstr ""
 #: src/indicator/sim-unlock-dialog.cpp:199
 msgid "Your SIM card is now permanently blocked and needs replacement."
 msgstr ""
+"La tarjeta SIM ha quedado bloqueada de forma permanente y debe ser "
+"reemplazada."
 
 #: src/indicator/sim-unlock-dialog.cpp:201
 msgid "Please contact your service provider."
@@ -100,8 +105,8 @@ msgstr ""
 #, c-format
 msgid "1 attempt remaining"
 msgid_plural "%d attempts remaining"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Queda un intento"
+msgstr[1] "Quedan %d intentos"
 
 #: src/indicator/sim-unlock-dialog.cpp:293
 msgid "Enter new %{1} PIN"
@@ -209,43 +214,3 @@ msgstr "Cancelar"
 
 #~ msgid "Unlock SIM…"
 #~ msgstr "Desbloquear SIM…"
-
-#, c-format
-#~ msgid "Attempt %d of %d"
-#~ msgstr "Intento %d de %d"
-
-#~ msgid "Oops!<br>Incorrect PIN entered."
-#~ msgstr "¡Vaya!<br> El PIN no es correcto"
-
-#~ msgid "Oops!<br>Incorrect PUK entered."
-#~ msgstr "¡Vaya!<br>PUK incorrecto."
-
-#~ msgid ""
-#~ "Your SIM is now permanently blocked and needs to be replaced.<br><br>Please "
-#~ "contact your network provider."
-#~ msgstr ""
-#~ "Your SIM is now permanently blocked and needs to be replaced.<br><br>Please "
-#~ "contact your network provider."
-
-#~ msgid ""
-#~ "This will be the last attempt.<br><br>If the SIM PIN is entered incorrectly, "
-#~ "your SIM will be blocked and would require the PUK Code to unlock."
-#~ msgstr ""
-#~ "This will be the last attempt.<br><br>If the SIM PIN is entered incorrectly, "
-#~ "your SIM will be blocked and would require the PUK Code to unlock."
-
-#~ msgid ""
-#~ "This will be the last attempt.<br><br>If the PUK code is entered "
-#~ "incorrectly, your SIM will need to be replaced.<br><br>Please contact your "
-#~ "network provider."
-#~ msgstr ""
-#~ "This will be the last attempt.<br><br>If the PUK code is entered "
-#~ "incorrectly, your SIM will need to be replaced.<br><br>Please contact your "
-#~ "network provider."
-
-#~ msgid ""
-#~ "Your SIM is now blocked.<br><br>Enter the PUK Code to unlock.<br><br>You may "
-#~ "contact your network provider for PUK Code."
-#~ msgstr ""
-#~ "Your SIM is now blocked.<br><br>Enter the PUK Code to unlock.<br><br>You may "
-#~ "contact your network provider for PUK Code."

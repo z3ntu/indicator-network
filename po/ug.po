@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Launchpad-Export-Date: 2014-10-10 05:45+0000\n"
+"X-Launchpad-Export-Date: 2014-10-11 05:15+0000\n"
 "X-Generator: Launchpad (build 17196)\n"
 
 #: src/indicator/quick-access-section.cpp:48
@@ -209,44 +209,3 @@ msgstr "ئەمەلدىن قالدۇر"
 
 #~ msgid "Unlock SIM…"
 #~ msgstr "SIM نى قۇلۇپسىزلاڭ..."
-
-#~ msgid "Oops!<br>Incorrect PUK entered."
-#~ msgstr "ئاپلا!<br> كىرگۈزگەن PUK توغرا ئەمەسكەن."
-
-#~ msgid "Oops!<br>Incorrect PIN entered."
-#~ msgstr "ئاپلا!<br> كىرگۈزگەن PIN توغرا ئەمەسكەن."
-
-#~ msgid ""
-#~ "Your SIM is now permanently blocked and needs to be replaced.<br><br>Please "
-#~ "contact your network provider."
-#~ msgstr ""
-#~ "سىم(SIM) كارتا تولۇق قۇلۇپلاندى. سىم كارتىنى ئالماشتۇرۇش زۆرۈر. شۇڭا "
-#~ "<br><br> تور تەمىنلىگۈچى بىلەن ئالاقە قىلىڭ."
-
-#, c-format
-#~ msgid "Attempt %d of %d"
-#~ msgstr "%d قېتىم تۈگىدى(جەمئىي %d قېتىم)"
-
-#~ msgid ""
-#~ "This will be the last attempt.<br><br>If the SIM PIN is entered incorrectly, "
-#~ "your SIM will be blocked and would require the PUK Code to unlock."
-#~ msgstr ""
-#~ "بۇ ئەڭ ئاخىرقى پۇرسەت. <br><br> سىم كارتىسىنىڭ PIN كودى خاتا كىرگۈزۈلسە، سىم "
-#~ "كارتىسى قۇلۇپلىنىپ قالىدۇ. قۇلۇپسىزلاش ئۈچۈن PUK كودى زۆرۈر بولىدۇ."
-
-#~ msgid ""
-#~ "This will be the last attempt.<br><br>If the PUK code is entered "
-#~ "incorrectly, your SIM will need to be replaced.<br><br>Please contact your "
-#~ "network provider."
-#~ msgstr ""
-#~ "بۇ ئەڭ ئاخىرقى پۇرسەت.<br><br> ئەگەر PUK كودى توغرا كىرگۈزۈلمىسە، سىم "
-#~ "كارتىڭىزنى ئالماشتۇرۇشقا توغرا كېلىدۇ. <br><br> تور تەمىنلىگۈچى بىلەن ئالاقە "
-#~ "قىلىڭ."
-
-#~ msgid ""
-#~ "Your SIM is now blocked.<br><br>Enter the PUK Code to unlock.<br><br>You may "
-#~ "contact your network provider for PUK Code."
-#~ msgstr ""
-#~ "سىم كارتىسى قۇلۇپلاندى. <br><br> قۇلۇپسىزلاش ئۈچۈن PUK كودىنى كىرگۈزۈڭ. "
-#~ "<br><br> PUK كودىنى كىرگۈزۈش ئۈچۈن تور تەمىنلىگۈچى بىلەن ئالاقە قىلىشقا "
-#~ "توغرا كېلىشى مۇمكىن."

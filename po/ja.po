@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-10-07 20:43+0300\n"
-"PO-Revision-Date: 2014-08-17 13:03+0000\n"
-"Last-Translator: Mitsuya Shibata <mty.shibata@gmail.com>\n"
+"PO-Revision-Date: 2014-10-10 13:49+0000\n"
+"Last-Translator: Shushi Kurose <md81bird@hitaki.net>\n"
 "Language-Team: Japanese <ja@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Launchpad-Export-Date: 2014-10-09 06:40+0000\n"
+"X-Launchpad-Export-Date: 2014-10-11 05:15+0000\n"
 "X-Generator: Launchpad (build 17196)\n"
 
 #: src/indicator/quick-access-section.cpp:48
@@ -29,7 +29,7 @@ msgstr "ネットワーク"
 
 #: src/indicator/sim-unlock-dialog.cpp:115
 msgid "Sorry, incorrect PIN"
-msgstr ""
+msgstr "PINが違います"
 
 #: src/indicator/sim-unlock-dialog.cpp:136
 msgid "Sorry, incorrect PUK"
@@ -42,7 +42,7 @@ msgstr ""
 #: src/indicator/sim-unlock-dialog.cpp:156
 #: src/indicator/sim-unlock-dialog.cpp:185
 msgid "This will be your last attempt."
-msgstr ""
+msgstr "これが最後のチャンスです。"
 
 #: src/indicator/sim-unlock-dialog.cpp:158
 msgid ""
@@ -209,39 +209,3 @@ msgstr "キャンセル"
 
 #~ msgid "Unlock SIM…"
 #~ msgstr "SIMのアンロック…"
-
-#~ msgid "Oops!<br>Incorrect PIN entered."
-#~ msgstr "PINコードが間違っているようです。"
-
-#~ msgid ""
-#~ "This will be the last attempt.<br><br>If the PUK code is entered "
-#~ "incorrectly, your SIM will need to be replaced.<br><br>Please contact your "
-#~ "network provider."
-#~ msgstr ""
-#~ "最後のチャンスです。<br><br>間違ったPUKコードを入力した場合、SIMを交換する必要があります。<br><br>ネットワークプロバイダーに問い合わ"
-#~ "せてください。"
-
-#~ msgid ""
-#~ "Your SIM is now blocked.<br><br>Enter the PUK Code to unlock.<br><br>You may "
-#~ "contact your network provider for PUK Code."
-#~ msgstr ""
-#~ "SIMがブロックされました。<br><br>アンロックするためにはPUKコードを入力してください。<br><br>PUKコードを入手するにはネットワークプ"
-#~ "ロバイダーに問い合わせる必要があるかもしれません。"
-
-#~ msgid ""
-#~ "Your SIM is now permanently blocked and needs to be replaced.<br><br>Please "
-#~ "contact your network provider."
-#~ msgstr "SIMは完全にブロックされました。SIMを交換する必要があります。<br><br>ネットワークプロバイダーに問い合わせてください。"
-
-#~ msgid ""
-#~ "This will be the last attempt.<br><br>If the SIM PIN is entered incorrectly, "
-#~ "your SIM will be blocked and would require the PUK Code to unlock."
-#~ msgstr ""
-#~ "最後のチャンスです。<br><br>間違ったSIM PINを入力した場合、SIMがブロックされ、アンロックするためにPUKコードが必要になります。"
-
-#~ msgid "Oops!<br>Incorrect PUK entered."
-#~ msgstr "PUKコードが間違っているようです。"
-
-#, c-format
-#~ msgid "Attempt %d of %d"
-#~ msgstr "%d回目の試行（最大%d回）"

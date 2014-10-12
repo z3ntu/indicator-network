@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-10-07 20:43+0300\n"
-"PO-Revision-Date: 2014-09-07 04:10+0000\n"
+"PO-Revision-Date: 2014-10-11 10:41+0000\n"
 "Last-Translator: David Planella <david.planella@ubuntu.com>\n"
 "Language-Team: Catalan <ca@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2014-10-09 06:40+0000\n"
+"X-Launchpad-Export-Date: 2014-10-12 07:15+0000\n"
 "X-Generator: Launchpad (build 17196)\n"
 
 #: src/indicator/quick-access-section.cpp:48
@@ -42,7 +42,7 @@ msgstr ""
 #: src/indicator/sim-unlock-dialog.cpp:156
 #: src/indicator/sim-unlock-dialog.cpp:185
 msgid "This will be your last attempt."
-msgstr ""
+msgstr "Aquest serà el darrer intent."
 
 #: src/indicator/sim-unlock-dialog.cpp:158
 msgid ""
@@ -209,43 +209,3 @@ msgstr "Cancel·la"
 
 #~ msgid "Unlock SIM…"
 #~ msgstr "Desbloca la SIM..."
-
-#~ msgid "Oops!<br>Incorrect PIN entered."
-#~ msgstr "Oh!<br>Ha entrat un PIN incorrecte."
-
-#, c-format
-#~ msgid "Attempt %d of %d"
-#~ msgstr "Intent %d de %d"
-
-#~ msgid "Oops!<br>Incorrect PUK entered."
-#~ msgstr "Oh!<br>Ha entrat un PUK incorrecte."
-
-#~ msgid ""
-#~ "Your SIM is now permanently blocked and needs to be replaced.<br><br>Please "
-#~ "contact your network provider."
-#~ msgstr ""
-#~ "La targeta SIM està bloquejada permanentment i cal reemplaçar-"
-#~ "la.<br><br>Contacteu el vostre operador de xarxa."
-
-#~ msgid ""
-#~ "This will be the last attempt.<br><br>If the SIM PIN is entered incorrectly, "
-#~ "your SIM will be blocked and would require the PUK Code to unlock."
-#~ msgstr ""
-#~ "Aquest serà el darrer intent.<br><br>Si introduïu un PIN incorrecte per a la "
-#~ "targeta SIM, es bloquejarà i us caldrà el codi PUK per desbloquejar-la"
-
-#~ msgid ""
-#~ "This will be the last attempt.<br><br>If the PUK code is entered "
-#~ "incorrectly, your SIM will need to be replaced.<br><br>Please contact your "
-#~ "network provider."
-#~ msgstr ""
-#~ "Aquest serà el darrer intent.<br><br>Si introduïu un PUK incorrecte haureu "
-#~ "de reemplaçar la targeta SIM. <br><br>Contacteu el vostre operador de xarxa."
-
-#~ msgid ""
-#~ "Your SIM is now blocked.<br><br>Enter the PUK Code to unlock.<br><br>You may "
-#~ "contact your network provider for PUK Code."
-#~ msgstr ""
-#~ "La targeta SIM està bloquejada.<br><br>Introduïu el codi PUK per "
-#~ "desbloquejar-la.<br><br>Podeu contactar el vostre operador de xarxa per "
-#~ "obtenir el codi PUK."

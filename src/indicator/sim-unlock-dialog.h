@@ -41,20 +41,13 @@ public:
 
     void unlock(Modem::Ptr modem);
 
-    /**
-     * there must be no other operation active on the dialog
-     * modem has to be on ready state, i.e. it has to be unlocked before
-     * changing the pin.
-     *
-     * @param modem
-     */
-    void changePin(Modem::Ptr modem);
-
     void cancel();
 
     Modem::Ptr modem();
 
-    core::Property<State> &state();
+    State state() const;
+    core::Signal<void> &ready();
+
     core::Property<bool> &showSimIdentifiers();
 };
 

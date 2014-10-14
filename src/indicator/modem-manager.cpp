@@ -60,7 +60,7 @@ public:
                 // If this happens, indicator-network is in an unknown state with no clear way of
                 // recovering. The only reasonable way out is a graceful exit.
                 std::cerr << __PRETTY_FUNCTION__ << " Failed to run dbus service: " << e.what() << std::endl;
-                exit(0);
+                quick_exit(0);
             }
         }));
 
@@ -207,7 +207,7 @@ ModemManager::unlockModem(Modem::Ptr modem)
         // and reliable way to recover so die and get restarted.
         // See also https://bugs.launchpad.net/unity-notifications/+bug/1238990
         std::cerr << __PRETTY_FUNCTION__ << " sim unlocking failed: " << e.what() << "\n";
-        exit(0);
+        quick_exit(0);
     }
 }
 

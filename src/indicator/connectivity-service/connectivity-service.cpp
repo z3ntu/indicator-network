@@ -126,7 +126,7 @@ ConnectivityService::Private::Private(std::shared_ptr<networking::Manager> manag
         m_bus->run();
     } catch(const std::exception &e) {
         std::cerr << __PRETTY_FUNCTION__ << "dbus-cpp crashed: " << e.what() << "\n";
-        exit(0);
+        quick_exit(0);
     }
     }));
 

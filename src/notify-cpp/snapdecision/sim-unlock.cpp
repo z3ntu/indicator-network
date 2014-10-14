@@ -34,6 +34,7 @@ class SimUnlock::Private
 public:
 
     Notification::Ptr m_notification;
+    Notification::Ptr m_pending;
 
     core::Property<std::string> m_title;
     core::Property<std::string> m_body;
@@ -44,6 +45,8 @@ public:
     core::Signal<void> m_closed;
 
     std::shared_ptr<SessionBus> m_sessionBus;
+
+    std::map<std::string, Variant> m_modelPaths;
 
     Action::Ptr m_notifyAction;
     Action::Ptr m_pinMinMaxAction;
@@ -58,6 +61,21 @@ public:
 
     std::function<void()> m_pendingErrorClosed;
     std::function<void()> m_pendingPopupClosed;
+
+    void resetNotification(const std::string &title,
+                           const std::string &body)
+    {
+        m_pending = m_notification;
+        m_notification = std::make_shared<notify::Notification>(title, body, "");
+        m_notification->setHintString("x-canonical-snap-decisions", "true");
+        m_notification->setHint("x-canonical-snap-decisions-timeout", TypedVariant<std::int32_t>(std::numeric_limits<std::int32_t>::max()));
+        m_notification->setHint("x-canonical-private-menu-model", TypedVariant<std::map<std::string, Variant>>(m_modelPaths));
+        m_notification->closed().connect([this]()
+        {
+            resetNotification(m_title.get(), m_body.get());
+            m_closed();
+        });
+    }
 
     Private(const std::string &title,
             const std::string &body,
@@ -78,10 +96,9 @@ public:
         std::map<std::string, Variant> modelActions;
         modelActions["notifications"] = TypedVariant<std::string>(actionPath);
 
-        std::map<std::string, Variant> modelPaths;
-        modelPaths["busName"] = TypedVariant<std::string>(m_sessionBus->address());
-        modelPaths["menuPath"] = TypedVariant<std::string>(menuPath);
-        modelPaths["actions"] = TypedVariant<std::map<std::string, Variant>>(modelActions);
+        m_modelPaths["busName"] = TypedVariant<std::string>(m_sessionBus->address());
+        m_modelPaths["menuPath"] = TypedVariant<std::string>(menuPath);
+        m_modelPaths["actions"] = TypedVariant<std::map<std::string, Variant>>(modelActions);
 
         m_menu = std::make_shared<Menu>();
         m_menuItem = std::make_shared<MenuItem>("", "notifications.simunlock");
@@ -141,11 +158,7 @@ public:
         m_menuExporter = std::make_shared<MenuExporter>(m_sessionBus, menuPath, m_menu);
         m_actionGroupExporter = std::make_shared<ActionGroupExporter>(m_sessionBus, m_actionGroup, actionPath);
 
-        m_notification = std::make_shared<notify::Notification>(title, body, "");
-        m_notification->setHintString("x-canonical-snap-decisions", "true");
-        m_notification->setHint("x-canonical-snap-decisions-timeout", TypedVariant<std::int32_t>(std::numeric_limits<std::int32_t>::max()));
-        m_notification->setHint("x-canonical-private-menu-model", TypedVariant<std::map<std::string, Variant>>(modelPaths));
-        m_notification->closed().connect([this](){ m_closed(); });
+        resetNotification(title, body);
 
         m_title.changed().connect([this](const std::string &value){
             m_notification->summary().set(value);

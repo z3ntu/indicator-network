@@ -67,19 +67,11 @@ public:
         m_dbus.reset(new core::dbus::DBus(m_bus));
 
         m_unlockDialog = std::make_shared<SimUnlockDialog>();
-        m_unlockDialog->state().changed().connect([this](SimUnlockDialog::State state){
-            switch (state) {
-            case SimUnlockDialog::State::unlocking:
-            case SimUnlockDialog::State::changingPin:
-                // don't care
-                break;
-            case SimUnlockDialog::State::ready:
-                if (!m_pendingUnlocks.empty()) {
-                    auto modem = m_pendingUnlocks.front();
-                    m_pendingUnlocks.pop_front();
-                    m_unlockDialog->unlock(modem);
-                }
-                break;
+        m_unlockDialog->ready().connect([this](){
+            if (!m_pendingUnlocks.empty()) {
+                auto modem = m_pendingUnlocks.front();
+                m_pendingUnlocks.pop_front();
+                m_unlockDialog->unlock(modem);
             }
         });
 
@@ -196,7 +188,7 @@ ModemManager::unlockModem(Modem::Ptr modem)
                 || std::count(d->m_pendingUnlocks.begin(), d->m_pendingUnlocks.end(), modem) != 0)
             return;
 
-        if (d->m_unlockDialog->state().get() == SimUnlockDialog::State::ready
+        if (d->m_unlockDialog->state() == SimUnlockDialog::State::ready
                 && d->m_pendingUnlocks.size() == 0)
             d->m_unlockDialog->unlock(modem);
         else

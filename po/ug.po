@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-10-07 20:43+0300\n"
-"PO-Revision-Date: 2014-10-10 01:27+0000\n"
+"PO-Revision-Date: 2014-10-14 11:30+0000\n"
 "Last-Translator: Gheyret T.Kenji <Unknown>\n"
 "Language-Team: Uyghur Computer Science Association <UKIJ@yahoogroups.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Launchpad-Export-Date: 2014-10-11 05:15+0000\n"
+"X-Launchpad-Export-Date: 2014-10-15 20:17+0000\n"
 "X-Generator: Launchpad (build 17196)\n"
 
 #: src/indicator/quick-access-section.cpp:48
@@ -37,29 +37,34 @@ msgstr "كەچۈرۈڭ، PUK توغرا ئەمەس"
 
 #: src/indicator/sim-unlock-dialog.cpp:151
 msgid "Sorry, incorrect %{1} PIN."
-msgstr ""
+msgstr "كەچۈرۈڭ، %{1} PIN توغرا ئەمەس."
 
 #: src/indicator/sim-unlock-dialog.cpp:156
 #: src/indicator/sim-unlock-dialog.cpp:185
 msgid "This will be your last attempt."
-msgstr "بۇ سىزنىڭ ئەڭ ئاخىرقى پۇرسىتىڭىز"
+msgstr "بۇ سىزنىڭ ئەڭ ئاخىرقى پۇرسىتىڭىز."
 
 #: src/indicator/sim-unlock-dialog.cpp:158
 msgid ""
 "If %{1} PIN is entered incorrectly you will require your PUK code to unlock."
 msgstr ""
+"ئەگەر %{1} PIN كودى توغرا كىرگۈزۈلمىسە، قۇلۇپسىزلاش ئۈچۈن PUK كودىنى تەلەپ "
+"قىلىدۇ."
 
 #: src/indicator/sim-unlock-dialog.cpp:168
 msgid "Sorry, your %{1} is now blocked."
-msgstr ""
+msgstr "كەچۈرۈڭ، ھازىر %{1}  چەكلەندى."
 
 #: src/indicator/sim-unlock-dialog.cpp:173
 msgid "Please enter your PUK code to unblock SIM card."
 msgstr ""
+"چەكلەنگەن SIM كارتىسىنىڭ چېكىنى بىكار قىلىش ئۈچۈن PUK كودىنى كىرگۈزۈڭ."
 
 #: src/indicator/sim-unlock-dialog.cpp:175
 msgid "You may need to contact your network provider for PUK code."
 msgstr ""
+"بۇ PUK كودى ئۈچۈن تور تەمىنلىگۈچى بىلەن ئالاقە قىلىشىڭىزغا توغرا كېلىشى "
+"مۇمكىن."
 
 #: src/indicator/sim-unlock-dialog.cpp:183
 #: src/indicator/sim-unlock-dialog.cpp:197
@@ -71,22 +76,24 @@ msgid ""
 "If PUK code is entered incorrectly, your SIM card will be blocked and needs "
 "replacement."
 msgstr ""
+"ئەگەر PUK كودىنى توغرا كىرگۈزۈلمىسە، SIM كارتىڭىز چەكلىنىشى ۋە زۆرۈر "
+"تېپىلغاندا ئالماشتۇرۇشقا توغرا كېلىشى مۇمكىن."
 
 #: src/indicator/sim-unlock-dialog.cpp:189
 msgid "Please contact your network provider."
-msgstr ""
+msgstr "تور تەمىنلىگۈچى بىلەن ئالاقە قىلىڭ."
 
 #: src/indicator/sim-unlock-dialog.cpp:199
 msgid "Your SIM card is now permanently blocked and needs replacement."
-msgstr ""
+msgstr "ھازىر SIM كارتا تولۇق چەكلەندى، شۇڭا ئۇنى ئالماشتۇرۇڭ."
 
 #: src/indicator/sim-unlock-dialog.cpp:201
 msgid "Please contact your service provider."
-msgstr ""
+msgstr "مۇلازىمەت تەمىنلىگۈچى بىلەن ئالاقە قىلىڭ."
 
 #: src/indicator/sim-unlock-dialog.cpp:265
 msgid "Enter %{1} PIN"
-msgstr ""
+msgstr "%{1} PIN نومۇرىنى كىرگۈزۈڭ"
 
 #: src/indicator/sim-unlock-dialog.cpp:272
 msgid "Enter PUK code"
@@ -94,22 +101,21 @@ msgstr "PUK كودىنى كىرگۈزۈڭ"
 
 #: src/indicator/sim-unlock-dialog.cpp:274
 msgid "Enter PUK code for %{1}"
-msgstr ""
+msgstr "%{1} نىڭ يېڭى PUK كودىنى كىرگۈزۈڭ"
 
 #: src/indicator/sim-unlock-dialog.cpp:282
 #, c-format
 msgid "1 attempt remaining"
 msgid_plural "%d attempts remaining"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%d قېتىملىق پۇرسىتىڭىز قالدى"
 
 #: src/indicator/sim-unlock-dialog.cpp:293
 msgid "Enter new %{1} PIN"
-msgstr ""
+msgstr "يېڭى %{1} PIN نومۇرىنى كىرگۈزۈڭ"
 
 #: src/indicator/sim-unlock-dialog.cpp:301
 msgid "Confirm new %{1} PIN"
-msgstr ""
+msgstr "يېڭى %{1} PIN كودىنى جەزملەڭ"
 
 #: src/indicator/sim-unlock-dialog.cpp:340
 #: src/indicator/sim-unlock-dialog.cpp:515
@@ -160,7 +166,7 @@ msgstr "SIM قۇلۇپلانغان"
 
 #: src/indicator/wwan-link-item.cpp:112
 msgid "Unregistered"
-msgstr "خەتلەنمىگەن"
+msgstr "رويخەتتىن ئۆچۈرۈلدى"
 
 #: src/indicator/wwan-link-item.cpp:116
 msgid "Unknown"
@@ -184,7 +190,7 @@ msgstr "توردا يوق"
 
 #: src/indicator/wwan-section.cpp:79
 msgid "Cellular settings…"
-msgstr "كۆچمە تور تەڭشىكى"
+msgstr "كۆچمە تور تەڭشىكى…"
 
 #: src/secret-agent/SecretRequest.cpp:62
 #, qt-format
@@ -209,3 +215,43 @@ msgstr "ئەمەلدىن قالدۇر"
 
 #~ msgid "Unlock SIM…"
 #~ msgstr "SIM نى قۇلۇپسىزلاڭ..."
+
+#~ msgid "Oops!<br>Incorrect PUK entered."
+#~ msgstr "ئاپلا!<br> كىرگۈزگەن PUK توغرا ئەمەسكەن."
+
+#~ msgid "Oops!<br>Incorrect PIN entered."
+#~ msgstr "ئاپلا!<br> كىرگۈزگەن PIN توغرا ئەمەسكەن."
+
+#~ msgid ""
+#~ "Your SIM is now permanently blocked and needs to be replaced.<br><br>Please "
+#~ "contact your network provider."
+#~ msgstr ""
+#~ "سىم(SIM) كارتا تولۇق قۇلۇپلاندى. سىم كارتىنى ئالماشتۇرۇش زۆرۈر. شۇڭا "
+#~ "<br><br> تور تەمىنلىگۈچى بىلەن ئالاقە قىلىڭ."
+
+#~ msgid "Attempt %d of %d"
+#~ msgstr "%d قېتىم تۈگىدى(جەمئىي %d قېتىم)"
+
+#~ msgid ""
+#~ "This will be the last attempt.<br><br>If the SIM PIN is entered incorrectly, "
+#~ "your SIM will be blocked and would require the PUK Code to unlock."
+#~ msgstr ""
+#~ "بۇ ئەڭ ئاخىرقى پۇرسەت. <br><br> سىم كارتىسىنىڭ PIN كودى خاتا كىرگۈزۈلسە، سىم "
+#~ "كارتىسى قۇلۇپلىنىپ قالىدۇ. قۇلۇپسىزلاش ئۈچۈن PUK كودى زۆرۈر بولىدۇ."
+
+#~ msgid ""
+#~ "This will be the last attempt.<br><br>If the PUK code is entered "
+#~ "incorrectly, your SIM will need to be replaced.<br><br>Please contact your "
+#~ "network provider."
+#~ msgstr ""
+#~ "بۇ ئەڭ ئاخىرقى پۇرسەت.<br><br> ئەگەر PUK كودى توغرا كىرگۈزۈلمىسە، سىم "
+#~ "كارتىڭىزنى ئالماشتۇرۇشقا توغرا كېلىدۇ. <br><br> تور تەمىنلىگۈچى بىلەن ئالاقە "
+#~ "قىلىڭ."
+
+#~ msgid ""
+#~ "Your SIM is now blocked.<br><br>Enter the PUK Code to unlock.<br><br>You may "
+#~ "contact your network provider for PUK Code."
+#~ msgstr ""
+#~ "سىم كارتىسى قۇلۇپلاندى. <br><br> قۇلۇپسىزلاش ئۈچۈن PUK كودىنى كىرگۈزۈڭ. "
+#~ "<br><br> PUK كودىنى كىرگۈزۈش ئۈچۈن تور تەمىنلىگۈچى بىلەن ئالاقە قىلىشقا "
+#~ "توغرا كېلىشى مۇمكىن."

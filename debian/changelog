@@ -1,3 +1,11 @@
+indicator-network (0.5.1+14.10.20141015-0ubuntu1) 14.09; urgency=low
+
+  [ Antti Kaijanmäki ]
+  * deadlock if calling unlock() inside ready signal for a modem that
+    does not require unlocking. (LP: #1333121)
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Wed, 15 Oct 2014 12:47:24 +0000
+
 indicator-network (0.5.1+14.10.20141014-0ubuntu1) utopic; urgency=low
 
   [ Antti Kaijanmäki ]

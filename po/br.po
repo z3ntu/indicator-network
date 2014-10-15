@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-10-07 20:43+0300\n"
-"PO-Revision-Date: 2014-08-26 08:40+0000\n"
+"PO-Revision-Date: 2014-10-13 06:43+0000\n"
 "Last-Translator: Fohanno Thierry <thierry.fohanno@ofis-bzh.org>\n"
 "Language-Team: Breton <br@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Launchpad-Export-Date: 2014-10-09 06:40+0000\n"
+"X-Launchpad-Export-Date: 2014-10-15 20:17+0000\n"
 "X-Generator: Launchpad (build 17196)\n"
 
 #: src/indicator/quick-access-section.cpp:48
@@ -29,64 +29,71 @@ msgstr "Rouedad"
 
 #: src/indicator/sim-unlock-dialog.cpp:115
 msgid "Sorry, incorrect PIN"
-msgstr ""
+msgstr "Siwazh, kod PIN direizh"
 
 #: src/indicator/sim-unlock-dialog.cpp:136
 msgid "Sorry, incorrect PUK"
-msgstr ""
+msgstr "Siwazh, kod PUK direizh"
 
 #: src/indicator/sim-unlock-dialog.cpp:151
 msgid "Sorry, incorrect %{1} PIN."
-msgstr ""
+msgstr "Siwazh, kod PIN %{1} direizh."
 
 #: src/indicator/sim-unlock-dialog.cpp:156
 #: src/indicator/sim-unlock-dialog.cpp:185
 msgid "This will be your last attempt."
-msgstr ""
+msgstr "Ho taol-esae diwezhañ e vo."
 
 #: src/indicator/sim-unlock-dialog.cpp:158
 msgid ""
 "If %{1} PIN is entered incorrectly you will require your PUK code to unlock."
 msgstr ""
+"Ma vez merket ar c'hod PIN %[1] en un doare direizh ho po ezhomm eus ho kod "
+"PUK evit dibrennañ he penveg."
 
 #: src/indicator/sim-unlock-dialog.cpp:168
 msgid "Sorry, your %{1} is now blocked."
-msgstr ""
+msgstr "Siwazh, prennet eo ho %{1} bremañ."
 
 #: src/indicator/sim-unlock-dialog.cpp:173
 msgid "Please enter your PUK code to unblock SIM card."
-msgstr ""
+msgstr "Merkit ho kod PUK evit dibrennañ ho kartenn SIM, mar plij."
 
 #: src/indicator/sim-unlock-dialog.cpp:175
 msgid "You may need to contact your network provider for PUK code."
 msgstr ""
+"Moarvat ho po ezhomm da vont e darempred gant ho pourchaser rouedad evit "
+"kaout ur c'hod PUK."
 
 #: src/indicator/sim-unlock-dialog.cpp:183
 #: src/indicator/sim-unlock-dialog.cpp:197
 msgid "Sorry, incorrect PUK."
-msgstr ""
+msgstr "Siwazh, kod PUK direizh."
 
 #: src/indicator/sim-unlock-dialog.cpp:187
 msgid ""
 "If PUK code is entered incorrectly, your SIM card will be blocked and needs "
 "replacement."
 msgstr ""
+"Ma vez merket ar c'hod PUK en un doare direizh e vo prennet ho kartenn SIM "
+"hag ezhomm ho po da lakaat unan all."
 
 #: src/indicator/sim-unlock-dialog.cpp:189
 msgid "Please contact your network provider."
-msgstr ""
+msgstr "Kit e darempred gant ho pourchaser rouedad, mar plij."
 
 #: src/indicator/sim-unlock-dialog.cpp:199
 msgid "Your SIM card is now permanently blocked and needs replacement."
 msgstr ""
+"Bremañ eo prennet ho kard SIM da vat, hag ezhomm zo da lakaat unan all."
 
 #: src/indicator/sim-unlock-dialog.cpp:201
 msgid "Please contact your service provider."
-msgstr ""
+msgstr "Kit e darempred gant ho pourchaser servij, mar plij."
 
 #: src/indicator/sim-unlock-dialog.cpp:265
 msgid "Enter %{1} PIN"
-msgstr ""
+msgstr "Merkit ar c'hod PIN %{1}"
 
 #: src/indicator/sim-unlock-dialog.cpp:272
 msgid "Enter PUK code"
@@ -94,22 +101,22 @@ msgstr "Ebarzhit ar c'hod PUK"
 
 #: src/indicator/sim-unlock-dialog.cpp:274
 msgid "Enter PUK code for %{1}"
-msgstr ""
+msgstr "Merkit ar c'hod PUK evit %{1}"
 
 #: src/indicator/sim-unlock-dialog.cpp:282
 #, c-format
 msgid "1 attempt remaining"
 msgid_plural "%d attempts remaining"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Chom a ra 1 taol-esae"
+msgstr[1] "Chom a ra %d a daolioù-esae"
 
 #: src/indicator/sim-unlock-dialog.cpp:293
 msgid "Enter new %{1} PIN"
-msgstr ""
+msgstr "Merkit ur c'hod PIN %{1} nevez"
 
 #: src/indicator/sim-unlock-dialog.cpp:301
 msgid "Confirm new %{1} PIN"
-msgstr ""
+msgstr "Kadarnait ar c'hod PIN %{1} nevez"
 
 #: src/indicator/sim-unlock-dialog.cpp:340
 #: src/indicator/sim-unlock-dialog.cpp:515
@@ -207,47 +214,5 @@ msgstr "Kevreañ"
 msgid "Cancel"
 msgstr "Nullañ"
 
-#~ msgid ""
-#~ "Your SIM is now blocked.<br><br>Enter the PUK Code to unlock.<br><br>You may "
-#~ "contact your network provider for PUK Code."
-#~ msgstr ""
-#~ "Prennet eo ho kartenn SIM pelloc'h.<br><br>Ebarzhit ar c'hod PUK evit "
-#~ "dibrennañ anezhi.<br><br>Gallout a rit mont e darempred gant hoc'h oberataer "
-#~ "pellgomzerezh evit tapout ho kod PUK."
-
-#~ msgid ""
-#~ "Your SIM is now permanently blocked and needs to be replaced.<br><br>Please "
-#~ "contact your network provider."
-#~ msgstr ""
-#~ "Prennet da vat eo ho kartenn SIM pelloc'h, ha ret eo erlec'hiañ "
-#~ "anezhi.<br><br>Kit e darempred gant hoc'h oberataer pellgomzerezh, mar plij."
-
-#~ msgid "Oops!<br>Incorrect PUK entered."
-#~ msgstr "Hopopop !<br>Direizh eo ar c'hod PUK."
-
-#~ msgid "Oops!<br>Incorrect PIN entered."
-#~ msgstr "Hopopop !<br>Direizh eo ar c'hod PIN."
-
-#, c-format
-#~ msgid "Attempt %d of %d"
-#~ msgstr "Esae %d diwar %d"
-
 #~ msgid "Unlock SIM…"
 #~ msgstr "Dibrennañ ar gartenn SIM..."
-
-#~ msgid ""
-#~ "This will be the last attempt.<br><br>If the PUK code is entered "
-#~ "incorrectly, your SIM will need to be replaced.<br><br>Please contact your "
-#~ "network provider."
-#~ msgstr ""
-#~ "An esae diwezhañ e vo.<br><br>Ma ne vez ket ebarzhet ar c'hod PUK evel zo "
-#~ "dleet, e rankoc'h erlec'hiañ ho kartenn SIM.<br><br>Kit e darempred gant "
-#~ "hoc'h oberataer pellgomzerezh, mar plij."
-
-#~ msgid ""
-#~ "This will be the last attempt.<br><br>If the SIM PIN is entered incorrectly, "
-#~ "your SIM will be blocked and would require the PUK Code to unlock."
-#~ msgstr ""
-#~ "An esae diwezhañ e vo.<br><br>Ma ne vez ket skrivet kod PIN ar gartenn SIM "
-#~ "evel zo dleet e vo prennet ho kartenn SIM hag ezhomm a vo eus ar c'hod PUK "
-#~ "evit dibrennañ anezhi."

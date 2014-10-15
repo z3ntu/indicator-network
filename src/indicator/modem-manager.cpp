@@ -71,7 +71,8 @@ public:
             if (!m_pendingUnlocks.empty()) {
                 auto modem = m_pendingUnlocks.front();
                 m_pendingUnlocks.pop_front();
-                m_unlockDialog->unlock(modem);
+                if (modem->requiredPin().get() != Modem::PinType::none)
+                    m_unlockDialog->unlock(modem);
             }
         });
 

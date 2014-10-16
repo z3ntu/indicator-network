@@ -1,4 +1,4 @@
-# Catalan translation for indicator-network
+# Punjabi translation for indicator-network
 # Copyright (c) 2014 Rosetta Contributors and Canonical Ltd 2014
 # This file is distributed under the same license as the indicator-network package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2014.
@@ -8,9 +8,9 @@ msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-10-07 20:43+0300\n"
-"PO-Revision-Date: 2014-10-15 14:37+0000\n"
-"Last-Translator: David Planella <david.planella@ubuntu.com>\n"
-"Language-Team: Catalan <ca@li.org>\n"
+"PO-Revision-Date: 2014-10-16 03:13+0000\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Punjabi <pa@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -20,29 +20,29 @@ msgstr ""
 
 #: src/indicator/quick-access-section.cpp:48
 msgid "Flight Mode"
-msgstr "Mode d'avió"
+msgstr "ਫਲਾਇਟ ਮੋਡ"
 
 #. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
 #: src/indicator/root-state.cpp:296
 msgid "Network"
-msgstr "Xarxa"
+msgstr "ਨੈੱਟਵਰਕ"
 
 #: src/indicator/sim-unlock-dialog.cpp:115
 msgid "Sorry, incorrect PIN"
-msgstr ""
+msgstr "ਅਫਸੋਸ, ਗਲਤ ਪਿੰਨ"
 
 #: src/indicator/sim-unlock-dialog.cpp:136
 msgid "Sorry, incorrect PUK"
-msgstr ""
+msgstr "ਅਫਸੋਸ, ਗਲਤ PUK"
 
 #: src/indicator/sim-unlock-dialog.cpp:151
 msgid "Sorry, incorrect %{1} PIN."
-msgstr ""
+msgstr "ਅਫਸੋਸ, ਗਲਤ %{1} PIN ਹੈ।"
 
 #: src/indicator/sim-unlock-dialog.cpp:156
 #: src/indicator/sim-unlock-dialog.cpp:185
 msgid "This will be your last attempt."
-msgstr ""
+msgstr "ਇਹ ਤੁਹਾਡੀ ਆਖਰੀ ਕੋਸ਼ਿਸ਼ ਹੋਵੇਗੀ।"
 
 #: src/indicator/sim-unlock-dialog.cpp:158
 msgid ""
@@ -51,7 +51,7 @@ msgstr ""
 
 #: src/indicator/sim-unlock-dialog.cpp:168
 msgid "Sorry, your %{1} is now blocked."
-msgstr ""
+msgstr "ਅਫਸੋਸ, ਤੁਹਾਡਾ %{1} ਹੁਣ ਬਲਾਕ ਹੋ ਗਿਆ ਹੈ।"
 
 #: src/indicator/sim-unlock-dialog.cpp:173
 msgid "Please enter your PUK code to unblock SIM card."
@@ -74,7 +74,7 @@ msgstr ""
 
 #: src/indicator/sim-unlock-dialog.cpp:189
 msgid "Please contact your network provider."
-msgstr ""
+msgstr "ਆਪਣੇ ਨੈੱਟਵਰਕ ਸੇਵਾ ਦੇਣ ਵਾਲੇ ਨਾਲ ਸੰਪਰਕ ਕਰੋ।"
 
 #: src/indicator/sim-unlock-dialog.cpp:199
 msgid "Your SIM card is now permanently blocked and needs replacement."
@@ -90,7 +90,7 @@ msgstr ""
 
 #: src/indicator/sim-unlock-dialog.cpp:272
 msgid "Enter PUK code"
-msgstr "Entre el codi PUK"
+msgstr ""
 
 #: src/indicator/sim-unlock-dialog.cpp:274
 msgid "Enter PUK code for %{1}"
@@ -100,8 +100,8 @@ msgstr ""
 #, c-format
 msgid "1 attempt remaining"
 msgid_plural "%d attempts remaining"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "1 ਕੋਸ਼ਿਸ਼ ਬਾਕੀ ਹੈ"
+msgstr[1] "%d ਕੋਸ਼ਿਸ਼ਾਂ ਬਾਕੀ ਹਨ"
 
 #: src/indicator/sim-unlock-dialog.cpp:293
 msgid "Enter new %{1} PIN"
@@ -114,82 +114,82 @@ msgstr ""
 #: src/indicator/sim-unlock-dialog.cpp:340
 #: src/indicator/sim-unlock-dialog.cpp:515
 msgid "PIN codes did not match."
-msgstr "Els codis PIN no són iguals."
+msgstr ""
 
 #: src/indicator/sim-unlock-dialog.cpp:495
 #: src/indicator/sim-unlock-dialog.cpp:523
 msgid "Enter SIM PIN"
-msgstr "Introduïu el PIN de la tarjeta SIM"
+msgstr ""
 
 #: src/indicator/sim-unlock-dialog.cpp:506
 #: src/indicator/sim-unlock-dialog.cpp:516
 msgid "Enter new PIN code"
-msgstr "Entre un nou codi PIN"
+msgstr ""
 
 #: src/indicator/sim-unlock-dialog.cpp:510
 msgid "Confirm new PIN code"
-msgstr "Confirme el nou codi PIN"
+msgstr ""
 
 #: src/indicator/sim-unlock-dialog.cpp:522
 msgid "Failed to change PIN."
-msgstr "No s'ha pogut canviar el PIN."
+msgstr ""
 
 #: src/indicator/wifi-link-item.h:88
 msgid "Wi-Fi"
-msgstr "Sense fil"
+msgstr "ਵਾਈ-ਫਾਈ"
 
 #: src/indicator/wifi-link-item.h:152
 msgid "Other network…"
-msgstr "Una altra xarxa..."
+msgstr "ਹੋਰ ਨੈੱਟਵਰਕ..."
 
 #: src/indicator/wifi-section.cpp:60
 msgid "Wi-Fi settings…"
-msgstr "Paràmetres del sense fil..."
+msgstr "ਵਾਈ-ਫਾਈ ਸੈਟਿੰਗ..."
 
 #: src/indicator/wwan-link-item.cpp:87
 msgid "No SIM"
-msgstr "Sense SIM"
+msgstr "ਸਿਮ ਨਹੀ"
 
 #: src/indicator/wwan-link-item.cpp:93
 msgid "SIM Error"
-msgstr "Error de la SIM"
+msgstr "ਸਿਮ ਗਲਤੀ"
 
 #: src/indicator/wwan-link-item.cpp:100
 msgid "SIM Locked"
-msgstr "SIM blocada"
+msgstr ""
 
 #: src/indicator/wwan-link-item.cpp:112
 msgid "Unregistered"
-msgstr "No registrat"
+msgstr "ਰਜਿਸਟਰ ਨਹੀਂ"
 
 #: src/indicator/wwan-link-item.cpp:116
 msgid "Unknown"
-msgstr "Desconegut"
+msgstr "ਅਣਜਾਣ"
 
 #: src/indicator/wwan-link-item.cpp:120
 msgid "Denied"
-msgstr "Denegat"
+msgstr "ਪਾਬੰਦੀ"
 
 #: src/indicator/wwan-link-item.cpp:124
 msgid "Searching"
-msgstr "S'està cercant"
+msgstr "ਖੋਜ ਜਾਰੀ ਹੈ"
 
 #: src/indicator/wwan-link-item.cpp:135
 msgid "No Signal"
-msgstr "Sense senyal"
+msgstr "ਸਿਗਨਲ ਨਹੀਂ ਹੈ"
 
 #: src/indicator/wwan-link-item.cpp:141
 msgid "Offline"
-msgstr "Fora de línia"
+msgstr "ਆਫਲਾਈਨ"
 
 #: src/indicator/wwan-section.cpp:79
 msgid "Cellular settings…"
-msgstr "Paràmetres de la xarxa mòbil..."
+msgstr "ਸੈਲੂਲਰ ਸੈਟਿੰਗ..."
 
 #: src/secret-agent/SecretRequest.cpp:62
 #, qt-format
 msgid "Connect to “%1”"
-msgstr "Connecta a “%1”"
+msgstr "\"%1\" ਨਾਲ ਕੁਨੈਕਟ ਕਰੋ"
 
 #: src/secret-agent/SecretRequest.cpp:67
 msgid "WPA"
@@ -201,8 +201,8 @@ msgstr "WEP"
 
 #: src/secret-agent/SecretRequest.cpp:75
 msgid "Connect"
-msgstr "Connecta"
+msgstr "ਕੁਨੈਕਟ ਕਰੋ"
 
 #: src/secret-agent/SecretRequest.cpp:76
 msgid "Cancel"
-msgstr "Cancel·la"
+msgstr "ਰੱਦ ਕਰੋ"

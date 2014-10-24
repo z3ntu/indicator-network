@@ -59,14 +59,25 @@ class MenuMerger : public MenuModel
         auto menu = m_gmenu;
 
         GMainLoopDispatch([=](){
+
+            std::cout << "itemsChanged : " << "offset " << offset << ", removed " << removed << ", added " << added << std::endl;
+
             for (int i = 0; i < removed; ++i) {
+                std::cout << "\tRemoving: " << std::string(g_variant_get_string(g_menu_model_get_item_attribute_value(G_MENU_MODEL(menu.get()), offset, "label", NULL), NULL)) << std::endl;
                 g_menu_remove(menu.get(), offset);
             }
+            if (added > 0)
+                std::cout << "\t=== Reversed ===" << std::endl;
             for (int i = added-1; i >= 0; --i) {
                 auto item = g_menu_item_new_from_model(model, position + i);
+
+                std::cout << ": " << "\tAdding " << std::string(g_variant_get_string(g_menu_item_get_attribute_value(item, "label", NULL), NULL)) << std::endl;
+
                 g_menu_insert_item(menu.get(), offset, item);
                 g_object_unref(item);
             }
+            if (added > 0)
+                std::cout << "\t=== Reversed ===" << std::endl;
         });
 
         int delta = added - removed;
@@ -106,7 +117,7 @@ public:
             start_position = 0;
         } else {
             start_position = m_startPositions[*m_menus.back()];
-            start_position += g_menu_model_get_n_items(*m_menus.back());
+            start_position += m_menus.back()->size();
         }
 
         m_menus.push_back(menu);
@@ -114,7 +125,7 @@ public:
         m_startPositions[*menu] = start_position;
 
         // add all items
-        itemsChanged(*menu, 0, 0, g_menu_model_get_n_items(*menu));
+        itemsChanged(*menu, 0, 0, menu->size());
         m_handlerId[*menu] = g_signal_connect(menu->operator GMenuModel *(),
                                               "items-changed",
                                               G_CALLBACK(MenuMerger::items_changed_cb),
@@ -130,7 +141,7 @@ public:
         m_handlerId.erase(*menu);
 
         // remove all items
-        itemsChanged(*menu, 0, g_menu_model_get_n_items(*menu), 0);
+        itemsChanged(*menu, 0, menu->size(), 0);
 
         m_startPositions.erase(*menu);
         m_gmodelToMenu.erase(*menu);
@@ -142,6 +153,15 @@ public:
         std::vector<MenuModel::Ptr> tmp = m_menus;
         for (auto menu : tmp)
             remove(menu);
+    }
+
+    size_t size() const
+    {
+        size_t tmp = 0;
+        for (const auto &menu : m_menus) {
+            tmp += menu->size();
+        }
+        return tmp;
     }
 
     operator GMenuModel*() { return G_MENU_MODEL(m_gmenu.get()); }

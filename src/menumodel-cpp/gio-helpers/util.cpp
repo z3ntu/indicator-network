@@ -20,15 +20,22 @@
 #include "util.h"
 
 std::mutex GMainLoopDispatch::_lock;
-std::list<GMainLoopDispatch::Func *> GMainLoopDispatch::_funcs;
+std::list<std::pair<int, GMainLoopDispatch::Func *>> GMainLoopDispatch::_funcs;
+
+int idx = 0;
+int expected = 0;
 
 gboolean
 GMainLoopDispatch::dispatch_cb(gpointer)
 {
     std::lock_guard<std::mutex> lock(_lock);
     for (auto func : _funcs) {
-        (*func)();
-        delete func;
+        //std::cout << __PRETTY_FUNCTION__ << "Dispatching "<<  func.first << std::endl;
+        if (func.first != expected)
+            abort();
+        expected++;
+        (*(func.second))();
+        delete func.second;
     }
     _funcs.clear();
     return G_SOURCE_REMOVE;
@@ -41,7 +48,8 @@ GMainLoopDispatch::GMainLoopDispatch(std::function<void()> func)
             func();
         else {
             std::function<void()> *funcPtr = new std::function<void()>(func);
-            _funcs.push_back(funcPtr);
+            _funcs.push_back(std::make_pair(idx, funcPtr));
+            idx++;
         }
         g_main_context_release(g_main_context_default());
     } else {
@@ -54,7 +62,8 @@ GMainLoopDispatch::GMainLoopDispatch(std::function<void()> func)
                             NULL,
                             NULL);
         }
-        _funcs.push_back(funcPtr);
+        _funcs.push_back(std::make_pair(idx, funcPtr));
+        idx++;
     }
 }
 

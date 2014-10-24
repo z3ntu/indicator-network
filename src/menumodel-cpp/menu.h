@@ -37,7 +37,7 @@ class Menu : public MenuModel
 {    
     GMenuPtr m_gmenu;
     std::list<MenuItem::Ptr> m_items;
-    std::recursive_mutex m_mutex;
+    mutable std::recursive_mutex m_mutex;
 
 public:
     typedef std::shared_ptr<Menu> Ptr;
@@ -85,6 +85,7 @@ public:
 
     void insert(MenuItem::Ptr item, iterator position)
     {
+        std::cout << __PRETTY_FUNCTION__ << std::endl;
         std::lock_guard<std::recursive_mutex> lg(m_mutex);
         int index = 0;
         auto iter = m_items.begin();
@@ -220,6 +221,12 @@ public:
             g_menu_remove_all(menu.get());
         });
         m_items.clear();
+    }
+
+    size_t size() const
+    {
+        std::lock_guard<std::recursive_mutex> lg(m_mutex);
+        return m_items.size();
     }
 
     operator GMenuModel*() { return G_MENU_MODEL(m_gmenu.get()); }

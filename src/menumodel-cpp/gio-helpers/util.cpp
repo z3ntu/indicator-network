@@ -28,13 +28,15 @@ int expected = 0;
 gboolean
 GMainLoopDispatch::dispatch_cb(gpointer)
 {
-    std::lock_guard<std::mutex> lock(_lock);
+    std::unique_lock<std::mutex> lock(_lock);
     for (auto func : _funcs) {
         //std::cout << __PRETTY_FUNCTION__ << "Dispatching "<<  func.first << std::endl;
         if (func.first != expected)
             abort();
         expected++;
+        lock.unlock();
         (*(func.second))();
+        lock.lock();
         delete func.second;
     }
     _funcs.clear();
@@ -43,18 +45,19 @@ GMainLoopDispatch::dispatch_cb(gpointer)
 
 GMainLoopDispatch::GMainLoopDispatch(std::function<void()> func)
 {
+    std::unique_lock<std::mutex> lock(_lock);
+
     if (g_main_context_acquire(g_main_context_default())) {
-        if (_funcs.empty())
+        if (_funcs.empty()) {
+            lock.unlock();
             func();
-        else {
+        } else {
             std::function<void()> *funcPtr = new std::function<void()>(func);
             _funcs.push_back(std::make_pair(idx, funcPtr));
             idx++;
         }
         g_main_context_release(g_main_context_default());
     } else {
-        std::lock_guard<std::mutex> lock(_lock);
-
         std::function<void()> *funcPtr = new std::function<void()>(func);
         if (_funcs.empty()) {
             g_idle_add_full(G_PRIORITY_HIGH,

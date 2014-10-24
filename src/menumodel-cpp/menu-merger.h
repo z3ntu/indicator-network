@@ -63,7 +63,7 @@ class MenuMerger : public MenuModel
             std::cout << "itemsChanged : " << "offset " << offset << ", removed " << removed << ", added " << added << std::endl;
 
             for (int i = 0; i < removed; ++i) {
-                std::cout << "\tRemoving: " << std::string(g_variant_get_string(g_menu_model_get_item_attribute_value(G_MENU_MODEL(menu.get()), offset, "label", NULL), NULL)) << std::endl;
+                //std::cout << "\tRemoving: " << std::string(g_variant_get_string(g_menu_model_get_item_attribute_value(G_MENU_MODEL(menu.get()), offset, "label", NULL), NULL)) << std::endl;
                 g_menu_remove(menu.get(), offset);
             }
             if (added > 0)
@@ -71,7 +71,7 @@ class MenuMerger : public MenuModel
             for (int i = added-1; i >= 0; --i) {
                 auto item = g_menu_item_new_from_model(model, position + i);
 
-                std::cout << ": " << "\tAdding " << std::string(g_variant_get_string(g_menu_item_get_attribute_value(item, "label", NULL), NULL)) << std::endl;
+                //std::cout << ": " << "\tAdding " << std::string(g_variant_get_string(g_menu_item_get_attribute_value(item, "label", NULL), NULL)) << std::endl;
 
                 g_menu_insert_item(menu.get(), offset, item);
                 g_object_unref(item);

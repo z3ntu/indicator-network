@@ -24,6 +24,7 @@ class MenuModel
 public:
     typedef std::shared_ptr<MenuModel> Ptr;
 
+    virtual size_t size() const = 0;
     virtual operator GMenuModel*() = 0;
     virtual ~MenuModel() {}
 };

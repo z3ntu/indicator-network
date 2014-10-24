@@ -74,7 +74,7 @@ public:
     typedef std::function<void()> Func;
     static std::mutex _lock;
     // list keeps the order of the functions
-    static std::list<Func *> _funcs;
+    static std::list<std::pair<int, Func *>> _funcs;
 
     //GMainLoopDispatch() = delete;
     GMainLoopDispatch(std::function<void()> func);
@@ -124,14 +124,6 @@ inline GMenuPtr make_gmenu_ptr() { return std::shared_ptr<GMenu>(g_menu_new(), G
 
 typedef std::shared_ptr<GMenuItem> GMenuItemPtr;
 inline GMenuItemPtr make_gmenuitem_ptr(GMenuItem *gmenuitem) { return std::shared_ptr<GMenuItem>(gmenuitem, GObjectDeleter()); }
-
-// returns the index of the appended item.
-inline int append_item_to_gmenu(GMenu *menu, GMenuItem *item)
-{
-    int n_items = g_menu_model_get_n_items(G_MENU_MODEL(menu));
-    g_menu_insert_item(menu, n_items, item);
-    return n_items;
-}
 
 }
 

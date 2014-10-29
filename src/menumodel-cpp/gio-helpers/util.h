@@ -77,7 +77,7 @@ public:
     static std::list<std::pair<int, Func *>> _funcs;
 
     //GMainLoopDispatch() = delete;
-    GMainLoopDispatch(std::function<void()> func);
+    GMainLoopDispatch(Func func);
 };
 
 struct GObjectDeleter {

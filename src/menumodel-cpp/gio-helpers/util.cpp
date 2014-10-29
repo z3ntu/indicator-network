@@ -43,7 +43,7 @@ GMainLoopDispatch::dispatch_cb(gpointer)
     return G_SOURCE_REMOVE;
 }
 
-GMainLoopDispatch::GMainLoopDispatch(std::function<void()> func)
+GMainLoopDispatch::GMainLoopDispatch(Func func)
 {
     std::unique_lock<std::mutex> lock(_lock);
 

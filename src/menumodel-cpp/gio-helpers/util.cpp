@@ -41,13 +41,10 @@ GMainLoopDispatch::GMainLoopDispatch(Func func)
     std::unique_lock<std::mutex> lock(_lock);
 
     if (g_main_context_acquire(g_main_context_default())) {
-        if (_funcs.empty()) {
-            lock.unlock();
-            func();
-        } else {
-            std::function<void()> *funcPtr = new std::function<void()>(func);
-            _funcs.push_back(funcPtr);
-        }
+        // already running inside GMainLoop..
+        // free the lock and dispatch immediately.
+        lock.unlock();
+        func();
         g_main_context_release(g_main_context_default());
     } else {
         std::function<void()> *funcPtr = new std::function<void()>(func);

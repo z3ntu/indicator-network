@@ -122,7 +122,6 @@ ConnectivityService::Private::Private(std::shared_ptr<networking::Manager> manag
 void
 ConnectivityService::Private::ConstructL()
 {
-    //m_manager->characteristics().changed().connect(std::bind(&Private::updateNetworkingStatus, this));
     auto that = shared_from_this();
     m_manager->characteristics().changed().connect(
                 [that](int){ GMainLoopDispatch([that](){ that->updateNetworkingStatus(); }); });

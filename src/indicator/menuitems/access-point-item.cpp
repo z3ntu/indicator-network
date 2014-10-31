@@ -74,9 +74,13 @@ public:
                                                     nullptr,
                                                     TypedVariant<std::uint8_t>(m_accessPoint->strength().get()));
 
-        auto that = shared_from_this();
-        auto con = m_accessPoint->strength().changed().connect([that](double value)
+        auto weak = std::weak_ptr<Private>(shared_from_this());
+        auto con = m_accessPoint->strength().changed().connect([weak](double value)
         {
+            if (weak.expired()) {
+                return;
+            }
+            auto that = weak.lock();
             GMainLoopDispatch([that, value]()
             {
                that->setStrength(value);

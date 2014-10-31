@@ -77,10 +77,9 @@ public:
         auto weak = std::weak_ptr<Private>(shared_from_this());
         auto con = m_accessPoint->strength().changed().connect([weak](double value)
         {
-            if (weak.expired()) {
-                return;
-            }
             auto that = weak.lock();
+            if (!that)
+                return;
             GMainLoopDispatch([that, value]()
             {
                that->setStrength(value);

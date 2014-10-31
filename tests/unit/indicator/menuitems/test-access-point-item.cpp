@@ -88,6 +88,9 @@ TEST_F(TestAccessPointItem, ExportBasicActionsAndMenu)
 
     accessPoint->m_strength = 20.0;
     EXPECT_EQ(20, strengthAction->state().as<uint8_t>());
+
+    accessPointItem.reset();
+    if (1 == 1);
 }
 
 } // namespace

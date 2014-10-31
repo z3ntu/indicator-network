@@ -30,58 +30,6 @@ namespace NM = fdo::NetworkManager;
 
 using core::Property;
 
-struct AccessPointKey {
-    std::string ssid;
-    uint32_t flags;
-    uint32_t wpa_flags;
-    uint32_t rsn_flags;
-    uint32_t mode;
-
-    bool operator<(const AccessPointKey &other) const
-    {
-        // Standard lexigraphic comparison.
-        if(ssid < other.ssid)
-            return true;
-        if(ssid > other.ssid)
-            return false;
-
-        if(flags < other.flags)
-            return true;
-        if(flags > other.flags)
-            return false;
-
-        /* NetworkManager seems to set the wpa and rns flags
-         * for AccessPoints on the same network in a total random manner.
-         * Sometimes only wpa_flags or rns_flags is set and sometimes
-         * they both are set but always to the same value
-         */
-        if((wpa_flags|rsn_flags)  < (other.wpa_flags|other.rsn_flags))
-            return true;
-        if((wpa_flags|rsn_flags) > (other.wpa_flags|other.rsn_flags))
-            return false;
-
-        if(mode < other.mode)
-            return true;
-        if(mode > other.mode)
-            return false;
-        return false;
-    }
-};
-
-namespace {
-
-AccessPointKey build_key(const std::shared_ptr<platform::nmofono::wifi::AccessPoint> &curap)
-{
-    AccessPointKey k;
-    k.ssid = curap->ssid();
-    k.flags = curap->get_ap().flags->get();
-    k.wpa_flags = curap->get_ap().wpa_flags->get();
-    k.rsn_flags = curap->get_ap().rsn_flags->get();
-    k.mode = curap->get_ap().mode->get();
-    return k;
-}
-
-}
 
 struct Link::Private
 {
@@ -103,7 +51,7 @@ struct Link::Private
     // hack hack
     std::vector<core::ScopedConnection> switchConnection;
 
-    std::map<AccessPointKey, std::shared_ptr<GroupedAccessPoint>> grouper;
+    std::map<AccessPoint::Key, std::shared_ptr<GroupedAccessPoint>> grouper;
     bool disabled;
     std::uint32_t lastState;
     std::string name;
@@ -181,7 +129,7 @@ void Link::ap_added(const dbus::types::ObjectPath &path)
         list.insert(shap);
         p->rawAccessPoints.set(list);
 
-        auto k = build_key(shap);
+        auto k = AccessPoint::Key(shap);
         if(p->grouper.find(k) != p->grouper.end()) {
             p->grouper[k]->add_ap(shap);
         } else {
@@ -355,11 +303,11 @@ Link::connect_to(std::shared_ptr<networking::wifi::AccessPoint> accessPoint)
         // The accesspoint interface does not provide this property so we need to coax it out of
         // derived classes.
         if(ap) {
-            ssid = ap->get_ap().ssid->get();
+            ssid = ap->raw_ssid();
         } else {
             std::shared_ptr<AccessPoint> bap = std::dynamic_pointer_cast<AccessPoint>(accessPoint);
             assert(bap);
-            ssid = bap->get_ap().ssid->get();
+            ssid = bap->raw_ssid();
         }
         NM::Interface::Connection *found = nullptr;
         auto connections = p->dev.get_available_connections();
@@ -370,7 +318,7 @@ Link::connect_to(std::shared_ptr<networking::wifi::AccessPoint> accessPoint)
                         if (conf.first == "ssid") {
                             std::vector<int8_t> value;
                             value = conf.second.as<std::vector<std::int8_t>>();
-                            if (value == ap->get_ap().ssid->get()) {
+                            if (value == ap->raw_ssid()) {
                                 found = &con;
                                 break;
                             }
@@ -394,7 +342,7 @@ Link::connect_to(std::shared_ptr<networking::wifi::AccessPoint> accessPoint)
             /// @todo getting the ssid multiple times over dbus is stupid.
 
             std::map<std::string, dbus::types::Variant> wireless_conf;
-            wireless_conf["ssid"] = dbus::types::Variant::encode<std::vector<std::int8_t>>(ap->get_ap().ssid->get());
+            wireless_conf["ssid"] = dbus::types::Variant::encode<std::vector<std::int8_t>>(ap->raw_ssid());
 
             conf["802-11-wireless"] = wireless_conf;
             auto ret = p->nm.add_and_activate_connection(conf,

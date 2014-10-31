@@ -165,9 +165,19 @@ void Link::ap_added(const dbus::types::ObjectPath &path)
                 return;
             }
         }
+
+        platform::nmofono::wifi::AccessPoint::Ptr shap;
+        try {
+            NM::Interface::AccessPoint ap(p->nm.service->object_for_path(path));
+            shap = std::make_shared<platform::nmofono::wifi::AccessPoint>(ap);
+        } catch(const std::exception &e) {
+            std::cerr << __PRETTY_FUNCTION__ << ": failed to create AccessPoint proxy for "<< path.as_string() << ": " << std::endl
+                      << "\t" << e.what() << std::endl
+                      << "\tIgnoring." << std::endl;
+            return;
+        }
+
         auto list = p->rawAccessPoints.get();
-        NM::Interface::AccessPoint ap(p->nm.service->object_for_path(path));
-        auto shap = std::make_shared<platform::nmofono::wifi::AccessPoint>(ap);
         list.insert(shap);
         p->rawAccessPoints.set(list);
 
@@ -200,7 +210,7 @@ void Link::ap_removed(const dbus::types::ObjectPath &path)
         }
     }
     if (!shap) {
-        std::cerr << "Tried to remove access point " << path.as_string() << " that has not been added." << std::endl;
+        std::cerr << __PRETTY_FUNCTION__ << ": Tried to remove access point " << path.as_string() << " that has not been added." << std::endl;
         return;
     }
     p->rawAccessPoints.set(list);

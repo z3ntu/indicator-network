@@ -1,3 +1,27 @@
+indicator-network (0.5.1+15.04.20141103-0ubuntu1) vivid; urgency=low
+
+  [ CI bot ]
+  * Resync trunk
+
+  [ Jussi Pakkanen ]
+  * Use std::quick_exit. (LP: #1381041)
+
+  [ Marcus Tomlinson ]
+  * Fix GMainLoopDispatch dispatching ordering when. called inside
+    GMainLoop already Fix GMainLoopDispatch locking. Force all signals
+    from external (dbus-cpp) threads through. GMainLoopDispatch (LP:
+    #1374419)
+
+  [ Antti Kaijanmäki ]
+  * Increase the default timeouts to match industry standards. (LP:
+    #1381041)
+  * Fix GMainLoopDispatch dispatching ordering when. called inside
+    GMainLoop already Fix GMainLoopDispatch locking. Force all signals
+    from external (dbus-cpp) threads through. GMainLoopDispatch (LP:
+    #1374419)
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Mon, 03 Nov 2014 11:48:11 +0000
+
 indicator-network (0.5.1+14.10.20141015-0ubuntu1) 14.09; urgency=low
 
   [ Antti Kaijanmäki ]

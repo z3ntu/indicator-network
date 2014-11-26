@@ -7,3 +7,4 @@ usr/lib/*/indicator-secret-agent
 usr/lib/*/indicator-network/indicator-network-service
 etc/xdg/autostart/indicator-network.desktop
 usr/share/locale
+usr/bin/i-n-sniffer

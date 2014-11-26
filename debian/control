@@ -70,3 +70,15 @@ Description: Autopilot tests for the network indicator for Ubuntu
  The Indicator-network service is responsible for exporting the system settings
  menu through dbus.  This package contains its autopilot tests.
 
+Package: indicator-network-tools
+Architecture: any
+Depends: ${misc:Depends},
+         ${shlibs:Depends},
+         network-manager,
+         ofono,
+         urfkill,
+Conflicts: chewie,
+           indicators-client-plugin-network,
+Description: tools for working with indicator-network
+ This package provides developer tools to aid in debugging
+ and development of indicator-network.

@@ -77,8 +77,6 @@ Depends: ${misc:Depends},
          network-manager,
          ofono,
          urfkill,
-Conflicts: chewie,
-           indicators-client-plugin-network,
 Description: tools for working with indicator-network
  This package provides developer tools to aid in debugging
  and development of indicator-network.

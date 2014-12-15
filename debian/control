@@ -42,6 +42,7 @@ X-Ubuntu-Use-Langpack: yes
 
 Package: indicator-network
 Architecture: any
+Multi-Arch: foreign
 Depends: ${misc:Depends},
          ${shlibs:Depends},
          network-manager,

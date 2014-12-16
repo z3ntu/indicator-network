@@ -1,3 +1,10 @@
+indicator-network (0.5.1+15.04.20141216-0ubuntu1) vivid; urgency=low
+
+  [ Jussi Pakkanen ]
+  * Created network status sniffer tool to aid in debugging.
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Tue, 16 Dec 2014 08:14:54 +0000
+
 indicator-network (0.5.1+15.04.20141215-0ubuntu1) vivid; urgency=low
 
   [ Antti Kaijanmäki ]

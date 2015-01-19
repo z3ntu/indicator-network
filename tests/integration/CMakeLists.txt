@@ -1,6 +1,6 @@
 add_subdirectory(connectivity-cpp)
 
-add_definitions(-DNETWORK_SERVICE_BIN="${CMAKE_BINARY_DIR}/network/indicator-network-service")
+add_definitions(-DNETWORK_SERVICE_BIN="${CMAKE_BINARY_DIR}/src/indicator/indicator-network-service")
 
 set(
     INTEGRATION_TESTS_SRC

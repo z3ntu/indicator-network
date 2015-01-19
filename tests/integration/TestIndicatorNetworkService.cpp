@@ -29,32 +29,46 @@ using namespace testing;
 using namespace QtDBusTest;
 using namespace QtDBusMock;
 
-namespace {
+namespace
+{
 
-class TestIndicatorNetworkService: public Test {
+class TestIndicatorNetworkService : public Test
+{
 protected:
-	TestIndicatorNetworkService() :
-			dbusMock(dbusTestRunner) {
+    TestIndicatorNetworkService() :
+            dbusMock(dbusTestRunner)
+    {
+    }
 
-		dbusMock.registerNetworkManager();
-		dbusTestRunner.startServices();
+    void SetUp() override
+    {
+        dbusMock.registerNetworkManager();
+        dbusMock.registerOfono();
+        dbusMock.registerURfkill();
 
-		DBusServicePtr indicator(
-				new QProcessDBusService("com.canonical.indicator.network",
-						QDBusConnection::SessionBus, NETWORK_SERVICE_BIN,
-						QStringList()));
-	}
+        dbusTestRunner.registerService(
+                DBusServicePtr(
+                        new QProcessDBusService(
+                                "com.canonical.indicator.network",
+                                QDBusConnection::SessionBus,
+                                NETWORK_SERVICE_BIN,
+                                QStringList())));
 
-	virtual ~TestIndicatorNetworkService() {
-	}
+        dbusTestRunner.startServices();
+    }
 
-	DBusTestRunner dbusTestRunner;
+    void TearDown() override
+    {
+        sleep(1); // FIXME delete this line when the indicator shuts down stably
+    }
 
-	DBusMock dbusMock;
+    DBusTestRunner dbusTestRunner;
+
+    DBusMock dbusMock;
 };
 
-TEST_F(TestIndicatorNetworkService, Foo) {
-	//FIXME: Port the python test
+TEST_F(TestIndicatorNetworkService, Foo)
+{
 }
 
 } // namespace

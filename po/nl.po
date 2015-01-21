@@ -8,15 +8,15 @@ msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-10-07 20:43+0300\n"
-"PO-Revision-Date: 2014-10-08 17:50+0000\n"
+"PO-Revision-Date: 2015-01-20 21:23+0000\n"
 "Last-Translator: rob <linuxned@gmail.com>\n"
 "Language-Team: Dutch <nl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2014-10-09 06:40+0000\n"
-"X-Generator: Launchpad (build 17196)\n"
+"X-Launchpad-Export-Date: 2015-01-21 06:45+0000\n"
+"X-Generator: Launchpad (build 17306)\n"
 
 #: src/indicator/quick-access-section.cpp:48
 msgid "Flight Mode"
@@ -33,7 +33,7 @@ msgstr "Sorry, onjuiste pincode"
 
 #: src/indicator/sim-unlock-dialog.cpp:136
 msgid "Sorry, incorrect PUK"
-msgstr "Sorry, onjuiste PUK-code"
+msgstr "Sorry, onjuiste pukcode"
 
 #: src/indicator/sim-unlock-dialog.cpp:151
 msgid "Sorry, incorrect %{1} PIN."
@@ -48,8 +48,8 @@ msgstr "Dit zal uw laatste poging worden."
 msgid ""
 "If %{1} PIN is entered incorrectly you will require your PUK code to unlock."
 msgstr ""
-"Indien de %{1}-pincode nu opnieuw onjuist wordt ingevoerd, heeft u de PUK-"
-"code nodig om de simkaart te deblokkeren."
+"Indien de %{1}-pincode nu opnieuw onjuist wordt ingevoerd, heeft u de "
+"pukcode nodig om de simkaart te deblokkeren."
 
 #: src/indicator/sim-unlock-dialog.cpp:168
 msgid "Sorry, your %{1} is now blocked."
@@ -57,24 +57,24 @@ msgstr "Sorry, uw %{1} is nu geblokkeerd."
 
 #: src/indicator/sim-unlock-dialog.cpp:173
 msgid "Please enter your PUK code to unblock SIM card."
-msgstr "Voer a.u.b. de PUK-code in om de simkaart te deblokkeren."
+msgstr "Voer a.u.b. de pukcode in om de simkaart te deblokkeren."
 
 #: src/indicator/sim-unlock-dialog.cpp:175
 msgid "You may need to contact your network provider for PUK code."
 msgstr ""
-"U kunt eventueel contact opnemen met uw telefoonprovider voor de PUK-code."
+"U kunt eventueel contact opnemen met uw telefoonprovider voor de pukcode."
 
 #: src/indicator/sim-unlock-dialog.cpp:183
 #: src/indicator/sim-unlock-dialog.cpp:197
 msgid "Sorry, incorrect PUK."
-msgstr "Sorry, onjuiste PUK-code."
+msgstr "Sorry, onjuiste pukcode."
 
 #: src/indicator/sim-unlock-dialog.cpp:187
 msgid ""
 "If PUK code is entered incorrectly, your SIM card will be blocked and needs "
 "replacement."
 msgstr ""
-"Indien de PUK-code nu opnieuw onjuist wordt ingevoerd, zal uw simkaart "
+"Indien de pukcode nu opnieuw onjuist wordt ingevoerd, zal uw simkaart "
 "definitief geblokkeerd worden en dient u deze te vervangen."
 
 #: src/indicator/sim-unlock-dialog.cpp:189
@@ -96,11 +96,11 @@ msgstr "Voer de %{1}-pincode in"
 
 #: src/indicator/sim-unlock-dialog.cpp:272
 msgid "Enter PUK code"
-msgstr "Voer de PUK-code in"
+msgstr "Voer de pukcode in"
 
 #: src/indicator/sim-unlock-dialog.cpp:274
 msgid "Enter PUK code for %{1}"
-msgstr "Voer de PUK-code in voor %{1}"
+msgstr "Voer de pukcode in voor %{1}"
 
 #: src/indicator/sim-unlock-dialog.cpp:282
 #, c-format
@@ -213,47 +213,5 @@ msgstr "Verbind"
 msgid "Cancel"
 msgstr "Annuleren"
 
-#~ msgid "Oops!<br>Incorrect PUK entered."
-#~ msgstr "Oeps!<br>Onjuiste PUK-code ingevoerd."
-
-#~ msgid "Oops!<br>Incorrect PIN entered."
-#~ msgstr "Oeps!<br>Onjuiste pincode ingevoerd."
-
-#, c-format
-#~ msgid "Attempt %d of %d"
-#~ msgstr "Poging %d van %d"
-
 #~ msgid "Unlock SIM…"
 #~ msgstr "SIM-kaart deblokkeren…"
-
-#~ msgid ""
-#~ "Your SIM is now permanently blocked and needs to be replaced.<br><br>Please "
-#~ "contact your network provider."
-#~ msgstr ""
-#~ "Uw simkaart is nu definitief geblokkeerd en dient vervangen te "
-#~ "worden.<br><br>Neem a.u.b. contact op met uw telefoonprovider."
-
-#~ msgid ""
-#~ "This will be the last attempt.<br><br>If the SIM PIN is entered incorrectly, "
-#~ "your SIM will be blocked and would require the PUK Code to unlock."
-#~ msgstr ""
-#~ "Dit zal uw laatste poging worden!<br><br>Indien de simpincode nu opnieuw "
-#~ "onjuist wordt ingevoerd, zal uw simkaart geblokkeerd worden en dient u de "
-#~ "PUK-code in te voeren om de simkaart te deblokkeren."
-
-#~ msgid ""
-#~ "This will be the last attempt.<br><br>If the PUK code is entered "
-#~ "incorrectly, your SIM will need to be replaced.<br><br>Please contact your "
-#~ "network provider."
-#~ msgstr ""
-#~ "Dit zal uw laatste poging worden!<br><br>Indien de PUK-code nu opnieuw "
-#~ "onjuist wordt ingevoerd, zal uw simkaart vervangen dienen te "
-#~ "worden.<br><br>Neem a.u.b. contact op met uw telefoonprovider."
-
-#~ msgid ""
-#~ "Your SIM is now blocked.<br><br>Enter the PUK Code to unlock.<br><br>You may "
-#~ "contact your network provider for PUK Code."
-#~ msgstr ""
-#~ "Uw simkaart is nu geblokkeerd.<br><br>Voer de PUK-code in om de simkaart te "
-#~ "deblokkeren.<br><br>U kunt contact opnemen met uw telefoonprovider voor de "
-#~ "PUK-code."

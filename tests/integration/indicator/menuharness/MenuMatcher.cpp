@@ -114,6 +114,7 @@ MenuMatcher& MenuMatcher::item(const MenuItemMatcher& item)
 
 void MenuMatcher::match(MatchResult& matchResult) const
 {
+    // FIXME No magic sleeps
     QTestEventLoop::instance().enterLoopMSecs(200);
 
     if (p->m_items.size() > (unsigned int) p->m_menuModel.rowCount())

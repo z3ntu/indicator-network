@@ -16,11 +16,15 @@
  * Authored by: Pete Woods <pete.woods@canonical.com>
  */
 
+#include <menuharness/MatchResult.h>
 #include <menuharness/MenuItemMatcher.h>
+
+#include <qmenumodel/unitymenumodel.h>
 
 #include <vector>
 
 #include <QObject>
+#include <QTestEventLoop>
 
 using namespace std;
 
@@ -42,6 +46,23 @@ enum MenuRoles
     IsRadioRole,
     IsToggledRole
 };
+
+static string type_to_string(MenuItemMatcher::Type type)
+{
+    switch(type)
+    {
+        case MenuItemMatcher::Type::plain:
+            return "plain";
+        case MenuItemMatcher::Type::checkbox:
+            return "checkbox";
+        case MenuItemMatcher::Type::radio:
+            return "radio";
+        case MenuItemMatcher::Type::separator:
+            return "separator";
+    }
+
+    return string();
+}
 }
 
 struct MenuItemMatcher::Priv
@@ -52,7 +73,11 @@ struct MenuItemMatcher::Priv
 
     shared_ptr<string> m_label;
 
+    shared_ptr<string> m_icon;
+
     shared_ptr<string> m_action;
+
+    shared_ptr<string> m_widget;
 
     vector<MenuItemMatcher> m_items;
 };
@@ -68,6 +93,13 @@ MenuItemMatcher MenuItemMatcher::separator()
 {
     MenuItemMatcher matcher;
     matcher.type(Type::separator);
+    return matcher;
+}
+
+MenuItemMatcher MenuItemMatcher::radio()
+{
+    MenuItemMatcher matcher;
+    matcher.type(Type::radio);
     return matcher;
 }
 
@@ -96,7 +128,9 @@ MenuItemMatcher& MenuItemMatcher::operator=(const MenuItemMatcher& other)
     p->m_type = other.p->m_type;
     p->m_mode = other.p->m_mode;
     p->m_label = other.p->m_label;
+    p->m_icon = other.p->m_icon;
     p->m_action = other.p->m_action;
+    p->m_widget = other.p->m_widget;
     p->m_items = other.p->m_items;
     return *this;
 }
@@ -125,6 +159,18 @@ MenuItemMatcher& MenuItemMatcher::action(const string& action)
     return *this;
 }
 
+MenuItemMatcher& MenuItemMatcher::icon(const string& icon)
+{
+    p->m_icon = make_shared<string>(icon);
+    return *this;
+}
+
+MenuItemMatcher& MenuItemMatcher::widget(const string& widget)
+{
+    p->m_widget = make_shared<string>(widget);
+    return *this;
+}
+
 MenuItemMatcher& MenuItemMatcher::mode(Mode mode)
 {
     p->m_mode = mode;
@@ -145,28 +191,99 @@ MenuItemMatcher& MenuItemMatcher::item(MenuItemMatcher&& item)
 
 void MenuItemMatcher::match(MatchResult& matchResult, UnityMenuModel& menuModel, const QModelIndex& index) const
 {
-//            QString label = model->data(index, MenuRoles::LabelRole).toString();
-//            QString icon = model->data(index, MenuRoles::IconRole).toString();
-//            QString action = model->data(index, MenuRoles::ActionRole).toString();
-//            QString type = model->data(index, MenuRoles::TypeRole).toString();
-//            QString isSeparator = model->data(index, MenuRoles::IsSeparatorRole).toBool() ? "is separator" : "is not separator";
-//            QString isCheckbox = model->data(index, MenuRoles::IsCheckRole).toBool() ? "is checkbox" : "is not checkbox";
-//            QString isRadio = model->data(index, MenuRoles::IsRadioRole).toBool() ? "is radio" : "is not radio";
-//            QString isToggled = model->data(index, MenuRoles::IsToggledRole).toBool() ? "is toggled" : "is not toggled";
-//            {
-//                for (int j = 0; j < indent * 2; ++j)
-//                {
-//                    m_buffer += " ";
-//                }
-//                m_buffer += " > " + label + ", " + icon + ", " + action + ", "
-//                        + type + ", " + isSeparator + ", " + isCheckbox + ", "
-//                        + isRadio + ", " + isToggled + "\n";
-//            }
-//            UnityMenuModel *submenu = qobject_cast<UnityMenuModel *>(model->submenu(i));
-//            if (submenu)
-//            {
-//                match....
-//            }
+    bool isSeparator = menuModel.data(index, MenuRoles::IsSeparatorRole).toBool();
+    bool isCheckbox = menuModel.data(index, MenuRoles::IsCheckRole).toBool();
+    bool isRadio = menuModel.data(index, MenuRoles::IsRadioRole).toBool();
+
+//    bool isToggled = menuModel.data(index, MenuRoles::IsToggledRole).toBool();
+
+    Type actualType = Type::plain;
+    if (isSeparator)
+    {
+        actualType = Type::separator;
+    }
+    else if (isCheckbox)
+    {
+        actualType = Type::checkbox;
+    }
+    else if (isRadio)
+    {
+        actualType = Type::radio;
+    }
+
+    if (actualType != p->m_type)
+    {
+        matchResult.failure(
+                "Expected " + type_to_string(p->m_type) + " at index "
+                        + to_string(index.row()) + ", found "
+                        + type_to_string(actualType));
+    }
+
+    string label = menuModel.data(index, MenuRoles::LabelRole).toString().toStdString();
+    if (p->m_label && (*p->m_label) != label)
+    {
+        matchResult.failure(
+                "Expected label " + *p->m_label + " at index "
+                        + to_string(index.row()) + ", but found " + label);
+    }
+
+    string icon = menuModel.data(index, MenuRoles::IconRole).toString().toStdString();
+    if (p->m_icon && (*p->m_icon) != icon)
+    {
+        matchResult.failure(
+                "Expected icon " + *p->m_icon + " at index "
+                        + to_string(index.row()) + ", but found " + icon);
+    }
+
+    string action = menuModel.data(index, MenuRoles::ActionRole).toString().toStdString();
+    if (p->m_action && (*p->m_action) != action)
+    {
+        matchResult.failure(
+                "Expected action " + *p->m_action + " at index "
+                        + to_string(index.row()) + ", but found " + action);
+    }
+
+    string widget = menuModel.data(index, MenuRoles::TypeRole).toString().toStdString();
+    if (p->m_widget && (*p->m_widget) != widget)
+    {
+        matchResult.failure(
+                "Expected widget " + *p->m_widget + " at index "
+                        + to_string(index.row()) + ", but found " + widget);
+    }
+
+    if (!p->m_items.empty())
+    {
+        UnityMenuModel *submenuModel = qobject_cast<UnityMenuModel *>(
+                menuModel.submenu(index.row()));
+
+        // FIXME No magic sleeps
+        QTestEventLoop::instance().enterLoopMSecs(100);
+
+        if (!submenuModel)
+        {
+            matchResult.failure(
+                    "Expected " + to_string(p->m_items.size())
+                            + " children at index " + to_string(index.row())
+                            + ", but found none");
+            return;
+        }
+
+        if (p->m_items.size() > (unsigned int) submenuModel->rowCount())
+        {
+            matchResult.failure(
+                    "Expected " + to_string(p->m_items.size())
+                            + " children at index " + to_string(index.row())
+                            + ", but found " + to_string(submenuModel->rowCount()));
+            return;
+        }
+
+        for (size_t i = 0; i < p->m_items.size(); ++i)
+        {
+            const auto& matcher = p->m_items.at(i);
+            auto index = submenuModel->index(i);
+            matcher.match(matchResult, *submenuModel, index);
+        }
+    }
 }
 
 }

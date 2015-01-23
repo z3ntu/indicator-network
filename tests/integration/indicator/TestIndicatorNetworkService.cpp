@@ -60,11 +60,6 @@ protected:
         dbusTestRunner.startServices();
     }
 
-    void TearDown() override
-    {
-//        sleep(1); // FIXME delete this line when the indicator shuts down stably
-    }
-
     DBusTestRunner dbusTestRunner;
 
     DBusMock dbusMock;
@@ -74,7 +69,7 @@ TEST_F(TestIndicatorNetworkService, Foo)
 {
     mh::MenuMatcher::Parameters parameters("com.canonical.indicator.network",
                                            {{ "indicator", "/com/canonical/indicator/network" }},
-                                           "/com/canonical/indicator/network/desktop");
+                                           "/com/canonical/indicator/network/phone");
 
     EXPECT_MATCHRESULT(mh::MenuMatcher(parameters)
         .item(mh::MenuItemMatcher()
@@ -84,20 +79,14 @@ TEST_F(TestIndicatorNetworkService, Foo)
             .item(mh::MenuItemMatcher::checkbox()
                 .label("Flight Mode")
                 .action("indicator.airplane.enabled")
+                .icon("")
             )
             .item(mh::MenuItemMatcher::separator())
             .item(mh::MenuItemMatcher()
-                .action("com.canonical.indicator.network.modeminfoitem")
+                .widget("com.canonical.indicator.network.modeminfoitem")
+                .icon("")
             )
         ).match());
-
-//    MenuPrinter printer("com.canonical.indicator.keyboard",
-//                        QVariantMap { { "indicator", "/com/canonical/indicator/keyboard" } },
-//                        "/com/canonical/indicator/keyboard/desktop");
-//    MenuPrinter printer("com.canonical.indicator.network",
-//                        QVariantMap { { "indicator", "/com/canonical/indicator/network" } },
-//                        "/com/canonical/indicator/network/phone");
-//    qDebug() << printer.m_buffer;
 }
 
 } // namespace

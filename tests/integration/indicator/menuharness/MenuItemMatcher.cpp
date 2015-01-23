@@ -67,6 +67,48 @@ static string type_to_string(MenuItemMatcher::Type type)
 
 struct MenuItemMatcher::Priv
 {
+    void all(MatchResult& matchResult, UnityMenuModel& submenuModel,
+        const QModelIndex& index)
+    {
+        if (m_items.size() != (unsigned int) submenuModel.rowCount())
+        {
+            matchResult.failure(
+                    "Expected " + to_string(m_items.size())
+                            + " children at index " + to_string(index.row())
+                            + ", but found "
+                            + to_string(submenuModel.rowCount()));
+            return;
+        }
+
+        for (size_t i = 0; i < m_items.size(); ++i)
+        {
+            const auto& matcher = m_items.at(i);
+            auto index = submenuModel.index(i);
+            matcher.match(matchResult, submenuModel, index);
+        }
+    }
+
+    void startsWith(MatchResult& matchResult, UnityMenuModel& submenuModel,
+                const QModelIndex& index)
+    {
+        if (m_items.size() > (unsigned int) submenuModel.rowCount())
+        {
+            matchResult.failure(
+                    "Expected at least " + to_string(m_items.size())
+                            + " children at index " + to_string(index.row())
+                            + ", but found "
+                            + to_string(submenuModel.rowCount()));
+            return;
+        }
+
+        for (size_t i = 0; i < m_items.size(); ++i)
+        {
+            const auto& matcher = m_items.at(i);
+            auto index = submenuModel.index(i);
+            matcher.match(matchResult, submenuModel, index);
+        }
+    }
+
     Type m_type = Type::plain;
 
     Mode m_mode = Mode::all;
@@ -195,8 +237,6 @@ void MenuItemMatcher::match(MatchResult& matchResult, UnityMenuModel& menuModel,
     bool isCheckbox = menuModel.data(index, MenuRoles::IsCheckRole).toBool();
     bool isRadio = menuModel.data(index, MenuRoles::IsRadioRole).toBool();
 
-//    bool isToggled = menuModel.data(index, MenuRoles::IsToggledRole).toBool();
-
     Type actualType = Type::plain;
     if (isSeparator)
     {
@@ -268,20 +308,14 @@ void MenuItemMatcher::match(MatchResult& matchResult, UnityMenuModel& menuModel,
             return;
         }
 
-        if (p->m_items.size() > (unsigned int) submenuModel->rowCount())
+        switch (p->m_mode)
         {
-            matchResult.failure(
-                    "Expected " + to_string(p->m_items.size())
-                            + " children at index " + to_string(index.row())
-                            + ", but found " + to_string(submenuModel->rowCount()));
-            return;
-        }
-
-        for (size_t i = 0; i < p->m_items.size(); ++i)
-        {
-            const auto& matcher = p->m_items.at(i);
-            auto index = submenuModel->index(i);
-            matcher.match(matchResult, *submenuModel, index);
+            case Mode::all:
+                p->all(matchResult, *submenuModel, index);
+                break;
+            case Mode::starts_with:
+                p->startsWith(matchResult, *submenuModel, index);
+                break;
         }
     }
 }

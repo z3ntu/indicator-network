@@ -49,6 +49,8 @@ public:
 
     static MenuItemMatcher separator();
 
+    static MenuItemMatcher radio();
+
     MenuItemMatcher();
 
     ~MenuItemMatcher();
@@ -66,6 +68,10 @@ public:
     MenuItemMatcher& label(const std::string& label);
 
     MenuItemMatcher& action(const std::string& action);
+
+    MenuItemMatcher& icon(const std::string& icon);
+
+    MenuItemMatcher& widget(const std::string& widget);
 
     MenuItemMatcher& mode(Mode mode);
 

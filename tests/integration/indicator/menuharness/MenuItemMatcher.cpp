@@ -121,6 +121,8 @@ struct MenuItemMatcher::Priv
 
     shared_ptr<string> m_widget;
 
+    shared_ptr<bool> m_isToggled;
+
     vector<MenuItemMatcher> m_items;
 
     bool m_activate = false;
@@ -175,6 +177,7 @@ MenuItemMatcher& MenuItemMatcher::operator=(const MenuItemMatcher& other)
     p->m_icon = other.p->m_icon;
     p->m_action = other.p->m_action;
     p->m_widget = other.p->m_widget;
+    p->m_isToggled = other.p->m_isToggled;
     p->m_items = other.p->m_items;
     p->m_activate = other.p->m_activate;
     return *this;
@@ -213,6 +216,12 @@ MenuItemMatcher& MenuItemMatcher::icon(const string& icon)
 MenuItemMatcher& MenuItemMatcher::widget(const string& widget)
 {
     p->m_widget = make_shared<string>(widget);
+    return *this;
+}
+
+MenuItemMatcher& MenuItemMatcher::toggled(bool isToggled)
+{
+    p->m_isToggled = make_shared<bool>(isToggled);
     return *this;
 }
 
@@ -298,6 +307,15 @@ void MenuItemMatcher::match(MatchResult& matchResult, UnityMenuModel& menuModel,
         matchResult.failure(
                 "Expected widget " + *p->m_widget + " at index "
                         + to_string(index.row()) + ", but found " + widget);
+    }
+
+    bool isToggled = menuModel.data(index, MenuRoles::IsToggledRole).toBool();
+    if (p->m_isToggled && (*p->m_isToggled) != isToggled)
+    {
+        matchResult.failure(
+                "Expected toggled = " + string(*p->m_isToggled ? "true" : "false")
+                        + " at index " + to_string(index.row()) + ", but found "
+                        + string(isToggled ? "true" : "false"));
     }
 
     if (!p->m_items.empty())

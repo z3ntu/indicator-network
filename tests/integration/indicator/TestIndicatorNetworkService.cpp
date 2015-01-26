@@ -22,6 +22,10 @@
 
 #include <menuharness/MenuMatcher.h>
 
+#include <QDebug>
+#include <QTestEventLoop>
+#include <QSignalSpy>
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
@@ -67,6 +71,13 @@ protected:
 
 TEST_F(TestIndicatorNetworkService, Foo)
 {
+    auto& urfkillInterface = dbusMock.mockInterface("org.freedesktop.URfkill",
+                                                   "/org/freedesktop/URfkill",
+                                                   "org.freedesktop.URfkill",
+                                                   QDBusConnection::SystemBus);
+
+    QSignalSpy urfkillSpy(&urfkillInterface, SIGNAL(MethodCalled(const QString &, const QVariantList &)));
+
     mh::MenuMatcher::Parameters parameters("com.canonical.indicator.network",
                                            {{ "indicator", "/com/canonical/indicator/network" }},
                                            "/com/canonical/indicator/network/phone");
@@ -100,6 +111,21 @@ TEST_F(TestIndicatorNetworkService, Foo)
                 .action("indicator.wifi.settings")
             )
         ).match());
+
+    EXPECT_MATCHRESULT(mh::MenuMatcher(parameters)
+        .item(mh::MenuItemMatcher()
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .item(mh::MenuItemMatcher::checkbox()
+                .action("indicator.airplane.enabled")
+                .activate()
+            )
+        ).match());
+
+    ASSERT_TRUE(urfkillSpy.wait());
+
+    QList<QtDBusMock::MethodCall> calls = urfkillInterface.GetMethodCalls("FlightMode");
+    ASSERT_EQ(calls.size(), 1);
+    EXPECT_EQ(calls.first().args(), QVariantList() << QVariant(true));
 }
 
 } // namespace

@@ -73,6 +73,8 @@ public:
 
     MenuItemMatcher& widget(const std::string& widget);
 
+    MenuItemMatcher& toggled(bool toggled);
+
     MenuItemMatcher& mode(Mode mode);
 
     MenuItemMatcher& item(const MenuItemMatcher& item);

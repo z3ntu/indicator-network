@@ -69,15 +69,8 @@ protected:
     DBusMock dbusMock;
 };
 
-TEST_F(TestIndicatorNetworkService, Foo)
+TEST_F(TestIndicatorNetworkService, BasicMenuContents)
 {
-    auto& urfkillInterface = dbusMock.mockInterface("org.freedesktop.URfkill",
-                                                   "/org/freedesktop/URfkill",
-                                                   "org.freedesktop.URfkill",
-                                                   QDBusConnection::SystemBus);
-
-    QSignalSpy urfkillSpy(&urfkillInterface, SIGNAL(MethodCalled(const QString &, const QVariantList &)));
-
     mh::MenuMatcher::Parameters parameters("com.canonical.indicator.network",
                                            {{ "indicator", "/com/canonical/indicator/network" }},
                                            "/com/canonical/indicator/network/phone");
@@ -91,6 +84,7 @@ TEST_F(TestIndicatorNetworkService, Foo)
                 .label("Flight Mode")
                 .action("indicator.airplane.enabled")
                 .icon("")
+                .toggled(false)
             )
             .item(mh::MenuItemMatcher::separator())
             .item(mh::MenuItemMatcher()
@@ -105,10 +99,34 @@ TEST_F(TestIndicatorNetworkService, Foo)
             .item(mh::MenuItemMatcher::checkbox()
                 .label("Wi-Fi")
                 .action("indicator.wifi.enable")
+                .toggled(true)
             )
             .item(mh::MenuItemMatcher()
                 .label("Wi-Fi settings…")
                 .action("indicator.wifi.settings")
+            )
+        ).match());
+}
+
+TEST_F(TestIndicatorNetworkService, FlightModeTalksToURfkill)
+{
+    auto& urfkillInterface = dbusMock.mockInterface("org.freedesktop.URfkill",
+                                                   "/org/freedesktop/URfkill",
+                                                   "org.freedesktop.URfkill",
+                                                   QDBusConnection::SystemBus);
+
+    QSignalSpy urfkillSpy(&urfkillInterface, SIGNAL(MethodCalled(const QString &, const QVariantList &)));
+
+    mh::MenuMatcher::Parameters parameters("com.canonical.indicator.network",
+                                           {{ "indicator", "/com/canonical/indicator/network" }},
+                                           "/com/canonical/indicator/network/phone");
+
+    EXPECT_MATCHRESULT(mh::MenuMatcher(parameters)
+        .item(mh::MenuItemMatcher()
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .item(mh::MenuItemMatcher::checkbox()
+                .action("indicator.airplane.enabled")
+                .toggled(false)
             )
         ).match());
 
@@ -126,6 +144,42 @@ TEST_F(TestIndicatorNetworkService, Foo)
     QList<QtDBusMock::MethodCall> calls = urfkillInterface.GetMethodCalls("FlightMode");
     ASSERT_EQ(calls.size(), 1);
     EXPECT_EQ(calls.first().args(), QVariantList() << QVariant(true));
+}
+
+TEST_F(TestIndicatorNetworkService, IndicatorListensToURfkill)
+{
+    auto& urfkillInterface = dbusMock.mockInterface("org.freedesktop.URfkill",
+                                                   "/org/freedesktop/URfkill",
+                                                   "org.freedesktop.URfkill",
+                                                   QDBusConnection::SystemBus);
+
+    mh::MenuMatcher::Parameters parameters("com.canonical.indicator.network",
+                                           {{ "indicator", "/com/canonical/indicator/network" }},
+                                           "/com/canonical/indicator/network/phone");
+
+    EXPECT_MATCHRESULT(mh::MenuMatcher(parameters)
+        .item(mh::MenuItemMatcher()
+            .label("")
+            .action("indicator.phone.network-status")
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .item(mh::MenuItemMatcher::checkbox()
+                .action("indicator.airplane.enabled")
+                .toggled(false)
+            )
+        ).match());
+
+    ASSERT_TRUE(dbusMock.urfkillInterface().FlightMode(true));
+
+    EXPECT_MATCHRESULT(mh::MenuMatcher(parameters)
+        .item(mh::MenuItemMatcher()
+            .label("")
+            .action("indicator.phone.network-status")
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .item(mh::MenuItemMatcher::checkbox()
+                .action("indicator.airplane.enabled")
+                .toggled(true)
+            )
+        ).match());
 }
 
 } // namespace

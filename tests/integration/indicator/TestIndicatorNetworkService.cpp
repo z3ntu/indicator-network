@@ -64,6 +64,14 @@ protected:
         dbusTestRunner.startServices();
     }
 
+    static mh::MenuMatcher::Parameters phoneParameters()
+    {
+        return mh::MenuMatcher::Parameters(
+                "com.canonical.indicator.network",
+                { { "indicator", "/com/canonical/indicator/network" } },
+                "/com/canonical/indicator/network/phone");
+    }
+
     DBusTestRunner dbusTestRunner;
 
     DBusMock dbusMock;
@@ -71,11 +79,7 @@ protected:
 
 TEST_F(TestIndicatorNetworkService, BasicMenuContents)
 {
-    mh::MenuMatcher::Parameters parameters("com.canonical.indicator.network",
-                                           {{ "indicator", "/com/canonical/indicator/network" }},
-                                           "/com/canonical/indicator/network/phone");
-
-    EXPECT_MATCHRESULT(mh::MenuMatcher(parameters)
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
             .label("")
             .action("indicator.phone.network-status")
@@ -117,11 +121,7 @@ TEST_F(TestIndicatorNetworkService, FlightModeTalksToURfkill)
 
     QSignalSpy urfkillSpy(&urfkillInterface, SIGNAL(MethodCalled(const QString &, const QVariantList &)));
 
-    mh::MenuMatcher::Parameters parameters("com.canonical.indicator.network",
-                                           {{ "indicator", "/com/canonical/indicator/network" }},
-                                           "/com/canonical/indicator/network/phone");
-
-    EXPECT_MATCHRESULT(mh::MenuMatcher(parameters)
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
             .mode(mh::MenuItemMatcher::Mode::starts_with)
             .item(mh::MenuItemMatcher::checkbox()
@@ -130,7 +130,7 @@ TEST_F(TestIndicatorNetworkService, FlightModeTalksToURfkill)
             )
         ).match());
 
-    EXPECT_MATCHRESULT(mh::MenuMatcher(parameters)
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
             .mode(mh::MenuItemMatcher::Mode::starts_with)
             .item(mh::MenuItemMatcher::checkbox()
@@ -148,16 +148,7 @@ TEST_F(TestIndicatorNetworkService, FlightModeTalksToURfkill)
 
 TEST_F(TestIndicatorNetworkService, IndicatorListensToURfkill)
 {
-    auto& urfkillInterface = dbusMock.mockInterface("org.freedesktop.URfkill",
-                                                   "/org/freedesktop/URfkill",
-                                                   "org.freedesktop.URfkill",
-                                                   QDBusConnection::SystemBus);
-
-    mh::MenuMatcher::Parameters parameters("com.canonical.indicator.network",
-                                           {{ "indicator", "/com/canonical/indicator/network" }},
-                                           "/com/canonical/indicator/network/phone");
-
-    EXPECT_MATCHRESULT(mh::MenuMatcher(parameters)
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
             .label("")
             .action("indicator.phone.network-status")
@@ -170,7 +161,7 @@ TEST_F(TestIndicatorNetworkService, IndicatorListensToURfkill)
 
     ASSERT_TRUE(dbusMock.urfkillInterface().FlightMode(true));
 
-    EXPECT_MATCHRESULT(mh::MenuMatcher(parameters)
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
             .label("")
             .action("indicator.phone.network-status")

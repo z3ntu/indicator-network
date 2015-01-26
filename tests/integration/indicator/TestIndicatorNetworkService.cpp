@@ -114,12 +114,8 @@ TEST_F(TestIndicatorNetworkService, BasicMenuContents)
 
 TEST_F(TestIndicatorNetworkService, FlightModeTalksToURfkill)
 {
-    auto& urfkillInterface = dbusMock.mockInterface("org.freedesktop.URfkill",
-                                                   "/org/freedesktop/URfkill",
-                                                   "org.freedesktop.URfkill",
-                                                   QDBusConnection::SystemBus);
-
-    QSignalSpy urfkillSpy(&urfkillInterface, SIGNAL(MethodCalled(const QString &, const QVariantList &)));
+    auto& urfkillInterface = dbusMock.urfkillInterface();
+    QSignalSpy urfkillSpy(&urfkillInterface, SIGNAL(FlightModeChanged(bool)));
 
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
@@ -135,15 +131,13 @@ TEST_F(TestIndicatorNetworkService, FlightModeTalksToURfkill)
             .mode(mh::MenuItemMatcher::Mode::starts_with)
             .item(mh::MenuItemMatcher::checkbox()
                 .action("indicator.airplane.enabled")
-                .activate()
+                .activate() // <--- Activate the action now
             )
         ).match());
 
+    // Wait to be notified that flight mode was enabled
     ASSERT_TRUE(urfkillSpy.wait());
-
-    QList<QtDBusMock::MethodCall> calls = urfkillInterface.GetMethodCalls("FlightMode");
-    ASSERT_EQ(calls.size(), 1);
-    EXPECT_EQ(calls.first().args(), QVariantList() << QVariant(true));
+    EXPECT_EQ(urfkillSpy.first(), QVariantList() << QVariant(true));
 }
 
 TEST_F(TestIndicatorNetworkService, IndicatorListensToURfkill)

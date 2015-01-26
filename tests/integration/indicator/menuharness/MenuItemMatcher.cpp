@@ -122,6 +122,8 @@ struct MenuItemMatcher::Priv
     shared_ptr<string> m_widget;
 
     vector<MenuItemMatcher> m_items;
+
+    bool m_activate = false;
 };
 
 MenuItemMatcher MenuItemMatcher::checkbox()
@@ -174,6 +176,7 @@ MenuItemMatcher& MenuItemMatcher::operator=(const MenuItemMatcher& other)
     p->m_action = other.p->m_action;
     p->m_widget = other.p->m_widget;
     p->m_items = other.p->m_items;
+    p->m_activate = other.p->m_activate;
     return *this;
 }
 
@@ -228,6 +231,12 @@ MenuItemMatcher& MenuItemMatcher::item(const MenuItemMatcher& item)
 MenuItemMatcher& MenuItemMatcher::item(MenuItemMatcher&& item)
 {
     p->m_items.emplace_back(item);
+    return *this;
+}
+
+MenuItemMatcher& MenuItemMatcher::activate()
+{
+    p->m_activate = true;
     return *this;
 }
 
@@ -317,6 +326,11 @@ void MenuItemMatcher::match(MatchResult& matchResult, UnityMenuModel& menuModel,
                 p->startsWith(matchResult, *submenuModel, index);
                 break;
         }
+    }
+
+    if (p->m_activate)
+    {
+        menuModel.activate(index.row());
     }
 }
 

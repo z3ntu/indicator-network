@@ -79,6 +79,8 @@ public:
 
     MenuItemMatcher& item(MenuItemMatcher&& item);
 
+    MenuItemMatcher& activate();
+
     void match(MatchResult& matchResult, UnityMenuModel& menuModel, const QModelIndex& index) const;
 
 protected:

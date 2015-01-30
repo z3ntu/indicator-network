@@ -22,6 +22,8 @@
 
 #include <menuharness/MenuMatcher.h>
 
+#include <NetworkManager.h>
+
 #include <QDebug>
 #include <QTestEventLoop>
 #include <QSignalSpy>
@@ -53,13 +55,7 @@ protected:
         dbusMock.registerOfono();
         dbusMock.registerURfkill();
 
-        dbusTestRunner.registerService(
-                DBusServicePtr(
-                        new QProcessDBusService(
-                                "com.canonical.indicator.network",
-                                QDBusConnection::SessionBus,
-                                NETWORK_SERVICE_BIN,
-                                QStringList())));
+        dbusMock.networkManagerInterface();
 
         dbusTestRunner.startServices();
     }
@@ -72,13 +68,27 @@ protected:
                 "/com/canonical/indicator/network/phone");
     }
 
+    void startIndicator()
+    {
+        indicator.reset(
+                new QProcessDBusService("com.canonical.indicator.network",
+                                        QDBusConnection::SessionBus,
+                                        NETWORK_SERVICE_BIN,
+                                        QStringList()));
+        indicator->start(dbusTestRunner.sessionConnection());
+    }
+
     DBusTestRunner dbusTestRunner;
 
     DBusMock dbusMock;
+
+    DBusServicePtr indicator;
 };
 
 TEST_F(TestIndicatorNetworkService, BasicMenuContents)
 {
+    startIndicator();
+
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
             .label("")
@@ -112,8 +122,63 @@ TEST_F(TestIndicatorNetworkService, BasicMenuContents)
         ).match());
 }
 
+TEST_F(TestIndicatorNetworkService, OneAccessPoint)
+{
+    auto& networkManager(dbusMock.networkManagerInterface());
+    networkManager.AddWiFiDevice("device", "eth1", NM_DEVICE_STATE_DISCONNECTED).waitForFinished();
+    networkManager.AddAccessPoint(
+            "/org/freedesktop/NetworkManager/Devices/device", "ap", "ssid",
+            "11:22:33:44:55:66", 0, 0, 0, 's', 0).waitForFinished();
+    networkManager.AddWiFiConnection(
+            "/org/freedesktop/NetworkManager/Devices/device", "connection",
+            "the ssid", "wpa-psk").waitForFinished();
+
+    startIndicator();
+
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .label("")
+            .action("indicator.phone.network-status")
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .item(mh::MenuItemMatcher::checkbox()
+                .label("Flight Mode")
+                .action("indicator.airplane.enabled")
+                .icon("")
+                .toggled(false)
+            )
+            .item(mh::MenuItemMatcher::separator())
+            .item(mh::MenuItemMatcher()
+                .widget("com.canonical.indicator.network.modeminfoitem")
+                .action("")
+                .icon("")
+            )
+            .item(mh::MenuItemMatcher()
+                .label("Cellular settings…")
+                .action("indicator.cellular.settings")
+            )
+            .item(mh::MenuItemMatcher::checkbox()
+                .label("Wi-Fi")
+                .action("indicator.wifi.enable")
+                .toggled(true)
+            )
+            .item(mh::MenuItemMatcher::separator())
+            .item(mh::MenuItemMatcher::checkbox()
+                .label("ssid")
+                .icon("")
+                .action("indicator.accesspoint.1")
+                .toggled(false)
+            )
+            .item(mh::MenuItemMatcher()
+                .label("Wi-Fi settings…")
+                .action("indicator.wifi.settings")
+            )
+        ).match());
+}
+
 TEST_F(TestIndicatorNetworkService, FlightModeTalksToURfkill)
 {
+    startIndicator();
+
     auto& urfkillInterface = dbusMock.urfkillInterface();
     QSignalSpy urfkillSpy(&urfkillInterface, SIGNAL(FlightModeChanged(bool)));
 
@@ -142,6 +207,8 @@ TEST_F(TestIndicatorNetworkService, FlightModeTalksToURfkill)
 
 TEST_F(TestIndicatorNetworkService, IndicatorListensToURfkill)
 {
+    startIndicator();
+
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
             .label("")

@@ -52,6 +52,7 @@ protected:
     void SetUp() override
     {
         dbusMock.registerNetworkManager();
+        // By default the ofono mock starts with one modem
         dbusMock.registerOfono();
         dbusMock.registerURfkill();
 
@@ -167,6 +168,56 @@ TEST_F(TestIndicatorNetworkService, OneAccessPoint)
                 .icon("")
                 .action("indicator.accesspoint.1")
                 .toggled(false)
+            )
+            .item(mh::MenuItemMatcher()
+                .label("Wi-Fi settings…")
+                .action("indicator.wifi.settings")
+            )
+        ).match());
+}
+
+TEST_F(TestIndicatorNetworkService, SecondModem)
+{
+    auto& ofono(dbusMock.ofonoInterface());
+    {
+        QVariantMap modemProperties {{ "Powered", false } };
+        ofono.AddModem("ril_1", modemProperties).waitForFinished();
+    }
+
+    startIndicator();
+
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .label("")
+            .action("indicator.phone.network-status")
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .item(mh::MenuItemMatcher::checkbox()
+                .label("Flight Mode")
+                .action("indicator.airplane.enabled")
+                .icon("")
+                .toggled(false)
+            )
+            .item(mh::MenuItemMatcher::separator())
+            .item(mh::MenuItemMatcher()
+                .widget("com.canonical.indicator.network.modeminfoitem")
+                .label("")
+                .action("")
+                .icon("")
+            )
+            .item(mh::MenuItemMatcher()
+                .widget("com.canonical.indicator.network.modeminfoitem")
+                .label("")
+                .action("")
+                .icon("")
+            )
+            .item(mh::MenuItemMatcher()
+                .label("Cellular settings…")
+                .action("indicator.cellular.settings")
+            )
+            .item(mh::MenuItemMatcher::checkbox()
+                .label("Wi-Fi")
+                .action("indicator.wifi.enable")
+                .toggled(true)
             )
             .item(mh::MenuItemMatcher()
                 .label("Wi-Fi settings…")

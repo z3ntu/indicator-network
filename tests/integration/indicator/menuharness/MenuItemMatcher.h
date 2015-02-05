@@ -18,11 +18,11 @@
 
 #pragma once
 
+#include <map>
 #include <memory>
 #include <string>
 
-class QModelIndex;
-class UnityMenuModel;
+#include <gio/gio.h>
 
 namespace menuharness
 {
@@ -41,13 +41,10 @@ public:
     {
         plain,
         checkbox,
-        radio,
-        separator
+        radio
     };
 
     static MenuItemMatcher checkbox();
-
-    static MenuItemMatcher separator();
 
     static MenuItemMatcher radio();
 
@@ -83,7 +80,9 @@ public:
 
     MenuItemMatcher& activate();
 
-    void match(MatchResult& matchResult, UnityMenuModel& menuModel, const QModelIndex& index) const;
+    void match(MatchResult& matchResult, const std::shared_ptr<GMenuModel>& menu,
+          std::map<std::string, std::shared_ptr<GActionGroup>>& actions,
+          int index) const;
 
 protected:
     struct Priv;

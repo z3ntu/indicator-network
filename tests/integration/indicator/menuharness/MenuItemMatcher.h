@@ -70,6 +70,12 @@ public:
 
     MenuItemMatcher& widget(const std::string& widget);
 
+    MenuItemMatcher& boolean_attribute(const std::string& name, bool value);
+
+    MenuItemMatcher& string_attribute(const std::string& name, const std::string& value);
+
+    MenuItemMatcher& has_string_attribute(const std::string& name);
+
     MenuItemMatcher& toggled(bool toggled);
 
     MenuItemMatcher& mode(Mode mode);

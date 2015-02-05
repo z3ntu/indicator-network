@@ -29,6 +29,12 @@ namespace menuharness
 {
 namespace
 {
+enum class LinkType
+{
+    any,
+    section,
+    submenu
+};
 
 static shared_ptr<GVariant> get_attribute(const shared_ptr<GMenuItem> menuItem, const gchar* attribute)
 {
@@ -127,6 +133,8 @@ struct MenuItemMatcher::Priv
 
     Mode m_mode = Mode::all;
 
+    LinkType m_linkType = LinkType::any;
+
     shared_ptr<string> m_label;
 
     shared_ptr<string> m_icon;
@@ -185,6 +193,7 @@ MenuItemMatcher& MenuItemMatcher::operator=(const MenuItemMatcher& other)
     p->m_action = other.p->m_action;
     p->m_widget = other.p->m_widget;
     p->m_isToggled = other.p->m_isToggled;
+    p->m_linkType = other.p->m_linkType;
     p->m_items = other.p->m_items;
     p->m_activate = other.p->m_activate;
     return *this;
@@ -235,6 +244,18 @@ MenuItemMatcher& MenuItemMatcher::toggled(bool isToggled)
 MenuItemMatcher& MenuItemMatcher::mode(Mode mode)
 {
     p->m_mode = mode;
+    return *this;
+}
+
+MenuItemMatcher& MenuItemMatcher::submenu()
+{
+    p->m_linkType = LinkType::submenu;
+    return *this;
+}
+
+MenuItemMatcher& MenuItemMatcher::section()
+{
+    p->m_linkType = LinkType::section;
     return *this;
 }
 
@@ -356,14 +377,32 @@ void MenuItemMatcher::match(
 
     if (!p->m_items.empty())
     {
-        shared_ptr<GMenuModel> submenu(g_menu_model_get_item_link(menu.get(), index, G_MENU_LINK_SUBMENU), &g_object_deleter);
+        shared_ptr<GMenuModel> link;
 
-        if (!submenu)
+        switch (p->m_linkType)
         {
-            submenu.reset(g_menu_model_get_item_link(menu.get(), (int) index, G_MENU_LINK_SECTION), &g_object_deleter);
+            case LinkType::any:
+            {
+                link.reset(g_menu_model_get_item_link(menu.get(), (int) index, G_MENU_LINK_SUBMENU), &g_object_deleter);
+                if (!link)
+                {
+                    link.reset(g_menu_model_get_item_link(menu.get(), (int) index, G_MENU_LINK_SECTION), &g_object_deleter);
+                }
+                break;
+            }
+            case LinkType::submenu:
+            {
+                link.reset(g_menu_model_get_item_link(menu.get(), (int) index, G_MENU_LINK_SUBMENU), &g_object_deleter);
+                break;
+            }
+            case LinkType::section:
+            {
+                link.reset(g_menu_model_get_item_link(menu.get(), (int) index, G_MENU_LINK_SECTION), &g_object_deleter);
+                break;
+            }
         }
 
-        if (!submenu)
+        if (!link)
         {
             matchResult.failure(
                     "Expected " + to_string(p->m_items.size())
@@ -372,15 +411,15 @@ void MenuItemMatcher::match(
             return;
         }
 
-        menuWaitForItems(submenu, p->m_items.size());
+        menuWaitForItems(link, p->m_items.size());
 
         switch (p->m_mode)
         {
             case Mode::all:
-                p->all(matchResult, submenu, actions, index);
+                p->all(matchResult, link, actions, index);
                 break;
             case Mode::starts_with:
-                p->startsWith(matchResult, submenu, actions, index);
+                p->startsWith(matchResult, link, actions, index);
                 break;
         }
     }

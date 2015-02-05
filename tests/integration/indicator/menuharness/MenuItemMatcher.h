@@ -74,6 +74,10 @@ public:
 
     MenuItemMatcher& mode(Mode mode);
 
+    MenuItemMatcher& submenu();
+
+    MenuItemMatcher& section();
+
     MenuItemMatcher& item(const MenuItemMatcher& item);
 
     MenuItemMatcher& item(MenuItemMatcher&& item);

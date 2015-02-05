@@ -36,7 +36,7 @@ public:
     explicit EventPrinter(QObject *parent = nullptr);
     ~EventPrinter();
 
-public slots:
+public Q_SLOTS:
     void flightModeChanged(bool new_mode);
     void btKillswitchChanged();
     void wlanKillswitchChanged();

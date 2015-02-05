@@ -17,15 +17,26 @@
  */
 
 #include <menuharness/MenuMatcher.h>
+#include <menuharness/MatchUtils.h>
 
-#include <qmenumodel/unitymenumodel.h>
-
-#include <QTestEventLoop>
+#include <gio/gio.h>
 
 using namespace std;
 
 namespace menuharness
 {
+namespace
+{
+static void gdbus_connection_deleter(GDBusConnection* connection)
+{
+    if (!g_dbus_connection_is_closed(connection))
+    {
+        g_dbus_connection_close_sync(connection, nullptr, nullptr);
+    }
+    g_clear_object(&connection);
+}
+}
+
 struct MenuMatcher::Parameters::Priv
 {
     string m_busName;
@@ -85,21 +96,45 @@ struct MenuMatcher::Priv
 
     vector<MenuItemMatcher> m_items;
 
-    UnityMenuModel m_menuModel;
+    shared_ptr<GDBusConnection> m_system;
+
+    shared_ptr<GDBusConnection> m_session;
+
+    shared_ptr<GMenuModel>  m_menu;
+
+    map<string, shared_ptr<GActionGroup>> m_actions;
 };
 
 MenuMatcher::MenuMatcher(const Parameters& parameters) :
         p(new Priv(parameters))
 {
-    p->m_menuModel.setBusName(QString::fromStdString(p->m_parameters.p->m_busName).toUtf8());
-    QVariantMap actionsMap;
+    p->m_system.reset(g_bus_get_sync(G_BUS_TYPE_SYSTEM, nullptr, nullptr),
+                      &gdbus_connection_deleter);
+    g_dbus_connection_set_exit_on_close(p->m_system.get(), false);
+
+    p->m_session.reset(g_bus_get_sync(G_BUS_TYPE_SESSION, nullptr, nullptr),
+                       &gdbus_connection_deleter);
+    g_dbus_connection_set_exit_on_close(p->m_session.get(), false);
+
+    p->m_menu.reset(
+            G_MENU_MODEL(
+                    g_dbus_menu_model_get(
+                            p->m_session.get(),
+                            p->m_parameters.p->m_busName.c_str(),
+                            p->m_parameters.p->m_menuObjectPath.c_str())),
+            &g_object_deleter);
+
     for (const auto& action : p->m_parameters.p->m_actions)
     {
-        actionsMap[QString::fromStdString(action.first)] =
-                QString::fromStdString(action.second);
+        shared_ptr<GActionGroup> actionGroup(
+                G_ACTION_GROUP(
+                        g_dbus_action_group_get(
+                                p->m_session.get(),
+                                p->m_parameters.p->m_busName.c_str(),
+                                action.second.c_str())),
+                &g_object_deleter);
+        p->m_actions[action.first] = actionGroup;
     }
-    p->m_menuModel.setActions(actionsMap);
-    p->m_menuModel.setMenuObjectPath(QString::fromStdString(p->m_parameters.p->m_menuObjectPath).toUtf8());
 }
 
 MenuMatcher::~MenuMatcher()
@@ -114,20 +149,19 @@ MenuMatcher& MenuMatcher::item(const MenuItemMatcher& item)
 
 void MenuMatcher::match(MatchResult& matchResult) const
 {
-    // FIXME No magic sleeps
-    QTestEventLoop::instance().enterLoopMSecs(200);
+    menuWaitForItems(p->m_menu, p->m_items.size());
 
-    if (p->m_items.size() > (unsigned int) p->m_menuModel.rowCount())
+    int menuSize = g_menu_model_get_n_items(p->m_menu.get());
+    if (p->m_items.size() > (unsigned int) menuSize)
     {
-        matchResult.failure("row count mismatch " + to_string(p->m_items.size()) + " vs " + to_string(p->m_menuModel.rowCount()));
+        matchResult.failure("row count mismatch " + to_string(p->m_items.size()) + " vs " + to_string(menuSize));
         return;
     }
 
     for (size_t i = 0; i < p->m_items.size(); ++i)
     {
         const auto& matcher = p->m_items.at(i);
-        auto index = p->m_menuModel.index(i);
-        matcher.match(matchResult, p->m_menuModel, index);
+        matcher.match(matchResult, p->m_menu, p->m_actions, i);
     }
 }
 
@@ -139,5 +173,3 @@ MatchResult MenuMatcher::match() const
 }
 
 }
-
-#include "MenuMatcher.moc"

@@ -17,14 +17,11 @@
  */
 
 #include <menuharness/MatchResult.h>
+#include <menuharness/MatchUtils.h>
 #include <menuharness/MenuItemMatcher.h>
 
-#include <qmenumodel/unitymenumodel.h>
-
+#include <iostream>
 #include <vector>
-
-#include <QObject>
-#include <QTestEventLoop>
 
 using namespace std;
 
@@ -32,20 +29,38 @@ namespace menuharness
 {
 namespace
 {
-enum MenuRoles
+
+static shared_ptr<GVariant> get_attribute(const shared_ptr<GMenuItem> menuItem, const gchar* attribute)
 {
-    LabelRole  = Qt::DisplayRole + 1,
-    SensitiveRole,
-    IsSeparatorRole,
-    IconRole,
-    TypeRole,
-    ExtendedAttributesRole,
-    ActionRole,
-    ActionStateRole,
-    IsCheckRole,
-    IsRadioRole,
-    IsToggledRole
-};
+    shared_ptr<GVariant> value(
+            g_menu_item_get_attribute_value(menuItem.get(), attribute, nullptr),
+            &gvariant_deleter);
+    return value;
+}
+
+static string get_string_attribute(const shared_ptr<GMenuItem> menuItem, const gchar* attribute)
+{
+    string result;
+    char* temp = nullptr;
+    if (g_menu_item_get_attribute(menuItem.get(), attribute, "s", &temp))
+    {
+        result = temp;
+        g_free(temp);
+    }
+    return result;
+}
+
+static pair<string, string> split_action(const string& action)
+{
+    auto index = action.find('.');
+
+    if (index == string::npos)
+    {
+        return make_pair(string(), action);
+    }
+
+    return make_pair(action.substr(0, index), action.substr(index + 1, action.size()));
+}
 
 static string type_to_string(MenuItemMatcher::Type type)
 {
@@ -57,8 +72,6 @@ static string type_to_string(MenuItemMatcher::Type type)
             return "checkbox";
         case MenuItemMatcher::Type::radio:
             return "radio";
-        case MenuItemMatcher::Type::separator:
-            return "separator";
     }
 
     return string();
@@ -67,45 +80,46 @@ static string type_to_string(MenuItemMatcher::Type type)
 
 struct MenuItemMatcher::Priv
 {
-    void all(MatchResult& matchResult, UnityMenuModel& submenuModel,
-        const QModelIndex& index)
+    void all(MatchResult& matchResult, const shared_ptr<GMenuModel>& menu,
+             map<string, shared_ptr<GActionGroup>>& actions, int index)
     {
-        if (m_items.size() != (unsigned int) submenuModel.rowCount())
+        int count = g_menu_model_get_n_items(menu.get());
+
+        if (m_items.size() != (unsigned int) count)
         {
             matchResult.failure(
                     "Expected " + to_string(m_items.size())
-                            + " children at index " + to_string(index.row())
+                            + " children at index " + to_string(index)
                             + ", but found "
-                            + to_string(submenuModel.rowCount()));
+                            + to_string(count));
             return;
         }
 
         for (size_t i = 0; i < m_items.size(); ++i)
         {
             const auto& matcher = m_items.at(i);
-            auto index = submenuModel.index(i);
-            matcher.match(matchResult, submenuModel, index);
+            matcher.match(matchResult, menu, actions, i);
         }
     }
 
-    void startsWith(MatchResult& matchResult, UnityMenuModel& submenuModel,
-                const QModelIndex& index)
+    void startsWith(MatchResult& matchResult, const shared_ptr<GMenuModel>& menu,
+                 map<string, shared_ptr<GActionGroup>>& actions, int index)
     {
-        if (m_items.size() > (unsigned int) submenuModel.rowCount())
+        int count = g_menu_model_get_n_items(menu.get());
+        if (m_items.size() > (unsigned int) count)
         {
             matchResult.failure(
                     "Expected at least " + to_string(m_items.size())
-                            + " children at index " + to_string(index.row())
+                            + " children at index " + to_string(index)
                             + ", but found "
-                            + to_string(submenuModel.rowCount()));
+                            + to_string(count));
             return;
         }
 
         for (size_t i = 0; i < m_items.size(); ++i)
         {
             const auto& matcher = m_items.at(i);
-            auto index = submenuModel.index(i);
-            matcher.match(matchResult, submenuModel, index);
+            matcher.match(matchResult, menu, actions, i);
         }
     }
 
@@ -132,13 +146,6 @@ MenuItemMatcher MenuItemMatcher::checkbox()
 {
     MenuItemMatcher matcher;
     matcher.type(Type::checkbox);
-    return matcher;
-}
-
-MenuItemMatcher MenuItemMatcher::separator()
-{
-    MenuItemMatcher matcher;
-    matcher.type(Type::separator);
     return matcher;
 }
 
@@ -249,18 +256,47 @@ MenuItemMatcher& MenuItemMatcher::activate()
     return *this;
 }
 
-void MenuItemMatcher::match(MatchResult& matchResult, UnityMenuModel& menuModel, const QModelIndex& index) const
+void MenuItemMatcher::match(
+        MatchResult& matchResult, const shared_ptr<GMenuModel>& menu,
+        map<string, shared_ptr<GActionGroup>>& actions,
+        int index) const
 {
-    bool isSeparator = menuModel.data(index, MenuRoles::IsSeparatorRole).toBool();
-    bool isCheckbox = menuModel.data(index, MenuRoles::IsCheckRole).toBool();
-    bool isRadio = menuModel.data(index, MenuRoles::IsRadioRole).toBool();
+    shared_ptr<GMenuItem> menuItem(g_menu_item_new_from_model(menu.get(), index), &g_object_deleter);
+
+    string action = get_string_attribute(menuItem, G_MENU_ATTRIBUTE_ACTION);
+
+    bool isCheckbox = false;
+    bool isRadio = false;
+    bool isToggled = false;
+
+    pair<string, string> idPair;
+    shared_ptr<GActionGroup> actionGroup;
+
+    if (!action.empty())
+    {
+        idPair = split_action(action);
+        actionGroup = actions[idPair.first];
+        shared_ptr<GVariant> state(
+                g_action_group_get_action_state(actionGroup.get(),
+                                                idPair.second.c_str()),
+                &gvariant_deleter);
+        auto attributeTarget = get_attribute(menuItem, G_MENU_ATTRIBUTE_TARGET);
+
+        if (attributeTarget && state)
+        {
+            isToggled = g_variant_equal(state.get(), attributeTarget.get());
+            isRadio = true;
+        }
+        else if (state
+                && g_variant_is_of_type(state.get(), G_VARIANT_TYPE_BOOLEAN))
+        {
+            isToggled = g_variant_get_boolean(state.get());
+            isCheckbox = true;
+        }
+    }
 
     Type actualType = Type::plain;
-    if (isSeparator)
-    {
-        actualType = Type::separator;
-    }
-    else if (isCheckbox)
+    if (isCheckbox)
     {
         actualType = Type::checkbox;
     }
@@ -269,86 +305,107 @@ void MenuItemMatcher::match(MatchResult& matchResult, UnityMenuModel& menuModel,
         actualType = Type::radio;
     }
 
+    cerr << "action = '" << action << "' of type '" << type_to_string(actualType) << "' at index " << index << endl;
+
     if (actualType != p->m_type)
     {
         matchResult.failure(
                 "Expected " + type_to_string(p->m_type) + " at index "
-                        + to_string(index.row()) + ", found "
+                        + to_string(index) + ", found "
                         + type_to_string(actualType));
     }
 
-    string label = menuModel.data(index, MenuRoles::LabelRole).toString().toStdString();
+    string label = get_string_attribute(menuItem, G_MENU_ATTRIBUTE_LABEL);
     if (p->m_label && (*p->m_label) != label)
     {
         matchResult.failure(
                 "Expected label " + *p->m_label + " at index "
-                        + to_string(index.row()) + ", but found " + label);
+                        + to_string(index) + ", but found " + label);
     }
 
-    string icon = menuModel.data(index, MenuRoles::IconRole).toString().toStdString();
+    string icon = get_string_attribute(menuItem, G_MENU_ATTRIBUTE_ICON);
     if (p->m_icon && (*p->m_icon) != icon)
     {
         matchResult.failure(
                 "Expected icon " + *p->m_icon + " at index "
-                        + to_string(index.row()) + ", but found " + icon);
+                        + to_string(index) + ", but found " + icon);
     }
 
-    string action = menuModel.data(index, MenuRoles::ActionRole).toString().toStdString();
     if (p->m_action && (*p->m_action) != action)
     {
         matchResult.failure(
                 "Expected action " + *p->m_action + " at index "
-                        + to_string(index.row()) + ", but found " + action);
+                        + to_string(index) + ", but found " + action);
     }
 
-    string widget = menuModel.data(index, MenuRoles::TypeRole).toString().toStdString();
+    string widget = get_string_attribute(menuItem, "x-canonical-type");
     if (p->m_widget && (*p->m_widget) != widget)
     {
         matchResult.failure(
                 "Expected widget " + *p->m_widget + " at index "
-                        + to_string(index.row()) + ", but found " + widget);
+                        + to_string(index) + ", but found " + widget);
     }
 
-    bool isToggled = menuModel.data(index, MenuRoles::IsToggledRole).toBool();
     if (p->m_isToggled && (*p->m_isToggled) != isToggled)
     {
         matchResult.failure(
                 "Expected toggled = " + string(*p->m_isToggled ? "true" : "false")
-                        + " at index " + to_string(index.row()) + ", but found "
+                        + " at index " + to_string(index) + ", but found "
                         + string(isToggled ? "true" : "false"));
     }
 
     if (!p->m_items.empty())
     {
-        UnityMenuModel *submenuModel = qobject_cast<UnityMenuModel *>(
-                menuModel.submenu(index.row()));
+        shared_ptr<GMenuModel> submenu(g_menu_model_get_item_link(menu.get(), index, G_MENU_LINK_SUBMENU), &g_object_deleter);
 
-        // FIXME No magic sleeps
-        QTestEventLoop::instance().enterLoopMSecs(100);
+        if (!submenu)
+        {
+            submenu.reset(g_menu_model_get_item_link(menu.get(), (int) index, G_MENU_LINK_SECTION), &g_object_deleter);
+        }
 
-        if (!submenuModel)
+        if (!submenu)
         {
             matchResult.failure(
                     "Expected " + to_string(p->m_items.size())
-                            + " children at index " + to_string(index.row())
+                            + " children at index " + to_string(index)
                             + ", but found none");
             return;
         }
 
+        menuWaitForItems(submenu, p->m_items.size());
+
         switch (p->m_mode)
         {
             case Mode::all:
-                p->all(matchResult, *submenuModel, index);
+                p->all(matchResult, submenu, actions, index);
                 break;
             case Mode::starts_with:
-                p->startsWith(matchResult, *submenuModel, index);
+                p->startsWith(matchResult, submenu, actions, index);
                 break;
         }
     }
 
     if (p->m_activate)
     {
-        menuModel.activate(index.row());
+        if (action.empty())
+        {
+            matchResult.failure(
+                    "Tried to activate action at index " + to_string(index)
+                            + ", but no action was found");
+        }
+        else if(!actionGroup)
+        {
+            matchResult.failure(
+                    "Tried to activate action group '" + idPair.first
+                            + "' at index " + to_string(index)
+                                    + ", but action group wasn't found");
+        }
+        else
+        {
+            // TODO Add parameterized activation
+            g_action_group_activate_action(actionGroup.get(),
+                                           idPair.second.c_str(), nullptr);
+        }
     }
 }
 

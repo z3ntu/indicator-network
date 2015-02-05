@@ -18,6 +18,8 @@ if(${trace_messages})
   add_definitions(-DINDICATOR_NETWORK_TRACE_MESSAGES)
 endif()
 
+add_definitions(-DQT_NO_SIGNALS_SLOTS_KEYWORDS=1)
+
 find_package(PkgConfig REQUIRED)
 include(EnableCoverageReport)
 include(GNUInstallDirs)

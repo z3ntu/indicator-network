@@ -40,6 +40,23 @@ namespace mh = menuharness;
 
 namespace
 {
+enum class Secure
+{
+    secure,
+    insecure
+};
+
+enum class ApMode
+{
+    infra,
+    adhoc
+};
+
+enum class ConnectionStatus
+{
+    connected,
+    disconnected
+};
 
 class TestIndicatorNetworkService : public Test
 {
@@ -84,6 +101,66 @@ protected:
         indicator->start(dbusTestRunner.sessionConnection());
     }
 
+    static mh::MenuItemMatcher flightModeSwitch(bool toggled = false)
+    {
+        return mh::MenuItemMatcher::checkbox()
+            .label("Flight Mode")
+            .action("indicator.airplane.enabled")
+            .toggled(toggled);
+    }
+
+    static mh::MenuItemMatcher wifiEnableSwitch(bool toggled = true)
+    {
+        return mh::MenuItemMatcher::checkbox()
+            .label("Wi-Fi")
+            .action("indicator.wifi.enable") // This action is accessed by system-settings-ui, do not change it
+            .toggled(toggled);
+    }
+
+    static mh::MenuItemMatcher wifiSettings()
+    {
+        return mh::MenuItemMatcher()
+            .label("Wi-Fi settings…")
+            .action("indicator.wifi.settings");
+    }
+
+    static mh::MenuItemMatcher modemInfo(unsigned int id)
+    {
+        return mh::MenuItemMatcher()
+            .widget("com.canonical.indicator.network.modeminfoitem")
+            .string_attribute("x-canonical-modem-roaming-action", "indicator.modem." + to_string(id) + "::roaming")
+            .string_attribute("x-canonical-modem-sim-identifier-label-action", "indicator.modem." + to_string(id) + "::sim-identifier-label")
+            .string_attribute("x-canonical-modem-connectivity-icon-action", "indicator.modem." + to_string(id) + "::connectivity-icon")
+            .string_attribute("x-canonical-modem-status-label-action", "indicator.modem." + to_string(id) + "::status-label")
+            .string_attribute("x-canonical-modem-status-icon-action", "indicator.modem." + to_string(id) + "::status-icon")
+            .string_attribute("x-canonical-modem-locked-action", "indicator.modem." + to_string(id) + "::locked");
+    }
+
+    static mh::MenuItemMatcher modemInfo()
+    {
+        return mh::MenuItemMatcher()
+            .widget("com.canonical.indicator.network.modeminfoitem")
+            .has_string_attribute("x-canonical-modem-roaming-action")
+            .has_string_attribute("x-canonical-modem-sim-identifier-label-action")
+            .has_string_attribute("x-canonical-modem-connectivity-icon-action")
+            .has_string_attribute("x-canonical-modem-status-label-action")
+            .has_string_attribute("x-canonical-modem-status-icon-action")
+            .has_string_attribute("x-canonical-modem-locked-action");
+    }
+
+    static mh::MenuItemMatcher accessPoint(const string& ssid, unsigned int id, Secure secure,
+                ApMode apMode, ConnectionStatus connectionStatus)
+    {
+        return mh::MenuItemMatcher::checkbox()
+            .label(ssid)
+            .widget("unity.widgets.systemsettings.tablet.accesspoint")
+            .action("indicator.accesspoint." + to_string(id))
+            .toggled(connectionStatus == ConnectionStatus::connected)
+            .string_attribute("x-canonical-wifi-ap-strength-action", "indicator.accesspoint." + to_string(id) + "::strength")
+            .boolean_attribute("x-canonical-wifi-ap-is-secure", secure == Secure::secure)
+            .boolean_attribute("x-canonical-wifi-ap-is-adhoc", apMode == ApMode::adhoc);
+    }
+
     DBusTestRunner dbusTestRunner;
 
     DBusMock dbusMock;
@@ -100,30 +177,17 @@ TEST_F(TestIndicatorNetworkService, BasicMenuContents)
             .action("indicator.phone.network-status")
             .mode(mh::MenuItemMatcher::Mode::all)
             .submenu()
-            .item(mh::MenuItemMatcher::checkbox()
-                .label("Flight Mode")
-                .action("indicator.airplane.enabled")
-                .toggled(false)
-            )
+            .item(flightModeSwitch())
             .item(mh::MenuItemMatcher()
                 .section()
-                .item(mh::MenuItemMatcher()
-                    .widget("com.canonical.indicator.network.modeminfoitem")
-                )
+                .item(modemInfo(1))
                 .item(mh::MenuItemMatcher()
                     .label("Cellular settings…")
                     .action("indicator.cellular.settings")
                 )
             )
-            .item(mh::MenuItemMatcher::checkbox()
-                .label("Wi-Fi")
-                .action("indicator.wifi.enable")
-                .toggled(true)
-            )
-            .item(mh::MenuItemMatcher()
-                .label("Wi-Fi settings…")
-                .action("indicator.wifi.settings")
-            )
+            .item(wifiEnableSwitch())
+            .item(wifiSettings())
         ).match());
 }
 
@@ -133,7 +197,8 @@ TEST_F(TestIndicatorNetworkService, OneAccessPoint)
     networkManager.AddWiFiDevice("device", "eth1", NM_DEVICE_STATE_DISCONNECTED).waitForFinished();
     networkManager.AddAccessPoint(
             "/org/freedesktop/NetworkManager/Devices/device", "ap", "ssid",
-            "11:22:33:44:55:66", 0, 0, 0, 's', 0).waitForFinished();
+            "11:22:33:44:55:66", NM_802_11_MODE_INFRA, 0, 0, 's',
+            NM_802_11_AP_SEC_KEY_MGMT_PSK).waitForFinished();
     networkManager.AddWiFiConnection(
             "/org/freedesktop/NetworkManager/Devices/device", "connection",
             "the ssid", "wpa-psk").waitForFinished();
@@ -146,42 +211,18 @@ TEST_F(TestIndicatorNetworkService, OneAccessPoint)
             .action("indicator.phone.network-status")
             .mode(mh::MenuItemMatcher::Mode::starts_with)
             .submenu()
-            .item(mh::MenuItemMatcher::checkbox()
-                .label("Flight Mode")
-                .action("indicator.airplane.enabled")
-                .icon("")
-                .toggled(false)
-            )
+            .item(flightModeSwitch())
+            .item(mh::MenuItemMatcher()) // <-- modems are under here
+            .item(wifiEnableSwitch())
             .item(mh::MenuItemMatcher()
                 .section()
-                .item(mh::MenuItemMatcher()
-                    .widget("com.canonical.indicator.network.modeminfoitem")
-                    .label("")
-                    .action("")
-                )
-                .item(mh::MenuItemMatcher()
-                    .label("Cellular settings…")
-                    .action("indicator.cellular.settings")
+                .item(accessPoint("ssid", 1,
+                      Secure::secure,
+                      ApMode::infra,
+                      ConnectionStatus::disconnected)
                 )
             )
-            .item(mh::MenuItemMatcher::checkbox()
-                .label("Wi-Fi")
-                .action("indicator.wifi.enable")
-                .toggled(true)
-            )
-            .item(mh::MenuItemMatcher()
-                .section()
-                .item(mh::MenuItemMatcher::checkbox()
-                    .label("ssid")
-                    .icon("")
-                    .action("indicator.accesspoint.1")
-                    .toggled(false)
-                )
-            )
-            .item(mh::MenuItemMatcher()
-                .label("Wi-Fi settings…")
-                .action("indicator.wifi.settings")
-            )
+            .item(wifiSettings())
         ).match());
 }
 
@@ -201,34 +242,18 @@ TEST_F(TestIndicatorNetworkService, SecondModem)
             .action("indicator.phone.network-status")
             .mode(mh::MenuItemMatcher::Mode::starts_with)
             .submenu()
-            .item(mh::MenuItemMatcher::checkbox()
-                .label("Flight Mode")
-                .action("indicator.airplane.enabled")
-                .icon("")
-                .toggled(false)
-            )
+            .item(flightModeSwitch())
             .item(mh::MenuItemMatcher()
                 .section()
-                .item(mh::MenuItemMatcher()
-                    .widget("com.canonical.indicator.network.modeminfoitem")
-                )
-                .item(mh::MenuItemMatcher()
-                    .widget("com.canonical.indicator.network.modeminfoitem")
-                )
+                .item(modemInfo())
+                .item(modemInfo())
                 .item(mh::MenuItemMatcher()
                     .label("Cellular settings…")
                     .action("indicator.cellular.settings")
                 )
             )
-            .item(mh::MenuItemMatcher::checkbox()
-                .label("Wi-Fi")
-                .action("indicator.wifi.enable")
-                .toggled(true)
-            )
-            .item(mh::MenuItemMatcher()
-                .label("Wi-Fi settings…")
-                .action("indicator.wifi.settings")
-            )
+            .item(wifiEnableSwitch())
+            .item(wifiSettings())
         ).match());
 }
 

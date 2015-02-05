@@ -44,6 +44,13 @@ static shared_ptr<GVariant> get_attribute(const shared_ptr<GMenuItem> menuItem, 
     return value;
 }
 
+static bool get_boolean_attribute(const shared_ptr<GMenuItem> menuItem, const gchar* attribute)
+{
+    gboolean result;
+    g_menu_item_get_attribute(menuItem.get(), attribute, "b", &result);
+    return result;
+}
+
 static string get_string_attribute(const shared_ptr<GMenuItem> menuItem, const gchar* attribute)
 {
     string result;
@@ -141,7 +148,11 @@ struct MenuItemMatcher::Priv
 
     shared_ptr<string> m_action;
 
-    shared_ptr<string> m_widget;
+    vector<pair<string, bool>> m_boolean_attributes;
+
+    vector<pair<string, string>> m_string_attributes;
+
+    vector<string> m_has_string_attributes;
 
     shared_ptr<bool> m_isToggled;
 
@@ -191,7 +202,9 @@ MenuItemMatcher& MenuItemMatcher::operator=(const MenuItemMatcher& other)
     p->m_label = other.p->m_label;
     p->m_icon = other.p->m_icon;
     p->m_action = other.p->m_action;
-    p->m_widget = other.p->m_widget;
+    p->m_boolean_attributes = other.p->m_boolean_attributes;
+    p->m_string_attributes = other.p->m_string_attributes;
+    p->m_has_string_attributes = other.p->m_has_string_attributes;
     p->m_isToggled = other.p->m_isToggled;
     p->m_linkType = other.p->m_linkType;
     p->m_items = other.p->m_items;
@@ -231,7 +244,24 @@ MenuItemMatcher& MenuItemMatcher::icon(const string& icon)
 
 MenuItemMatcher& MenuItemMatcher::widget(const string& widget)
 {
-    p->m_widget = make_shared<string>(widget);
+    return string_attribute("x-canonical-type", widget);
+}
+
+MenuItemMatcher& MenuItemMatcher::boolean_attribute(const string& name, bool value)
+{
+    p->m_boolean_attributes.emplace_back(name, value);
+    return *this;
+}
+
+MenuItemMatcher& MenuItemMatcher::string_attribute(const string& name, const string& value)
+{
+    p->m_string_attributes.emplace_back(name, value);
+    return *this;
+}
+
+MenuItemMatcher& MenuItemMatcher::has_string_attribute(const string& name)
+{
+    p->m_has_string_attributes.emplace_back(name);
     return *this;
 }
 
@@ -359,12 +389,40 @@ void MenuItemMatcher::match(
                         + to_string(index) + ", but found " + action);
     }
 
-    string widget = get_string_attribute(menuItem, "x-canonical-type");
-    if (p->m_widget && (*p->m_widget) != widget)
+    for (const auto& e: p->m_boolean_attributes)
     {
-        matchResult.failure(
-                "Expected widget " + *p->m_widget + " at index "
-                        + to_string(index) + ", but found " + widget);
+        bool value = get_boolean_attribute(menuItem, e.first.c_str());
+        if (e.second != value)
+        {
+            matchResult.failure(
+                    "Expected boolean attribute '" + e.first + "' == "
+                            + (e.second ? "true" : "false") + " at index "
+                            + to_string(index) + ", but found "
+                            + (value ? "true" : "false"));
+        }
+    }
+
+    for (const auto& e: p->m_string_attributes)
+    {
+        string value = get_string_attribute(menuItem, e.first.c_str());
+        if (e.second != value)
+        {
+            matchResult.failure(
+                    "Expected string attribute '" + e.first + "' == '" + e.second
+                            + "' at index " + to_string(index) + ", but found '"
+                                    + value + "'");
+        }
+    }
+
+    for (const string& name: p->m_has_string_attributes)
+    {
+        auto value = get_attribute(menuItem, name.c_str());
+        if (!value)
+        {
+            matchResult.failure(
+                    "Expected string attribute '" + name + "' at index "
+                            + to_string(index) + ", but not found");
+        }
     }
 
     if (p->m_isToggled && (*p->m_isToggled) != isToggled)

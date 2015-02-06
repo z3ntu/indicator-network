@@ -67,6 +67,13 @@ void MatchResult::failure(const string& message)
     p->m_failures.emplace_back(message);
 }
 
+void MatchResult::merge(const MatchResult& other)
+{
+    p->m_success &= other.p->m_success;
+    p->m_failures.insert(p->m_failures.end(), other.p->m_failures.begin(),
+                         other.p->m_failures.end());
+}
+
 bool MatchResult::success() const
 {
     return p->m_success;

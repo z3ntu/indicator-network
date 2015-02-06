@@ -38,7 +38,7 @@ void waitForCore (GObject * obj, const string& signalName) {
                 g_signal_handler_disconnect(obj, s);
             });
 
-    util::ResourcePtr<guint, function<void(guint)>> timer(g_timeout_add_seconds(5,
+    util::ResourcePtr<guint, function<void(guint)>> timer(g_timeout_add(200,
             [](gpointer user_data) -> gboolean
             {
                 g_main_loop_quit((GMainLoop *)user_data);
@@ -51,15 +51,8 @@ void waitForCore (GObject * obj, const string& signalName) {
     g_main_loop_run(loop.get());
 }
 
-void menuWaitForItems(const shared_ptr<GMenuModel>& menu, int expectedCount)
+void menuWaitForItems(const shared_ptr<GMenuModel>& menu)
 {
-    auto count = g_menu_model_get_n_items(menu.get());
-
-    if (count == expectedCount)
-    {
-        return;
-    }
-
     waitForCore(G_OBJECT(menu.get()), "items-changed");
 }
 

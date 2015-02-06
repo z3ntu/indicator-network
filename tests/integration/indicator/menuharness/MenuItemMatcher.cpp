@@ -468,17 +468,39 @@ void MenuItemMatcher::match(
                             + ", but found none");
             return;
         }
-
-        menuWaitForItems(link, p->m_items.size());
-
-        switch (p->m_mode)
+        else
         {
-            case Mode::all:
-                p->all(matchResult, link, actions, index);
-                break;
-            case Mode::starts_with:
-                p->startsWith(matchResult, link, actions, index);
-                break;
+            unsigned int waitCounter = 0;
+            while (true)
+            {
+                MatchResult childMatchResult;
+
+                switch (p->m_mode)
+                {
+                    case Mode::all:
+                        p->all(childMatchResult, link, actions, index);
+                        break;
+                    case Mode::starts_with:
+                        p->startsWith(childMatchResult, link, actions, index);
+                        break;
+                }
+
+                if (childMatchResult.success())
+                {
+                    matchResult.merge(childMatchResult);
+                    break;
+                }
+                else
+                {
+                    ++waitCounter;
+                    if (waitCounter >= 10)
+                    {
+                        matchResult.merge(childMatchResult);
+                        break;
+                    }
+                    menuWaitForItems(link);
+                }
+            }
         }
     }
 

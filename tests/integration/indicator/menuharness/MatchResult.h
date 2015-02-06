@@ -42,6 +42,8 @@ public:
 
     void failure(const std::string& message);
 
+    void merge(const MatchResult& other);
+
     bool success() const;
 
     std::vector<std::string>& failures() const;

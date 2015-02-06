@@ -19,6 +19,8 @@
 #include <menuharness/MenuMatcher.h>
 #include <menuharness/MatchUtils.h>
 
+#include <iostream>
+
 #include <gio/gio.h>
 
 using namespace std;
@@ -29,10 +31,10 @@ namespace
 {
 static void gdbus_connection_deleter(GDBusConnection* connection)
 {
-    if (!g_dbus_connection_is_closed(connection))
-    {
-        g_dbus_connection_close_sync(connection, nullptr, nullptr);
-    }
+//    if (!g_dbus_connection_is_closed(connection))
+//    {
+//        g_dbus_connection_close_sync(connection, nullptr, nullptr);
+//    }
     g_clear_object(&connection);
 }
 }
@@ -147,21 +149,44 @@ MenuMatcher& MenuMatcher::item(const MenuItemMatcher& item)
     return *this;
 }
 
-void MenuMatcher::match(MatchResult& matchResult) const
+void MenuMatcher::match(MatchResult& parentMatchResult) const
 {
-    menuWaitForItems(p->m_menu, p->m_items.size());
-
-    int menuSize = g_menu_model_get_n_items(p->m_menu.get());
-    if (p->m_items.size() > (unsigned int) menuSize)
+    unsigned int waitCounter = 0;
+    while (true)
     {
-        matchResult.failure("row count mismatch " + to_string(p->m_items.size()) + " vs " + to_string(menuSize));
-        return;
-    }
+        MatchResult matchResult;
 
-    for (size_t i = 0; i < p->m_items.size(); ++i)
-    {
-        const auto& matcher = p->m_items.at(i);
-        matcher.match(matchResult, p->m_menu, p->m_actions, i);
+        int menuSize = g_menu_model_get_n_items(p->m_menu.get());
+        if (p->m_items.size() > (unsigned int) menuSize)
+        {
+            matchResult.failure(
+                    "row count mismatch, expected " + to_string(p->m_items.size())
+                            + " but found " + to_string(menuSize));
+        }
+        else
+        {
+            for (size_t i = 0; i < p->m_items.size(); ++i)
+            {
+                const auto& matcher = p->m_items.at(i);
+                matcher.match(matchResult, p->m_menu, p->m_actions, i);
+            }
+        }
+
+        if (matchResult.success())
+        {
+            parentMatchResult.merge(matchResult);
+            break;
+        }
+        else
+        {
+            ++waitCounter;
+            if (waitCounter >= 10)
+            {
+                parentMatchResult.merge(matchResult);
+                break;
+            }
+            menuWaitForItems(p->m_menu);
+        }
     }
 }
 

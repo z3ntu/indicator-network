@@ -27,7 +27,7 @@ namespace menuharness
 {
 void waitForCore(GObject* obj, const std::string& signalName);
 
-void menuWaitForItems(const std::shared_ptr<GMenuModel>& menu, int expectedCount);
+void menuWaitForItems(const std::shared_ptr<GMenuModel>& menu);
 
 void g_object_deleter(gpointer object);
 

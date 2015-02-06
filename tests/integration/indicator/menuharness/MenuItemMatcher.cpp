@@ -524,6 +524,8 @@ void MenuItemMatcher::match(
             // TODO Add parameterized activation
             g_action_group_activate_action(actionGroup.get(),
                                            idPair.second.c_str(), nullptr);
+            // FIXME this is a dodgy way to ensure the activation gets dispatched
+            menuWaitForItems(menu);
         }
     }
 }

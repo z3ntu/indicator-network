@@ -275,7 +275,10 @@ TEST_F(TestIndicatorNetworkService, FlightModeTalksToURfkill)
         ).match());
 
     // Wait to be notified that flight mode was enabled
-    ASSERT_TRUE(urfkillSpy.wait());
+    if (urfkillSpy.empty())
+    {
+        ASSERT_TRUE(urfkillSpy.wait());
+    }
     EXPECT_EQ(urfkillSpy.first(), QVariantList() << QVariant(true));
 }
 

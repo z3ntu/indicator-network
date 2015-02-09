@@ -137,28 +137,16 @@ protected:
             .action("indicator.wifi.settings");
     }
 
-    static mh::MenuItemMatcher modemInfo(unsigned int id)
+    static mh::MenuItemMatcher modemInfo(const string& simIdentifier, const string& label, const string& statusIcon)
     {
         return mh::MenuItemMatcher()
             .widget("com.canonical.indicator.network.modeminfoitem")
-            .string_attribute("x-canonical-modem-roaming-action", "indicator.modem." + to_string(id) + "::roaming")
-            .string_attribute("x-canonical-modem-sim-identifier-label-action", "indicator.modem." + to_string(id) + "::sim-identifier-label")
-            .string_attribute("x-canonical-modem-connectivity-icon-action", "indicator.modem." + to_string(id) + "::connectivity-icon")
-            .string_attribute("x-canonical-modem-status-label-action", "indicator.modem." + to_string(id) + "::status-label")
-            .string_attribute("x-canonical-modem-status-icon-action", "indicator.modem." + to_string(id) + "::status-icon")
-            .string_attribute("x-canonical-modem-locked-action", "indicator.modem." + to_string(id) + "::locked");
-    }
-
-    static mh::MenuItemMatcher modemInfo()
-    {
-        return mh::MenuItemMatcher()
-            .widget("com.canonical.indicator.network.modeminfoitem")
-            .has_string_attribute("x-canonical-modem-roaming-action")
-            .has_string_attribute("x-canonical-modem-sim-identifier-label-action")
-            .has_string_attribute("x-canonical-modem-connectivity-icon-action")
-            .has_string_attribute("x-canonical-modem-status-label-action")
-            .has_string_attribute("x-canonical-modem-status-icon-action")
-            .has_string_attribute("x-canonical-modem-locked-action");
+            .pass_through_string_attribute("x-canonical-modem-sim-identifier-label-action", simIdentifier)
+            .pass_through_string_attribute("x-canonical-modem-connectivity-icon-action", "")
+            .pass_through_string_attribute("x-canonical-modem-status-label-action", label)
+            .pass_through_string_attribute("x-canonical-modem-status-icon-action", statusIcon)
+            .pass_through_boolean_attribute("x-canonical-modem-roaming-action", false)
+            .pass_through_boolean_attribute("x-canonical-modem-locked-action", false);
     }
 
     static mh::MenuItemMatcher cellularSettings()
@@ -187,7 +175,10 @@ TEST_F(TestIndicatorNetworkService, BasicMenuContents)
             .item(flightModeSwitch())
             .item(mh::MenuItemMatcher()
                 .section()
-                .item(modemInfo(1))
+                .item(modemInfo("",
+                                "fake.tel",
+                                "gsm-3g-full")
+                )
                 .item(cellularSettings())
             )
             .item(wifiEnableSwitch())
@@ -249,8 +240,8 @@ TEST_F(TestIndicatorNetworkService, SecondModem)
             .item(flightModeSwitch())
             .item(mh::MenuItemMatcher()
                 .section()
-                .item(modemInfo())
-                .item(modemInfo())
+                .item(modemInfo("SIM 1", "fake.tel", "gsm-3g-full"))
+                .item(modemInfo("SIM 2", "fake.tel", "gsm-3g-full"))
                 .item(cellularSettings())
             )
             .item(wifiEnableSwitch())

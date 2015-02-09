@@ -36,6 +36,39 @@ enum class LinkType
     submenu
 };
 
+static string bool_to_string(bool value)
+{
+    return value? "true" : "false";
+}
+
+static shared_ptr<GVariant> get_action_group_attribute(const shared_ptr<GActionGroup>& actionGroup, const gchar* attribute)
+{
+    shared_ptr<GVariant> value(
+            g_action_group_get_action_state(actionGroup.get(), attribute),
+            &gvariant_deleter);
+    return value;
+}
+
+static bool get_action_group_boolean_attribute(const shared_ptr<GActionGroup>& actionGroup, const gchar* attribute)
+{
+    auto variant = get_action_group_attribute(actionGroup, attribute);
+    gboolean value = g_variant_get_boolean(variant.get());
+    return value;
+}
+
+static string get_action_group_string_attribute(const shared_ptr<GActionGroup>& actionGroup, const gchar* attribute)
+{
+    string result;
+    auto variant = get_action_group_attribute(actionGroup, attribute);
+    gsize length = 0;
+    const gchar* temp = g_variant_get_string(variant.get(), &length);
+    if (length != 0)
+    {
+        result = temp;
+    }
+    return result;
+}
+
 static shared_ptr<GVariant> get_attribute(const shared_ptr<GMenuItem> menuItem, const gchar* attribute)
 {
     shared_ptr<GVariant> value(
@@ -150,6 +183,10 @@ struct MenuItemMatcher::Priv
 
     vector<pair<string, bool>> m_boolean_attributes;
 
+    vector<pair<string, bool>> m_pass_through_boolean_attributes;
+
+    vector<pair<string, string>> m_pass_through_string_attributes;
+
     vector<pair<string, string>> m_string_attributes;
 
     vector<string> m_has_string_attributes;
@@ -203,6 +240,8 @@ MenuItemMatcher& MenuItemMatcher::operator=(const MenuItemMatcher& other)
     p->m_icon = other.p->m_icon;
     p->m_action = other.p->m_action;
     p->m_boolean_attributes = other.p->m_boolean_attributes;
+    p->m_pass_through_boolean_attributes = other.p->m_pass_through_boolean_attributes;
+    p->m_pass_through_string_attributes = other.p->m_pass_through_string_attributes;
     p->m_string_attributes = other.p->m_string_attributes;
     p->m_has_string_attributes = other.p->m_has_string_attributes;
     p->m_isToggled = other.p->m_isToggled;
@@ -250,6 +289,18 @@ MenuItemMatcher& MenuItemMatcher::widget(const string& widget)
 MenuItemMatcher& MenuItemMatcher::boolean_attribute(const string& name, bool value)
 {
     p->m_boolean_attributes.emplace_back(name, value);
+    return *this;
+}
+
+MenuItemMatcher& MenuItemMatcher::pass_through_boolean_attribute(const string& name, bool value)
+{
+    p->m_pass_through_boolean_attributes.emplace_back(name, value);
+    return *this;
+}
+
+MenuItemMatcher& MenuItemMatcher::pass_through_string_attribute(const string& name, const string& value)
+{
+    p->m_pass_through_string_attributes.emplace_back(name, value);
     return *this;
 }
 
@@ -396,9 +447,71 @@ void MenuItemMatcher::match(
         {
             matchResult.failure(
                     "Expected boolean attribute '" + e.first + "' == "
-                            + (e.second ? "true" : "false") + " at index "
+                            + bool_to_string(e.second) + " at index "
                             + to_string(index) + ", but found "
-                            + (value ? "true" : "false"));
+                            + bool_to_string(value));
+        }
+    }
+
+    for (const auto& e: p->m_pass_through_boolean_attributes)
+    {
+        string actionName = get_string_attribute(menuItem, e.first.c_str());
+        if (actionName.empty())
+        {
+            matchResult.failure("Could not find action name '" + actionName + "'");
+        }
+        else
+        {
+            auto passThroughIdPair = split_action(actionName);
+            auto actionGroup = actions[passThroughIdPair.first];
+            if (actionGroup)
+            {
+                bool value = get_action_group_boolean_attribute(
+                        actionGroup, passThroughIdPair.second.c_str());
+                if (e.second != value)
+                {
+                    matchResult.failure(
+                            "Expected boolean pass-through attribute '"
+                                    + e.first + "' == "
+                                    + bool_to_string(e.second) + "' at index "
+                                    + to_string(index) + ", but found '"
+                                    + bool_to_string(value) + "'");
+                }
+            }
+            else
+            {
+                matchResult.failure("Could not find action group for ID '" + passThroughIdPair.first + "'");
+            }
+        }
+    }
+
+    for (const auto& e: p->m_pass_through_string_attributes)
+    {
+        string actionName = get_string_attribute(menuItem, e.first.c_str());
+        if (actionName.empty())
+        {
+            matchResult.failure("Could not find action name '" + actionName + "'");
+        }
+        else
+        {
+            auto passThroughIdPair = split_action(actionName);
+            auto actionGroup = actions[passThroughIdPair.first];
+            if (actionGroup)
+            {
+                string value = get_action_group_string_attribute(
+                        actionGroup, passThroughIdPair.second.c_str());
+                if (e.second != value)
+                {
+                    matchResult.failure(
+                            "Expected string pass-through attribute '" + e.first + "' == '" + e.second
+                                    + "' at index " + to_string(index) + ", but found '"
+                                            + value + "'");
+                }
+            }
+            else
+            {
+                matchResult.failure("Could not find action group for ID '" + passThroughIdPair.first + "'");
+            }
         }
     }
 
@@ -428,9 +541,9 @@ void MenuItemMatcher::match(
     if (p->m_isToggled && (*p->m_isToggled) != isToggled)
     {
         matchResult.failure(
-                "Expected toggled = " + string(*p->m_isToggled ? "true" : "false")
+                "Expected toggled = " + bool_to_string(*p->m_isToggled)
                         + " at index " + to_string(index) + ", but found "
-                        + string(isToggled ? "true" : "false"));
+                        + bool_to_string(isToggled));
     }
 
     if (!p->m_items.empty())
@@ -493,8 +606,9 @@ void MenuItemMatcher::match(
                 else
                 {
                     ++waitCounter;
-                    if (waitCounter >= 10)
+                    if (waitCounter >= 10 || childMatchResult.hardFailed())
                     {
+                        childMatchResult.hardFailure();
                         matchResult.merge(childMatchResult);
                         break;
                     }

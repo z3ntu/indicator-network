@@ -180,7 +180,7 @@ void MenuMatcher::match(MatchResult& parentMatchResult) const
         else
         {
             ++waitCounter;
-            if (waitCounter >= 10)
+            if (waitCounter >= 10 || matchResult.hardFailed())
             {
                 parentMatchResult.merge(matchResult);
                 break;

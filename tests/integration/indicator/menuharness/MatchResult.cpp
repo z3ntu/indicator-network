@@ -27,6 +27,8 @@ namespace menuharness
 
 struct MatchResult::Priv
 {
+    bool m_hardFailure = false;
+
     bool m_success = true;
 
     vector<string> m_failures;
@@ -50,6 +52,7 @@ MatchResult::MatchResult(const MatchResult& other) :
 
 MatchResult& MatchResult::operator=(const MatchResult& other)
 {
+    p->m_hardFailure = other.p->m_hardFailure;
     p->m_success = other.p->m_success;
     p->m_failures= other.p->m_failures;
     return *this;
@@ -61,6 +64,12 @@ MatchResult& MatchResult::operator=(MatchResult&& other)
     return *this;
 }
 
+void MatchResult::hardFailure()
+{
+    p->m_hardFailure = true;
+    p->m_success = false;
+}
+
 void MatchResult::failure(const string& message)
 {
     p->m_success = false;
@@ -69,9 +78,15 @@ void MatchResult::failure(const string& message)
 
 void MatchResult::merge(const MatchResult& other)
 {
+    p->m_hardFailure |= other.p->m_hardFailure;
     p->m_success &= other.p->m_success;
     p->m_failures.insert(p->m_failures.end(), other.p->m_failures.begin(),
                          other.p->m_failures.end());
+}
+
+bool MatchResult::hardFailed() const
+{
+    return p->m_hardFailure;
 }
 
 bool MatchResult::success() const

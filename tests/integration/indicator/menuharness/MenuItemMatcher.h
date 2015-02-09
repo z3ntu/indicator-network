@@ -72,6 +72,10 @@ public:
 
     MenuItemMatcher& boolean_attribute(const std::string& name, bool value);
 
+    MenuItemMatcher& pass_through_boolean_attribute(const std::string& actionName, bool value);
+
+    MenuItemMatcher& pass_through_string_attribute(const std::string& actionName, const std::string& value);
+
     MenuItemMatcher& string_attribute(const std::string& name, const std::string& value);
 
     MenuItemMatcher& has_string_attribute(const std::string& name);

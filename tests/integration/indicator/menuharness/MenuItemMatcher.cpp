@@ -258,7 +258,10 @@ MenuItemMatcher& MenuItemMatcher::pass_through_attribute(const string& actionNam
 
 MenuItemMatcher& MenuItemMatcher::pass_through_boolean_attribute(const string& actionName, bool value)
 {
-    return pass_through_attribute(actionName, shared_ptr<GVariant>(g_variant_new_boolean(value), &g_variant_unref));
+    return pass_through_attribute(
+            actionName,
+            shared_ptr<GVariant>(g_variant_new_boolean(value),
+                                 &gvariant_deleter));
 }
 
 MenuItemMatcher& MenuItemMatcher::pass_through_string_attribute(const string& actionName, const string& value)
@@ -266,7 +269,7 @@ MenuItemMatcher& MenuItemMatcher::pass_through_string_attribute(const string& ac
     return pass_through_attribute(
             actionName,
             shared_ptr<GVariant>(g_variant_new_string(value.c_str()),
-                                 &g_variant_unref));
+                                 &gvariant_deleter));
 }
 
 MenuItemMatcher& MenuItemMatcher::attribute(const string& name, const shared_ptr<GVariant>& value)
@@ -280,7 +283,7 @@ MenuItemMatcher& MenuItemMatcher::boolean_attribute(const string& name, bool val
     return attribute(
             name,
             shared_ptr<GVariant>(g_variant_new_boolean(value),
-                                 &g_variant_unref));
+                                 &gvariant_deleter));
 }
 
 MenuItemMatcher& MenuItemMatcher::string_attribute(const string& name, const string& value)
@@ -288,7 +291,7 @@ MenuItemMatcher& MenuItemMatcher::string_attribute(const string& name, const str
     return attribute(
             name,
             shared_ptr<GVariant>(g_variant_new_string(value.c_str()),
-                                 &g_variant_unref));
+                                 &gvariant_deleter));
 }
 
 MenuItemMatcher& MenuItemMatcher::toggled(bool isToggled)

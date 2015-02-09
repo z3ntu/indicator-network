@@ -101,6 +101,18 @@ protected:
         indicator->start(dbusTestRunner.sessionConnection());
     }
 
+    void createAccessPoint()
+    {
+        auto& networkManager(dbusMock.networkManagerInterface());
+        networkManager.AddAccessPoint(
+                    "/org/freedesktop/NetworkManager/Devices/device", "ap", "the ssid",
+                    "11:22:33:44:55:66", NM_802_11_MODE_INFRA, 0, 0, 's',
+                    NM_802_11_AP_SEC_KEY_MGMT_PSK).waitForFinished();
+        networkManager.AddWiFiConnection(
+                "/org/freedesktop/NetworkManager/Devices/device", "connection",
+                "the ssid", "wpa-psk").waitForFinished();
+    }
+
     static mh::MenuItemMatcher flightModeSwitch(bool toggled = false)
     {
         return mh::MenuItemMatcher::checkbox()
@@ -117,7 +129,9 @@ protected:
             .widget("unity.widgets.systemsettings.tablet.accesspoint")
             .action("indicator.accesspoint." + to_string(id))
             .toggled(connectionStatus == ConnectionStatus::connected)
-            .string_attribute("x-canonical-wifi-ap-strength-action", "indicator.accesspoint." + to_string(id) + "::strength")
+            .pass_through_attribute(
+                "x-canonical-wifi-ap-strength-action",
+                shared_ptr<GVariant>(g_variant_new_byte(0x73), &g_variant_unref))
             .boolean_attribute("x-canonical-wifi-ap-is-secure", secure == Secure::secure)
             .boolean_attribute("x-canonical-wifi-ap-is-adhoc", apMode == ApMode::adhoc);
     }
@@ -186,17 +200,11 @@ TEST_F(TestIndicatorNetworkService, BasicMenuContents)
         ).match());
 }
 
-TEST_F(TestIndicatorNetworkService, OneAccessPoint)
+TEST_F(TestIndicatorNetworkService, OneAccessPointDisconnected)
 {
     auto& networkManager(dbusMock.networkManagerInterface());
     networkManager.AddWiFiDevice("device", "eth1", NM_DEVICE_STATE_DISCONNECTED).waitForFinished();
-    networkManager.AddAccessPoint(
-            "/org/freedesktop/NetworkManager/Devices/device", "ap", "the ssid",
-            "11:22:33:44:55:66", NM_802_11_MODE_INFRA, 0, 0, 's',
-            NM_802_11_AP_SEC_KEY_MGMT_PSK).waitForFinished();
-    networkManager.AddWiFiConnection(
-            "/org/freedesktop/NetworkManager/Devices/device", "connection",
-            "the ssid", "wpa-psk").waitForFinished();
+    createAccessPoint();
 
     startIndicator();
 
@@ -220,6 +228,35 @@ TEST_F(TestIndicatorNetworkService, OneAccessPoint)
             .item(wifiSettings())
         ).match());
 }
+
+//TEST_F(TestIndicatorNetworkService, OneAccessPointConnected)
+//{
+//    auto& networkManager(dbusMock.networkManagerInterface());
+//    networkManager.AddWiFiDevice("device", "eth1", NM_DEVICE_STATE_ACTIVATED).waitForFinished();
+//    createAccessPoint();
+//
+//    startIndicator();
+//
+//    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+//        .item(mh::MenuItemMatcher()
+//            .label("")
+//            .action("indicator.phone.network-status")
+//            .mode(mh::MenuItemMatcher::Mode::starts_with)
+//            .submenu()
+//            .item(flightModeSwitch())
+//            .item(mh::MenuItemMatcher()) // <-- modems are under here
+//            .item(wifiEnableSwitch())
+//            .item(mh::MenuItemMatcher()
+//                .section()
+//                .item(accessPoint("the ssid", 1,
+//                      Secure::secure,
+//                      ApMode::infra,
+//                      ConnectionStatus::connected)
+//                )
+//            )
+//            .item(wifiSettings())
+//        ).match());
+//}
 
 TEST_F(TestIndicatorNetworkService, SecondModem)
 {

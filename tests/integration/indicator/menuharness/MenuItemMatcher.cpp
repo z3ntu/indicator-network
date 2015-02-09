@@ -49,39 +49,12 @@ static shared_ptr<GVariant> get_action_group_attribute(const shared_ptr<GActionG
     return value;
 }
 
-static bool get_action_group_boolean_attribute(const shared_ptr<GActionGroup>& actionGroup, const gchar* attribute)
-{
-    auto variant = get_action_group_attribute(actionGroup, attribute);
-    gboolean value = g_variant_get_boolean(variant.get());
-    return value;
-}
-
-static string get_action_group_string_attribute(const shared_ptr<GActionGroup>& actionGroup, const gchar* attribute)
-{
-    string result;
-    auto variant = get_action_group_attribute(actionGroup, attribute);
-    gsize length = 0;
-    const gchar* temp = g_variant_get_string(variant.get(), &length);
-    if (length != 0)
-    {
-        result = temp;
-    }
-    return result;
-}
-
 static shared_ptr<GVariant> get_attribute(const shared_ptr<GMenuItem> menuItem, const gchar* attribute)
 {
     shared_ptr<GVariant> value(
             g_menu_item_get_attribute_value(menuItem.get(), attribute, nullptr),
             &gvariant_deleter);
     return value;
-}
-
-static bool get_boolean_attribute(const shared_ptr<GMenuItem> menuItem, const gchar* attribute)
-{
-    gboolean result;
-    g_menu_item_get_attribute(menuItem.get(), attribute, "b", &result);
-    return result;
 }
 
 static string get_string_attribute(const shared_ptr<GMenuItem> menuItem, const gchar* attribute)
@@ -181,15 +154,9 @@ struct MenuItemMatcher::Priv
 
     shared_ptr<string> m_action;
 
-    vector<pair<string, bool>> m_boolean_attributes;
+    vector<pair<string, shared_ptr<GVariant>>> m_attributes;
 
-    vector<pair<string, bool>> m_pass_through_boolean_attributes;
-
-    vector<pair<string, string>> m_pass_through_string_attributes;
-
-    vector<pair<string, string>> m_string_attributes;
-
-    vector<string> m_has_string_attributes;
+    vector<pair<string, shared_ptr<GVariant>>> m_pass_through_attributes;
 
     shared_ptr<bool> m_isToggled;
 
@@ -239,11 +206,8 @@ MenuItemMatcher& MenuItemMatcher::operator=(const MenuItemMatcher& other)
     p->m_label = other.p->m_label;
     p->m_icon = other.p->m_icon;
     p->m_action = other.p->m_action;
-    p->m_boolean_attributes = other.p->m_boolean_attributes;
-    p->m_pass_through_boolean_attributes = other.p->m_pass_through_boolean_attributes;
-    p->m_pass_through_string_attributes = other.p->m_pass_through_string_attributes;
-    p->m_string_attributes = other.p->m_string_attributes;
-    p->m_has_string_attributes = other.p->m_has_string_attributes;
+    p->m_attributes = other.p->m_attributes;
+    p->m_pass_through_attributes = other.p->m_pass_through_attributes;
     p->m_isToggled = other.p->m_isToggled;
     p->m_linkType = other.p->m_linkType;
     p->m_items = other.p->m_items;
@@ -286,34 +250,45 @@ MenuItemMatcher& MenuItemMatcher::widget(const string& widget)
     return string_attribute("x-canonical-type", widget);
 }
 
+MenuItemMatcher& MenuItemMatcher::pass_through_attribute(const string& actionName, const shared_ptr<GVariant>& value)
+{
+    p->m_pass_through_attributes.emplace_back(actionName, value);
+    return *this;
+}
+
+MenuItemMatcher& MenuItemMatcher::pass_through_boolean_attribute(const string& actionName, bool value)
+{
+    return pass_through_attribute(actionName, shared_ptr<GVariant>(g_variant_new_boolean(value), &g_variant_unref));
+}
+
+MenuItemMatcher& MenuItemMatcher::pass_through_string_attribute(const string& actionName, const string& value)
+{
+    return pass_through_attribute(
+            actionName,
+            shared_ptr<GVariant>(g_variant_new_string(value.c_str()),
+                                 &g_variant_unref));
+}
+
+MenuItemMatcher& MenuItemMatcher::attribute(const string& name, const shared_ptr<GVariant>& value)
+{
+    p->m_attributes.emplace_back(name, value);
+    return *this;
+}
+
 MenuItemMatcher& MenuItemMatcher::boolean_attribute(const string& name, bool value)
 {
-    p->m_boolean_attributes.emplace_back(name, value);
-    return *this;
-}
-
-MenuItemMatcher& MenuItemMatcher::pass_through_boolean_attribute(const string& name, bool value)
-{
-    p->m_pass_through_boolean_attributes.emplace_back(name, value);
-    return *this;
-}
-
-MenuItemMatcher& MenuItemMatcher::pass_through_string_attribute(const string& name, const string& value)
-{
-    p->m_pass_through_string_attributes.emplace_back(name, value);
-    return *this;
+    return attribute(
+            name,
+            shared_ptr<GVariant>(g_variant_new_boolean(value),
+                                 &g_variant_unref));
 }
 
 MenuItemMatcher& MenuItemMatcher::string_attribute(const string& name, const string& value)
 {
-    p->m_string_attributes.emplace_back(name, value);
-    return *this;
-}
-
-MenuItemMatcher& MenuItemMatcher::has_string_attribute(const string& name)
-{
-    p->m_has_string_attributes.emplace_back(name);
-    return *this;
+    return attribute(
+            name,
+            shared_ptr<GVariant>(g_variant_new_string(value.c_str()),
+                                 &g_variant_unref));
 }
 
 MenuItemMatcher& MenuItemMatcher::toggled(bool isToggled)
@@ -407,8 +382,6 @@ void MenuItemMatcher::match(
         actualType = Type::radio;
     }
 
-    cerr << "action = '" << action << "' of type '" << type_to_string(actualType) << "' at index " << index << endl;
-
     if (actualType != p->m_type)
     {
         matchResult.failure(
@@ -440,20 +413,7 @@ void MenuItemMatcher::match(
                         + to_string(index) + ", but found " + action);
     }
 
-    for (const auto& e: p->m_boolean_attributes)
-    {
-        bool value = get_boolean_attribute(menuItem, e.first.c_str());
-        if (e.second != value)
-        {
-            matchResult.failure(
-                    "Expected boolean attribute '" + e.first + "' == "
-                            + bool_to_string(e.second) + " at index "
-                            + to_string(index) + ", but found "
-                            + bool_to_string(value));
-        }
-    }
-
-    for (const auto& e: p->m_pass_through_boolean_attributes)
+    for (const auto& e: p->m_pass_through_attributes)
     {
         string actionName = get_string_attribute(menuItem, e.first.c_str());
         if (actionName.empty())
@@ -466,16 +426,21 @@ void MenuItemMatcher::match(
             auto actionGroup = actions[passThroughIdPair.first];
             if (actionGroup)
             {
-                bool value = get_action_group_boolean_attribute(
+                auto value = get_action_group_attribute(
                         actionGroup, passThroughIdPair.second.c_str());
-                if (e.second != value)
+                if (g_variant_compare(e.second.get(), value.get()))
                 {
+                    gchar* expectedString = g_variant_print(e.second.get(), true);
+                    gchar* actualString = g_variant_print(value.get(), true);
                     matchResult.failure(
-                            "Expected boolean pass-through attribute '"
+                            "Expected pass-through attribute '"
                                     + e.first + "' == "
-                                    + bool_to_string(e.second) + "' at index "
-                                    + to_string(index) + ", but found '"
-                                    + bool_to_string(value) + "'");
+                                    + expectedString + " at index "
+                                    + to_string(index) + " but found "
+                                    + actualString);
+
+                    g_free(expectedString);
+                    g_free(actualString);
                 }
             }
             else
@@ -485,56 +450,26 @@ void MenuItemMatcher::match(
         }
     }
 
-    for (const auto& e: p->m_pass_through_string_attributes)
+    for (const auto& e: p->m_attributes)
     {
-        string actionName = get_string_attribute(menuItem, e.first.c_str());
-        if (actionName.empty())
-        {
-            matchResult.failure("Could not find action name '" + actionName + "'");
-        }
-        else
-        {
-            auto passThroughIdPair = split_action(actionName);
-            auto actionGroup = actions[passThroughIdPair.first];
-            if (actionGroup)
-            {
-                string value = get_action_group_string_attribute(
-                        actionGroup, passThroughIdPair.second.c_str());
-                if (e.second != value)
-                {
-                    matchResult.failure(
-                            "Expected string pass-through attribute '" + e.first + "' == '" + e.second
-                                    + "' at index " + to_string(index) + ", but found '"
-                                            + value + "'");
-                }
-            }
-            else
-            {
-                matchResult.failure("Could not find action group for ID '" + passThroughIdPair.first + "'");
-            }
-        }
-    }
-
-    for (const auto& e: p->m_string_attributes)
-    {
-        string value = get_string_attribute(menuItem, e.first.c_str());
-        if (e.second != value)
-        {
-            matchResult.failure(
-                    "Expected string attribute '" + e.first + "' == '" + e.second
-                            + "' at index " + to_string(index) + ", but found '"
-                                    + value + "'");
-        }
-    }
-
-    for (const string& name: p->m_has_string_attributes)
-    {
-        auto value = get_attribute(menuItem, name.c_str());
+        auto value = get_attribute(menuItem, e.first.c_str());
         if (!value)
         {
             matchResult.failure(
-                    "Expected string attribute '" + name + "' at index "
-                            + to_string(index) + ", but not found");
+                    "Expected attribute '" + e.first
+                            + "' could not be found at index "
+                            + to_string(index));
+        }
+        else if (g_variant_compare(e.second.get(), value.get()))
+        {
+            gchar* expectedString = g_variant_print(e.second.get(), true);
+            gchar* actualString = g_variant_print(value.get(), true);
+            matchResult.failure(
+                    "Expected attribute '" + e.first + "' == " + expectedString
+                            + " at index " + to_string(index) + ", but found "
+                            + actualString);
+            g_free(expectedString);
+            g_free(actualString);
         }
     }
 

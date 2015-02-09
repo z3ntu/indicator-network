@@ -70,15 +70,17 @@ public:
 
     MenuItemMatcher& widget(const std::string& widget);
 
-    MenuItemMatcher& boolean_attribute(const std::string& name, bool value);
+    MenuItemMatcher& pass_through_attribute(const std::string& actionName, const std::shared_ptr<GVariant>& value);
 
     MenuItemMatcher& pass_through_boolean_attribute(const std::string& actionName, bool value);
 
     MenuItemMatcher& pass_through_string_attribute(const std::string& actionName, const std::string& value);
 
-    MenuItemMatcher& string_attribute(const std::string& name, const std::string& value);
+    MenuItemMatcher& attribute(const std::string& name, const std::shared_ptr<GVariant>& value);
 
-    MenuItemMatcher& has_string_attribute(const std::string& name);
+    MenuItemMatcher& boolean_attribute(const std::string& name, bool value);
+
+    MenuItemMatcher& string_attribute(const std::string& name, const std::string& value);
 
     MenuItemMatcher& toggled(bool toggled);
 

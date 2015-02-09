@@ -20,6 +20,7 @@
 #include <libqtdbustest/QProcessDBusService.h>
 #include <libqtdbusmock/DBusMock.h>
 
+#include <menuharness/MatchUtils.h>
 #include <menuharness/MenuMatcher.h>
 
 #include <NetworkManager.h>
@@ -131,7 +132,7 @@ protected:
             .toggled(connectionStatus == ConnectionStatus::connected)
             .pass_through_attribute(
                 "x-canonical-wifi-ap-strength-action",
-                shared_ptr<GVariant>(g_variant_new_byte(0x73), &g_variant_unref))
+                shared_ptr<GVariant>(g_variant_new_byte(0x73), &mh::gvariant_deleter))
             .boolean_attribute("x-canonical-wifi-ap-is-secure", secure == Secure::secure)
             .boolean_attribute("x-canonical-wifi-ap-is-adhoc", apMode == ApMode::adhoc);
     }

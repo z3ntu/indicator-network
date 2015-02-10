@@ -70,8 +70,6 @@ void print_nm_wlans(NetworkManagerRoot *nmroot) {
         } else {
             printf("Connection %s is not wireless.\n", path.path().toUtf8().data());
         }
-        auto &d = devices[0];
-
     }
 }
 

@@ -151,6 +151,8 @@ MenuMatcher& MenuMatcher::item(const MenuItemMatcher& item)
 
 void MenuMatcher::match(MatchResult& parentMatchResult) const
 {
+    vector<unsigned int> location;
+
     unsigned int waitCounter = 0;
     while (true)
     {
@@ -160,7 +162,8 @@ void MenuMatcher::match(MatchResult& parentMatchResult) const
         if (p->m_items.size() > (unsigned int) menuSize)
         {
             matchResult.failure(
-                    "row count mismatch, expected " + to_string(p->m_items.size())
+                    location,
+                    "Row count mismatch, expected " + to_string(p->m_items.size())
                             + " but found " + to_string(menuSize));
         }
         else
@@ -168,7 +171,7 @@ void MenuMatcher::match(MatchResult& parentMatchResult) const
             for (size_t i = 0; i < p->m_items.size(); ++i)
             {
                 const auto& matcher = p->m_items.at(i);
-                matcher.match(matchResult, p->m_menu, p->m_actions, i);
+                matcher.match(matchResult, location, p->m_menu, p->m_actions, i);
             }
         }
 

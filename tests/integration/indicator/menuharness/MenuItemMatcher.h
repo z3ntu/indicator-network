@@ -96,7 +96,8 @@ public:
 
     MenuItemMatcher& activate();
 
-    void match(MatchResult& matchResult, const std::shared_ptr<GMenuModel>& menu,
+    void match(MatchResult& matchResult, const std::vector<unsigned int>& location,
+          const std::shared_ptr<GMenuModel>& menu,
           std::map<std::string, std::shared_ptr<GActionGroup>>& actions,
           int index) const;
 

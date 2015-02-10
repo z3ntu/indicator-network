@@ -99,46 +99,46 @@ static string type_to_string(MenuItemMatcher::Type type)
 
 struct MenuItemMatcher::Priv
 {
-    void all(MatchResult& matchResult, const shared_ptr<GMenuModel>& menu,
-             map<string, shared_ptr<GActionGroup>>& actions, int index)
+    void all(MatchResult& matchResult, const vector<unsigned int>& location,
+        const shared_ptr<GMenuModel>& menu,
+        map<string, shared_ptr<GActionGroup>>& actions)
     {
         int count = g_menu_model_get_n_items(menu.get());
 
         if (m_items.size() != (unsigned int) count)
         {
             matchResult.failure(
+                    location,
                     "Expected " + to_string(m_items.size())
-                            + " children at index " + to_string(index)
-                            + ", but found "
-                            + to_string(count));
+                            + " children, but found " + to_string(count));
             return;
         }
 
         for (size_t i = 0; i < m_items.size(); ++i)
         {
             const auto& matcher = m_items.at(i);
-            matcher.match(matchResult, menu, actions, i);
+            matcher.match(matchResult, location, menu, actions, i);
         }
     }
 
-    void startsWith(MatchResult& matchResult, const shared_ptr<GMenuModel>& menu,
-                 map<string, shared_ptr<GActionGroup>>& actions, int index)
+    void startsWith(MatchResult& matchResult, const vector<unsigned int>& location,
+               const shared_ptr<GMenuModel>& menu,
+               map<string, shared_ptr<GActionGroup>>& actions)
     {
         int count = g_menu_model_get_n_items(menu.get());
         if (m_items.size() > (unsigned int) count)
         {
             matchResult.failure(
+                    location,
                     "Expected at least " + to_string(m_items.size())
-                            + " children at index " + to_string(index)
-                            + ", but found "
-                            + to_string(count));
+                            + " children, but found " + to_string(count));
             return;
         }
 
         for (size_t i = 0; i < m_items.size(); ++i)
         {
             const auto& matcher = m_items.at(i);
-            matcher.match(matchResult, menu, actions, i);
+            matcher.match(matchResult, location, menu, actions, i);
         }
     }
 
@@ -337,11 +337,16 @@ MenuItemMatcher& MenuItemMatcher::activate()
 }
 
 void MenuItemMatcher::match(
-        MatchResult& matchResult, const shared_ptr<GMenuModel>& menu,
-        map<string, shared_ptr<GActionGroup>>& actions,
-        int index) const
+        MatchResult& matchResult,
+       const vector<unsigned int>& parentLocation,
+       const shared_ptr<GMenuModel>& menu,
+       map<string, shared_ptr<GActionGroup>>& actions,
+       int index) const
 {
     shared_ptr<GMenuItem> menuItem(g_menu_item_new_from_model(menu.get(), index), &g_object_deleter);
+
+    vector<unsigned int> location(parentLocation);
+    location.emplace_back(index);
 
     string action = get_string_attribute(menuItem, G_MENU_ATTRIBUTE_ACTION);
 
@@ -388,8 +393,8 @@ void MenuItemMatcher::match(
     if (actualType != p->m_type)
     {
         matchResult.failure(
-                "Expected " + type_to_string(p->m_type) + " at index "
-                        + to_string(index) + ", found "
+                location,
+                "Expected " + type_to_string(p->m_type) + ", found "
                         + type_to_string(actualType));
     }
 
@@ -397,23 +402,25 @@ void MenuItemMatcher::match(
     if (p->m_label && (*p->m_label) != label)
     {
         matchResult.failure(
-                "Expected label " + *p->m_label + " at index "
-                        + to_string(index) + ", but found " + label);
+                location,
+                "Expected label '" + *p->m_label + "', but found '" + label
+                        + "'");
     }
 
     string icon = get_string_attribute(menuItem, G_MENU_ATTRIBUTE_ICON);
     if (p->m_icon && (*p->m_icon) != icon)
     {
         matchResult.failure(
-                "Expected icon " + *p->m_icon + " at index "
-                        + to_string(index) + ", but found " + icon);
+                location,
+                "Expected icon '" + *p->m_icon + "', but found '" + icon + "'");
     }
 
     if (p->m_action && (*p->m_action) != action)
     {
         matchResult.failure(
-                "Expected action " + *p->m_action + " at index "
-                        + to_string(index) + ", but found " + action);
+                location,
+                "Expected action '" + *p->m_action + "', but found '" + action
+                        + "'");
     }
 
     for (const auto& e: p->m_pass_through_attributes)
@@ -421,7 +428,9 @@ void MenuItemMatcher::match(
         string actionName = get_string_attribute(menuItem, e.first.c_str());
         if (actionName.empty())
         {
-            matchResult.failure("Could not find action name '" + actionName + "'");
+            matchResult.failure(
+                    location,
+                    "Could not find action name '" + actionName + "'");
         }
         else
         {
@@ -436,10 +445,9 @@ void MenuItemMatcher::match(
                     gchar* expectedString = g_variant_print(e.second.get(), true);
                     gchar* actualString = g_variant_print(value.get(), true);
                     matchResult.failure(
-                            "Expected pass-through attribute '"
-                                    + e.first + "' == "
-                                    + expectedString + " at index "
-                                    + to_string(index) + " but found "
+                            location,
+                            "Expected pass-through attribute '" + e.first
+                                    + "' == " + expectedString + " but found "
                                     + actualString);
 
                     g_free(expectedString);
@@ -448,7 +456,7 @@ void MenuItemMatcher::match(
             }
             else
             {
-                matchResult.failure("Could not find action group for ID '" + passThroughIdPair.first + "'");
+                matchResult.failure(location, "Could not find action group for ID '" + passThroughIdPair.first + "'");
             }
         }
     }
@@ -458,19 +466,18 @@ void MenuItemMatcher::match(
         auto value = get_attribute(menuItem, e.first.c_str());
         if (!value)
         {
-            matchResult.failure(
+            matchResult.failure(location,
                     "Expected attribute '" + e.first
-                            + "' could not be found at index "
-                            + to_string(index));
+                            + "' could not be found");
         }
         else if (g_variant_compare(e.second.get(), value.get()))
         {
             gchar* expectedString = g_variant_print(e.second.get(), true);
             gchar* actualString = g_variant_print(value.get(), true);
             matchResult.failure(
+                    location,
                     "Expected attribute '" + e.first + "' == " + expectedString
-                            + " at index " + to_string(index) + ", but found "
-                            + actualString);
+                            + ", but found " + actualString);
             g_free(expectedString);
             g_free(actualString);
         }
@@ -479,9 +486,9 @@ void MenuItemMatcher::match(
     if (p->m_isToggled && (*p->m_isToggled) != isToggled)
     {
         matchResult.failure(
+                location,
                 "Expected toggled = " + bool_to_string(*p->m_isToggled)
-                        + " at index " + to_string(index) + ", but found "
-                        + bool_to_string(isToggled));
+                        + ", but found " + bool_to_string(isToggled));
     }
 
     if (!p->m_items.empty())
@@ -514,9 +521,9 @@ void MenuItemMatcher::match(
         if (!link)
         {
             matchResult.failure(
+                    location,
                     "Expected " + to_string(p->m_items.size())
-                            + " children at index " + to_string(index)
-                            + ", but found none");
+                            + " children, but found none");
             return;
         }
         else
@@ -529,10 +536,10 @@ void MenuItemMatcher::match(
                 switch (p->m_mode)
                 {
                     case Mode::all:
-                        p->all(childMatchResult, link, actions, index);
+                        p->all(childMatchResult, location, link, actions);
                         break;
                     case Mode::starts_with:
-                        p->startsWith(childMatchResult, link, actions, index);
+                        p->startsWith(childMatchResult, location, link, actions);
                         break;
                 }
 
@@ -561,15 +568,15 @@ void MenuItemMatcher::match(
         if (action.empty())
         {
             matchResult.failure(
-                    "Tried to activate action at index " + to_string(index)
-                            + ", but no action was found");
+                    location,
+                    "Tried to activate action, but menu item has no action");
         }
         else if(!actionGroup)
         {
             matchResult.failure(
+                    location,
                     "Tried to activate action group '" + idPair.first
-                            + "' at index " + to_string(index)
-                                    + ", but action group wasn't found");
+                            + "', but action group wasn't found");
         }
         else
         {

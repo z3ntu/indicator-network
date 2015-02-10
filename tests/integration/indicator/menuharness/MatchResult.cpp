@@ -18,12 +18,69 @@
 
 #include <menuharness/MatchResult.h>
 
+#include <map>
 #include <sstream>
+#include <iostream>
 
 using namespace std;
 
 namespace menuharness
 {
+namespace
+{
+static void printLocation(ostream& ss, const vector<unsigned int>& location, bool first)
+{
+    for (int i : location)
+    {
+        ss << " ";
+        if (first)
+        {
+            ss << i;
+        }
+        else
+        {
+            ss << " ";
+        }
+    }
+    ss << " ";
+}
+
+struct compare_vector
+{
+    bool operator()(const vector<unsigned int>& a,
+               const vector<unsigned int>& b) const
+    {
+        auto p1 = a.begin();
+        auto p2 = b.begin();
+
+        while (p1 != a.end())
+        {
+            if (p2 == b.end())
+            {
+                return false;
+            }
+            if (*p2 > *p1)
+            {
+                return true;
+            }
+            if (*p1 > *p2)
+            {
+                return false;
+            }
+
+            ++p1;
+            ++p2;
+        }
+
+        if (p2 != b.end())
+        {
+            return true;
+        }
+
+        return false;
+    }
+};
+}
 
 struct MatchResult::Priv
 {
@@ -31,7 +88,7 @@ struct MatchResult::Priv
 
     bool m_success = true;
 
-    vector<string> m_failures;
+    map<vector<unsigned int>, vector<string>, compare_vector> m_failures;
 };
 
 MatchResult::MatchResult() :
@@ -70,18 +127,25 @@ void MatchResult::hardFailure()
     p->m_success = false;
 }
 
-void MatchResult::failure(const string& message)
+void MatchResult::failure(const vector<unsigned int>& location, const string& message)
 {
     p->m_success = false;
-    p->m_failures.emplace_back(message);
+    auto it = p->m_failures.find(location);
+    if (it == p->m_failures.end())
+    {
+        it = p->m_failures.insert(make_pair(location, vector<string>())).first;
+    }
+    it->second.emplace_back(message);
 }
 
 void MatchResult::merge(const MatchResult& other)
 {
     p->m_hardFailure |= other.p->m_hardFailure;
     p->m_success &= other.p->m_success;
-    p->m_failures.insert(p->m_failures.end(), other.p->m_failures.begin(),
-                         other.p->m_failures.end());
+    for (const auto& e : other.p->m_failures)
+    {
+        p->m_failures.insert(make_pair(e.first, e.second));
+    }
 }
 
 bool MatchResult::hardFailed() const
@@ -94,18 +158,19 @@ bool MatchResult::success() const
     return p->m_success;
 }
 
-vector<string>& MatchResult::failures() const
-{
-    return p->m_failures;
-}
-
 string MatchResult::concat_failures() const
 {
     stringstream ss;
     ss << "Failed expectations:" << endl;
     for (const auto& failure : p->m_failures)
     {
-        ss << failure << endl;
+        bool first = true;
+        for (const string& s: failure.second)
+        {
+            printLocation(ss, failure.first, first);
+            first = false;
+            ss << s << endl;
+        }
     }
     return ss.str();
 }

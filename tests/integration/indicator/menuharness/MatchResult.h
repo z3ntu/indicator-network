@@ -42,15 +42,13 @@ public:
 
     void hardFailure();
 
-    void failure(const std::string& message);
+    void failure(const std::vector<unsigned int>& location, const std::string& message);
 
     void merge(const MatchResult& other);
 
     bool success() const;
 
     bool hardFailed() const;
-
-    std::vector<std::string>& failures() const;
 
     std::string concat_failures() const;
 

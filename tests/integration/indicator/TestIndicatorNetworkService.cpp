@@ -81,7 +81,7 @@ protected:
 
     void TearDown() override
     {
-        QTestEventLoop::instance().enterLoopMSecs(200);
+        QTestEventLoop::instance().enterLoopMSecs(500);
     }
 
     static mh::MenuMatcher::Parameters phoneParameters()
@@ -102,16 +102,27 @@ protected:
         indicator->start(dbusTestRunner.sessionConnection());
     }
 
-    void createAccessPoint()
+    QString createWiFiDevice(int state, const QString& id = "0")
     {
         auto& networkManager(dbusMock.networkManagerInterface());
-        networkManager.AddAccessPoint(
-                    "/org/freedesktop/NetworkManager/Devices/device", "ap", "the ssid",
+        return networkManager.AddWiFiDevice(id, "eth1", state);
+    }
+
+    QString createAccessPoint(const QString& id, const QString& ssid, const QString& device)
+    {
+        auto& networkManager(dbusMock.networkManagerInterface());
+        return networkManager.AddAccessPoint(
+                    device, id, ssid,
                     "11:22:33:44:55:66", NM_802_11_MODE_INFRA, 0, 0, 's',
-                    NM_802_11_AP_SEC_KEY_MGMT_PSK).waitForFinished();
-        networkManager.AddWiFiConnection(
-                "/org/freedesktop/NetworkManager/Devices/device", "connection",
-                "the ssid", "wpa-psk").waitForFinished();
+                    NM_802_11_AP_SEC_KEY_MGMT_PSK);
+    }
+
+    QString createAccessPointConnection(const QString& id, const QString& ssid, const QString& device)
+    {
+        auto& networkManager(dbusMock.networkManagerInterface());
+        return networkManager.AddWiFiConnection(
+                device, id,
+                ssid, "wpa-psk");
     }
 
     static mh::MenuItemMatcher flightModeSwitch(bool toggled = false)
@@ -201,11 +212,11 @@ TEST_F(TestIndicatorNetworkService, BasicMenuContents)
         ).match());
 }
 
-TEST_F(TestIndicatorNetworkService, OneAccessPointDisconnected)
+TEST_F(TestIndicatorNetworkService, OneDisconnectedAccessPointAtStartup)
 {
-    auto& networkManager(dbusMock.networkManagerInterface());
-    networkManager.AddWiFiDevice("device", "eth1", NM_DEVICE_STATE_DISCONNECTED).waitForFinished();
-    createAccessPoint();
+    auto device = createWiFiDevice(NM_DEVICE_STATE_DISCONNECTED);
+    auto ap = createAccessPoint("0", "the ssid", device);
+    auto connection = createAccessPointConnection("0", "the ssid", device);
 
     startIndicator();
 
@@ -230,34 +241,69 @@ TEST_F(TestIndicatorNetworkService, OneAccessPointDisconnected)
         ).match());
 }
 
-//TEST_F(TestIndicatorNetworkService, OneAccessPointConnected)
-//{
-//    auto& networkManager(dbusMock.networkManagerInterface());
-//    networkManager.AddWiFiDevice("device", "eth1", NM_DEVICE_STATE_ACTIVATED).waitForFinished();
-//    createAccessPoint();
-//
-//    startIndicator();
-//
-//    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
-//        .item(mh::MenuItemMatcher()
-//            .label("")
-//            .action("indicator.phone.network-status")
-//            .mode(mh::MenuItemMatcher::Mode::starts_with)
-//            .submenu()
-//            .item(flightModeSwitch())
-//            .item(mh::MenuItemMatcher()) // <-- modems are under here
-//            .item(wifiEnableSwitch())
-//            .item(mh::MenuItemMatcher()
-//                .section()
-//                .item(accessPoint("the ssid", 1,
-//                      Secure::secure,
-//                      ApMode::infra,
-//                      ConnectionStatus::connected)
-//                )
-//            )
-//            .item(wifiSettings())
-//        ).match());
-//}
+TEST_F(TestIndicatorNetworkService, OneConnectedAccessPointAtStartup)
+{
+    auto device = createWiFiDevice(NM_DEVICE_STATE_ACTIVATED);
+    auto ap = createAccessPoint("0", "the ssid", device);
+    auto connection = createAccessPointConnection("0", "the ssid", device);
+
+    auto& nm = dbusMock.networkManagerInterface();
+    auto activeConnection = nm.AddActiveConnection(QStringList{ device },
+                           connection,
+                           ap,
+                           "0",
+                           NM_ACTIVE_CONNECTION_STATE_ACTIVATED);
+
+    startIndicator();
+
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .label("")
+            .action("indicator.phone.network-status")
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .submenu()
+            .item(flightModeSwitch())
+            .item(mh::MenuItemMatcher()) // <-- modems are under here
+            .item(wifiEnableSwitch())
+            .item(mh::MenuItemMatcher()
+                .section()
+                .item(accessPoint("the ssid", 1,
+                      Secure::secure,
+                      ApMode::infra,
+                      ConnectionStatus::connected)
+                )
+            )
+            .item(wifiSettings())
+        ).match());
+}
+
+TEST_F(TestIndicatorNetworkService, AddOneAccessPointAfterStartup)
+{
+    auto device = createWiFiDevice(NM_DEVICE_STATE_ACTIVATED);
+    startIndicator();
+    auto ap = createAccessPoint("0", "the ssid", device);
+    auto connection = createAccessPointConnection("0", "the ssid", device);
+
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .label("")
+            .action("indicator.phone.network-status")
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .submenu()
+            .item(flightModeSwitch())
+            .item(mh::MenuItemMatcher())
+            .item(wifiEnableSwitch())
+            .item(mh::MenuItemMatcher()
+                .section()
+                .item(accessPoint("the ssid", 1,
+                      Secure::secure,
+                      ApMode::infra,
+                      ConnectionStatus::disconnected)
+                )
+            )
+            .item(wifiSettings())
+        ).match());
+}
 
 TEST_F(TestIndicatorNetworkService, SecondModem)
 {

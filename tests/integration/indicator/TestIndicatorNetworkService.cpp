@@ -125,6 +125,22 @@ protected:
                 ssid, "wpa-psk");
     }
 
+    QString createActiveConnection(const QString& id, const QString& device, const QString& connection, const QString& ap)
+    {
+        auto& nm = dbusMock.networkManagerInterface();
+        return nm.AddActiveConnection(QStringList() << device,
+                               connection,
+                               ap,
+                               id,
+                               NM_ACTIVE_CONNECTION_STATE_ACTIVATED);
+    }
+
+    void setGlobalConnectedState(int state)
+    {
+        auto& nm = dbusMock.networkManagerInterface();
+        return nm.SetGlobalConnectionState(state).waitForFinished();
+    }
+
     static mh::MenuItemMatcher flightModeSwitch(bool toggled = false)
     {
         return mh::MenuItemMatcher::checkbox()
@@ -191,6 +207,7 @@ protected:
 
 TEST_F(TestIndicatorNetworkService, BasicMenuContents)
 {
+    setGlobalConnectedState(NM_STATE_DISCONNECTED);
     startIndicator();
 
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
@@ -214,6 +231,7 @@ TEST_F(TestIndicatorNetworkService, BasicMenuContents)
 
 TEST_F(TestIndicatorNetworkService, OneDisconnectedAccessPointAtStartup)
 {
+    setGlobalConnectedState(NM_STATE_DISCONNECTED);
     auto device = createWiFiDevice(NM_DEVICE_STATE_DISCONNECTED);
     auto ap = createAccessPoint("0", "the ssid", device);
     auto connection = createAccessPointConnection("0", "the ssid", device);
@@ -222,9 +240,6 @@ TEST_F(TestIndicatorNetworkService, OneDisconnectedAccessPointAtStartup)
 
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
-            .label("")
-            .action("indicator.phone.network-status")
-            .mode(mh::MenuItemMatcher::Mode::starts_with)
             .submenu()
             .item(flightModeSwitch())
             .item(mh::MenuItemMatcher()) // <-- modems are under here
@@ -243,24 +258,16 @@ TEST_F(TestIndicatorNetworkService, OneDisconnectedAccessPointAtStartup)
 
 TEST_F(TestIndicatorNetworkService, OneConnectedAccessPointAtStartup)
 {
+    setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
     auto device = createWiFiDevice(NM_DEVICE_STATE_ACTIVATED);
     auto ap = createAccessPoint("0", "the ssid", device);
     auto connection = createAccessPointConnection("0", "the ssid", device);
-
-    auto& nm = dbusMock.networkManagerInterface();
-    auto activeConnection = nm.AddActiveConnection(QStringList{ device },
-                           connection,
-                           ap,
-                           "0",
-                           NM_ACTIVE_CONNECTION_STATE_ACTIVATED);
+    createActiveConnection("0", device, connection, ap);
 
     startIndicator();
 
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
-            .label("")
-            .action("indicator.phone.network-status")
-            .mode(mh::MenuItemMatcher::Mode::starts_with)
             .submenu()
             .item(flightModeSwitch())
             .item(mh::MenuItemMatcher()) // <-- modems are under here
@@ -277,18 +284,17 @@ TEST_F(TestIndicatorNetworkService, OneConnectedAccessPointAtStartup)
         ).match());
 }
 
-TEST_F(TestIndicatorNetworkService, AddOneAccessPointAfterStartup)
+TEST_F(TestIndicatorNetworkService, AddOneDisconnectedAccessPointAfterStartup)
 {
-    auto device = createWiFiDevice(NM_DEVICE_STATE_ACTIVATED);
+    setGlobalConnectedState(NM_STATE_DISCONNECTED);
+    auto device = createWiFiDevice(NM_DEVICE_STATE_DISCONNECTED);
+
     startIndicator();
     auto ap = createAccessPoint("0", "the ssid", device);
     auto connection = createAccessPointConnection("0", "the ssid", device);
 
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
-            .label("")
-            .action("indicator.phone.network-status")
-            .mode(mh::MenuItemMatcher::Mode::starts_with)
             .submenu()
             .item(flightModeSwitch())
             .item(mh::MenuItemMatcher())
@@ -299,6 +305,36 @@ TEST_F(TestIndicatorNetworkService, AddOneAccessPointAfterStartup)
                       Secure::secure,
                       ApMode::infra,
                       ConnectionStatus::disconnected)
+                )
+            )
+            .item(wifiSettings())
+        ).match());
+}
+
+TEST_F(TestIndicatorNetworkService, AddOneConnectedAccessPointAfterStartup)
+{
+    setGlobalConnectedState(NM_STATE_DISCONNECTED);
+    auto device = createWiFiDevice(NM_DEVICE_STATE_DISCONNECTED);
+
+    startIndicator();
+
+    auto ap = createAccessPoint("0", "the ssid", device);
+    auto connection = createAccessPointConnection("0", "the ssid", device);
+    createActiveConnection("0", device, connection, ap);
+    setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
+
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .submenu()
+            .item(flightModeSwitch())
+            .item(mh::MenuItemMatcher())
+            .item(wifiEnableSwitch())
+            .item(mh::MenuItemMatcher()
+                .section()
+                .item(accessPoint("the ssid", 1,
+                      Secure::secure,
+                      ApMode::infra,
+                      ConnectionStatus::connected)
                 )
             )
             .item(wifiSettings())
@@ -317,9 +353,6 @@ TEST_F(TestIndicatorNetworkService, SecondModem)
 
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
-            .label("")
-            .action("indicator.phone.network-status")
-            .mode(mh::MenuItemMatcher::Mode::starts_with)
             .submenu()
             .item(flightModeSwitch())
             .item(mh::MenuItemMatcher()
@@ -363,8 +396,6 @@ TEST_F(TestIndicatorNetworkService, IndicatorListensToURfkill)
 
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
-            .label("")
-            .action("indicator.phone.network-status")
             .mode(mh::MenuItemMatcher::Mode::starts_with)
             .submenu()
             .item(flightModeSwitch(false))
@@ -374,8 +405,6 @@ TEST_F(TestIndicatorNetworkService, IndicatorListensToURfkill)
 
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
-            .label("")
-            .action("indicator.phone.network-status")
             .mode(mh::MenuItemMatcher::Mode::starts_with)
             .item(flightModeSwitch(true))
         ).match());

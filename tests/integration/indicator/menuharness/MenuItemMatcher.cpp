@@ -440,7 +440,14 @@ void MenuItemMatcher::match(
             {
                 auto value = get_action_group_attribute(
                         actionGroup, passThroughIdPair.second.c_str());
-                if (g_variant_compare(e.second.get(), value.get()))
+                if (!value)
+                {
+                    matchResult.failure(
+                            location,
+                            "Expected pass-through attribute '" + e.first
+                                    + "' was not present");
+                }
+                else if (g_variant_compare(e.second.get(), value.get()))
                 {
                     gchar* expectedString = g_variant_print(e.second.get(), true);
                     gchar* actualString = g_variant_print(value.get(), true);

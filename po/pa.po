@@ -8,15 +8,15 @@ msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-10-07 20:43+0300\n"
-"PO-Revision-Date: 2014-10-16 03:13+0000\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"PO-Revision-Date: 2015-02-14 11:45+0000\n"
+"Last-Translator: Gursharnjit_Singh <ubuntuser13@gmail.com>\n"
 "Language-Team: Punjabi <pa@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2014-10-17 06:26+0000\n"
-"X-Generator: Launchpad (build 17196)\n"
+"X-Launchpad-Export-Date: 2015-02-15 06:37+0000\n"
+"X-Generator: Launchpad (build 17341)\n"
 
 #: src/indicator/quick-access-section.cpp:48
 msgid "Flight Mode"
@@ -48,6 +48,8 @@ msgstr "ਇਹ ਤੁਹਾਡੀ ਆਖਰੀ ਕੋਸ਼ਿਸ਼ ਹੋਵੇਗ�
 msgid ""
 "If %{1} PIN is entered incorrectly you will require your PUK code to unlock."
 msgstr ""
+"ਜੇਕਰ ਤੁਸੀਂ %{1} PIN ਗਲਤ ਦਾਖਲ ਕੀਤਾ ਤਾਂ ਤੁਹਾਨੂੰ ਲਾੱਕ ਖੋਲ੍ਹਣ ਲਈ PUK ਕੋਡ ਦੀ ਲੋੜ "
+"ਪਵੇਗੀ।"
 
 #: src/indicator/sim-unlock-dialog.cpp:168
 msgid "Sorry, your %{1} is now blocked."
@@ -55,22 +57,25 @@ msgstr "ਅਫਸੋਸ, ਤੁਹਾਡਾ %{1} ਹੁਣ ਬਲਾਕ ਹੋ �
 
 #: src/indicator/sim-unlock-dialog.cpp:173
 msgid "Please enter your PUK code to unblock SIM card."
-msgstr ""
+msgstr "ਸਿਮ ਕਾਰਡ ਦਾ ਲਾੱਕ ਖੋਲ੍ਹਣ ਲਈ ਆਪਣਾ PUK ਕੋਡ ਦਿਓ।"
 
 #: src/indicator/sim-unlock-dialog.cpp:175
 msgid "You may need to contact your network provider for PUK code."
 msgstr ""
+"ਹੋ ਸਕਦਾ ਤੁਹਾਨੂੰ PUK ਕੋਡ ਲਈ ਤੁਹਾਡੇ ਨੈੱਟਵਰਕ ਪ੍ਰਦਾਤਾ ਨਾਲ ਸੰਪਰਕ ਕਰਨ ਦੀ ਲੋੜ ਪਵੇ।"
 
 #: src/indicator/sim-unlock-dialog.cpp:183
 #: src/indicator/sim-unlock-dialog.cpp:197
 msgid "Sorry, incorrect PUK."
-msgstr ""
+msgstr "ਮੁਆਫ਼ੀ, ਗਲਤ PUK।"
 
 #: src/indicator/sim-unlock-dialog.cpp:187
 msgid ""
 "If PUK code is entered incorrectly, your SIM card will be blocked and needs "
 "replacement."
 msgstr ""
+"ਜੇਕਰ ਤੁਸੀਂ PUK ਕੋਡ ਗਲਤ ਦਾਖਲ ਕੀਤਾ, ਤੁਹਾਡਾ ਸਿਮ ਕਾਰਡ ਬਲਾਕ ਹੋ ਜਾਵੇਗਾ ਅਤੇ ਬਦਲਣਾ "
+"ਪਵੇਗਾ।"
 
 #: src/indicator/sim-unlock-dialog.cpp:189
 msgid "Please contact your network provider."
@@ -78,23 +83,23 @@ msgstr "ਆਪਣੇ ਨੈੱਟਵਰਕ ਸੇਵਾ ਦੇਣ ਵਾਲੇ �
 
 #: src/indicator/sim-unlock-dialog.cpp:199
 msgid "Your SIM card is now permanently blocked and needs replacement."
-msgstr ""
+msgstr "ਤੁਹਾਡਾ ਸਿਮ ਕਾਰਡ ਹੁਣ ਪੱਕੇ ਤੌਰ ਤੇ ਬਲਾਕ ਹੋ ਗਿਆ ਅਤੇ ਬਦਲਣ ਦੀ ਜ਼ਰੂਰਤ ਹੈ।"
 
 #: src/indicator/sim-unlock-dialog.cpp:201
 msgid "Please contact your service provider."
-msgstr ""
+msgstr "ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ ਸੇਵਾ ਪ੍ਰਦਾਤਾ ਨਾਲ ਸੰਪਰਕ ਕਰੋ।"
 
 #: src/indicator/sim-unlock-dialog.cpp:265
 msgid "Enter %{1} PIN"
-msgstr ""
+msgstr "%{1} PIN ਦਿਓ"
 
 #: src/indicator/sim-unlock-dialog.cpp:272
 msgid "Enter PUK code"
-msgstr ""
+msgstr "PUK ਕੋਡ ਦਿਓ"
 
 #: src/indicator/sim-unlock-dialog.cpp:274
 msgid "Enter PUK code for %{1}"
-msgstr ""
+msgstr "%{1} ਲਈ PUK ਕੋਡ ਦਿਓ"
 
 #: src/indicator/sim-unlock-dialog.cpp:282
 #, c-format
@@ -105,34 +110,34 @@ msgstr[1] "%d ਕੋਸ਼ਿਸ਼ਾਂ ਬਾਕੀ ਹਨ"
 
 #: src/indicator/sim-unlock-dialog.cpp:293
 msgid "Enter new %{1} PIN"
-msgstr ""
+msgstr "ਨਵਾਂ %{1} PIN ਦਿਓ"
 
 #: src/indicator/sim-unlock-dialog.cpp:301
 msgid "Confirm new %{1} PIN"
-msgstr ""
+msgstr "ਨਵੇਂ %{1} PIN ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ"
 
 #: src/indicator/sim-unlock-dialog.cpp:340
 #: src/indicator/sim-unlock-dialog.cpp:515
 msgid "PIN codes did not match."
-msgstr ""
+msgstr "PIN ਕੋਡਾਂ ਦਾ ਮੇਲ ਨਹੀਂ ਹੋਇਆ।"
 
 #: src/indicator/sim-unlock-dialog.cpp:495
 #: src/indicator/sim-unlock-dialog.cpp:523
 msgid "Enter SIM PIN"
-msgstr ""
+msgstr "SIM PIN ਦਿਓ"
 
 #: src/indicator/sim-unlock-dialog.cpp:506
 #: src/indicator/sim-unlock-dialog.cpp:516
 msgid "Enter new PIN code"
-msgstr ""
+msgstr "ਨਵਾਂ PIN ਕੋਡ ਦਿਓ"
 
 #: src/indicator/sim-unlock-dialog.cpp:510
 msgid "Confirm new PIN code"
-msgstr ""
+msgstr "ਨਵੇਂ PIN ਕੋਡ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ"
 
 #: src/indicator/sim-unlock-dialog.cpp:522
 msgid "Failed to change PIN."
-msgstr ""
+msgstr "PIN ਨਹੀਂ ਬਦਲ ਸਕਿਆ।"
 
 #: src/indicator/wifi-link-item.h:88
 msgid "Wi-Fi"
@@ -156,7 +161,7 @@ msgstr "ਸਿਮ ਗਲਤੀ"
 
 #: src/indicator/wwan-link-item.cpp:100
 msgid "SIM Locked"
-msgstr ""
+msgstr "ਸਿਮ ਲਾੱਕ ਹੋਇਆ"
 
 #: src/indicator/wwan-link-item.cpp:112
 msgid "Unregistered"

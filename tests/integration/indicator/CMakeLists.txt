@@ -32,7 +32,7 @@ target_link_libraries(
     ${GMOCK_LIBRARIES}
 )
 
-add_dbus_test(
+add_test(
     integration-tests
     integration-tests
 )

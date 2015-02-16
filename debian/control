@@ -30,7 +30,6 @@ Build-Depends: cmake,
                qt5-default,
                qtbase5-dev,
                qtbase5-dev-tools,
-               qtdbustest-runner,
                valgrind [amd64 armhf i386 powerpc],
 Standards-Version: 3.9.3
 # If you aren't a member of ~indicator-applet-developers but need to upload

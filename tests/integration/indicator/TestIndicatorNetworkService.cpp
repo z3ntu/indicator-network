@@ -69,19 +69,26 @@ protected:
 
     void SetUp() override
     {
+//        dbusTestRunner.registerService(
+//                DBusServicePtr(
+//                        new QProcessDBusService(
+//                                "", QDBusConnection::SessionBus,
+//                                "/usr/bin/bustle-pcap",
+//                                QStringList{"-e", "/tmp/bustle-session.log"})));
+//        dbusTestRunner.registerService(
+//                DBusServicePtr(
+//                        new QProcessDBusService(
+//                                "", QDBusConnection::SystemBus,
+//                                "/usr/bin/bustle-pcap",
+//                                QStringList{"-y", "/tmp/bustle-system.log"})));
+
         dbusMock.registerNetworkManager();
         // By default the ofono mock starts with one modem
         dbusMock.registerOfono();
         dbusMock.registerURfkill();
 
-        dbusMock.networkManagerInterface();
 
         dbusTestRunner.startServices();
-    }
-
-    void TearDown() override
-    {
-        QTestEventLoop::instance().enterLoopMSecs(500);
     }
 
     static mh::MenuMatcher::Parameters phoneParameters()
@@ -105,40 +112,54 @@ protected:
     QString createWiFiDevice(int state, const QString& id = "0")
     {
         auto& networkManager(dbusMock.networkManagerInterface());
-        return networkManager.AddWiFiDevice(id, "eth1", state);
+        auto reply = networkManager.AddWiFiDevice(id, "eth1", state);
+        reply.waitForFinished();
+        return reply;
     }
 
     QString createAccessPoint(const QString& id, const QString& ssid, const QString& device)
     {
         auto& networkManager(dbusMock.networkManagerInterface());
-        return networkManager.AddAccessPoint(
-                    device, id, ssid,
-                    "11:22:33:44:55:66", NM_802_11_MODE_INFRA, 0, 0, 's',
-                    NM_802_11_AP_SEC_KEY_MGMT_PSK);
+        auto reply = networkManager.AddAccessPoint(
+                            device, id, ssid,
+                            "11:22:33:44:55:66", NM_802_11_MODE_INFRA, 0, 0, 's',
+                            NM_802_11_AP_SEC_KEY_MGMT_PSK);
+        reply.waitForFinished();
+        return reply;
     }
 
     QString createAccessPointConnection(const QString& id, const QString& ssid, const QString& device)
     {
         auto& networkManager(dbusMock.networkManagerInterface());
-        return networkManager.AddWiFiConnection(
-                device, id,
-                ssid, "wpa-psk");
+        auto reply = networkManager.AddWiFiConnection(device, id, ssid,
+                                                      "wpa-psk");
+        reply.waitForFinished();
+        return reply;
     }
 
     QString createActiveConnection(const QString& id, const QString& device, const QString& connection, const QString& ap)
     {
         auto& nm = dbusMock.networkManagerInterface();
-        return nm.AddActiveConnection(QStringList() << device,
+        auto reply = nm.AddActiveConnection(QStringList() << device,
                                connection,
                                ap,
                                id,
                                NM_ACTIVE_CONNECTION_STATE_ACTIVATED);
+        reply.waitForFinished();
+        return reply;
     }
 
     void setGlobalConnectedState(int state)
     {
         auto& nm = dbusMock.networkManagerInterface();
-        return nm.SetGlobalConnectionState(state).waitForFinished();
+        nm.SetGlobalConnectionState(state).waitForFinished();
+    }
+
+    QString createModem(const QString& id)
+    {
+        auto& ofono(dbusMock.ofonoInterface());
+        QVariantMap modemProperties {{ "Powered", false } };
+        return ofono.AddModem(id, modemProperties);
     }
 
     static mh::MenuItemMatcher flightModeSwitch(bool toggled = false)
@@ -208,7 +229,7 @@ protected:
 TEST_F(TestIndicatorNetworkService, BasicMenuContents)
 {
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
-    startIndicator();
+    ASSERT_NO_THROW(startIndicator());
 
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
@@ -236,7 +257,7 @@ TEST_F(TestIndicatorNetworkService, OneDisconnectedAccessPointAtStartup)
     auto ap = createAccessPoint("0", "the ssid", device);
     auto connection = createAccessPointConnection("0", "the ssid", device);
 
-    startIndicator();
+    ASSERT_NO_THROW(startIndicator());
 
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
@@ -264,7 +285,7 @@ TEST_F(TestIndicatorNetworkService, OneConnectedAccessPointAtStartup)
     auto connection = createAccessPointConnection("0", "the ssid", device);
     createActiveConnection("0", device, connection, ap);
 
-    startIndicator();
+    ASSERT_NO_THROW(startIndicator());
 
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
@@ -289,7 +310,7 @@ TEST_F(TestIndicatorNetworkService, AddOneDisconnectedAccessPointAfterStartup)
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
     auto device = createWiFiDevice(NM_DEVICE_STATE_DISCONNECTED);
 
-    startIndicator();
+    ASSERT_NO_THROW(startIndicator());
     auto ap = createAccessPoint("0", "the ssid", device);
     auto connection = createAccessPointConnection("0", "the ssid", device);
 
@@ -316,7 +337,7 @@ TEST_F(TestIndicatorNetworkService, AddOneConnectedAccessPointAfterStartup)
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
     auto device = createWiFiDevice(NM_DEVICE_STATE_DISCONNECTED);
 
-    startIndicator();
+    ASSERT_NO_THROW(startIndicator());
 
     auto ap = createAccessPoint("0", "the ssid", device);
     auto connection = createAccessPointConnection("0", "the ssid", device);
@@ -343,13 +364,8 @@ TEST_F(TestIndicatorNetworkService, AddOneConnectedAccessPointAfterStartup)
 
 TEST_F(TestIndicatorNetworkService, SecondModem)
 {
-    auto& ofono(dbusMock.ofonoInterface());
-    {
-        QVariantMap modemProperties {{ "Powered", false } };
-        ofono.AddModem("ril_1", modemProperties).waitForFinished();
-    }
-
-    startIndicator();
+    createModem("ril_1"); // ril_0 already exists
+    ASSERT_NO_THROW(startIndicator());
 
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
@@ -366,9 +382,40 @@ TEST_F(TestIndicatorNetworkService, SecondModem)
         ).match());
 }
 
+TEST_F(TestIndicatorNetworkService, ModemSignalStrength)
+{
+    ASSERT_NO_THROW(startIndicator());
+
+    // start at full strength
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .submenu()
+            .item(flightModeSwitch())
+            .item(mh::MenuItemMatcher()
+                .section()
+                .item(modemInfo("", "fake.tel", "gsm-3g-full"))
+                .item(cellularSettings())
+            )
+        ).match());
+
+
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .submenu()
+            .item(flightModeSwitch())
+            .item(mh::MenuItemMatcher()
+                .section()
+                .item(modemInfo("", "fake.tel", "gsm-3g-full"))
+                .item(cellularSettings())
+            )
+        ).match());
+}
+
 TEST_F(TestIndicatorNetworkService, FlightModeTalksToURfkill)
 {
-    startIndicator();
+    ASSERT_NO_THROW(startIndicator());
 
     auto& urfkillInterface = dbusMock.urfkillInterface();
     QSignalSpy urfkillSpy(&urfkillInterface, SIGNAL(FlightModeChanged(bool)));
@@ -392,7 +439,7 @@ TEST_F(TestIndicatorNetworkService, FlightModeTalksToURfkill)
 
 TEST_F(TestIndicatorNetworkService, IndicatorListensToURfkill)
 {
-    startIndicator();
+    ASSERT_NO_THROW(startIndicator());
 
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()

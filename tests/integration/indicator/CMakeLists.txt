@@ -3,10 +3,6 @@ add_definitions(-DNETWORK_SERVICE_BIN="${CMAKE_BINARY_DIR}/src/indicator/indicat
 
 set(
     INTEGRATION_TESTS_SRC
-    menuharness/MatchResult.cpp
-    menuharness/MatchUtils.cpp
-    menuharness/MenuItemMatcher.cpp
-    menuharness/MenuMatcher.cpp
     TestIndicatorNetworkService.cpp
 )
 
@@ -25,9 +21,9 @@ qt5_use_modules(
 target_link_libraries(
     integration-tests
     test-utils
+    menuharness
     ${QTDBUSMOCK_LDFLAGS}
     ${QTDBUSTEST_LDFLAGS}
-    ${GLIB_LDFLAGS}
     ${GTEST_LIBRARIES}
     ${GMOCK_LIBRARIES}
 )

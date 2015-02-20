@@ -497,14 +497,14 @@ void MenuItemMatcher::match(
         if (p->m_state_icons != actual_state_icons)
         {
             std::string expected_icons;
-            for (auto const& icon : p->m_state_icons)
+            for (unsigned int i = 0; i < p->m_state_icons.size(); ++i)
             {
-                expected_icons += icon == p->m_state_icons[0] ? icon : ", " + icon;
+                expected_icons += i == 0 ? p->m_state_icons[i] : ", " + p->m_state_icons[i];
             }
             std::string actual_icons;
-            for (auto const& icon : actual_state_icons)
+            for (unsigned int i = 0; i < actual_state_icons.size(); ++i)
             {
-                actual_icons += icon == actual_state_icons[0] ? icon : ", " + icon;
+                actual_icons += i == 0 ? actual_state_icons[i] : ", " + actual_state_icons[i];
             }
             matchResult.failure(
                     location,

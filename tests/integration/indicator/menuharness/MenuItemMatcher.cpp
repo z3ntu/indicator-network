@@ -154,6 +154,8 @@ struct MenuItemMatcher::Priv
 
     shared_ptr<string> m_action;
 
+    vector<std::string> m_state_icons;
+
     vector<pair<string, shared_ptr<GVariant>>> m_attributes;
 
     vector<pair<string, shared_ptr<GVariant>>> m_pass_through_attributes;
@@ -206,6 +208,7 @@ MenuItemMatcher& MenuItemMatcher::operator=(const MenuItemMatcher& other)
     p->m_label = other.p->m_label;
     p->m_icon = other.p->m_icon;
     p->m_action = other.p->m_action;
+    p->m_state_icons = other.p->m_state_icons;
     p->m_attributes = other.p->m_attributes;
     p->m_pass_through_attributes = other.p->m_pass_through_attributes;
     p->m_isToggled = other.p->m_isToggled;
@@ -236,6 +239,12 @@ MenuItemMatcher& MenuItemMatcher::label(const string& label)
 MenuItemMatcher& MenuItemMatcher::action(const string& action)
 {
     p->m_action = make_shared<string>(action);
+    return *this;
+}
+
+MenuItemMatcher& MenuItemMatcher::state_icons(const std::vector<std::string>& state_icons)
+{
+    p->m_state_icons = state_icons;
     return *this;
 }
 
@@ -356,15 +365,15 @@ void MenuItemMatcher::match(
 
     pair<string, string> idPair;
     shared_ptr<GActionGroup> actionGroup;
+    shared_ptr<GVariant> state;
 
     if (!action.empty())
     {
         idPair = split_action(action);
         actionGroup = actions[idPair.first];
-        shared_ptr<GVariant> state(
-                g_action_group_get_action_state(actionGroup.get(),
-                                                idPair.second.c_str()),
-                &gvariant_deleter);
+        state = shared_ptr<GVariant>(g_action_group_get_action_state(actionGroup.get(),
+                                     idPair.second.c_str()),
+                                     &gvariant_deleter);
         auto attributeTarget = get_attribute(menuItem, G_MENU_ATTRIBUTE_TARGET);
 
         if (attributeTarget && state)
@@ -421,6 +430,84 @@ void MenuItemMatcher::match(
                 location,
                 "Expected action '" + *p->m_action + "', but found '" + action
                         + "'");
+    }
+
+    if (!p->m_state_icons.empty() && !state)
+    {
+        matchResult.failure(
+                location,
+                "Expected state icons but no state was found");
+    }
+    else if (!p->m_state_icons.empty() && state &&
+             !g_variant_is_of_type(state.get(), G_VARIANT_TYPE_VARDICT))
+    {
+        matchResult.failure(
+                location,
+                "Expected state icons vardict, found "
+                        + type_to_string(actualType));
+    }
+    else if (!p->m_state_icons.empty() && state &&
+             g_variant_is_of_type(state.get(), G_VARIANT_TYPE_VARDICT))
+    {
+        std::vector<std::string> actual_state_icons;
+        GVariantIter it;
+        gchar* key;
+        GVariant* value;
+
+        g_variant_iter_init(&it, state.get());
+        while (g_variant_iter_loop(&it, "{sv}", &key, &value))
+        {
+            if (std::string(key) == "icon") {
+                auto gicon = g_icon_deserialize(value);
+                if (gicon && G_IS_THEMED_ICON(gicon))
+                {
+                    auto iconNames = g_themed_icon_get_names(G_THEMED_ICON(gicon));
+                    // Just take the first icon in the list (there is only ever one)
+                    actual_state_icons.push_back(iconNames[0]);
+                    g_object_unref(gicon);
+                }
+            }
+            else if (std::string(key) == "icons" && g_variant_is_of_type(value, G_VARIANT_TYPE("av")))
+            {
+                // If we find "icons" in the map, clear any icons we may have found in "icon",
+                // then break from the loop as we have found all icons now.
+                actual_state_icons.clear();
+                GVariantIter icon_it;
+                GVariant* icon_value;
+
+                g_variant_iter_init(&icon_it, value);
+                while (g_variant_iter_loop(&icon_it, "v", &icon_value))
+                {
+                    auto gicon = g_icon_deserialize(icon_value);
+                    if (gicon && G_IS_THEMED_ICON(gicon))
+                    {
+                        auto iconNames = g_themed_icon_get_names(G_THEMED_ICON(gicon));
+                        // Just take the first icon in the list (there is only ever one)
+                        actual_state_icons.push_back(iconNames[0]);
+                        g_object_unref(gicon);
+                    }
+                }
+                break;
+            }
+        }
+
+        if (p->m_state_icons != actual_state_icons)
+        {
+            std::string expected_icons;
+            for (auto const& icon : p->m_state_icons)
+            {
+                expected_icons += icon == p->m_state_icons[0] ? icon : ", " + icon;
+            }
+            std::string actual_icons;
+            for (auto const& icon : actual_state_icons)
+            {
+                actual_icons += icon == actual_state_icons[0] ? icon : ", " + icon;
+            }
+            matchResult.failure(
+                    location,
+                    "Expected state_icons == {" + expected_icons
+                        + "} but found {" + actual_icons + "}");
+        }
     }
 
     for (const auto& e: p->m_pass_through_attributes)

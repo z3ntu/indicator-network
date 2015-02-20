@@ -66,6 +66,8 @@ public:
 
     MenuItemMatcher& action(const std::string& action);
 
+    MenuItemMatcher& state_icons(const std::vector<std::string>& state);
+
     MenuItemMatcher& icon(const std::string& icon);
 
     MenuItemMatcher& widget(const std::string& widget);

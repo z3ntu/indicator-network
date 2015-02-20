@@ -262,6 +262,7 @@ TEST_F(TestIndicatorNetworkService, OneDisconnectedAccessPointAtStartup)
 
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
+            .state_icons({"gsm-3g-full", "nm-no-connection"})
             .submenu()
             .item(flightModeSwitch())
             .item(mh::MenuItemMatcher()) // <-- modems are under here
@@ -290,6 +291,7 @@ TEST_F(TestIndicatorNetworkService, OneConnectedAccessPointAtStartup)
 
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
+            .state_icons({"gsm-3g-full", "nm-signal-100-secure"})
             .submenu()
             .item(flightModeSwitch())
             .item(mh::MenuItemMatcher()) // <-- modems are under here

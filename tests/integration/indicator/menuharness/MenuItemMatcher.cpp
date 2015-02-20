@@ -487,6 +487,9 @@ void MenuItemMatcher::match(
                         g_object_unref(gicon);
                     }
                 }
+                // We're breaking out of g_variant_iter_loop here so clean up
+                g_variant_unref(value);
+                g_free(key);
                 break;
             }
         }

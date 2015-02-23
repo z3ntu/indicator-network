@@ -537,6 +537,15 @@ void MenuItemMatcher::match(
                             "Expected pass-through attribute '" + e.first
                                     + "' was not present");
                 }
+                else if (!g_variant_is_of_type(e.second.get(), g_variant_get_type(value.get())))
+                {
+                    std::string expectedType = g_variant_get_type_string(e.second.get());
+                    std::string actualType = g_variant_get_type_string(value.get());
+                    matchResult.failure(
+                            location,
+                            "Expected pass-through attribute type '" + expectedType
+                                    + "' but found '" + actualType + "'");
+                }
                 else if (g_variant_compare(e.second.get(), value.get()))
                 {
                     gchar* expectedString = g_variant_print(e.second.get(), true);
@@ -566,6 +575,15 @@ void MenuItemMatcher::match(
             matchResult.failure(location,
                     "Expected attribute '" + e.first
                             + "' could not be found");
+        }
+        else if (!g_variant_is_of_type(e.second.get(), g_variant_get_type(value.get())))
+        {
+            std::string expectedType = g_variant_get_type_string(e.second.get());
+            std::string actualType = g_variant_get_type_string(value.get());
+            matchResult.failure(
+                    location,
+                    "Expected attribute type '" + expectedType
+                            + "' but found '" + actualType + "'");
         }
         else if (g_variant_compare(e.second.get(), value.get()))
         {

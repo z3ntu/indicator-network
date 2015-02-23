@@ -162,6 +162,13 @@ protected:
         return ofono.AddModem(id, modemProperties);
     }
 
+    template<typename T>
+    void setModemProperty(int modemIndex, const QString& propertyName, const T& value)
+    {
+        auto& ofono(dbusMock.ofonoSimManagerInterface(modemIndex));
+        ofono.SetProperty(propertyName, QDBusVariant(value));
+    }
+
     static mh::MenuItemMatcher flightModeSwitch(bool toggled = false)
     {
         return mh::MenuItemMatcher::checkbox()
@@ -457,6 +464,33 @@ TEST_F(TestIndicatorNetworkService, IndicatorListensToURfkill)
         .item(mh::MenuItemMatcher()
             .mode(mh::MenuItemMatcher::Mode::starts_with)
             .item(flightModeSwitch(true))
+        ).match());
+}
+
+TEST_F(TestIndicatorNetworkService, NoSIM)
+{
+    setModemProperty(0, "Present", false);
+
+    setGlobalConnectedState(NM_STATE_DISCONNECTED);
+    ASSERT_NO_THROW(startIndicator());
+
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .action("indicator.phone.network-status")
+            .state_icons({"nm-no-connection"})
+            .mode(mh::MenuItemMatcher::Mode::all)
+            .submenu()
+            .item(flightModeSwitch())
+            .item(mh::MenuItemMatcher()
+                .section()
+                .item(modemInfo("",
+                                "No SIM",
+                                "no-simcard")
+                )
+                .item(cellularSettings())
+            )
+            .item(wifiEnableSwitch())
+            .item(wifiSettings())
         ).match());
 }
 

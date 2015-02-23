@@ -207,7 +207,7 @@ protected:
             .action("indicator.wifi.settings");
     }
 
-    static mh::MenuItemMatcher modemInfo(const string& simIdentifier, const string& label, const string& statusIcon)
+    static mh::MenuItemMatcher modemInfo(const string& simIdentifier, const string& label, const string& statusIcon, bool locked = false)
     {
         return mh::MenuItemMatcher()
             .widget("com.canonical.indicator.network.modeminfoitem")
@@ -216,7 +216,7 @@ protected:
             .pass_through_string_attribute("x-canonical-modem-status-label-action", label)
             .pass_through_string_attribute("x-canonical-modem-status-icon-action", statusIcon)
             .pass_through_boolean_attribute("x-canonical-modem-roaming-action", false)
-            .pass_through_boolean_attribute("x-canonical-modem-locked-action", false);
+            .pass_through_boolean_attribute("x-canonical-modem-locked-action", locked);
     }
 
     static mh::MenuItemMatcher cellularSettings()
@@ -467,11 +467,11 @@ TEST_F(TestIndicatorNetworkService, IndicatorListensToURfkill)
         ).match());
 }
 
-TEST_F(TestIndicatorNetworkService, NoSIM)
+TEST_F(TestIndicatorNetworkService, SimStates_NoSIM)
 {
+    setGlobalConnectedState(NM_STATE_DISCONNECTED);
     setModemProperty(0, "Present", false);
 
-    setGlobalConnectedState(NM_STATE_DISCONNECTED);
     ASSERT_NO_THROW(startIndicator());
 
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
@@ -486,6 +486,36 @@ TEST_F(TestIndicatorNetworkService, NoSIM)
                 .item(modemInfo("",
                                 "No SIM",
                                 "no-simcard")
+                )
+                .item(cellularSettings())
+            )
+            .item(wifiEnableSwitch())
+            .item(wifiSettings())
+        ).match());
+}
+
+TEST_F(TestIndicatorNetworkService, SimStates_LockedSIM)
+{
+    setGlobalConnectedState(NM_STATE_DISCONNECTED);
+    setModemProperty(0, "PinRequired", "pin");
+
+    ASSERT_NO_THROW(startIndicator());
+
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .action("indicator.phone.network-status")
+            .state_icons({"simcard-locked", "nm-no-connection"})
+            .mode(mh::MenuItemMatcher::Mode::all)
+            .submenu()
+            .item(flightModeSwitch())
+            .item(mh::MenuItemMatcher()
+                .section()
+                .item(modemInfo("",
+                                "SIM Locked",
+                                "simcard-locked",
+                                true)
+                      .string_attribute("x-canonical-modem-locked-action", "indicator.modem.1::locked")
+
                 )
                 .item(cellularSettings())
             )

@@ -148,6 +148,8 @@ struct MenuItemMatcher::Priv
 
     LinkType m_linkType = LinkType::any;
 
+    shared_ptr<size_t> m_expectedSize;
+
     shared_ptr<string> m_label;
 
     shared_ptr<string> m_icon;
@@ -205,6 +207,7 @@ MenuItemMatcher& MenuItemMatcher::operator=(const MenuItemMatcher& other)
 {
     p->m_type = other.p->m_type;
     p->m_mode = other.p->m_mode;
+    p->m_expectedSize = other.p->m_expectedSize;
     p->m_label = other.p->m_label;
     p->m_icon = other.p->m_icon;
     p->m_action = other.p->m_action;
@@ -324,6 +327,17 @@ MenuItemMatcher& MenuItemMatcher::submenu()
 MenuItemMatcher& MenuItemMatcher::section()
 {
     p->m_linkType = LinkType::section;
+    return *this;
+}
+
+MenuItemMatcher& MenuItemMatcher::is_empty()
+{
+    return has_exactly(0);
+}
+
+MenuItemMatcher& MenuItemMatcher::has_exactly(size_t children)
+{
+    p->m_expectedSize = make_shared<size_t>(children);
     return *this;
 }
 
@@ -606,7 +620,7 @@ void MenuItemMatcher::match(
                         + ", but found " + bool_to_string(isToggled));
     }
 
-    if (!p->m_items.empty())
+    if (!p->m_items.empty() || p->m_expectedSize)
     {
         shared_ptr<GMenuModel> link;
 
@@ -633,12 +647,23 @@ void MenuItemMatcher::match(
             }
         }
 
+
         if (!link)
         {
-            matchResult.failure(
-                    location,
-                    "Expected " + to_string(p->m_items.size())
-                            + " children, but found none");
+            if (p->m_expectedSize)
+            {
+                matchResult.failure(
+                        location,
+                        "Expected " + to_string(*p->m_expectedSize)
+                                + " children, but found none");
+            }
+            else
+            {
+                matchResult.failure(
+                        location,
+                        "Expected " + to_string(p->m_items.size())
+                                + " children, but found none");
+            }
             return;
         }
         else
@@ -648,14 +673,30 @@ void MenuItemMatcher::match(
             {
                 MatchResult childMatchResult;
 
-                switch (p->m_mode)
+                if (p->m_expectedSize
+                        && *p->m_expectedSize
+                                != (unsigned int) g_menu_model_get_n_items(
+                                        link.get()))
                 {
-                    case Mode::all:
-                        p->all(childMatchResult, location, link, actions);
-                        break;
-                    case Mode::starts_with:
-                        p->startsWith(childMatchResult, location, link, actions);
-                        break;
+                    childMatchResult.failure(
+                            location,
+                            "Expected " + to_string(*p->m_expectedSize)
+                                    + " child items, but found "
+                                    + to_string(
+                                            g_menu_model_get_n_items(
+                                                    link.get())));
+                }
+                else if (!p->m_items.empty())
+                {
+                    switch (p->m_mode)
+                    {
+                        case Mode::all:
+                            p->all(childMatchResult, location, link, actions);
+                            break;
+                        case Mode::starts_with:
+                            p->startsWith(childMatchResult, location, link, actions);
+                            break;
+                    }
                 }
 
                 if (childMatchResult.success())

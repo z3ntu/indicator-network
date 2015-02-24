@@ -562,6 +562,133 @@ TEST_F(TestIndicatorNetworkService, SimStates_UnlockedSIM)
             .item(wifiEnableSwitch())
             .item(wifiSettings())
         ).match());
+
+    setNetworkRegistrationProperty(0, "Status", "searching");
+
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .action("indicator.phone.network-status")
+            .state_icons({"gsm-3g-disabled", "nm-no-connection"})
+            .mode(mh::MenuItemMatcher::Mode::all)
+            .submenu()
+            .item(flightModeSwitch())
+            .item(mh::MenuItemMatcher()
+                .section()
+                .item(modemInfo("",
+                                "Searching",
+                                "gsm-3g-disabled")
+                )
+                .item(cellularSettings())
+            )
+            .item(wifiEnableSwitch())
+            .item(wifiSettings())
+        ).match());
+
+    setNetworkRegistrationProperty(0, "Status", "registered");
+    setNetworkRegistrationProperty(0, "Strength", uchar(1));
+
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .action("indicator.phone.network-status")
+            .state_icons({"gsm-3g-none", "nm-no-connection"})
+            .mode(mh::MenuItemMatcher::Mode::all)
+            .submenu()
+            .item(flightModeSwitch())
+            .item(mh::MenuItemMatcher()
+                .section()
+                .item(modemInfo("",
+                                "fake.tel",
+                                "gsm-3g-none")
+                )
+                .item(cellularSettings())
+            )
+            .item(wifiEnableSwitch())
+            .item(wifiSettings())
+        ).match());
+
+    setNetworkRegistrationProperty(0, "Strength", uchar(6));
+
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .action("indicator.phone.network-status")
+            .state_icons({"gsm-3g-low", "nm-no-connection"})
+            .mode(mh::MenuItemMatcher::Mode::all)
+            .submenu()
+            .item(flightModeSwitch())
+            .item(mh::MenuItemMatcher()
+                .section()
+                .item(modemInfo("",
+                                "fake.tel",
+                                "gsm-3g-low")
+                )
+                .item(cellularSettings())
+            )
+            .item(wifiEnableSwitch())
+            .item(wifiSettings())
+        ).match());
+
+    setNetworkRegistrationProperty(0, "Strength", uchar(16));
+
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .action("indicator.phone.network-status")
+            .state_icons({"gsm-3g-medium", "nm-no-connection"})
+            .mode(mh::MenuItemMatcher::Mode::all)
+            .submenu()
+            .item(flightModeSwitch())
+            .item(mh::MenuItemMatcher()
+                .section()
+                .item(modemInfo("",
+                                "fake.tel",
+                                "gsm-3g-medium")
+                )
+                .item(cellularSettings())
+            )
+            .item(wifiEnableSwitch())
+            .item(wifiSettings())
+        ).match());
+
+    setNetworkRegistrationProperty(0, "Strength", uchar(26));
+
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .action("indicator.phone.network-status")
+            .state_icons({"gsm-3g-high", "nm-no-connection"})
+            .mode(mh::MenuItemMatcher::Mode::all)
+            .submenu()
+            .item(flightModeSwitch())
+            .item(mh::MenuItemMatcher()
+                .section()
+                .item(modemInfo("",
+                                "fake.tel",
+                                "gsm-3g-high")
+                )
+                .item(cellularSettings())
+            )
+            .item(wifiEnableSwitch())
+            .item(wifiSettings())
+        ).match());
+
+    setNetworkRegistrationProperty(0, "Strength", uchar(39));
+
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .action("indicator.phone.network-status")
+            .state_icons({"gsm-3g-full", "nm-no-connection"})
+            .mode(mh::MenuItemMatcher::Mode::all)
+            .submenu()
+            .item(flightModeSwitch())
+            .item(mh::MenuItemMatcher()
+                .section()
+                .item(modemInfo("",
+                                "fake.tel",
+                                "gsm-3g-full")
+                )
+                .item(cellularSettings())
+            )
+            .item(wifiEnableSwitch())
+            .item(wifiSettings())
+        ).match());
 }
 
 } // namespace

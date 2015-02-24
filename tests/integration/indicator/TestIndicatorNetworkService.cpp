@@ -163,10 +163,23 @@ protected:
     }
 
     template<typename T>
-    void setModemProperty(int modemIndex, const QString& propertyName, const T& value)
+    void setSimManagerProperty(int modemIndex, const QString& propertyName, const T& value)
     {
         auto& ofono(dbusMock.ofonoSimManagerInterface(modemIndex));
         ofono.SetProperty(propertyName, QDBusVariant(value));
+    }
+
+    template<typename T>
+    void setNetworkRegistrationProperty(int modemIndex, const QString& propertyName, const T& value)
+    {
+        auto& ofono(dbusMock.ofonoNetworkRegistrationInterface(modemIndex));
+        ofono.SetProperty(propertyName, QDBusVariant(value));
+    }
+
+    void setNetworkRegistrationProperty(int modemIndex, const QString& propertyName, const uchar& value)
+    {
+        auto& ofono(dbusMock.ofonoNetworkRegistrationInterface(modemIndex));
+        ofono.SetProperty(propertyName, value);
     }
 
     static mh::MenuItemMatcher flightModeSwitch(bool toggled = false)
@@ -470,7 +483,7 @@ TEST_F(TestIndicatorNetworkService, IndicatorListensToURfkill)
 TEST_F(TestIndicatorNetworkService, SimStates_NoSIM)
 {
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
-    setModemProperty(0, "Present", false);
+    setSimManagerProperty(0, "Present", false);
 
     ASSERT_NO_THROW(startIndicator());
 
@@ -497,7 +510,7 @@ TEST_F(TestIndicatorNetworkService, SimStates_NoSIM)
 TEST_F(TestIndicatorNetworkService, SimStates_LockedSIM)
 {
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
-    setModemProperty(0, "PinRequired", "pin");
+    setSimManagerProperty(0, "PinRequired", "pin");
 
     ASSERT_NO_THROW(startIndicator());
 
@@ -516,6 +529,33 @@ TEST_F(TestIndicatorNetworkService, SimStates_LockedSIM)
                                 true)
                       .string_attribute("x-canonical-modem-locked-action", "indicator.modem.1::locked")
 
+                )
+                .item(cellularSettings())
+            )
+            .item(wifiEnableSwitch())
+            .item(wifiSettings())
+        ).match());
+}
+
+TEST_F(TestIndicatorNetworkService, SimStates_UnlockedSIM)
+{
+    setGlobalConnectedState(NM_STATE_DISCONNECTED);
+    setNetworkRegistrationProperty(0, "Strength", uchar(0));
+
+    ASSERT_NO_THROW(startIndicator());
+
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .action("indicator.phone.network-status")
+            .state_icons({"gsm-3g-no-service", "nm-no-connection"})
+            .mode(mh::MenuItemMatcher::Mode::all)
+            .submenu()
+            .item(flightModeSwitch())
+            .item(mh::MenuItemMatcher()
+                .section()
+                .item(modemInfo("",
+                                "No Signal",
+                                "gsm-3g-no-service")
                 )
                 .item(cellularSettings())
             )

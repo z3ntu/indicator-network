@@ -87,7 +87,6 @@ protected:
         dbusMock.registerOfono();
         dbusMock.registerURfkill();
 
-
         dbusTestRunner.startServices();
     }
 
@@ -132,7 +131,7 @@ protected:
     {
         auto& networkManager(dbusMock.networkManagerInterface());
         auto reply = networkManager.AddWiFiConnection(device, id, ssid,
-                                                      "wpa-psk");
+                                                      "");
         reply.waitForFinished();
         return reply;
     }
@@ -459,21 +458,40 @@ TEST_F(TestIndicatorNetworkService, FlightModeTalksToURfkill)
 
 TEST_F(TestIndicatorNetworkService, IndicatorListensToURfkill)
 {
+    setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
+    auto device = createWiFiDevice(NM_DEVICE_STATE_ACTIVATED);
+    auto ap = createAccessPoint("0", "the ssid", device);
+    auto connection = createAccessPointConnection("0", "the ssid", device);
+    createActiveConnection("0", device, connection, ap);
+
     ASSERT_NO_THROW(startIndicator());
 
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
             .mode(mh::MenuItemMatcher::Mode::starts_with)
-            .submenu()
             .item(flightModeSwitch(false))
+            .item(mh::MenuItemMatcher())
+            .item(wifiEnableSwitch())
+            .item(mh::MenuItemMatcher()
+                .has_exactly(1) // <-- has one access point
+            )
         ).match());
 
     ASSERT_TRUE(dbusMock.urfkillInterface().FlightMode(true));
+
+    auto& nm = dbusMock.networkManagerInterface();
+    nm.RemoveWifiConnection(device, connection).waitForFinished();
+    nm.RemoveAccessPoint(device, ap).waitForFinished();
 
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
             .mode(mh::MenuItemMatcher::Mode::starts_with)
             .item(flightModeSwitch(true))
+            .item(mh::MenuItemMatcher())
+            .item(wifiEnableSwitch(false))
+            .item(mh::MenuItemMatcher()
+                .is_empty() // <-- no access points
+            )
         ).match());
 }
 

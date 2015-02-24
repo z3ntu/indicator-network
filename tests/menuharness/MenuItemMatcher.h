@@ -92,6 +92,10 @@ public:
 
     MenuItemMatcher& section();
 
+    MenuItemMatcher& is_empty();
+
+    MenuItemMatcher& has_exactly(std::size_t children);
+
     MenuItemMatcher& item(const MenuItemMatcher& item);
 
     MenuItemMatcher& item(MenuItemMatcher&& item);

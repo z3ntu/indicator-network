@@ -116,13 +116,14 @@ protected:
         return reply;
     }
 
-    QString createAccessPoint(const QString& id, const QString& ssid, const QString& device)
+    QString createAccessPoint(const QString& id, const QString& ssid, const QString& device, int strength = 100, Secure secure = Secure::secure)
     {
         auto& networkManager(dbusMock.networkManagerInterface());
         auto reply = networkManager.AddAccessPoint(
                             device, id, ssid,
-                            "11:22:33:44:55:66", NM_802_11_MODE_INFRA, 0, 0, 's',
-                            NM_802_11_AP_SEC_KEY_MGMT_PSK);
+                            "11:22:33:44:55:66", NM_802_11_MODE_INFRA, 0, 0, strength,
+                            secure == Secure::secure ? NM_802_11_AP_SEC_KEY_MGMT_PSK : NM_802_11_AP_SEC_NONE,
+                            secure == Secure::secure ? NM_802_11_AP_FLAGS_PRIVACY : NM_802_11_AP_FLAGS_NONE);
         reply.waitForFinished();
         return reply;
     }
@@ -190,7 +191,7 @@ protected:
     }
 
     static mh::MenuItemMatcher accessPoint(const string& ssid, unsigned int id, Secure secure,
-                ApMode apMode, ConnectionStatus connectionStatus)
+                ApMode apMode, ConnectionStatus connectionStatus, int strength = 100)
     {
         return mh::MenuItemMatcher::checkbox()
             .label(ssid)
@@ -199,7 +200,7 @@ protected:
             .toggled(connectionStatus == ConnectionStatus::connected)
             .pass_through_attribute(
                 "x-canonical-wifi-ap-strength-action",
-                shared_ptr<GVariant>(g_variant_new_byte(0x73), &mh::gvariant_deleter))
+                shared_ptr<GVariant>(g_variant_new_byte(strength), &mh::gvariant_deleter))
             .boolean_attribute("x-canonical-wifi-ap-is-secure", secure == Secure::secure)
             .boolean_attribute("x-canonical-wifi-ap-is-adhoc", apMode == ApMode::adhoc);
     }
@@ -814,7 +815,7 @@ TEST_F(TestIndicatorNetworkService, FlightMode_NoSIM)
 {
     setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
     auto device = createWiFiDevice(NM_DEVICE_STATE_ACTIVATED);
-    auto ap = createAccessPoint("0", "the ssid", device);
+    auto ap = createAccessPoint("0", "the ssid", device, 40, Secure::insecure);
     auto connection = createAccessPointConnection("0", "the ssid", device);
     createActiveConnection("0", device, connection, ap);
 
@@ -824,20 +825,21 @@ TEST_F(TestIndicatorNetworkService, FlightMode_NoSIM)
 
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
-            .state_icons({"nm-signal-100-secure"})
+            .state_icons({"nm-signal-50"})
             .mode(mh::MenuItemMatcher::Mode::starts_with)
-            .item(flightModeSwitch())
+            .item(flightModeSwitch(false))
             .item(mh::MenuItemMatcher()
                 .item(modemInfo("", "No SIM", "no-simcard"))
                 .item(cellularSettings())
             )
-            .item(wifiEnableSwitch())
+            .item(wifiEnableSwitch(true))
             .item(mh::MenuItemMatcher()
                 .section()
                 .item(accessPoint("the ssid", 1,
-                      Secure::secure,
+                      Secure::insecure,
                       ApMode::infra,
-                      ConnectionStatus::connected)
+                      ConnectionStatus::connected,
+                      40)
                 )
             )
         ).match());
@@ -845,8 +847,8 @@ TEST_F(TestIndicatorNetworkService, FlightMode_NoSIM)
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
             .mode(mh::MenuItemMatcher::Mode::starts_with)
-            .item(flightModeSwitch()
-                  .activate() // <--- Activate the action now
+            .item(flightModeSwitch(false)
+                  .activate()
             )
         ).match());
 
@@ -873,7 +875,7 @@ TEST_F(TestIndicatorNetworkService, FlightMode_NoSIM)
         .item(mh::MenuItemMatcher()
             .mode(mh::MenuItemMatcher::Mode::starts_with)
             .item(flightModeSwitch(true)
-                  .activate() // <--- Activate the action now
+                  .activate()
             )
         ).match());
 
@@ -881,14 +883,14 @@ TEST_F(TestIndicatorNetworkService, FlightMode_NoSIM)
 
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
-            .state_icons({"nm-signal-100-secure"})
+            .state_icons({"nm-signal-50"})
             .mode(mh::MenuItemMatcher::Mode::starts_with)
-            .item(flightModeSwitch())
+            .item(flightModeSwitch(false))
             .item(mh::MenuItemMatcher()
                 .item(modemInfo("", "No SIM", "no-simcard"))
                 .item(cellularSettings())
             )
-            .item(wifiEnableSwitch())
+            .item(wifiEnableSwitch(true))
         ).match());
 }
 

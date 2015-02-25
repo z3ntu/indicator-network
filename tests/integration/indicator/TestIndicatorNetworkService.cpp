@@ -989,18 +989,98 @@ TEST_F(TestIndicatorNetworkService, FlightMode_NoSIM)
 TEST_F(TestIndicatorNetworkService, FlightMode_LockedSIM)
 {
     // set wifi on, flight mode off
+    setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
+
     // add and connect to 1-bar secure AP
+    auto device = createWiFiDevice(NM_DEVICE_STATE_ACTIVATED);
+    auto ap = createAccessPoint("0", "the ssid", device, 20, Secure::secure);
+    auto connection = createAccessPointConnection("0", "the ssid", device);
+    createActiveConnection("0", device, connection, ap);
+
+    ASSERT_NO_THROW(startIndicator());
+
     // set sim locked
+    setSimManagerProperty(0, "PinRequired", "pin");
+
     // check indicator is a locked sim card and a 1-bar locked wifi icon
     // check sim status shows “SIM Locked”, with locked sim card icon and a “Unlock SIM” button beneath.
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .state_icons({"simcard-locked", "nm-signal-25-secure"})
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .item(flightModeSwitch(false))
+            .item(mh::MenuItemMatcher()
+                .item(modemInfo("", "SIM Locked", "simcard-locked", true))
+                .item(cellularSettings())
+            )
+            .item(wifiEnableSwitch(true))
+            .item(mh::MenuItemMatcher()
+                .section()
+                .item(accessPoint("the ssid", 1,
+                      Secure::secure,
+                      ApMode::infra,
+                      ConnectionStatus::connected,
+                      20)
+                )
+            )
+        ).match());
+
     // set flight mode on
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .item(flightModeSwitch(false)
+                  .activate()
+            )
+        ).match());
+
+    setGlobalConnectedState(NM_STATE_DISCONNECTED);
+    auto& nm = dbusMock.networkManagerInterface();
+    nm.RemoveAccessPoint(device, ap).waitForFinished();
+
     // check that the wifi switch turns off
-    // check indicator is a plane icon and a 0-bar wifi icon
+    // check indicator is a plane icon, a locked sim card and a 0-bar wifi icon
     // check sim status shows “SIM Locked”, with locked sim card icon and a “Unlock SIM” button beneath (unchanged).
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .state_icons({"airplane-mode", "simcard-locked", "nm-no-connection"})
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .item(flightModeSwitch(true))
+            .item(mh::MenuItemMatcher()
+                .item(modemInfo("", "SIM Locked", "simcard-locked", true))
+                .item(cellularSettings())
+            )
+            .item(wifiEnableSwitch(false))
+            .item(mh::MenuItemMatcher()
+                .is_empty()
+            )
+        ).match());
+
     // set flight mode off
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .item(flightModeSwitch(true)
+                  .activate()
+            )
+        ).match());
+
+    setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
+
     // check that the wifi switch turns back on
     // check indicator is a locked sim card and a 1-bar locked wifi icon
     // check sim status shows “SIM Locked”, with locked sim card icon and a “Unlock SIM” button beneath.
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .state_icons({"simcard-locked", "nm-signal-25-secure"})
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .item(flightModeSwitch(false))
+            .item(mh::MenuItemMatcher()
+                .item(modemInfo("", "SIM Locked", "simcard-locked", true))
+                .item(cellularSettings())
+            )
+            .item(wifiEnableSwitch(true))
+        ).match());
 }
 
 } // namespace

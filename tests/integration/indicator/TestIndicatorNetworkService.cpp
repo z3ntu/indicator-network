@@ -498,11 +498,16 @@ TEST_F(TestIndicatorNetworkService, IndicatorListensToURfkill)
 
 TEST_F(TestIndicatorNetworkService, SimStates_NoSIM)
 {
+    // set flight mode off, wifi off, and cell data off
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
+
+    // set no sim
     setSimManagerProperty(0, "Present", false);
 
     ASSERT_NO_THROW(startIndicator());
 
+    // check indicator is just a 0-bar wifi icon
+    // check sim status shows “No SIM” with crossed sim card icon
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
             .state_icons({"nm-no-connection"})
@@ -517,12 +522,17 @@ TEST_F(TestIndicatorNetworkService, SimStates_NoSIM)
 
 TEST_F(TestIndicatorNetworkService, SimStates_NoSIM2)
 {
+    // set flight mode off, wifi off, and cell data off
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
+
+    // set no sim 2
     createModem("ril_1");
     setSimManagerProperty(1, "Present", false);
 
     ASSERT_NO_THROW(startIndicator());
 
+    // check indicator is a 4-bar signal icon and a 0-bar wifi icon
+    // check sim 2 status shows “No SIM” with crossed sim card icon
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
             .state_icons({"gsm-3g-full", "nm-no-connection"})
@@ -538,11 +548,17 @@ TEST_F(TestIndicatorNetworkService, SimStates_NoSIM2)
 
 TEST_F(TestIndicatorNetworkService, SimStates_LockedSIM)
 {
+    // set flight mode off, wifi off, and cell data off, and sim in
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
+
+    // set sim locked
     setSimManagerProperty(0, "PinRequired", "pin");
 
     ASSERT_NO_THROW(startIndicator());
 
+    // check indicator is a locked sim card and a 0-bar wifi icon.
+    // check sim status shows “SIM Locked”, with locked sim card icon and a “Unlock SIM” button beneath.
+    // check that the “Unlock SIM” button has the correct action name.
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
             .state_icons({"simcard-locked", "nm-no-connection"})
@@ -556,8 +572,11 @@ TEST_F(TestIndicatorNetworkService, SimStates_LockedSIM)
             )
         ).match());
 
+    // set sim unlocked
     setSimManagerProperty(0, "PinRequired", "none");
 
+    // check indicator is a 4-bar signal icon and a 0-bar wifi icon
+    // check sim status shows correct carrier name with 4-bar signal icon.
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
             .state_icons({"gsm-3g-full", "nm-no-connection"})
@@ -572,12 +591,18 @@ TEST_F(TestIndicatorNetworkService, SimStates_LockedSIM)
 
 TEST_F(TestIndicatorNetworkService, SimStates_LockedSIM2)
 {
+    // set flight mode off, wifi off, and cell data off, and sim in
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
+
+    // set sim 2 locked
     createModem("ril_1");
     setSimManagerProperty(1, "PinRequired", "pin");
 
     ASSERT_NO_THROW(startIndicator());
 
+    // check indicator is a 4-bar signal icon, a locked sim card and a 0-bar wifi icon.
+    // check sim 2 status shows “SIM Locked”, with locked sim card icon and a “Unlock SIM” button beneath.
+    // check that the “Unlock SIM” button has the correct action name.
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
             .state_icons({"gsm-3g-full", "simcard-locked", "nm-no-connection"})
@@ -592,8 +617,11 @@ TEST_F(TestIndicatorNetworkService, SimStates_LockedSIM2)
             )
         ).match());
 
+    // set sim unlocked
     setSimManagerProperty(1, "PinRequired", "none");
 
+    // check indicator is 4-bar signal icon, a 4-bar signal icon and a 0-bar wifi icon
+    // check sim statuses show correct carrier names with 4-bar signal icons.
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
             .state_icons({"gsm-3g-full", "gsm-3g-full", "nm-no-connection"})
@@ -609,11 +637,16 @@ TEST_F(TestIndicatorNetworkService, SimStates_LockedSIM2)
 
 TEST_F(TestIndicatorNetworkService, SimStates_UnlockedSIM)
 {
+    // set flight mode off, wifi off, cell data off, sim in, and sim unlocked
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
+
+    // set no signal
     setNetworkRegistrationProperty(0, "Strength", uchar(0));
 
     ASSERT_NO_THROW(startIndicator());
 
+    // check indicator is a crossed signal icon and a 0-bar wifi icon.
+    // check sim status shows “No Signal” with crossed signal icon.
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
             .state_icons({"gsm-3g-no-service", "nm-no-connection"})
@@ -625,8 +658,11 @@ TEST_F(TestIndicatorNetworkService, SimStates_UnlockedSIM)
             )
         ).match());
 
+    // set sim searching
     setNetworkRegistrationProperty(0, "Status", "searching");
 
+    // check indicator is a disabled signal icon and a 0-bar wifi icon.
+    // check sim status shows “Searching” with disabled signal icon.
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
             .state_icons({"gsm-3g-disabled", "nm-no-connection"})
@@ -638,9 +674,14 @@ TEST_F(TestIndicatorNetworkService, SimStates_UnlockedSIM)
             )
         ).match());
 
+    // set sim registered
     setNetworkRegistrationProperty(0, "Status", "registered");
+
+    // set signal strength to 1
     setNetworkRegistrationProperty(0, "Strength", uchar(1));
 
+    // check indicator is a 0-bar signal icon and a 0-bar wifi icon.
+    // check sim status shows correct carrier name with 0-bar signal icon.
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
             .state_icons({"gsm-3g-none", "nm-no-connection"})
@@ -652,8 +693,11 @@ TEST_F(TestIndicatorNetworkService, SimStates_UnlockedSIM)
             )
         ).match());
 
+    // set signal strength to 6
     setNetworkRegistrationProperty(0, "Strength", uchar(6));
 
+    // check indicator is a 1-bar signal icon and a 0-bar wifi icon.
+    // check sim status shows correct carrier name with 1-bar signal icon.
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
             .state_icons({"gsm-3g-low", "nm-no-connection"})
@@ -665,8 +709,11 @@ TEST_F(TestIndicatorNetworkService, SimStates_UnlockedSIM)
             )
         ).match());
 
+    // set signal strength to 16
     setNetworkRegistrationProperty(0, "Strength", uchar(16));
 
+    // check indicator is a 2-bar signal icon and a 0-bar wifi icon.
+    // check sim status shows correct carrier name with 2-bar signal icon.
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
             .state_icons({"gsm-3g-medium", "nm-no-connection"})
@@ -678,8 +725,11 @@ TEST_F(TestIndicatorNetworkService, SimStates_UnlockedSIM)
             )
         ).match());
 
+    // set signal strength to 26
     setNetworkRegistrationProperty(0, "Strength", uchar(26));
 
+    // check indicator is a 3-bar signal icon and a 0-bar wifi icon.
+    // check sim status shows correct carrier name with 3-bar signal icon.
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
             .state_icons({"gsm-3g-high", "nm-no-connection"})
@@ -691,8 +741,11 @@ TEST_F(TestIndicatorNetworkService, SimStates_UnlockedSIM)
             )
         ).match());
 
+    // set signal strength to 39
     setNetworkRegistrationProperty(0, "Strength", uchar(39));
 
+    // check indicator is a 4-bar signal icon and a 0-bar wifi icon.
+    // check sim status shows correct carrier name with 4-bar signal icon.
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
             .state_icons({"gsm-3g-full", "nm-no-connection"})
@@ -707,12 +760,17 @@ TEST_F(TestIndicatorNetworkService, SimStates_UnlockedSIM)
 
 TEST_F(TestIndicatorNetworkService, SimStates_UnlockedSIM2)
 {
+    // set flight mode off, wifi off, cell data off, sim in, and sim unlocked
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
+
+    // set no signal on sim 2
     createModem("ril_1");
     setNetworkRegistrationProperty(1, "Strength", uchar(0));
 
     ASSERT_NO_THROW(startIndicator());
 
+    // check indicator is a 4-bar signal icon, a crossed signal icon and a 0-bar wifi icon.
+    // check sim 2 status shows “No Signal” with crossed signal icon.
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
             .state_icons({"gsm-3g-full", "gsm-3g-no-service", "nm-no-connection"})
@@ -725,8 +783,11 @@ TEST_F(TestIndicatorNetworkService, SimStates_UnlockedSIM2)
             )
         ).match());
 
+    // set sim searching
     setNetworkRegistrationProperty(1, "Status", "searching");
 
+    // check indicator is a 4-bar signal icon, a disabled signal icon and a 0-bar wifi icon.
+    // check sim 2 status shows “Searching” with disabled signal icon.
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
             .state_icons({"gsm-3g-full", "gsm-3g-disabled", "nm-no-connection"})
@@ -739,9 +800,14 @@ TEST_F(TestIndicatorNetworkService, SimStates_UnlockedSIM2)
             )
         ).match());
 
+    // set sim registered
     setNetworkRegistrationProperty(1, "Status", "registered");
+
+    // set signal strength to 1
     setNetworkRegistrationProperty(1, "Strength", uchar(1));
 
+    // check indicator is a 4-bar signal icon, a 0-bar signal icon and a 0-bar wifi icon.
+    // check sim 2 status shows correct carrier name with 0-bar signal icon.
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
             .state_icons({"gsm-3g-full", "gsm-3g-none", "nm-no-connection"})
@@ -754,8 +820,11 @@ TEST_F(TestIndicatorNetworkService, SimStates_UnlockedSIM2)
             )
         ).match());
 
+    // set signal strength to 6
     setNetworkRegistrationProperty(1, "Strength", uchar(6));
 
+    // check indicator is a 4-bar signal icon, a 1-bar signal icon and a 0-bar wifi icon.
+    // check sim 2 status shows correct carrier name with 1-bar signal icon.
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
             .state_icons({"gsm-3g-full", "gsm-3g-low", "nm-no-connection"})
@@ -768,8 +837,11 @@ TEST_F(TestIndicatorNetworkService, SimStates_UnlockedSIM2)
             )
         ).match());
 
+    // set signal strength to 16
     setNetworkRegistrationProperty(1, "Strength", uchar(16));
 
+    // check indicator is a 4-bar signal icon, a 2-bar signal icon and a 0-bar wifi icon.
+    // check sim 2 status shows correct carrier name with 2-bar signal icon.
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
             .state_icons({"gsm-3g-full", "gsm-3g-medium", "nm-no-connection"})
@@ -782,8 +854,11 @@ TEST_F(TestIndicatorNetworkService, SimStates_UnlockedSIM2)
             )
         ).match());
 
+    // set signal strength to 26
     setNetworkRegistrationProperty(1, "Strength", uchar(26));
 
+    // check indicator is a 4-bar signal icon, a 3-bar signal icon and a 0-bar wifi icon.
+    // check sim 2 status shows correct carrier name with 3-bar signal icon.
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
             .state_icons({"gsm-3g-full", "gsm-3g-high", "nm-no-connection"})
@@ -796,8 +871,11 @@ TEST_F(TestIndicatorNetworkService, SimStates_UnlockedSIM2)
             )
         ).match());
 
+    // set signal strength to 39
     setNetworkRegistrationProperty(1, "Strength", uchar(39));
 
+    // check indicator is a 4-bar signal icon, a 4-bar signal icon and a 0-bar wifi icon.
+    // check sim 2 status shows correct carrier name with 4-bar signal icon.
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
             .state_icons({"gsm-3g-full", "gsm-3g-full", "nm-no-connection"})
@@ -813,7 +891,10 @@ TEST_F(TestIndicatorNetworkService, SimStates_UnlockedSIM2)
 
 TEST_F(TestIndicatorNetworkService, FlightMode_NoSIM)
 {
+    // set wifi on, flight mode off
     setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
+
+    // add and connect to 2-bar unsecure AP
     auto device = createWiFiDevice(NM_DEVICE_STATE_ACTIVATED);
     auto ap = createAccessPoint("0", "the ssid", device, 40, Secure::insecure);
     auto connection = createAccessPointConnection("0", "the ssid", device);
@@ -821,8 +902,11 @@ TEST_F(TestIndicatorNetworkService, FlightMode_NoSIM)
 
     ASSERT_NO_THROW(startIndicator());
 
+    // set no sim
     setSimManagerProperty(0, "Present", false);
 
+    // check indicator is just a 2-bar wifi icon
+    // check sim status shows “No SIM” with crossed sim card icon.
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
             .state_icons({"nm-signal-50"})
@@ -844,6 +928,7 @@ TEST_F(TestIndicatorNetworkService, FlightMode_NoSIM)
             )
         ).match());
 
+    // set flight mode on
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
             .mode(mh::MenuItemMatcher::Mode::starts_with)
@@ -856,6 +941,9 @@ TEST_F(TestIndicatorNetworkService, FlightMode_NoSIM)
     auto& nm = dbusMock.networkManagerInterface();
     nm.RemoveAccessPoint(device, ap).waitForFinished();
 
+    // check that the wifi switch turns off
+    // check indicator is a plane icon and a 0-bar wifi icon
+    // check sim status shows “No SIM” with crossed sim card icon (unchanged).
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
             .state_icons({"airplane-mode", "nm-no-connection"})
@@ -871,6 +959,7 @@ TEST_F(TestIndicatorNetworkService, FlightMode_NoSIM)
             )
         ).match());
 
+    // set flight mode off
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
             .mode(mh::MenuItemMatcher::Mode::starts_with)
@@ -881,6 +970,9 @@ TEST_F(TestIndicatorNetworkService, FlightMode_NoSIM)
 
     setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
 
+    // check that the wifi switch turns back on
+    // check indicator is just a 2-bar wifi icon
+    // check sim status shows “No SIM” with crossed sim card icon.
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
             .state_icons({"nm-signal-50"})
@@ -892,6 +984,23 @@ TEST_F(TestIndicatorNetworkService, FlightMode_NoSIM)
             )
             .item(wifiEnableSwitch(true))
         ).match());
+}
+
+TEST_F(TestIndicatorNetworkService, FlightMode_LockedSIM)
+{
+    // set wifi on, flight mode off
+    // add and connect to 1-bar secure AP
+    // set sim locked
+    // check indicator is a locked sim card and a 1-bar locked wifi icon
+    // check sim status shows “SIM Locked”, with locked sim card icon and a “Unlock SIM” button beneath.
+    // set flight mode on
+    // check that the wifi switch turns off
+    // check indicator is a plane icon and a 0-bar wifi icon
+    // check sim status shows “SIM Locked”, with locked sim card icon and a “Unlock SIM” button beneath (unchanged).
+    // set flight mode off
+    // check that the wifi switch turns back on
+    // check indicator is a locked sim card and a 1-bar locked wifi icon
+    // check sim status shows “SIM Locked”, with locked sim card icon and a “Unlock SIM” button beneath.
 }
 
 } // namespace

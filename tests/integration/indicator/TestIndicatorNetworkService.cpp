@@ -515,6 +515,28 @@ TEST_F(TestIndicatorNetworkService, SimStates_NoSIM)
         ).match());
 }
 
+TEST_F(TestIndicatorNetworkService, SimStates_NoSIM2)
+{
+    setGlobalConnectedState(NM_STATE_DISCONNECTED);
+    createModem("ril_1");
+    setSimManagerProperty(1, "Present", false);
+
+    ASSERT_NO_THROW(startIndicator());
+
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .action("indicator.phone.network-status")
+            .state_icons({"gsm-3g-full", "nm-no-connection"})
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .item(flightModeSwitch())
+            .item(mh::MenuItemMatcher()
+                .item(modemInfo("SIM 1", "fake.tel", "gsm-3g-full"))
+                .item(modemInfo("SIM 2", "No SIM", "no-simcard"))
+                .item(cellularSettings())
+            )
+        ).match());
+}
+
 TEST_F(TestIndicatorNetworkService, SimStates_LockedSIM)
 {
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
@@ -532,6 +554,59 @@ TEST_F(TestIndicatorNetworkService, SimStates_LockedSIM)
                 .item(modemInfo("", "SIM Locked", "simcard-locked", true)
                       .string_attribute("x-canonical-modem-locked-action", "indicator.modem.1::locked")
                 )
+                .item(cellularSettings())
+            )
+        ).match());
+
+    setSimManagerProperty(0, "PinRequired", "none");
+
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .action("indicator.phone.network-status")
+            .state_icons({"gsm-3g-full", "nm-no-connection"})
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .item(flightModeSwitch())
+            .item(mh::MenuItemMatcher()
+                .item(modemInfo("", "fake.tel", "gsm-3g-full"))
+                .item(cellularSettings())
+            )
+        ).match());
+}
+
+TEST_F(TestIndicatorNetworkService, SimStates_LockedSIM2)
+{
+    setGlobalConnectedState(NM_STATE_DISCONNECTED);
+    createModem("ril_1");
+    setSimManagerProperty(1, "PinRequired", "pin");
+
+    ASSERT_NO_THROW(startIndicator());
+
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .action("indicator.phone.network-status")
+            .state_icons({"gsm-3g-full", "simcard-locked", "nm-no-connection"})
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .item(flightModeSwitch())
+            .item(mh::MenuItemMatcher()
+                .item(modemInfo("SIM 1", "fake.tel", "gsm-3g-full"))
+                .item(modemInfo("SIM 2", "SIM Locked", "simcard-locked", true)
+                      .string_attribute("x-canonical-modem-locked-action", "indicator.modem.2::locked")
+                )
+                .item(cellularSettings())
+            )
+        ).match());
+
+    setSimManagerProperty(1, "PinRequired", "none");
+
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .action("indicator.phone.network-status")
+            .state_icons({"gsm-3g-full", "gsm-3g-full", "nm-no-connection"})
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .item(flightModeSwitch())
+            .item(mh::MenuItemMatcher()
+                .item(modemInfo("SIM 1", "fake.tel", "gsm-3g-full"))
+                .item(modemInfo("SIM 2", "fake.tel", "gsm-3g-full"))
                 .item(cellularSettings())
             )
         ).match());
@@ -637,6 +712,119 @@ TEST_F(TestIndicatorNetworkService, SimStates_UnlockedSIM)
             .item(flightModeSwitch())
             .item(mh::MenuItemMatcher()
                 .item(modemInfo("", "fake.tel", "gsm-3g-full"))
+                .item(cellularSettings())
+            )
+        ).match());
+}
+
+TEST_F(TestIndicatorNetworkService, SimStates_UnlockedSIM2)
+{
+    setGlobalConnectedState(NM_STATE_DISCONNECTED);
+    createModem("ril_1");
+    setNetworkRegistrationProperty(1, "Strength", uchar(0));
+
+    ASSERT_NO_THROW(startIndicator());
+
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .action("indicator.phone.network-status")
+            .state_icons({"gsm-3g-full", "gsm-3g-no-service", "nm-no-connection"})
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .item(flightModeSwitch())
+            .item(mh::MenuItemMatcher()
+                .item(modemInfo("SIM 1", "fake.tel", "gsm-3g-full"))
+                .item(modemInfo("SIM 2", "No Signal", "gsm-3g-no-service"))
+                .item(cellularSettings())
+            )
+        ).match());
+
+    setNetworkRegistrationProperty(1, "Status", "searching");
+
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .action("indicator.phone.network-status")
+            .state_icons({"gsm-3g-full", "gsm-3g-disabled", "nm-no-connection"})
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .item(flightModeSwitch())
+            .item(mh::MenuItemMatcher()
+                .item(modemInfo("SIM 1", "fake.tel", "gsm-3g-full"))
+                .item(modemInfo("SIM 2", "Searching", "gsm-3g-disabled"))
+                .item(cellularSettings())
+            )
+        ).match());
+
+    setNetworkRegistrationProperty(1, "Status", "registered");
+    setNetworkRegistrationProperty(1, "Strength", uchar(1));
+
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .action("indicator.phone.network-status")
+            .state_icons({"gsm-3g-full", "gsm-3g-none", "nm-no-connection"})
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .item(flightModeSwitch())
+            .item(mh::MenuItemMatcher()
+                .item(modemInfo("SIM 1", "fake.tel", "gsm-3g-full"))
+                .item(modemInfo("SIM 2", "fake.tel", "gsm-3g-none"))
+                .item(cellularSettings())
+            )
+        ).match());
+
+    setNetworkRegistrationProperty(1, "Strength", uchar(6));
+
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .action("indicator.phone.network-status")
+            .state_icons({"gsm-3g-full", "gsm-3g-low", "nm-no-connection"})
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .item(flightModeSwitch())
+            .item(mh::MenuItemMatcher()
+                .item(modemInfo("SIM 1", "fake.tel", "gsm-3g-full"))
+                .item(modemInfo("SIM 2", "fake.tel", "gsm-3g-low"))
+                .item(cellularSettings())
+            )
+        ).match());
+
+    setNetworkRegistrationProperty(1, "Strength", uchar(16));
+
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .action("indicator.phone.network-status")
+            .state_icons({"gsm-3g-full", "gsm-3g-medium", "nm-no-connection"})
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .item(flightModeSwitch())
+            .item(mh::MenuItemMatcher()
+                .item(modemInfo("SIM 1", "fake.tel", "gsm-3g-full"))
+                .item(modemInfo("SIM 2", "fake.tel", "gsm-3g-medium"))
+                .item(cellularSettings())
+            )
+        ).match());
+
+    setNetworkRegistrationProperty(1, "Strength", uchar(26));
+
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .action("indicator.phone.network-status")
+            .state_icons({"gsm-3g-full", "gsm-3g-high", "nm-no-connection"})
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .item(flightModeSwitch())
+            .item(mh::MenuItemMatcher()
+                .item(modemInfo("SIM 1", "fake.tel", "gsm-3g-full"))
+                .item(modemInfo("SIM 2", "fake.tel", "gsm-3g-high"))
+                .item(cellularSettings())
+            )
+        ).match());
+
+    setNetworkRegistrationProperty(1, "Strength", uchar(39));
+
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .action("indicator.phone.network-status")
+            .state_icons({"gsm-3g-full", "gsm-3g-full", "nm-no-connection"})
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .item(flightModeSwitch())
+            .item(mh::MenuItemMatcher()
+                .item(modemInfo("SIM 1", "fake.tel", "gsm-3g-full"))
+                .item(modemInfo("SIM 2", "fake.tel", "gsm-3g-full"))
                 .item(cellularSettings())
             )
         ).match());

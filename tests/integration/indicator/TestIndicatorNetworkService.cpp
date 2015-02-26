@@ -131,6 +131,12 @@ protected:
         return reply;
     }
 
+    void removeAccessPoint(const QString& device, const QString& ap)
+    {
+        auto& nm = dbusMock.networkManagerInterface();
+        nm.RemoveAccessPoint(device, ap).waitForFinished();
+    }
+
     QString createAccessPointConnection(const QString& id, const QString& ssid, const QString& device)
     {
         auto& networkManager(dbusMock.networkManagerInterface());
@@ -138,6 +144,12 @@ protected:
                                                       "");
         reply.waitForFinished();
         return reply;
+    }
+
+    void removeWifiConnection(const QString& device, const QString& connection)
+    {
+        auto& nm = dbusMock.networkManagerInterface();
+        nm.RemoveWifiConnection(device, connection).waitForFinished();
     }
 
     QString createActiveConnection(const QString& id, const QString& device, const QString& connection, const QString& ap)
@@ -150,6 +162,12 @@ protected:
                                NM_ACTIVE_CONNECTION_STATE_ACTIVATED);
         reply.waitForFinished();
         return reply;
+    }
+
+    void removeActiveConnection(const QString& device, const QString& active_connection)
+    {
+        auto& nm = dbusMock.networkManagerInterface();
+        nm.RemoveActiveConnection(device, active_connection).waitForFinished();
     }
 
     void setGlobalConnectedState(int state)
@@ -490,9 +508,8 @@ TEST_F(TestIndicatorNetworkService, IndicatorListensToURfkill)
 
     ASSERT_TRUE(dbusMock.urfkillInterface().FlightMode(true));
 
-    auto& nm = dbusMock.networkManagerInterface();
-    nm.RemoveWifiConnection(device, connection).waitForFinished();
-    nm.RemoveAccessPoint(device, ap).waitForFinished();
+    removeWifiConnection(device, connection);
+    removeAccessPoint(device, ap);
 
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
@@ -955,9 +972,8 @@ TEST_F(TestIndicatorNetworkService, FlightMode_NoSIM)
         ).match());
 
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
-    auto& nm = dbusMock.networkManagerInterface();
-    nm.RemoveWifiConnection(device, connection).waitForFinished();
-    nm.RemoveAccessPoint(device, ap).waitForFinished();
+    removeWifiConnection(device, connection);
+    removeAccessPoint(device, ap);
 
     // check that the wifi switch turns off
     // check indicator is a plane icon and a 0-bar wifi icon
@@ -1054,9 +1070,8 @@ TEST_F(TestIndicatorNetworkService, FlightMode_LockedSIM)
         ).match());
 
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
-    auto& nm = dbusMock.networkManagerInterface();
-    nm.RemoveWifiConnection(device, connection).waitForFinished();
-    nm.RemoveAccessPoint(device, ap).waitForFinished();
+    removeWifiConnection(device, connection);
+    removeAccessPoint(device, ap);
 
     // check that the wifi switch turns off
     // check indicator is a plane icon, a locked sim card and a 0-bar wifi icon
@@ -1168,17 +1183,16 @@ TEST_F(TestIndicatorNetworkService, FlightMode_WifiOff)
         ).match());
 
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
-    auto& nm = dbusMock.networkManagerInterface();
-    nm.RemoveAccessPoint(device, ap1).waitForFinished();
-    nm.RemoveAccessPoint(device, ap2).waitForFinished();
-    nm.RemoveAccessPoint(device, ap3).waitForFinished();
-    nm.RemoveAccessPoint(device, ap4).waitForFinished();
-    nm.RemoveAccessPoint(device, ap5).waitForFinished();
-    nm.RemoveAccessPoint(device, ap6).waitForFinished();
-    nm.RemoveAccessPoint(device, ap7).waitForFinished();
-    nm.RemoveAccessPoint(device, ap8).waitForFinished();
-    nm.RemoveWifiConnection(device, connection).waitForFinished();
-    nm.RemoveActiveConnection(device, active_connection).waitForFinished();
+    removeActiveConnection(device, active_connection);
+    removeWifiConnection(device, connection);
+    removeAccessPoint(device, ap1);
+    removeAccessPoint(device, ap2);
+    removeAccessPoint(device, ap3);
+    removeAccessPoint(device, ap4);
+    removeAccessPoint(device, ap5);
+    removeAccessPoint(device, ap6);
+    removeAccessPoint(device, ap7);
+    removeAccessPoint(device, ap8);
 
     // check that the flight mode switch is still off
     // check that the wifi switch is off

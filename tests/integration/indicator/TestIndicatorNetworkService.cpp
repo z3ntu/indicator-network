@@ -1514,6 +1514,40 @@ TEST_F(TestIndicatorNetworkService, GroupedWiFiAccessPoints)
                 .item(accessPoint("groupA", Secure::secure, ApMode::infra, ConnectionStatus::disconnected, 80))
             )
         ).match());
+
+    // add another AP with a different SSID
+    auto ap3 = createAccessPoint("3", "groupB", device, 75, Secure::secure, ApMode::infra);
+
+    // check that we see a single AP with the higher strength
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .item(flightModeSwitch())
+            .item(mh::MenuItemMatcher())
+            .item(wifiEnableSwitch())
+            .item(mh::MenuItemMatcher()
+                .section()
+                .item(accessPoint("groupA", Secure::secure, ApMode::infra, ConnectionStatus::disconnected, 80))
+                .item(accessPoint("groupB", Secure::secure, ApMode::infra, ConnectionStatus::disconnected, 75))
+            )
+        ).match());
+
+    // remove the first access point
+    removeAccessPoint(device, ap1);
+
+    // verify the list has the old combined access point and the strength matches the second ap initial strength
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .item(flightModeSwitch())
+            .item(mh::MenuItemMatcher())
+            .item(wifiEnableSwitch())
+            .item(mh::MenuItemMatcher()
+                .section()
+                .item(accessPoint("groupA", Secure::secure, ApMode::infra, ConnectionStatus::disconnected, 60))
+                .item(accessPoint("groupB", Secure::secure, ApMode::infra, ConnectionStatus::disconnected, 75))
+            )
+        ).match());
 }
 
 } // namespace

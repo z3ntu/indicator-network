@@ -198,6 +198,12 @@ protected:
         nm.SetGlobalConnectionState(state).waitForFinished();
     }
 
+    void setNmProperty(const QString& path, const QString& iface, const QString& name, const QVariant& value)
+    {
+        auto& nm = dbusMock.networkManagerInterface();
+        nm.SetProperty(path, iface, name, QDBusVariant(value)).waitForFinished();
+    }
+
     QString createModem(const QString& id)
     {
         auto& ofono(dbusMock.ofonoInterface());
@@ -1490,6 +1496,22 @@ TEST_F(TestIndicatorNetworkService, GroupedWiFiAccessPoints)
             .item(mh::MenuItemMatcher()
                 .section()
                 .item(accessPoint("groupA", Secure::secure, ApMode::infra, ConnectionStatus::disconnected, 60))
+            )
+        ).match());
+
+    // up the strength of the first AP
+    setNmProperty(ap1, NM_DBUS_INTERFACE_ACCESS_POINT, "Strength", QVariant::fromValue(uchar(80)));
+
+    // check that we see a single AP with the higher strength
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .item(flightModeSwitch())
+            .item(mh::MenuItemMatcher())
+            .item(wifiEnableSwitch())
+            .item(mh::MenuItemMatcher()
+                .section()
+                .item(accessPoint("groupA", Secure::secure, ApMode::infra, ConnectionStatus::disconnected, 80))
             )
         ).match());
 }

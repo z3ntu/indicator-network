@@ -430,37 +430,6 @@ TEST_F(TestIndicatorNetworkService, SecondModem)
         ).match());
 }
 
-TEST_F(TestIndicatorNetworkService, ModemSignalStrength)
-{
-    ASSERT_NO_THROW(startIndicator());
-
-    // start at full strength
-    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
-        .item(mh::MenuItemMatcher()
-            .mode(mh::MenuItemMatcher::Mode::starts_with)
-            .submenu()
-            .item(flightModeSwitch())
-            .item(mh::MenuItemMatcher()
-                .section()
-                .item(modemInfo("", "fake.tel", "gsm-3g-full"))
-                .item(cellularSettings())
-            )
-        ).match());
-
-
-    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
-        .item(mh::MenuItemMatcher()
-            .mode(mh::MenuItemMatcher::Mode::starts_with)
-            .submenu()
-            .item(flightModeSwitch())
-            .item(mh::MenuItemMatcher()
-                .section()
-                .item(modemInfo("", "fake.tel", "gsm-3g-full"))
-                .item(cellularSettings())
-            )
-        ).match());
-}
-
 TEST_F(TestIndicatorNetworkService, FlightModeTalksToURfkill)
 {
     ASSERT_NO_THROW(startIndicator());

@@ -1,4 +1,6 @@
 
+set(CMAKE_AUTOMOC ON)
+
 include(FindGMock)
 
 find_package("Valgrind" REQUIRED)

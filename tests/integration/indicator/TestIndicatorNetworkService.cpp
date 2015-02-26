@@ -169,27 +169,27 @@ protected:
     void setModemProperty(int modemIndex, const QString& propertyName, const T& value)
     {
         auto& ofono(dbusMock.ofonoModemInterface(modemIndex));
-        ofono.SetProperty(propertyName, QDBusVariant(value));
+        ofono.SetProperty(propertyName, QDBusVariant(value)).waitForFinished();
     }
 
     template<typename T>
     void setSimManagerProperty(int modemIndex, const QString& propertyName, const T& value)
     {
         auto& ofono(dbusMock.ofonoSimManagerInterface(modemIndex));
-        ofono.SetProperty(propertyName, QDBusVariant(value));
+        ofono.SetProperty(propertyName, QDBusVariant(value)).waitForFinished();
     }
 
     template<typename T>
     void setNetworkRegistrationProperty(int modemIndex, const QString& propertyName, const T& value)
     {
         auto& ofono(dbusMock.ofonoNetworkRegistrationInterface(modemIndex));
-        ofono.SetProperty(propertyName, QDBusVariant(value));
+        ofono.SetProperty(propertyName, QDBusVariant(value)).waitForFinished();
     }
 
     void setNetworkRegistrationProperty(int modemIndex, const QString& propertyName, const uchar& value)
     {
         auto& ofono(dbusMock.ofonoNetworkRegistrationInterface(modemIndex));
-        ofono.SetProperty(propertyName, value);
+        ofono.SetProperty(propertyName, value).waitForFinished();
     }
 
     static mh::MenuItemMatcher flightModeSwitch(bool toggled = false)

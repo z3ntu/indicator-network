@@ -116,12 +116,15 @@ protected:
         return reply;
     }
 
-    QString createAccessPoint(const QString& id, const QString& ssid, const QString& device, int strength = 100, Secure secure = Secure::secure)
+    QString createAccessPoint(const QString& id, const QString& ssid, const QString& device, int strength = 100,
+                              Secure secure = Secure::secure, ApMode apMode = ApMode::infra)
     {
         auto& networkManager(dbusMock.networkManagerInterface());
         auto reply = networkManager.AddAccessPoint(
                             device, id, ssid,
-                            "11:22:33:44:55:66", NM_802_11_MODE_INFRA, 0, 0, strength,
+                            "11:22:33:44:55:66",
+                            apMode == ApMode::adhoc ? NM_802_11_MODE_ADHOC : NM_802_11_MODE_INFRA,
+                            0, 0, strength,
                             secure == Secure::secure ? NM_802_11_AP_SEC_KEY_MGMT_PSK : NM_802_11_AP_SEC_NONE,
                             secure == Secure::secure ? NM_802_11_AP_FLAGS_PRIVACY : NM_802_11_AP_FLAGS_NONE);
         reply.waitForFinished();
@@ -160,6 +163,13 @@ protected:
         auto& ofono(dbusMock.ofonoInterface());
         QVariantMap modemProperties {{ "Powered", false } };
         return ofono.AddModem(id, modemProperties);
+    }
+
+    template<typename T>
+    void setModemProperty(int modemIndex, const QString& propertyName, const T& value)
+    {
+        auto& ofono(dbusMock.ofonoModemInterface(modemIndex));
+        ofono.SetProperty(propertyName, QDBusVariant(value));
     }
 
     template<typename T>
@@ -504,6 +514,7 @@ TEST_F(TestIndicatorNetworkService, SimStates_NoSIM)
     // set no sim
     setSimManagerProperty(0, "Present", false);
 
+    // start the indicator
     ASSERT_NO_THROW(startIndicator());
 
     // check indicator is just a 0-bar wifi icon
@@ -529,6 +540,7 @@ TEST_F(TestIndicatorNetworkService, SimStates_NoSIM2)
     createModem("ril_1");
     setSimManagerProperty(1, "Present", false);
 
+    // start the indicator
     ASSERT_NO_THROW(startIndicator());
 
     // check indicator is a 4-bar signal icon and a 0-bar wifi icon
@@ -554,6 +566,7 @@ TEST_F(TestIndicatorNetworkService, SimStates_LockedSIM)
     // set sim locked
     setSimManagerProperty(0, "PinRequired", "pin");
 
+    // start the indicator
     ASSERT_NO_THROW(startIndicator());
 
     // check indicator is a locked sim card and a 0-bar wifi icon.
@@ -598,6 +611,7 @@ TEST_F(TestIndicatorNetworkService, SimStates_LockedSIM2)
     createModem("ril_1");
     setSimManagerProperty(1, "PinRequired", "pin");
 
+    // start the indicator
     ASSERT_NO_THROW(startIndicator());
 
     // check indicator is a 4-bar signal icon, a locked sim card and a 0-bar wifi icon.
@@ -617,7 +631,7 @@ TEST_F(TestIndicatorNetworkService, SimStates_LockedSIM2)
             )
         ).match());
 
-    // set sim unlocked
+    // set sim 2 unlocked
     setSimManagerProperty(1, "PinRequired", "none");
 
     // check indicator is 4-bar signal icon, a 4-bar signal icon and a 0-bar wifi icon
@@ -643,6 +657,7 @@ TEST_F(TestIndicatorNetworkService, SimStates_UnlockedSIM)
     // set no signal
     setNetworkRegistrationProperty(0, "Strength", uchar(0));
 
+    // start the indicator
     ASSERT_NO_THROW(startIndicator());
 
     // check indicator is a crossed signal icon and a 0-bar wifi icon.
@@ -767,6 +782,7 @@ TEST_F(TestIndicatorNetworkService, SimStates_UnlockedSIM2)
     createModem("ril_1");
     setNetworkRegistrationProperty(1, "Strength", uchar(0));
 
+    // start the indicator
     ASSERT_NO_THROW(startIndicator());
 
     // check indicator is a 4-bar signal icon, a crossed signal icon and a 0-bar wifi icon.
@@ -900,6 +916,7 @@ TEST_F(TestIndicatorNetworkService, FlightMode_NoSIM)
     auto connection = createAccessPointConnection("0", "the ssid", device);
     createActiveConnection("0", device, connection, ap);
 
+    // start the indicator
     ASSERT_NO_THROW(startIndicator());
 
     // set no sim
@@ -939,6 +956,7 @@ TEST_F(TestIndicatorNetworkService, FlightMode_NoSIM)
 
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
     auto& nm = dbusMock.networkManagerInterface();
+    nm.RemoveWifiConnection(device, connection).waitForFinished();
     nm.RemoveAccessPoint(device, ap).waitForFinished();
 
     // check that the wifi switch turns off
@@ -997,6 +1015,7 @@ TEST_F(TestIndicatorNetworkService, FlightMode_LockedSIM)
     auto connection = createAccessPointConnection("0", "the ssid", device);
     createActiveConnection("0", device, connection, ap);
 
+    // start the indicator
     ASSERT_NO_THROW(startIndicator());
 
     // set sim locked
@@ -1036,6 +1055,7 @@ TEST_F(TestIndicatorNetworkService, FlightMode_LockedSIM)
 
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
     auto& nm = dbusMock.networkManagerInterface();
+    nm.RemoveWifiConnection(device, connection).waitForFinished();
     nm.RemoveAccessPoint(device, ap).waitForFinished();
 
     // check that the wifi switch turns off
@@ -1080,6 +1100,164 @@ TEST_F(TestIndicatorNetworkService, FlightMode_LockedSIM)
                 .item(cellularSettings())
             )
             .item(wifiEnableSwitch(true))
+        ).match());
+}
+
+TEST_F(TestIndicatorNetworkService, FlightMode_WifiOff)
+{
+    // set wifi on, flight mode off
+    setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
+
+    // add some APs (secure / unsecure / adhoc / varied strength)
+    auto device = createWiFiDevice(NM_DEVICE_STATE_ACTIVATED);
+    auto ap1 = createAccessPoint("1", "NSD", device, 0, Secure::secure, ApMode::infra);
+    auto ap2 = createAccessPoint("2", "JDR", device, 20, Secure::secure, ApMode::adhoc);
+    auto ap3 = createAccessPoint("3", "DGN", device, 40, Secure::secure, ApMode::infra);
+    auto ap4 = createAccessPoint("4", "JDY", device, 60, Secure::secure, ApMode::adhoc);
+    auto ap5 = createAccessPoint("5", "SCE", device, 20, Secure::insecure, ApMode::infra);
+    auto ap6 = createAccessPoint("6", "ADS", device, 40, Secure::insecure, ApMode::adhoc);
+    auto ap7 = createAccessPoint("7", "CFT", device, 60, Secure::insecure, ApMode::infra);
+    auto ap8 = createAccessPoint("8", "GDF", device, 80, Secure::insecure, ApMode::adhoc);
+
+    // connect to 2-bar secure AP
+    auto connection = createAccessPointConnection("3", "DGN", device);
+    auto active_connection = createActiveConnection("3", device, connection, ap3);
+
+    // start the indicator
+    ASSERT_NO_THROW(startIndicator());
+
+    // set sim unlocked on carrier with 3-bar signal
+    setNetworkRegistrationProperty(0, "Strength", uchar(26));
+
+    // check that the wifi switch is on
+    // check indicator is a 3-bar signal icon and 2-bar locked wifi icon
+    // check sim status shows correct carrier name with 3-bar signal icon.
+    // check that AP list contains the connected AP at top then other APs underneath in alphabetical order.
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .state_icons({"gsm-3g-high", "nm-signal-50-secure"})
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .item(flightModeSwitch(false))
+            .item(mh::MenuItemMatcher()
+                .item(modemInfo("", "fake.tel", "gsm-3g-high"))
+                .item(cellularSettings())
+            )
+            .item(wifiEnableSwitch(true))
+            .item(mh::MenuItemMatcher()
+                .section()
+                .item(accessPoint("DGN", 3, Secure::secure, ApMode::infra, ConnectionStatus::connected, 40))
+                .item(accessPoint("ADS", 6, Secure::insecure, ApMode::adhoc, ConnectionStatus::disconnected, 40))
+                .item(accessPoint("CFT", 7, Secure::insecure, ApMode::infra, ConnectionStatus::disconnected, 60))
+                .item(accessPoint("GDF", 8, Secure::insecure, ApMode::adhoc, ConnectionStatus::disconnected, 80))
+                .item(accessPoint("JDR", 2, Secure::secure, ApMode::adhoc, ConnectionStatus::disconnected, 20))
+                .item(accessPoint("JDY", 4, Secure::secure, ApMode::adhoc, ConnectionStatus::disconnected, 60))
+                .item(accessPoint("NSD", 1, Secure::secure, ApMode::infra, ConnectionStatus::disconnected, 0))
+                .item(accessPoint("SCE", 5, Secure::insecure, ApMode::infra, ConnectionStatus::disconnected, 20))
+            )
+        ).match());
+
+    // set wifi off
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+              .item(flightModeSwitch(false))
+              .item(mh::MenuItemMatcher())
+              .item(wifiEnableSwitch(true)
+                  .activate()
+              )
+        ).match());
+
+    setGlobalConnectedState(NM_STATE_DISCONNECTED);
+    auto& nm = dbusMock.networkManagerInterface();
+    nm.RemoveAccessPoint(device, ap1).waitForFinished();
+    nm.RemoveAccessPoint(device, ap2).waitForFinished();
+    nm.RemoveAccessPoint(device, ap3).waitForFinished();
+    nm.RemoveAccessPoint(device, ap4).waitForFinished();
+    nm.RemoveAccessPoint(device, ap5).waitForFinished();
+    nm.RemoveAccessPoint(device, ap6).waitForFinished();
+    nm.RemoveAccessPoint(device, ap7).waitForFinished();
+    nm.RemoveAccessPoint(device, ap8).waitForFinished();
+    nm.RemoveWifiConnection(device, connection).waitForFinished();
+    nm.RemoveActiveConnection(device, active_connection).waitForFinished();
+
+    // check that the flight mode switch is still off
+    // check that the wifi switch is off
+    // check indicator is a 3-bar signal icon and 0-bar wifi icon
+    // check sim status shows correct carrier name with 3-bar signal icon.
+    // check that AP list is empty
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .state_icons({"gsm-3g-high", "nm-no-connection"})
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .item(flightModeSwitch(false))
+            .item(mh::MenuItemMatcher()
+                .item(modemInfo("", "fake.tel", "gsm-3g-high"))
+                .item(cellularSettings())
+            )
+            .item(wifiEnableSwitch(false))
+            .item(mh::MenuItemMatcher()
+                .is_empty()
+            )
+        ).match());
+
+    // set flight mode on
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .item(flightModeSwitch(false)
+                  .activate()
+            )
+        ).match());
+
+    setModemProperty(0, "Online", false);
+
+    // check indicator is a plane icon and a 0-bar wifi icon
+    // check sim status shows “Offline” with 0-bar signal icon.
+    // check that AP list is empty
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .state_icons({"airplane-mode", "nm-no-connection"})
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .item(flightModeSwitch(true))
+            .item(mh::MenuItemMatcher()
+                .item(modemInfo("", "Offline", "gsm-3g-disabled"))
+                .item(cellularSettings())
+            )
+            .item(wifiEnableSwitch(false))
+            .item(mh::MenuItemMatcher()
+                .is_empty()
+            )
+        ).match());
+
+    // set flight mode off
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .item(flightModeSwitch(true)
+                  .activate()
+            )
+        ).match());
+
+    setModemProperty(0, "Online", true);
+    setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
+
+    // check that the wifi switch is still off
+    // check indicator is a 3-bar signal icon and 0-bar wifi icon
+    // check sim status shows correct carrier name with 3-bar signal icon.
+    // check that AP list is empty
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .state_icons({"gsm-3g-high", "nm-signal-0"})
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .item(flightModeSwitch(false))
+            .item(mh::MenuItemMatcher()
+                .item(modemInfo("", "fake.tel", "gsm-3g-high"))
+                .item(cellularSettings())
+            )
+            .item(wifiEnableSwitch(false))
+            .item(mh::MenuItemMatcher()
+                .is_empty()
+            )
         ).match());
 }
 

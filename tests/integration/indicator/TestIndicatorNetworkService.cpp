@@ -116,13 +116,35 @@ protected:
         return reply;
     }
 
+    static QString randomMac()
+    {
+        int high = 254;
+        int low = 1;
+        QString hardwareAddress;
+        bool first = true;
+
+        for (unsigned int i = 0; i < 6; ++i)
+        {
+            if (!first)
+            {
+                hardwareAddress.append(":");
+            }
+            int r = qrand() % ((high + 1) - low) + low;
+            hardwareAddress.append(QString::number(r, 16));
+            first = false;
+        }
+        return hardwareAddress;
+    }
+
+
     QString createAccessPoint(const QString& id, const QString& ssid, const QString& device, int strength = 100,
                               Secure secure = Secure::secure, ApMode apMode = ApMode::infra)
     {
+
         auto& networkManager(dbusMock.networkManagerInterface());
         auto reply = networkManager.AddAccessPoint(
                             device, id, ssid,
-                            "11:22:33:44:55:66",
+                            randomMac(),
                             apMode == ApMode::adhoc ? NM_802_11_MODE_ADHOC : NM_802_11_MODE_INFRA,
                             0, 0, strength,
                             secure == Secure::secure ? NM_802_11_AP_SEC_KEY_MGMT_PSK : NM_802_11_AP_SEC_NONE,

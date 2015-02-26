@@ -218,13 +218,12 @@ protected:
             .toggled(toggled);
     }
 
-    static mh::MenuItemMatcher accessPoint(const string& ssid, unsigned int id, Secure secure,
+    static mh::MenuItemMatcher accessPoint(const string& ssid, Secure secure,
                 ApMode apMode, ConnectionStatus connectionStatus, int strength = 100)
     {
         return mh::MenuItemMatcher::checkbox()
             .label(ssid)
             .widget("unity.widgets.systemsettings.tablet.accesspoint")
-            .action("indicator.accesspoint." + to_string(id))
             .toggled(connectionStatus == ConnectionStatus::connected)
             .pass_through_attribute(
                 "x-canonical-wifi-ap-strength-action",
@@ -314,7 +313,7 @@ TEST_F(TestIndicatorNetworkService, OneDisconnectedAccessPointAtStartup)
             .item(wifiEnableSwitch())
             .item(mh::MenuItemMatcher()
                 .section()
-                .item(accessPoint("the ssid", 1,
+                .item(accessPoint("the ssid",
                       Secure::secure,
                       ApMode::infra,
                       ConnectionStatus::disconnected)
@@ -343,7 +342,7 @@ TEST_F(TestIndicatorNetworkService, OneConnectedAccessPointAtStartup)
             .item(wifiEnableSwitch())
             .item(mh::MenuItemMatcher()
                 .section()
-                .item(accessPoint("the ssid", 1,
+                .item(accessPoint("the ssid",
                       Secure::secure,
                       ApMode::infra,
                       ConnectionStatus::connected)
@@ -370,7 +369,7 @@ TEST_F(TestIndicatorNetworkService, AddOneDisconnectedAccessPointAfterStartup)
             .item(wifiEnableSwitch())
             .item(mh::MenuItemMatcher()
                 .section()
-                .item(accessPoint("the ssid", 1,
+                .item(accessPoint("the ssid",
                       Secure::secure,
                       ApMode::infra,
                       ConnectionStatus::disconnected)
@@ -400,7 +399,7 @@ TEST_F(TestIndicatorNetworkService, AddOneConnectedAccessPointAfterStartup)
             .item(wifiEnableSwitch())
             .item(mh::MenuItemMatcher()
                 .section()
-                .item(accessPoint("the ssid", 1,
+                .item(accessPoint("the ssid",
                       Secure::secure,
                       ApMode::infra,
                       ConnectionStatus::connected)
@@ -922,7 +921,7 @@ TEST_F(TestIndicatorNetworkService, FlightMode_NoSIM)
             .item(wifiEnableSwitch(true))
             .item(mh::MenuItemMatcher()
                 .section()
-                .item(accessPoint("the ssid", 1,
+                .item(accessPoint("the ssid",
                       Secure::insecure,
                       ApMode::infra,
                       ConnectionStatus::connected,
@@ -1020,7 +1019,7 @@ TEST_F(TestIndicatorNetworkService, FlightMode_LockedSIM)
             .item(wifiEnableSwitch(true))
             .item(mh::MenuItemMatcher()
                 .section()
-                .item(accessPoint("the ssid", 1,
+                .item(accessPoint("the ssid",
                       Secure::secure,
                       ApMode::infra,
                       ConnectionStatus::connected,
@@ -1129,14 +1128,14 @@ TEST_F(TestIndicatorNetworkService, FlightMode_WifiOff)
             .item(wifiEnableSwitch(true))
             .item(mh::MenuItemMatcher()
                 .section()
-                .item(accessPoint("DGN", 3, Secure::secure, ApMode::infra, ConnectionStatus::connected, 40))
-                .item(accessPoint("ADS", 6, Secure::insecure, ApMode::adhoc, ConnectionStatus::disconnected, 40))
-                .item(accessPoint("CFT", 7, Secure::insecure, ApMode::infra, ConnectionStatus::disconnected, 60))
-                .item(accessPoint("GDF", 8, Secure::insecure, ApMode::adhoc, ConnectionStatus::disconnected, 80))
-                .item(accessPoint("JDR", 2, Secure::secure, ApMode::adhoc, ConnectionStatus::disconnected, 20))
-                .item(accessPoint("JDY", 4, Secure::secure, ApMode::adhoc, ConnectionStatus::disconnected, 60))
-                .item(accessPoint("NSD", 1, Secure::secure, ApMode::infra, ConnectionStatus::disconnected, 0))
-                .item(accessPoint("SCE", 5, Secure::insecure, ApMode::infra, ConnectionStatus::disconnected, 20))
+                .item(accessPoint("DGN", Secure::secure, ApMode::infra, ConnectionStatus::connected, 40))
+                .item(accessPoint("ADS", Secure::insecure, ApMode::adhoc, ConnectionStatus::disconnected, 40))
+                .item(accessPoint("CFT", Secure::insecure, ApMode::infra, ConnectionStatus::disconnected, 60))
+                .item(accessPoint("GDF", Secure::insecure, ApMode::adhoc, ConnectionStatus::disconnected, 80))
+                .item(accessPoint("JDR", Secure::secure, ApMode::adhoc, ConnectionStatus::disconnected, 20))
+                .item(accessPoint("JDY", Secure::secure, ApMode::adhoc, ConnectionStatus::disconnected, 60))
+                .item(accessPoint("NSD", Secure::secure, ApMode::infra, ConnectionStatus::disconnected, 0))
+                .item(accessPoint("SCE", Secure::insecure, ApMode::infra, ConnectionStatus::disconnected, 20))
             )
         ).match());
 
@@ -1240,6 +1239,49 @@ TEST_F(TestIndicatorNetworkService, FlightMode_WifiOff)
             .item(wifiEnableSwitch(false))
             .item(mh::MenuItemMatcher()
                 .is_empty()
+            )
+        ).match());
+}
+
+TEST_F(TestIndicatorNetworkService, GroupedWiFiAccessPoints)
+{
+    // set wifi on, flight mode off
+    setGlobalConnectedState(NM_STATE_DISCONNECTED);
+
+    // create the wifi device
+    auto device = createWiFiDevice(NM_DEVICE_STATE_ACTIVATED);
+
+    // start the indicator
+    ASSERT_NO_THROW(startIndicator());
+
+    // add a single AP
+    auto ap1 = createAccessPoint("1", "groupA", device, 40, Secure::secure, ApMode::infra);
+
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .item(flightModeSwitch())
+            .item(mh::MenuItemMatcher())
+            .item(wifiEnableSwitch())
+            .item(mh::MenuItemMatcher()
+                .section()
+                .item(accessPoint("groupA", Secure::secure, ApMode::infra, ConnectionStatus::disconnected, 40))
+            )
+        ).match());
+
+    // add a second AP with the same SSID
+    auto ap2 = createAccessPoint("2", "groupA", device, 60, Secure::secure, ApMode::infra);
+
+    // check that we see a single AP with the higher strength
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .item(flightModeSwitch())
+            .item(mh::MenuItemMatcher())
+            .item(wifiEnableSwitch())
+            .item(mh::MenuItemMatcher()
+                .section()
+                .item(accessPoint("groupA", Secure::secure, ApMode::infra, ConnectionStatus::disconnected, 60))
             )
         ).match());
 }

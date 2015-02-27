@@ -1435,7 +1435,7 @@ TEST_F(TestIndicatorNetworkService, FlightMode_WifiOn)
               .item(flightModeSwitch(false))
               .item(mh::MenuItemMatcher()
                   .item(modemInfo("", "fake.tel", "gsm-3g-low"))
-                .item(cellularSettings())
+                  .item(cellularSettings())
             )
             .item(wifiEnableSwitch(true))
             .item(mh::MenuItemMatcher()
@@ -1649,14 +1649,9 @@ TEST_F(TestIndicatorNetworkService, WifiStates_Connect1AP)
     // check that AP list contains the connected AP highlighted at top then other APs underneath in alphabetical order.
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
-              .state_icons({"nm-signal-25"})
-              .mode(mh::MenuItemMatcher::Mode::starts_with)
-              .item(flightModeSwitch(false))
-              .item(mh::MenuItemMatcher()
-                  .item(modemInfo("", "No SIM", "no-simcard"))
-                .item(cellularSettings())
-            )
-            .item(wifiEnableSwitch(true))
+            .state_icons({"nm-signal-25"})
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .item(flightModeSwitch(false)).item(mh::MenuItemMatcher()).item(wifiEnableSwitch(true))
             .item(mh::MenuItemMatcher()
                 .item(accessPoint("ADS", Secure::insecure, ApMode::adhoc, ConnectionStatus::connected, 20))
                 .item(accessPoint("CFT", Secure::insecure, ApMode::infra, ConnectionStatus::disconnected, 40))
@@ -1669,12 +1664,113 @@ TEST_F(TestIndicatorNetworkService, WifiStates_Connect1AP)
             )
         ).match());
 
-    // vary AP signal strength 1..4
-    // check indicator is a 1..4-bar wifi icon.
+    // vary AP signal strength 0
+    setNmProperty(ap6, NM_DBUS_INTERFACE_ACCESS_POINT, "Strength", QVariant::fromValue(uchar(0)));
+    setGlobalConnectedState(NM_STATE_CONNECTING);
+    setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
+
+    // check indicator is a 0-bar wifi icon.
     // check that AP signal icon also updates accordingly.
+    auto ap_item = mh::MenuItemMatcher::checkbox();
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .state_icons({"nm-signal-0"})
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .item(flightModeSwitch(false)).item(mh::MenuItemMatcher()).item(wifiEnableSwitch(true))
+            .item(mh::MenuItemMatcher()
+                .item(accessPoint("ADS", Secure::insecure, ApMode::adhoc, ConnectionStatus::connected, 0))
+                .item(ap_item).item(ap_item).item(ap_item).item(ap_item).item(ap_item).item(ap_item).item(ap_item)
+            )
+        ).match());
+
+    // vary AP signal strength 40
+    setNmProperty(ap6, NM_DBUS_INTERFACE_ACCESS_POINT, "Strength", QVariant::fromValue(uchar(40)));
+    setGlobalConnectedState(NM_STATE_CONNECTING);
+    setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
+
+    // check indicator is a 2-bar wifi icon.
+    // check that AP signal icon also updates accordingly.
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .state_icons({"nm-signal-50"})
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .item(flightModeSwitch(false)).item(mh::MenuItemMatcher()).item(wifiEnableSwitch(true))
+            .item(mh::MenuItemMatcher()
+                .item(accessPoint("ADS", Secure::insecure, ApMode::adhoc, ConnectionStatus::connected, 40))
+                .item(ap_item).item(ap_item).item(ap_item).item(ap_item).item(ap_item).item(ap_item).item(ap_item)
+            )
+        ).match());
+
+    // vary AP signal strength 60
+    setNmProperty(ap6, NM_DBUS_INTERFACE_ACCESS_POINT, "Strength", QVariant::fromValue(uchar(60)));
+    setGlobalConnectedState(NM_STATE_CONNECTING);
+    setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
+
+    // check indicator is a 3-bar wifi icon.
+    // check that AP signal icon also updates accordingly.
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .state_icons({"nm-signal-75"})
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .item(flightModeSwitch(false)).item(mh::MenuItemMatcher()).item(wifiEnableSwitch(true))
+            .item(mh::MenuItemMatcher()
+                .item(accessPoint("ADS", Secure::insecure, ApMode::adhoc, ConnectionStatus::connected, 60))
+                .item(ap_item).item(ap_item).item(ap_item).item(ap_item).item(ap_item).item(ap_item).item(ap_item)
+            )
+        ).match());
+
+    // vary AP signal strength 80
+    setNmProperty(ap6, NM_DBUS_INTERFACE_ACCESS_POINT, "Strength", QVariant::fromValue(uchar(80)));
+    setGlobalConnectedState(NM_STATE_CONNECTING);
+    setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
+
+    // check indicator is a 4-bar wifi icon.
+    // check that AP signal icon also updates accordingly.
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .state_icons({"nm-signal-100"})
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .item(flightModeSwitch(false)).item(mh::MenuItemMatcher()).item(wifiEnableSwitch(true))
+            .item(mh::MenuItemMatcher()
+                .item(accessPoint("ADS", Secure::insecure, ApMode::adhoc, ConnectionStatus::connected, 80))
+                .item(ap_item).item(ap_item).item(ap_item).item(ap_item).item(ap_item).item(ap_item).item(ap_item)
+            )
+        ).match());
+
     // set wifi off
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+              .item(flightModeSwitch(false))
+              .item(mh::MenuItemMatcher())
+              .item(wifiEnableSwitch(true)
+                  .activate()
+              )
+        ).match());
+
+    setGlobalConnectedState(NM_STATE_DISCONNECTED);
+    removeActiveConnection(device, active_connection);
+    removeWifiConnection(device, connection);
+    removeAccessPoint(device, ap1);
+    removeAccessPoint(device, ap2);
+    removeAccessPoint(device, ap3);
+    removeAccessPoint(device, ap4);
+    removeAccessPoint(device, ap5);
+    removeAccessPoint(device, ap6);
+    removeAccessPoint(device, ap7);
+    removeAccessPoint(device, ap8);
+
     // check indicator is just a 0-bar wifi icon
     // check that AP list is empty
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .state_icons({"nm-no-connection"})
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .item(flightModeSwitch(false)).item(mh::MenuItemMatcher()).item(wifiEnableSwitch(false))
+            .item(mh::MenuItemMatcher()
+                .is_empty()
+            )
+        ).match());
 }
 
 TEST_F(TestIndicatorNetworkService, WifiStates_Connect2APs)

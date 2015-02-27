@@ -232,12 +232,6 @@ protected:
         ofono.SetProperty(propertyName, QDBusVariant(value)).waitForFinished();
     }
 
-    void setNetworkRegistrationProperty(int modemIndex, const QString& propertyName, const uchar& value)
-    {
-        auto& ofono(dbusMock.ofonoNetworkRegistrationInterface(modemIndex));
-        ofono.SetProperty(propertyName, value).waitForFinished();
-    }
-
     static mh::MenuItemMatcher flightModeSwitch(bool toggled = false)
     {
         return mh::MenuItemMatcher::checkbox()
@@ -668,7 +662,7 @@ TEST_F(TestIndicatorNetworkService, SimStates_UnlockedSIM)
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
 
     // set no signal
-    setNetworkRegistrationProperty(0, "Strength", uchar(0));
+    setNetworkRegistrationProperty(0, "Strength", QVariant::fromValue(uchar(0)));
 
     // start the indicator
     ASSERT_NO_THROW(startIndicator());
@@ -706,7 +700,7 @@ TEST_F(TestIndicatorNetworkService, SimStates_UnlockedSIM)
     setNetworkRegistrationProperty(0, "Status", "registered");
 
     // set signal strength to 1
-    setNetworkRegistrationProperty(0, "Strength", uchar(1));
+    setNetworkRegistrationProperty(0, "Strength", QVariant::fromValue(uchar(1)));
 
     // check indicator is a 0-bar signal icon and a 0-bar wifi icon.
     // check sim status shows correct carrier name with 0-bar signal icon.
@@ -722,7 +716,7 @@ TEST_F(TestIndicatorNetworkService, SimStates_UnlockedSIM)
         ).match());
 
     // set signal strength to 6
-    setNetworkRegistrationProperty(0, "Strength", uchar(6));
+    setNetworkRegistrationProperty(0, "Strength", QVariant::fromValue(uchar(6)));
 
     // check indicator is a 1-bar signal icon and a 0-bar wifi icon.
     // check sim status shows correct carrier name with 1-bar signal icon.
@@ -738,7 +732,7 @@ TEST_F(TestIndicatorNetworkService, SimStates_UnlockedSIM)
         ).match());
 
     // set signal strength to 16
-    setNetworkRegistrationProperty(0, "Strength", uchar(16));
+    setNetworkRegistrationProperty(0, "Strength", QVariant::fromValue(uchar(16)));
 
     // check indicator is a 2-bar signal icon and a 0-bar wifi icon.
     // check sim status shows correct carrier name with 2-bar signal icon.
@@ -754,7 +748,7 @@ TEST_F(TestIndicatorNetworkService, SimStates_UnlockedSIM)
         ).match());
 
     // set signal strength to 26
-    setNetworkRegistrationProperty(0, "Strength", uchar(26));
+    setNetworkRegistrationProperty(0, "Strength", QVariant::fromValue(uchar(26)));
 
     // check indicator is a 3-bar signal icon and a 0-bar wifi icon.
     // check sim status shows correct carrier name with 3-bar signal icon.
@@ -770,7 +764,7 @@ TEST_F(TestIndicatorNetworkService, SimStates_UnlockedSIM)
         ).match());
 
     // set signal strength to 39
-    setNetworkRegistrationProperty(0, "Strength", uchar(39));
+    setNetworkRegistrationProperty(0, "Strength", QVariant::fromValue(uchar(39)));
 
     // check indicator is a 4-bar signal icon and a 0-bar wifi icon.
     // check sim status shows correct carrier name with 4-bar signal icon.
@@ -793,7 +787,7 @@ TEST_F(TestIndicatorNetworkService, SimStates_UnlockedSIM2)
 
     // set no signal on sim 2
     createModem("ril_1");
-    setNetworkRegistrationProperty(1, "Strength", uchar(0));
+    setNetworkRegistrationProperty(1, "Strength", QVariant::fromValue(uchar(0)));
 
     // start the indicator
     ASSERT_NO_THROW(startIndicator());
@@ -833,7 +827,7 @@ TEST_F(TestIndicatorNetworkService, SimStates_UnlockedSIM2)
     setNetworkRegistrationProperty(1, "Status", "registered");
 
     // set signal strength to 1
-    setNetworkRegistrationProperty(1, "Strength", uchar(1));
+    setNetworkRegistrationProperty(1, "Strength", QVariant::fromValue(uchar(1)));
 
     // check indicator is a 4-bar signal icon, a 0-bar signal icon and a 0-bar wifi icon.
     // check sim 2 status shows correct carrier name with 0-bar signal icon.
@@ -850,7 +844,7 @@ TEST_F(TestIndicatorNetworkService, SimStates_UnlockedSIM2)
         ).match());
 
     // set signal strength to 6
-    setNetworkRegistrationProperty(1, "Strength", uchar(6));
+    setNetworkRegistrationProperty(1, "Strength", QVariant::fromValue(uchar(6)));
 
     // check indicator is a 4-bar signal icon, a 1-bar signal icon and a 0-bar wifi icon.
     // check sim 2 status shows correct carrier name with 1-bar signal icon.
@@ -867,7 +861,7 @@ TEST_F(TestIndicatorNetworkService, SimStates_UnlockedSIM2)
         ).match());
 
     // set signal strength to 16
-    setNetworkRegistrationProperty(1, "Strength", uchar(16));
+    setNetworkRegistrationProperty(1, "Strength", QVariant::fromValue(uchar(16)));
 
     // check indicator is a 4-bar signal icon, a 2-bar signal icon and a 0-bar wifi icon.
     // check sim 2 status shows correct carrier name with 2-bar signal icon.
@@ -884,7 +878,7 @@ TEST_F(TestIndicatorNetworkService, SimStates_UnlockedSIM2)
         ).match());
 
     // set signal strength to 26
-    setNetworkRegistrationProperty(1, "Strength", uchar(26));
+    setNetworkRegistrationProperty(1, "Strength", QVariant::fromValue(uchar(26)));
 
     // check indicator is a 4-bar signal icon, a 3-bar signal icon and a 0-bar wifi icon.
     // check sim 2 status shows correct carrier name with 3-bar signal icon.
@@ -901,7 +895,7 @@ TEST_F(TestIndicatorNetworkService, SimStates_UnlockedSIM2)
         ).match());
 
     // set signal strength to 39
-    setNetworkRegistrationProperty(1, "Strength", uchar(39));
+    setNetworkRegistrationProperty(1, "Strength", QVariant::fromValue(uchar(39)));
 
     // check indicator is a 4-bar signal icon, a 4-bar signal icon and a 0-bar wifi icon.
     // check sim 2 status shows correct carrier name with 4-bar signal icon.
@@ -1138,7 +1132,7 @@ TEST_F(TestIndicatorNetworkService, FlightMode_WifiOff)
     ASSERT_NO_THROW(startIndicator());
 
     // set sim unlocked on carrier with 3-bar signal
-    setNetworkRegistrationProperty(0, "Strength", uchar(26));
+    setNetworkRegistrationProperty(0, "Strength", QVariant::fromValue(uchar(26)));
 
     // check that the wifi switch is on
     // check indicator is a 3-bar signal icon and 2-bar locked wifi icon
@@ -1295,7 +1289,7 @@ TEST_F(TestIndicatorNetworkService, FlightMode_WifiOn)
     ASSERT_NO_THROW(startIndicator());
 
     // set sim unlocked on carrier with 1-bar signal
-    setNetworkRegistrationProperty(0, "Strength", uchar(6));
+    setNetworkRegistrationProperty(0, "Strength", QVariant::fromValue(uchar(6)));
 
     // check that the wifi switch is on
     // check indicator is a 1-bar signal icon and 4-bar wifi icon

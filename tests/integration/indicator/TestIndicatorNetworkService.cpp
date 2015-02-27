@@ -1815,4 +1815,12 @@ TEST_F(TestIndicatorNetworkService, WifiStates_Connect2APs)
     // check that AP list contains the connected AP highlighted at top then other APs underneath in alphabetical order.
 }
 
+TEST_F(TestIndicatorNetworkService, CellDataEnabled)
+{
+}
+
+TEST_F(TestIndicatorNetworkService, CellDataDisabled)
+{
+}
+
 } // namespace

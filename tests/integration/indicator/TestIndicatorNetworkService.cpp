@@ -1550,4 +1550,12 @@ TEST_F(TestIndicatorNetworkService, GroupedWiFiAccessPoints)
         ).match());
 }
 
+TEST_F(TestIndicatorNetworkService, WifiStates_Connect1AP)
+{
+}
+
+TEST_F(TestIndicatorNetworkService, WifiStates_Connect2APs)
+{
+}
+
 } // namespace

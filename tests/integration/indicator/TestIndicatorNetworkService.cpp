@@ -1646,11 +1646,35 @@ TEST_F(TestIndicatorNetworkService, WifiStates_Connect1AP)
         ).match());
 
     // connect to 1-bar unsecure AP
+    setGlobalConnectedState(NM_STATE_CONNECTING);
     auto connection = createAccessPointConnection("6", "ADS", device);
-    auto active_connection = createActiveConnection("6", device, connection, ap8);
+    auto active_connection = createActiveConnection("6", device, connection, ap6);
+    setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
 
     // check indicator is just a 1-bar wifi icon
     // check that AP list contains the connected AP highlighted at top then other APs underneath in alphabetical order.
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+              .state_icons({"nm-signal-25"})
+              .mode(mh::MenuItemMatcher::Mode::starts_with)
+              .item(flightModeSwitch(false))
+              .item(mh::MenuItemMatcher()
+                  .item(modemInfo("", "No SIM", "no-simcard"))
+                .item(cellularSettings())
+            )
+            .item(wifiEnableSwitch(true))
+            .item(mh::MenuItemMatcher()
+                .item(accessPoint("ADS", Secure::insecure, ApMode::adhoc, ConnectionStatus::connected, 20))
+                .item(accessPoint("CFT", Secure::insecure, ApMode::infra, ConnectionStatus::disconnected, 40))
+                .item(accessPoint("DGN", Secure::secure, ApMode::infra, ConnectionStatus::disconnected, 60))
+                .item(accessPoint("GDF", Secure::insecure, ApMode::adhoc, ConnectionStatus::disconnected, 60))
+                .item(accessPoint("JDR", Secure::secure, ApMode::adhoc, ConnectionStatus::disconnected, 40))
+                .item(accessPoint("JDY", Secure::secure, ApMode::adhoc, ConnectionStatus::disconnected, 80))
+                .item(accessPoint("NSD", Secure::secure, ApMode::infra, ConnectionStatus::disconnected, 20))
+                .item(accessPoint("SCE", Secure::insecure, ApMode::infra, ConnectionStatus::disconnected, 0))
+            )
+        ).match());
+
     // vary AP signal strength 1..4
     // check indicator is a 1..4-bar wifi icon.
     // check that AP signal icon also updates accordingly.
@@ -1680,10 +1704,12 @@ TEST_F(TestIndicatorNetworkService, WifiStates_Connect2APs)
 
     // connect to 4-bar secure AP
     auto connection = createAccessPointConnection("4", "JDY", device);
-    auto active_connection = createActiveConnection("4", device, connection, ap8);
+    auto active_connection = createActiveConnection("4", device, connection, ap4);
 
     // check indicator is just a 4-bar locked wifi icon
     // check that AP list contains the connected AP highlighted at top then other APs underneath in alphabetical order.
+
+
     // vary AP signal strength 1..4
     // check indicator is a 1..4-bar locked wifi icon.
     // check that AP signal icon also updates accordingly.

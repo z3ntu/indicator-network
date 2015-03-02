@@ -211,28 +211,33 @@ protected:
         return ofono.AddModem(id, modemProperties);
     }
 
-    void setModemProperty(int modemIndex, const QString& propertyName, const QVariant& value)
+    void setModemProperty(const QString& path, const QString& propertyName, const QVariant& value)
     {
-        auto& ofono(dbusMock.ofonoModemInterface(modemIndex));
+        auto& ofono(dbusMock.ofonoModemInterface(path));
         ofono.SetProperty(propertyName, QDBusVariant(value)).waitForFinished();
     }
 
-    void setSimManagerProperty(int modemIndex, const QString& propertyName, const QVariant& value)
+    void setSimManagerProperty(const QString& path, const QString& propertyName, const QVariant& value)
     {
-        auto& ofono(dbusMock.ofonoSimManagerInterface(modemIndex));
+        auto& ofono(dbusMock.ofonoSimManagerInterface(path));
         ofono.SetProperty(propertyName, QDBusVariant(value)).waitForFinished();
     }
 
-    void setConnectionManagerProperty(int modemIndex, const QString& propertyName, const QVariant& value)
+    void setConnectionManagerProperty(const QString& path, const QString& propertyName, const QVariant& value)
     {
-        auto& ofono(dbusMock.ofonoConnectionManagerInterface(modemIndex));
+        auto& ofono(dbusMock.ofonoConnectionManagerInterface(path));
         ofono.SetProperty(propertyName, QDBusVariant(value)).waitForFinished();
     }
 
-    void setNetworkRegistrationProperty(int modemIndex, const QString& propertyName, const QVariant& value)
+    void setNetworkRegistrationProperty(const QString& path, const QString& propertyName, const QVariant& value)
     {
-        auto& ofono(dbusMock.ofonoNetworkRegistrationInterface(modemIndex));
+        auto& ofono(dbusMock.ofonoNetworkRegistrationInterface(path));
         ofono.SetProperty(propertyName, QDBusVariant(value)).waitForFinished();
+    }
+
+    QString firstModem()
+    {
+        return "/ril_0";
     }
 
     static mh::MenuItemMatcher flightModeSwitch(bool toggled = false)
@@ -522,7 +527,7 @@ TEST_F(TestIndicatorNetworkService, SimStates_NoSIM)
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
 
     // set no sim
-    setSimManagerProperty(0, "Present", false);
+    setSimManagerProperty(firstModem(), "Present", false);
 
     // start the indicator
     ASSERT_NO_THROW(startIndicator());
@@ -547,8 +552,8 @@ TEST_F(TestIndicatorNetworkService, SimStates_NoSIM2)
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
 
     // set no sim 2
-    createModem("ril_1");
-    setSimManagerProperty(1, "Present", false);
+    auto modem1 = createModem("ril_1");
+    setSimManagerProperty(modem1, "Present", false);
 
     // start the indicator
     ASSERT_NO_THROW(startIndicator());
@@ -574,7 +579,7 @@ TEST_F(TestIndicatorNetworkService, SimStates_LockedSIM)
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
 
     // set sim locked
-    setSimManagerProperty(0, "PinRequired", "pin");
+    setSimManagerProperty(firstModem(), "PinRequired", "pin");
 
     // start the indicator
     ASSERT_NO_THROW(startIndicator());
@@ -596,7 +601,7 @@ TEST_F(TestIndicatorNetworkService, SimStates_LockedSIM)
         ).match());
 
     // set sim unlocked
-    setSimManagerProperty(0, "PinRequired", "none");
+    setSimManagerProperty(firstModem(), "PinRequired", "none");
 
     // check indicator is a 4-bar signal icon and a 0-bar wifi icon
     // check sim status shows correct carrier name with 4-bar signal icon.
@@ -618,8 +623,8 @@ TEST_F(TestIndicatorNetworkService, SimStates_LockedSIM2)
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
 
     // set sim 2 locked
-    createModem("ril_1");
-    setSimManagerProperty(1, "PinRequired", "pin");
+    auto modem1 = createModem("ril_1");
+    setSimManagerProperty(modem1, "PinRequired", "pin");
 
     // start the indicator
     ASSERT_NO_THROW(startIndicator());
@@ -642,7 +647,7 @@ TEST_F(TestIndicatorNetworkService, SimStates_LockedSIM2)
         ).match());
 
     // set sim 2 unlocked
-    setSimManagerProperty(1, "PinRequired", "none");
+    setSimManagerProperty(modem1, "PinRequired", "none");
 
     // check indicator is 4-bar signal icon, a 4-bar signal icon and a 0-bar wifi icon
     // check sim statuses show correct carrier names with 4-bar signal icons.
@@ -665,7 +670,7 @@ TEST_F(TestIndicatorNetworkService, SimStates_UnlockedSIM)
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
 
     // set no signal
-    setNetworkRegistrationProperty(0, "Strength", QVariant::fromValue(uchar(0)));
+    setNetworkRegistrationProperty(firstModem(), "Strength", QVariant::fromValue(uchar(0)));
 
     // start the indicator
     ASSERT_NO_THROW(startIndicator());
@@ -684,7 +689,7 @@ TEST_F(TestIndicatorNetworkService, SimStates_UnlockedSIM)
         ).match());
 
     // set sim searching
-    setNetworkRegistrationProperty(0, "Status", "searching");
+    setNetworkRegistrationProperty(firstModem(), "Status", "searching");
 
     // check indicator is a disabled signal icon and a 0-bar wifi icon.
     // check sim status shows “Searching” with disabled signal icon.
@@ -700,10 +705,10 @@ TEST_F(TestIndicatorNetworkService, SimStates_UnlockedSIM)
         ).match());
 
     // set sim registered
-    setNetworkRegistrationProperty(0, "Status", "registered");
+    setNetworkRegistrationProperty(firstModem(), "Status", "registered");
 
     // set signal strength to 1
-    setNetworkRegistrationProperty(0, "Strength", QVariant::fromValue(uchar(1)));
+    setNetworkRegistrationProperty(firstModem(), "Strength", QVariant::fromValue(uchar(1)));
 
     // check indicator is a 0-bar signal icon and a 0-bar wifi icon.
     // check sim status shows correct carrier name with 0-bar signal icon.
@@ -719,7 +724,7 @@ TEST_F(TestIndicatorNetworkService, SimStates_UnlockedSIM)
         ).match());
 
     // set signal strength to 6
-    setNetworkRegistrationProperty(0, "Strength", QVariant::fromValue(uchar(6)));
+    setNetworkRegistrationProperty(firstModem(), "Strength", QVariant::fromValue(uchar(6)));
 
     // check indicator is a 1-bar signal icon and a 0-bar wifi icon.
     // check sim status shows correct carrier name with 1-bar signal icon.
@@ -735,7 +740,7 @@ TEST_F(TestIndicatorNetworkService, SimStates_UnlockedSIM)
         ).match());
 
     // set signal strength to 16
-    setNetworkRegistrationProperty(0, "Strength", QVariant::fromValue(uchar(16)));
+    setNetworkRegistrationProperty(firstModem(), "Strength", QVariant::fromValue(uchar(16)));
 
     // check indicator is a 2-bar signal icon and a 0-bar wifi icon.
     // check sim status shows correct carrier name with 2-bar signal icon.
@@ -751,7 +756,7 @@ TEST_F(TestIndicatorNetworkService, SimStates_UnlockedSIM)
         ).match());
 
     // set signal strength to 26
-    setNetworkRegistrationProperty(0, "Strength", QVariant::fromValue(uchar(26)));
+    setNetworkRegistrationProperty(firstModem(), "Strength", QVariant::fromValue(uchar(26)));
 
     // check indicator is a 3-bar signal icon and a 0-bar wifi icon.
     // check sim status shows correct carrier name with 3-bar signal icon.
@@ -767,7 +772,7 @@ TEST_F(TestIndicatorNetworkService, SimStates_UnlockedSIM)
         ).match());
 
     // set signal strength to 39
-    setNetworkRegistrationProperty(0, "Strength", QVariant::fromValue(uchar(39)));
+    setNetworkRegistrationProperty(firstModem(), "Strength", QVariant::fromValue(uchar(39)));
 
     // check indicator is a 4-bar signal icon and a 0-bar wifi icon.
     // check sim status shows correct carrier name with 4-bar signal icon.
@@ -789,8 +794,8 @@ TEST_F(TestIndicatorNetworkService, SimStates_UnlockedSIM2)
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
 
     // set no signal on sim 2
-    createModem("ril_1");
-    setNetworkRegistrationProperty(1, "Strength", QVariant::fromValue(uchar(0)));
+    auto modem1 = createModem("ril_1");
+    setNetworkRegistrationProperty(modem1, "Strength", QVariant::fromValue(uchar(0)));
 
     // start the indicator
     ASSERT_NO_THROW(startIndicator());
@@ -810,7 +815,7 @@ TEST_F(TestIndicatorNetworkService, SimStates_UnlockedSIM2)
         ).match());
 
     // set sim searching
-    setNetworkRegistrationProperty(1, "Status", "searching");
+    setNetworkRegistrationProperty(modem1, "Status", "searching");
 
     // check indicator is a 4-bar signal icon, a disabled signal icon and a 0-bar wifi icon.
     // check sim 2 status shows “Searching” with disabled signal icon.
@@ -827,10 +832,10 @@ TEST_F(TestIndicatorNetworkService, SimStates_UnlockedSIM2)
         ).match());
 
     // set sim registered
-    setNetworkRegistrationProperty(1, "Status", "registered");
+    setNetworkRegistrationProperty(modem1, "Status", "registered");
 
     // set signal strength to 1
-    setNetworkRegistrationProperty(1, "Strength", QVariant::fromValue(uchar(1)));
+    setNetworkRegistrationProperty(modem1, "Strength", QVariant::fromValue(uchar(1)));
 
     // check indicator is a 4-bar signal icon, a 0-bar signal icon and a 0-bar wifi icon.
     // check sim 2 status shows correct carrier name with 0-bar signal icon.
@@ -847,7 +852,7 @@ TEST_F(TestIndicatorNetworkService, SimStates_UnlockedSIM2)
         ).match());
 
     // set signal strength to 6
-    setNetworkRegistrationProperty(1, "Strength", QVariant::fromValue(uchar(6)));
+    setNetworkRegistrationProperty(modem1, "Strength", QVariant::fromValue(uchar(6)));
 
     // check indicator is a 4-bar signal icon, a 1-bar signal icon and a 0-bar wifi icon.
     // check sim 2 status shows correct carrier name with 1-bar signal icon.
@@ -864,7 +869,7 @@ TEST_F(TestIndicatorNetworkService, SimStates_UnlockedSIM2)
         ).match());
 
     // set signal strength to 16
-    setNetworkRegistrationProperty(1, "Strength", QVariant::fromValue(uchar(16)));
+    setNetworkRegistrationProperty(modem1, "Strength", QVariant::fromValue(uchar(16)));
 
     // check indicator is a 4-bar signal icon, a 2-bar signal icon and a 0-bar wifi icon.
     // check sim 2 status shows correct carrier name with 2-bar signal icon.
@@ -881,7 +886,7 @@ TEST_F(TestIndicatorNetworkService, SimStates_UnlockedSIM2)
         ).match());
 
     // set signal strength to 26
-    setNetworkRegistrationProperty(1, "Strength", QVariant::fromValue(uchar(26)));
+    setNetworkRegistrationProperty(modem1, "Strength", QVariant::fromValue(uchar(26)));
 
     // check indicator is a 4-bar signal icon, a 3-bar signal icon and a 0-bar wifi icon.
     // check sim 2 status shows correct carrier name with 3-bar signal icon.
@@ -898,7 +903,7 @@ TEST_F(TestIndicatorNetworkService, SimStates_UnlockedSIM2)
         ).match());
 
     // set signal strength to 39
-    setNetworkRegistrationProperty(1, "Strength", QVariant::fromValue(uchar(39)));
+    setNetworkRegistrationProperty(modem1, "Strength", QVariant::fromValue(uchar(39)));
 
     // check indicator is a 4-bar signal icon, a 4-bar signal icon and a 0-bar wifi icon.
     // check sim 2 status shows correct carrier name with 4-bar signal icon.
@@ -930,7 +935,7 @@ TEST_F(TestIndicatorNetworkService, FlightMode_NoSIM)
     ASSERT_NO_THROW(startIndicator());
 
     // set no sim
-    setSimManagerProperty(0, "Present", false);
+    setSimManagerProperty(firstModem(), "Present", false);
 
     // check indicator is just a 2-bar wifi icon
     // check sim status shows “No SIM” with crossed sim card icon.
@@ -1028,7 +1033,7 @@ TEST_F(TestIndicatorNetworkService, FlightMode_LockedSIM)
     ASSERT_NO_THROW(startIndicator());
 
     // set sim locked
-    setSimManagerProperty(0, "PinRequired", "pin");
+    setSimManagerProperty(firstModem(), "PinRequired", "pin");
 
     // check indicator is a locked sim card and a 1-bar locked wifi icon
     // check sim status shows “SIM Locked”, with locked sim card icon and a “Unlock SIM” button beneath.
@@ -1135,7 +1140,7 @@ TEST_F(TestIndicatorNetworkService, FlightMode_WifiOff)
     ASSERT_NO_THROW(startIndicator());
 
     // set sim unlocked on carrier with 3-bar signal
-    setNetworkRegistrationProperty(0, "Strength", QVariant::fromValue(uchar(26)));
+    setNetworkRegistrationProperty(firstModem(), "Strength", QVariant::fromValue(uchar(26)));
 
     // check that the wifi switch is on
     // check indicator is a 3-bar signal icon and 2-bar locked wifi icon
@@ -1216,7 +1221,7 @@ TEST_F(TestIndicatorNetworkService, FlightMode_WifiOff)
             )
         ).match());
 
-    setModemProperty(0, "Online", false);
+    setModemProperty(firstModem(), "Online", false);
 
     // check indicator is a plane icon and a 0-bar wifi icon
     // check sim status shows “Offline” with 0-bar signal icon.
@@ -1245,7 +1250,7 @@ TEST_F(TestIndicatorNetworkService, FlightMode_WifiOff)
             )
         ).match());
 
-    setModemProperty(0, "Online", true);
+    setModemProperty(firstModem(), "Online", true);
     setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
 
     // check that the wifi switch is still off
@@ -1292,7 +1297,7 @@ TEST_F(TestIndicatorNetworkService, FlightMode_WifiOn)
     ASSERT_NO_THROW(startIndicator());
 
     // set sim unlocked on carrier with 1-bar signal
-    setNetworkRegistrationProperty(0, "Strength", QVariant::fromValue(uchar(6)));
+    setNetworkRegistrationProperty(firstModem(), "Strength", QVariant::fromValue(uchar(6)));
 
     // check that the wifi switch is on
     // check indicator is a 1-bar signal icon and 4-bar wifi icon
@@ -1329,7 +1334,7 @@ TEST_F(TestIndicatorNetworkService, FlightMode_WifiOn)
             )
         ).match());
 
-    setModemProperty(0, "Online", false);
+    setModemProperty(firstModem(), "Online", false);
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
     removeActiveConnection(device, active_connection);
     removeWifiConnection(device, connection);
@@ -1425,7 +1430,7 @@ TEST_F(TestIndicatorNetworkService, FlightMode_WifiOn)
             )
         ).match());
 
-    setModemProperty(0, "Online", true);
+    setModemProperty(firstModem(), "Online", true);
 
     // check that the wifi switch remains on
     // check indicator is a 1-bar signal icon and 4-bar wifi icon
@@ -1569,7 +1574,7 @@ TEST_F(TestIndicatorNetworkService, WifiStates_Connect1AP)
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
 
     // set no sim
-    setSimManagerProperty(0, "Present", false);
+    setSimManagerProperty(firstModem(), "Present", false);
 
     // check indicator is just a 0-bar wifi icon
     // check that AP list is empty
@@ -1774,7 +1779,7 @@ TEST_F(TestIndicatorNetworkService, WifiStates_Connect2APs)
     setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
 
     // set no sim
-    setSimManagerProperty(0, "Present", false);
+    setSimManagerProperty(firstModem(), "Present", false);
 
     // add some APs (secure / unsecure / adhoc / varied strength)
     auto device = createWiFiDevice(NM_DEVICE_STATE_ACTIVATED);
@@ -1946,42 +1951,70 @@ TEST_F(TestIndicatorNetworkService, CellDataEnabled)
     // We are connected
     setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
 
-    // Set WiFi off
+    // Create a WiFi device and power it off
     auto device = createWiFiDevice(NM_DEVICE_STATE_DISCONNECTED);
     auto& urfkillInterface = dbusMock.urfkillInterface();
     urfkillInterface.Block(1, true).waitForFinished();
 
-    // sim in with carrier and 4-bar signal
-    setNetworkRegistrationProperty(0, "Strength", QVariant::fromValue(uchar(26)));
-    setNetworkRegistrationProperty(0, "Technology", "hspa");
-    setModemProperty(0, "Online", true);
-    setConnectionManagerProperty(0, "Powered", true);
+    auto secondModem = createModem("ril_1");
+
+    // sim in with carrier and 4-bar signal and HSPA
+    setNetworkRegistrationProperty(firstModem(), "Strength", QVariant::fromValue(uchar(26)));
+    setNetworkRegistrationProperty(firstModem(), "Technology", "hspa");
+    setModemProperty(firstModem(), "Online", true);
+    setConnectionManagerProperty(firstModem(), "Powered", true);
+
+    // second sim with umts (3G)
+    setNetworkRegistrationProperty(secondModem, "Strength", QVariant::fromValue(uchar(6)));
+    setNetworkRegistrationProperty(secondModem, "Technology", "umts");
+    setModemProperty(secondModem, "Online", true);
+    setConnectionManagerProperty(secondModem, "Powered", false);
 
     ASSERT_NO_THROW(startIndicator());
 
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
-            .state_icons({"gsm-3g-high", "network-cellular-hspa"})
+            .state_icons({"gsm-3g-high", "gsm-3g-low", "network-cellular-hspa"})
             .mode(mh::MenuItemMatcher::Mode::starts_with)
             .item(flightModeSwitch())
             .item(mh::MenuItemMatcher()
-                .item(modemInfo("", "fake.tel", "gsm-3g-high"))
+                .item(modemInfo("SIM 1", "fake.tel", "gsm-3g-high"))
+                .item(modemInfo("SIM 2", "fake.tel", "gsm-3g-low"))
                 .item(cellularSettings())
             )
             .item(wifiEnableSwitch(false))
         ).match());
 
-    // set preferred cell data to 2G only
-    setNetworkRegistrationProperty(0, "Technology", "edge");
+    // First SIM card now only has EDGE
+    setNetworkRegistrationProperty(firstModem(), "Technology", "edge");
 
     // Now we should only have an edge icon
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
             .item(mh::MenuItemMatcher()
-                .state_icons({"gsm-3g-high", "network-cellular-edge"})
+                .state_icons({"gsm-3g-high", "gsm-3g-low", "network-cellular-edge"})
                 .mode(mh::MenuItemMatcher::Mode::starts_with)
                 .item(flightModeSwitch())
                 .item(mh::MenuItemMatcher()
-                    .item(modemInfo("", "fake.tel", "gsm-3g-high"))
+                    .item(modemInfo("SIM 1", "fake.tel", "gsm-3g-high"))
+                    .item(modemInfo("SIM 2", "fake.tel", "gsm-3g-low"))
+                    .item(cellularSettings())
+                )
+                .item(wifiEnableSwitch(false))
+            ).match());
+
+    // Set second SIM as the active data connection
+    setConnectionManagerProperty(firstModem(), "Powered", false);
+    setConnectionManagerProperty(secondModem, "Powered", true);
+
+    // Now we should only have an edge icon
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+            .item(mh::MenuItemMatcher()
+                .state_icons({"gsm-3g-high", "gsm-3g-low", "network-cellular-3g"})
+                .mode(mh::MenuItemMatcher::Mode::starts_with)
+                .item(flightModeSwitch())
+                .item(mh::MenuItemMatcher()
+                    .item(modemInfo("SIM 1", "fake.tel", "gsm-3g-high"))
+                    .item(modemInfo("SIM 2", "fake.tel", "gsm-3g-low"))
                     .item(cellularSettings())
                 )
                 .item(wifiEnableSwitch(false))

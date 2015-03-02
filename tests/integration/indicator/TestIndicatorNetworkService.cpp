@@ -211,22 +211,25 @@ protected:
         return ofono.AddModem(id, modemProperties);
     }
 
-    template<typename T>
-    void setModemProperty(int modemIndex, const QString& propertyName, const T& value)
+    void setModemProperty(int modemIndex, const QString& propertyName, const QVariant& value)
     {
         auto& ofono(dbusMock.ofonoModemInterface(modemIndex));
         ofono.SetProperty(propertyName, QDBusVariant(value)).waitForFinished();
     }
 
-    template<typename T>
-    void setSimManagerProperty(int modemIndex, const QString& propertyName, const T& value)
+    void setSimManagerProperty(int modemIndex, const QString& propertyName, const QVariant& value)
     {
         auto& ofono(dbusMock.ofonoSimManagerInterface(modemIndex));
         ofono.SetProperty(propertyName, QDBusVariant(value)).waitForFinished();
     }
 
-    template<typename T>
-    void setNetworkRegistrationProperty(int modemIndex, const QString& propertyName, const T& value)
+    void setConnectionManagerProperty(int modemIndex, const QString& propertyName, const QVariant& value)
+    {
+        auto& ofono(dbusMock.ofonoConnectionManagerInterface(modemIndex));
+        ofono.SetProperty(propertyName, QDBusVariant(value)).waitForFinished();
+    }
+
+    void setNetworkRegistrationProperty(int modemIndex, const QString& propertyName, const QVariant& value)
     {
         auto& ofono(dbusMock.ofonoNetworkRegistrationInterface(modemIndex));
         ofono.SetProperty(propertyName, QDBusVariant(value)).waitForFinished();
@@ -1925,8 +1928,64 @@ TEST_F(TestIndicatorNetworkService, WifiStates_Connect2APs)
         ).match());
 }
 
+/*
+- set flight mode off, wifi off, and sim in with carrier and 4-bar signal
+- check that first half of indicator is a 4-bar signal icon
+- set cell data on
+- set preferred cell data to 2G only
+- vary available cell data
+- check that only none->2G is displayed as second half indicator icon.
+- set preferred cell data to 2G / 3G
+- vary available cell data
+- check that all types are displayed as second half indicator icon.
+
+Need to update this test to include dual SIM functionality
+ */
 TEST_F(TestIndicatorNetworkService, CellDataEnabled)
 {
+    // We are connected
+    setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
+
+    // Set WiFi off
+    auto device = createWiFiDevice(NM_DEVICE_STATE_DISCONNECTED);
+    auto& urfkillInterface = dbusMock.urfkillInterface();
+    urfkillInterface.Block(1, true).waitForFinished();
+
+    // sim in with carrier and 4-bar signal
+    setNetworkRegistrationProperty(0, "Strength", QVariant::fromValue(uchar(26)));
+    setNetworkRegistrationProperty(0, "Technology", "hspa");
+    setModemProperty(0, "Online", true);
+    setConnectionManagerProperty(0, "Powered", true);
+
+    ASSERT_NO_THROW(startIndicator());
+
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .state_icons({"gsm-3g-high", "network-cellular-hspa"})
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .item(flightModeSwitch())
+            .item(mh::MenuItemMatcher()
+                .item(modemInfo("", "fake.tel", "gsm-3g-high"))
+                .item(cellularSettings())
+            )
+            .item(wifiEnableSwitch(false))
+        ).match());
+
+    // set preferred cell data to 2G only
+    setNetworkRegistrationProperty(0, "Technology", "edge");
+
+    // Now we should only have an edge icon
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+            .item(mh::MenuItemMatcher()
+                .state_icons({"gsm-3g-high", "network-cellular-edge"})
+                .mode(mh::MenuItemMatcher::Mode::starts_with)
+                .item(flightModeSwitch())
+                .item(mh::MenuItemMatcher()
+                    .item(modemInfo("", "fake.tel", "gsm-3g-high"))
+                    .item(cellularSettings())
+                )
+                .item(wifiEnableSwitch(false))
+            ).match());
 }
 
 TEST_F(TestIndicatorNetworkService, CellDataDisabled)

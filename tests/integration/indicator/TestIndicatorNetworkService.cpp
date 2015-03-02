@@ -1958,6 +1958,7 @@ TEST_F(TestIndicatorNetworkService, CellDataEnabled)
 
     ASSERT_NO_THROW(startIndicator());
 
+    // Should be connected to HSPA
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
             .state_icons({"gsm-3g-high", "gsm-3g-low", "network-cellular-hspa"})
@@ -1974,7 +1975,7 @@ TEST_F(TestIndicatorNetworkService, CellDataEnabled)
     // First SIM card now only has EDGE
     setNetworkRegistrationProperty(firstModem(), "Technology", "edge");
 
-    // Now we should only have an edge icon
+    // Now we should have an EDGE icon
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
             .item(mh::MenuItemMatcher()
                 .state_icons({"gsm-3g-high", "gsm-3g-low", "network-cellular-edge"})
@@ -1992,7 +1993,7 @@ TEST_F(TestIndicatorNetworkService, CellDataEnabled)
     setConnectionManagerProperty(firstModem(), "Powered", false);
     setConnectionManagerProperty(secondModem, "Powered", true);
 
-    // Now we should only have an edge icon
+    // Now we should have a 3G icon
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
             .item(mh::MenuItemMatcher()
                 .state_icons({"gsm-3g-high", "gsm-3g-low", "network-cellular-3g"})

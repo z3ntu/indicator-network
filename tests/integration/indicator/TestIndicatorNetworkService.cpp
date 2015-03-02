@@ -1933,19 +1933,6 @@ TEST_F(TestIndicatorNetworkService, WifiStates_Connect2APs)
         ).match());
 }
 
-/*
-- set flight mode off, wifi off, and sim in with carrier and 4-bar signal
-- check that first half of indicator is a 4-bar signal icon
-- set cell data on
-- set preferred cell data to 2G only
-- vary available cell data
-- check that only none->2G is displayed as second half indicator icon.
-- set preferred cell data to 2G / 3G
-- vary available cell data
-- check that all types are displayed as second half indicator icon.
-
-Need to update this test to include dual SIM functionality
- */
 TEST_F(TestIndicatorNetworkService, CellDataEnabled)
 {
     // We are connected
@@ -1956,8 +1943,6 @@ TEST_F(TestIndicatorNetworkService, CellDataEnabled)
     auto& urfkillInterface = dbusMock.urfkillInterface();
     urfkillInterface.Block(1, true).waitForFinished();
 
-    auto secondModem = createModem("ril_1");
-
     // sim in with carrier and 4-bar signal and HSPA
     setNetworkRegistrationProperty(firstModem(), "Strength", QVariant::fromValue(uchar(26)));
     setNetworkRegistrationProperty(firstModem(), "Technology", "hspa");
@@ -1965,6 +1950,7 @@ TEST_F(TestIndicatorNetworkService, CellDataEnabled)
     setConnectionManagerProperty(firstModem(), "Powered", true);
 
     // second sim with umts (3G)
+    auto secondModem = createModem("ril_1");
     setNetworkRegistrationProperty(secondModem, "Strength", QVariant::fromValue(uchar(6)));
     setNetworkRegistrationProperty(secondModem, "Technology", "umts");
     setModemProperty(secondModem, "Online", true);

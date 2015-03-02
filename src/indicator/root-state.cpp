@@ -34,6 +34,8 @@ public:
     std::shared_ptr<networking::Manager> m_manager;
     ModemManager::Ptr m_modemManager;
     core::Property<Variant> m_state;
+    networking::wifi::AccessPoint::Ptr m_activeAP;
+    std::shared_ptr<core::ScopedConnection> m_activeAP_conn;
 
     std::string m_label;
 
@@ -224,9 +226,35 @@ RootState::Private::updateNetworkingIcon()
 
                 int strength = -1;
                 bool secured = false;
-                if (wifiLink->activeAccessPoint().get()) {
-                    strength = wifiLink->activeAccessPoint().get()->strength().get();
-                    secured  = wifiLink->activeAccessPoint().get()->secured();
+
+                // check if the currently active AP has changed
+                if (m_activeAP != wifiLink->activeAccessPoint().get())
+                {
+                    // locally store the active AP
+                    m_activeAP = wifiLink->activeAccessPoint().get();
+                    if (m_activeAP)
+                    {
+                        // connect updateNetworkingIcon() to changes in AP strength
+                        auto that = shared_from_this();
+                        m_activeAP_conn = std::make_shared<core::ScopedConnection>(
+                            m_activeAP->strength().changed().connect([that](double)
+                            {
+                                GMainLoopDispatch([that](){
+                                    that->updateNetworkingIcon();
+                                });
+                            })
+                        );
+                    }
+                    else
+                    {
+                        // there is no active AP, so we disconnect from strength updates
+                        m_activeAP_conn = nullptr;
+                    }
+                }
+
+                if (m_activeAP) {
+                    strength = m_activeAP->strength().get();
+                    secured  = m_activeAP->secured();
                 }
 
                 /// @todo deal with a11ydesc

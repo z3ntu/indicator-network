@@ -1788,23 +1788,141 @@ TEST_F(TestIndicatorNetworkService, WifiStates_Connect2APs)
     auto connection = createAccessPointConnection("4", "JDY", device);
     auto active_connection = createActiveConnection("4", device, connection, ap4);
 
+    // start the indicator
+    ASSERT_NO_THROW(startIndicator());
+
     // check indicator is just a 4-bar locked wifi icon
     // check that AP list contains the connected AP highlighted at top then other APs underneath in alphabetical order.
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .state_icons({"nm-signal-100-secure"})
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .item(flightModeSwitch(false))
+            .item(mh::MenuItemMatcher()
+                .item(modemInfo("", "No SIM", "no-simcard"))
+                .item(cellularSettings())
+            )
+          .item(wifiEnableSwitch(true))
+            .item(mh::MenuItemMatcher()
+                .item(accessPoint("JDY", Secure::secure, ApMode::adhoc, ConnectionStatus::connected, 80))
+                .item(accessPoint("ADS", Secure::insecure, ApMode::adhoc, ConnectionStatus::disconnected, 20))
+                .item(accessPoint("CFT", Secure::insecure, ApMode::infra, ConnectionStatus::disconnected, 40))
+                .item(accessPoint("DGN", Secure::secure, ApMode::infra, ConnectionStatus::disconnected, 60))
+                .item(accessPoint("GDF", Secure::insecure, ApMode::adhoc, ConnectionStatus::disconnected, 60))
+                .item(accessPoint("JDR", Secure::secure, ApMode::adhoc, ConnectionStatus::disconnected, 40))
+                .item(accessPoint("NSD", Secure::secure, ApMode::infra, ConnectionStatus::disconnected, 20))
+                .item(accessPoint("SCE", Secure::insecure, ApMode::infra, ConnectionStatus::disconnected, 0))
+            )
+        ).match());
 
+    // connect to 2-bar unsecure AP
+    setGlobalConnectedState(NM_STATE_DISCONNECTED);
+    removeActiveConnection(device, active_connection);
+    removeWifiConnection(device, connection);
+    setGlobalConnectedState(NM_STATE_CONNECTING);
+    connection = createAccessPointConnection("7", "CFT", device);
+    active_connection = createActiveConnection("7", device, connection, ap7);
+    setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
 
-    // vary AP signal strength 1..4
-    // check indicator is a 1..4-bar locked wifi icon.
-    // check that AP signal icon also updates accordingly.
-    // connect to 3-bar unsecure AP
-    // check indicator is just a 3-bar wifi icon
+    // check indicator is just a 2-bar wifi icon
     // check that AP list contains the connected AP highlighted at top then other APs underneath in alphabetical order.
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .state_icons({"nm-signal-50"})
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .item(flightModeSwitch(false)).item(mh::MenuItemMatcher()).item(wifiEnableSwitch(true))
+            .item(mh::MenuItemMatcher()
+                .item(accessPoint("CFT", Secure::insecure, ApMode::infra, ConnectionStatus::connected, 40))
+                .item(accessPoint("ADS", Secure::insecure, ApMode::adhoc, ConnectionStatus::disconnected, 20))
+                .item(accessPoint("DGN", Secure::secure, ApMode::infra, ConnectionStatus::disconnected, 60))
+                .item(accessPoint("GDF", Secure::insecure, ApMode::adhoc, ConnectionStatus::disconnected, 60))
+                .item(accessPoint("JDR", Secure::secure, ApMode::adhoc, ConnectionStatus::disconnected, 40))
+                .item(accessPoint("JDY", Secure::secure, ApMode::adhoc, ConnectionStatus::disconnected, 80))
+                .item(accessPoint("NSD", Secure::secure, ApMode::infra, ConnectionStatus::disconnected, 20))
+                .item(accessPoint("SCE", Secure::insecure, ApMode::infra, ConnectionStatus::disconnected, 0))
+            )
+        ).match());
+
     // set wifi off
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+              .item(flightModeSwitch(false))
+              .item(mh::MenuItemMatcher())
+              .item(wifiEnableSwitch(true)
+                  .activate()
+              )
+        ).match());
+
+    setGlobalConnectedState(NM_STATE_DISCONNECTED);
+    removeActiveConnection(device, active_connection);
+    removeWifiConnection(device, connection);
+    removeAccessPoint(device, ap1);
+    removeAccessPoint(device, ap2);
+    removeAccessPoint(device, ap3);
+    removeAccessPoint(device, ap4);
+    removeAccessPoint(device, ap5);
+    removeAccessPoint(device, ap6);
+    removeAccessPoint(device, ap7);
+    removeAccessPoint(device, ap8);
+
     // check indicator is just a 0-bar wifi icon
     // check that AP list is empty
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .state_icons({"nm-no-connection"})
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .item(flightModeSwitch(false)).item(mh::MenuItemMatcher()).item(wifiEnableSwitch(false))
+            .item(mh::MenuItemMatcher()
+                .is_empty()
+            )
+        ).match());
+
     // set wifi on
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+              .item(flightModeSwitch(false))
+              .item(mh::MenuItemMatcher())
+              .item(wifiEnableSwitch(false)
+                  .activate()
+              )
+        ).match());
+
+    // NOTE: every newly created access point increments AP index (see: AccessPointItem::Private::ConstructL())
+    //       so here we need to start at index 1+8 as we've had 8 APs previously.
+    ap1 = createAccessPoint("9", "NSD", device, 20, Secure::secure, ApMode::infra);
+    ap2 = createAccessPoint("10", "JDR", device, 40, Secure::secure, ApMode::adhoc);
+    ap3 = createAccessPoint("11", "DGN", device, 60, Secure::secure, ApMode::infra);
+    ap4 = createAccessPoint("12", "JDY", device, 80, Secure::secure, ApMode::adhoc);
+    ap5 = createAccessPoint("13", "SCE", device, 0, Secure::insecure, ApMode::infra);
+    ap6 = createAccessPoint("14", "ADS", device, 20, Secure::insecure, ApMode::adhoc);
+    ap7 = createAccessPoint("15", "CFT", device, 40, Secure::insecure, ApMode::infra);
+    ap8 = createAccessPoint("16", "GDF", device, 60, Secure::insecure, ApMode::adhoc);
+
+    connection = createAccessPointConnection("12", "JDY", device);
+    active_connection = createActiveConnection("12", device, connection, ap4);
+    setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
+
     // check that the 4-bar secure AP is reconnected (as it has the highest signal).
     // check indicator is just a 4-bar locked wifi icon
     // check that AP list contains the connected AP highlighted at top then other APs underneath in alphabetical order.
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .state_icons({"nm-signal-100-secure"})
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .item(flightModeSwitch(false)).item(mh::MenuItemMatcher()).item(wifiEnableSwitch(true))
+            .item(mh::MenuItemMatcher()
+                .item(accessPoint("JDY", Secure::secure, ApMode::adhoc, ConnectionStatus::connected, 80))
+                .item(accessPoint("ADS", Secure::insecure, ApMode::adhoc, ConnectionStatus::disconnected, 20))
+                .item(accessPoint("CFT", Secure::insecure, ApMode::infra, ConnectionStatus::disconnected, 40))
+                .item(accessPoint("DGN", Secure::secure, ApMode::infra, ConnectionStatus::disconnected, 60))
+                .item(accessPoint("GDF", Secure::insecure, ApMode::adhoc, ConnectionStatus::disconnected, 60))
+                .item(accessPoint("JDR", Secure::secure, ApMode::adhoc, ConnectionStatus::disconnected, 40))
+                .item(accessPoint("NSD", Secure::secure, ApMode::infra, ConnectionStatus::disconnected, 20))
+                .item(accessPoint("SCE", Secure::insecure, ApMode::infra, ConnectionStatus::disconnected, 0))
+            )
+        ).match());
 }
 
 TEST_F(TestIndicatorNetworkService, CellDataEnabled)

@@ -1664,10 +1664,8 @@ TEST_F(TestIndicatorNetworkService, WifiStates_Connect1AP)
             )
         ).match());
 
-    // vary AP signal strength 0
+    // set AP signal strength 0
     setNmProperty(ap6, NM_DBUS_INTERFACE_ACCESS_POINT, "Strength", QVariant::fromValue(uchar(0)));
-    setGlobalConnectedState(NM_STATE_CONNECTING);
-    setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
 
     // check indicator is a 0-bar wifi icon.
     // check that AP signal icon also updates accordingly.
@@ -1683,10 +1681,8 @@ TEST_F(TestIndicatorNetworkService, WifiStates_Connect1AP)
             )
         ).match());
 
-    // vary AP signal strength 40
+    // set AP signal strength 40
     setNmProperty(ap6, NM_DBUS_INTERFACE_ACCESS_POINT, "Strength", QVariant::fromValue(uchar(40)));
-    setGlobalConnectedState(NM_STATE_CONNECTING);
-    setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
 
     // check indicator is a 2-bar wifi icon.
     // check that AP signal icon also updates accordingly.
@@ -1701,10 +1697,8 @@ TEST_F(TestIndicatorNetworkService, WifiStates_Connect1AP)
             )
         ).match());
 
-    // vary AP signal strength 60
+    // set AP signal strength 60
     setNmProperty(ap6, NM_DBUS_INTERFACE_ACCESS_POINT, "Strength", QVariant::fromValue(uchar(60)));
-    setGlobalConnectedState(NM_STATE_CONNECTING);
-    setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
 
     // check indicator is a 3-bar wifi icon.
     // check that AP signal icon also updates accordingly.
@@ -1719,10 +1713,8 @@ TEST_F(TestIndicatorNetworkService, WifiStates_Connect1AP)
             )
         ).match());
 
-    // vary AP signal strength 80
+    // set AP signal strength 80
     setNmProperty(ap6, NM_DBUS_INTERFACE_ACCESS_POINT, "Strength", QVariant::fromValue(uchar(80)));
-    setGlobalConnectedState(NM_STATE_CONNECTING);
-    setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
 
     // check indicator is a 4-bar wifi icon.
     // check that AP signal icon also updates accordingly.

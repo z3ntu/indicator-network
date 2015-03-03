@@ -1552,6 +1552,57 @@ TEST_F(TestIndicatorNetworkService, GroupedWiFiAccessPoints)
         ).match());
 }
 
+TEST_F(TestIndicatorNetworkService, WifiStates_SSIDs)
+{
+    // set wifi on, flight mode off
+    setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
+
+    // add some APs (secure / unsecure / adhoc / varied strength)
+    auto device = createWiFiDevice(NM_DEVICE_STATE_ACTIVATED);
+
+    // prepend a non-utf8 character to the end of AP 1's SSID
+    auto ap1 = createAccessPoint("1", "NSD", device, 20, Secure::secure, ApMode::infra);
+    setNmProperty(ap1, NM_DBUS_INTERFACE_ACCESS_POINT, "Ssid", QByteArray(1, 0) + QByteArray("NSD"));
+
+    // append a non-utf8 character to the end of AP 2's SSID
+    auto ap2 = createAccessPoint("2", "DGN", device, 20, Secure::secure, ApMode::infra);
+    setNmProperty(ap2, NM_DBUS_INTERFACE_ACCESS_POINT, "Ssid", QByteArray("DGN") + QByteArray(1, 0));
+
+    // insert a non-utf8 character into AP 3's SSID
+    auto ap3 = createAccessPoint("3", "JDY", device, 20, Secure::secure, ApMode::infra);
+    setNmProperty(ap3, NM_DBUS_INTERFACE_ACCESS_POINT, "Ssid", QByteArray("JD") + QByteArray(1, 0) + QByteArray("Y"));
+
+    // use only non-utf8 characters for AP 4's SSID
+    auto ap4 = createAccessPoint("4", "---", device, 20, Secure::secure, ApMode::infra);
+    setNmProperty(ap4, NM_DBUS_INTERFACE_ACCESS_POINT, "Ssid", QByteArray(4, 0));
+
+    // leave AP 5's SSID blank
+    auto ap5 = createAccessPoint("5", "", device, 20, Secure::secure, ApMode::infra);
+
+    // start the indicator
+    ASSERT_NO_THROW(startIndicator());
+
+    // check indicator is just a 4-bar locked wifi icon
+    // check that AP list contains the connected AP highlighted at top then other APs underneath in alphabetical order.
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .state_icons({"gsm-3g-full", "nm-signal-0"})
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .item(flightModeSwitch(false))
+            .item(mh::MenuItemMatcher()
+                .item(modemInfo("", "fake.tel", "gsm-3g-full"))
+                .item(cellularSettings())
+            )
+          .item(wifiEnableSwitch(true))
+            .item(mh::MenuItemMatcher()
+                .item(accessPoint("DGN�", Secure::secure, ApMode::infra, ConnectionStatus::disconnected, 20))
+                .item(accessPoint("JD�Y", Secure::secure, ApMode::infra, ConnectionStatus::disconnected, 20))
+                .item(accessPoint("�NSD", Secure::secure, ApMode::infra, ConnectionStatus::disconnected, 20))
+                .item(accessPoint("����", Secure::secure, ApMode::infra, ConnectionStatus::disconnected, 20))
+            )
+        ).match());
+}
+
 TEST_F(TestIndicatorNetworkService, WifiStates_Connect1AP)
 {
     // create a wifi device

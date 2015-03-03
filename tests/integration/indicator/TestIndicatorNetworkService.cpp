@@ -83,7 +83,7 @@ protected:
 //                                QStringList{"-y", "/tmp/bustle-system.log"})));
 
         dbusMock.registerNetworkManager();
-        dbusMock.registerNotifications();
+        dbusMock.registerNotificationDaemon();
         // By default the ofono mock starts with one modem
         dbusMock.registerOfono();
         dbusMock.registerURfkill();

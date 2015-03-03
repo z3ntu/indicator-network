@@ -2114,49 +2114,49 @@ TEST_F(TestIndicatorNetworkService, CellDataDisabled)
     setConnectionManagerProperty(secondModem, "Powered", true);
 
     // Should be connected to 3G
-   EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .state_icons({"gsm-3g-low", "gsm-3g-high", "network-cellular-3g"})
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .item(flightModeSwitch())
+            .item(mh::MenuItemMatcher()
+                .item(modemInfo("SIM 1", "fake.tel", "gsm-3g-low"))
+                .item(modemInfo("SIM 2", "fake.tel", "gsm-3g-high"))
+                .item(cellularSettings())
+            )
+            .item(wifiEnableSwitch(false))
+        ).match());
+
+    // Enable WiFi and connect to it
+    enableWiFi();
+    auto ap1 = createAccessPoint("1", "ABC", device, 20, Secure::secure, ApMode::infra);
+    auto connection = createAccessPointConnection("1", "ABC", device);
+    setNmProperty(device, NM_DBUS_INTERFACE_DEVICE, "State", QVariant::fromValue(uint(NM_DEVICE_STATE_ACTIVATED)));
+    auto active_connection = createActiveConnection("1", device, connection, ap1);
+    setGlobalConnectedState(NM_STATE_CONNECTING);
+    setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
+
+    // Should be connected to WiFi
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
        .item(mh::MenuItemMatcher()
-           .state_icons({"gsm-3g-low", "gsm-3g-high", "network-cellular-3g"})
+           .state_icons({"gsm-3g-low", "gsm-3g-high", "nm-signal-25-secure"})
            .mode(mh::MenuItemMatcher::Mode::starts_with)
            .item(flightModeSwitch())
            .item(mh::MenuItemMatcher()
                .item(modemInfo("SIM 1", "fake.tel", "gsm-3g-low"))
                .item(modemInfo("SIM 2", "fake.tel", "gsm-3g-high"))
                .item(cellularSettings())
-           )
-           .item(wifiEnableSwitch(false))
-       ).match());
-
-   // Enable WiFi and connect to it
-   enableWiFi();
-   auto ap1 = createAccessPoint("1", "ABC", device, 20, Secure::secure, ApMode::infra);
-   auto connection = createAccessPointConnection("1", "ABC", device);
-   setNmProperty(device, NM_DBUS_INTERFACE_DEVICE, "State", QVariant::fromValue(uint(NM_DEVICE_STATE_ACTIVATED)));
-   auto active_connection = createActiveConnection("1", device, connection, ap1);
-   setGlobalConnectedState(NM_STATE_CONNECTING);
-   setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
-
-   // Should be connected to WiFi
-  EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
-      .item(mh::MenuItemMatcher()
-          .state_icons({"gsm-3g-low", "gsm-3g-high", "nm-signal-25-secure"})
-          .mode(mh::MenuItemMatcher::Mode::starts_with)
-          .item(flightModeSwitch())
-          .item(mh::MenuItemMatcher()
-              .item(modemInfo("SIM 1", "fake.tel", "gsm-3g-low"))
-              .item(modemInfo("SIM 2", "fake.tel", "gsm-3g-high"))
-              .item(cellularSettings())
-          )
-          .item(wifiEnableSwitch(true))
-          .item(mh::MenuItemMatcher()
-              .item(accessPoint("ABC",
+            )
+            .item(wifiEnableSwitch(true))
+            .item(mh::MenuItemMatcher()
+                .item(accessPoint("ABC",
                     Secure::secure,
                     ApMode::infra,
                     ConnectionStatus::connected,
                     20)
-              )
-          )
-      ).match());
+                )
+            )
+        ).match());
 }
 
 } // namespace

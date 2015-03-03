@@ -451,7 +451,8 @@ namespace NetworkManager
             get_settings()
             {
 
-                auto result = object->invoke_method_synchronously<Method::GetSettings, Method::GetSettings::ResultType>();
+                auto future = object->invoke_method_asynchronously<Method::GetSettings, Method::GetSettings::ResultType>();
+                auto result = future.get();
 
                 if (result.is_error())
                     connectivity::throw_dbus_exception(result.error());
@@ -662,9 +663,10 @@ namespace NetworkManager
 
             void disconnect()
             {
-                auto result =
-                        object->invoke_method_synchronously<
+                auto future =
+                        object->invoke_method_asynchronously<
                             Device::Method::Disconnect, Device::Method::Disconnect::ResultType>();
+                auto result = future.get();
 
                 if (result.is_error())
                     connectivity::throw_dbus_exception(result.error());
@@ -697,8 +699,9 @@ namespace NetworkManager
 
             Wireless::Method::GetAccessPoints::ResultType get_access_points() const
             {
-                auto result = object->invoke_method_synchronously<Wireless::Method::GetAccessPoints,
+                auto future = object->invoke_method_asynchronously<Wireless::Method::GetAccessPoints,
                                                                   Wireless::Method::GetAccessPoints::ResultType>();
+                auto result = future.get();
 
                 if (result.is_error())
                     connectivity::throw_dbus_exception(result.error());
@@ -880,11 +883,12 @@ namespace NetworkManager
                                 const core::dbus::types::ObjectPath &device,
                                 const core::dbus::types::ObjectPath &specific_object)
             {
-                auto result =
-                        object->invoke_method_synchronously<
+                auto future =
+                        object->invoke_method_asynchronously<
                             Method::ActivateConnection,
                             Method::ActivateConnection::ResultType>
                         (connection, device, specific_object);
+                auto result = future.get();
 
                 if (result.is_error())
                     connectivity::throw_dbus_exception(result.error());
@@ -897,11 +901,12 @@ namespace NetworkManager
                                         const core::dbus::types::ObjectPath &device,
                                         const core::dbus::types::ObjectPath &specific_object)
             {
-                auto result =
-                        object->invoke_method_synchronously<
+                auto future =
+                        object->invoke_method_asynchronously<
                             Method::AddAndActivateConnection,
                             Method::AddAndActivateConnection::ResultType>
                         (connection, device, specific_object);
+                auto result = future.get();
 
                 if (result.is_error())
                     connectivity::throw_dbus_exception(result.error());
@@ -913,10 +918,11 @@ namespace NetworkManager
 
             std::vector<core::dbus::types::ObjectPath> get_devices()
             {
-                auto result =
-                        object->invoke_method_synchronously<
+                auto future =
+                        object->invoke_method_asynchronously<
                             Method::GetDevices,
                             Method::GetDevices::ResultType>();
+                auto result = future.get();
 
                 if (result.is_error())
                     connectivity::throw_dbus_exception(result.error());

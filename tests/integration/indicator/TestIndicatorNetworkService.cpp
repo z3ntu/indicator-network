@@ -136,6 +136,17 @@ protected:
         return hardwareAddress;
     }
 
+    void enableWiFi()
+    {
+        auto& urfkillInterface = dbusMock.urfkillInterface();
+        urfkillInterface.Block(1, false).waitForFinished();
+    }
+
+    void disableWiFi()
+    {
+        auto& urfkillInterface = dbusMock.urfkillInterface();
+        urfkillInterface.Block(1, true).waitForFinished();
+    }
 
     QString createAccessPoint(const QString& id, const QString& ssid, const QString& device, int strength = 100,
                               Secure secure = Secure::secure, ApMode apMode = ApMode::infra)
@@ -1991,8 +2002,7 @@ TEST_F(TestIndicatorNetworkService, CellDataEnabled)
 
     // Create a WiFi device and power it off
     auto device = createWiFiDevice(NM_DEVICE_STATE_DISCONNECTED);
-    auto& urfkillInterface = dbusMock.urfkillInterface();
-    urfkillInterface.Block(1, true).waitForFinished();
+    disableWiFi();
 
     // sim in with carrier and 4-bar signal and HSPA
     setNetworkRegistrationProperty(firstModem(), "Strength", QVariant::fromValue(uchar(26)));
@@ -2061,6 +2071,89 @@ TEST_F(TestIndicatorNetworkService, CellDataEnabled)
 
 TEST_F(TestIndicatorNetworkService, CellDataDisabled)
 {
+    // We are connected
+    setGlobalConnectedState(NM_STATE_DISCONNECTED);
+
+    // Create a WiFi device and power it off
+    auto device = createWiFiDevice(NM_DEVICE_STATE_DISCONNECTED);
+    disableWiFi();
+
+    // sim in with carrier and 1-bar signal and HSPA, data disabled
+    setNetworkRegistrationProperty(firstModem(), "Strength", QVariant::fromValue(uchar(6)));
+    setNetworkRegistrationProperty(firstModem(), "Technology", "hspa");
+    setModemProperty(firstModem(), "Online", true);
+    setConnectionManagerProperty(firstModem(), "Powered", false);
+
+    // second sim with 4-bar signal umts (3G), data disabled
+    auto secondModem = createModem("ril_1");
+    setNetworkRegistrationProperty(secondModem, "Strength", QVariant::fromValue(uchar(26)));
+    setNetworkRegistrationProperty(secondModem, "Technology", "umts");
+    setModemProperty(secondModem, "Online", true);
+    setConnectionManagerProperty(secondModem, "Powered", false);
+
+    ASSERT_NO_THROW(startIndicator());
+
+    // Should be totally disconnected
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .state_icons({"gsm-3g-low", "gsm-3g-high", "nm-no-connection"})
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .item(flightModeSwitch())
+            .item(mh::MenuItemMatcher()
+                .item(modemInfo("SIM 1", "fake.tel", "gsm-3g-low"))
+                .item(modemInfo("SIM 2", "fake.tel", "gsm-3g-high"))
+                .item(cellularSettings())
+            )
+            .item(wifiEnableSwitch(false))
+        ).match());
+
+    // Set second SIM as the active data connection
+    setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
+    setConnectionManagerProperty(firstModem(), "Powered", false);
+    setConnectionManagerProperty(secondModem, "Powered", true);
+
+    // Should be connected to 3G
+   EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+       .item(mh::MenuItemMatcher()
+           .state_icons({"gsm-3g-low", "gsm-3g-high", "network-cellular-3g"})
+           .mode(mh::MenuItemMatcher::Mode::starts_with)
+           .item(flightModeSwitch())
+           .item(mh::MenuItemMatcher()
+               .item(modemInfo("SIM 1", "fake.tel", "gsm-3g-low"))
+               .item(modemInfo("SIM 2", "fake.tel", "gsm-3g-high"))
+               .item(cellularSettings())
+           )
+           .item(wifiEnableSwitch(false))
+       ).match());
+
+   // Enable WiFi and connect to it
+   enableWiFi();
+   auto ap1 = createAccessPoint("1", "ABC", device, 20, Secure::secure, ApMode::infra);
+   auto connection = createAccessPointConnection("1", "ABC", device);
+   setNmProperty(device, NM_DBUS_INTERFACE_DEVICE, "State", QVariant::fromValue(uint(NM_DEVICE_STATE_ACTIVATED)));
+   auto active_connection = createActiveConnection("1", device, connection, ap1);
+
+   // Should be connected to WiFi
+  EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+      .item(mh::MenuItemMatcher()
+          .state_icons({"gsm-3g-low", "gsm-3g-high", "nm-signal-20-secure"})
+          .mode(mh::MenuItemMatcher::Mode::starts_with)
+          .item(flightModeSwitch())
+          .item(mh::MenuItemMatcher()
+              .item(modemInfo("SIM 1", "fake.tel", "gsm-3g-low"))
+              .item(modemInfo("SIM 2", "fake.tel", "gsm-3g-high"))
+              .item(cellularSettings())
+          )
+          .item(wifiEnableSwitch(true))
+          .item(mh::MenuItemMatcher()
+              .item(accessPoint("ABC",
+                    Secure::secure,
+                    ApMode::infra,
+                    ConnectionStatus::connected,
+                    20)
+              )
+          )
+      ).match());
 }
 
 } // namespace

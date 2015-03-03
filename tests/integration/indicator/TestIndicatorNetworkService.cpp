@@ -2108,6 +2108,7 @@ TEST_F(TestIndicatorNetworkService, CellDataDisabled)
         ).match());
 
     // Set second SIM as the active data connection
+    setGlobalConnectedState(NM_STATE_CONNECTING);
     setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
     setConnectionManagerProperty(firstModem(), "Powered", false);
     setConnectionManagerProperty(secondModem, "Powered", true);
@@ -2132,11 +2133,13 @@ TEST_F(TestIndicatorNetworkService, CellDataDisabled)
    auto connection = createAccessPointConnection("1", "ABC", device);
    setNmProperty(device, NM_DBUS_INTERFACE_DEVICE, "State", QVariant::fromValue(uint(NM_DEVICE_STATE_ACTIVATED)));
    auto active_connection = createActiveConnection("1", device, connection, ap1);
+   setGlobalConnectedState(NM_STATE_CONNECTING);
+   setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
 
    // Should be connected to WiFi
   EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
       .item(mh::MenuItemMatcher()
-          .state_icons({"gsm-3g-low", "gsm-3g-high", "nm-signal-20-secure"})
+          .state_icons({"gsm-3g-low", "gsm-3g-high", "nm-signal-25-secure"})
           .mode(mh::MenuItemMatcher::Mode::starts_with)
           .item(flightModeSwitch())
           .item(mh::MenuItemMatcher()

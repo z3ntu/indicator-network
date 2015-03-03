@@ -281,7 +281,8 @@ struct Manager
           modem_added(object->get_signal<ModemAdded>()),
           modem_removed(object->get_signal<ModemRemoved>())
     {
-        auto result = object->invoke_method_synchronously<GetModems, GetModems::ResultType>();
+        auto future = object->invoke_method_asynchronously<GetModems, GetModems::ResultType>();
+        auto result = future.get();
 
         if (result.is_error())
             connectivity::throw_dbus_exception(result.error());

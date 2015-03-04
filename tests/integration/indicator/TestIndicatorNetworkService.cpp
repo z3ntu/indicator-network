@@ -2168,4 +2168,34 @@ TEST_F(TestIndicatorNetworkService, CellDataDisabled)
         ).match());
 }
 
+TEST_F(TestIndicatorNetworkService, SimStates_UnLockSIM)
+{
+    // set flight mode off, wifi off, and cell data off, and sim in
+    setGlobalConnectedState(NM_STATE_DISCONNECTED);
+
+    // set sim locked
+    setSimManagerProperty(firstModem(), "PinRequired", "pin");
+
+    // start the indicator
+    ASSERT_NO_THROW(startIndicator());
+
+    // check indicator is a locked sim card and a 0-bar wifi icon.
+    // check sim status shows “SIM Locked”, with locked sim card icon and a “Unlock SIM” button beneath.
+    // check that the “Unlock SIM” button has the correct action name.
+    // activate “Unlock SIM” action
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .state_icons({"simcard-locked", "nm-no-connection"})
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .item(flightModeSwitch())
+            .item(mh::MenuItemMatcher()
+                .item(modemInfo("", "SIM Locked", "simcard-locked", true)
+                      .string_attribute("x-canonical-modem-locked-action", "indicator.modem.1::locked")
+                      .activate("indicator.modem.1::locked")
+                )
+                .item(cellularSettings())
+            )
+        ).match());
+}
+
 } // namespace

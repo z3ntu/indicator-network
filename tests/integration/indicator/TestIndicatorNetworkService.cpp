@@ -2168,7 +2168,7 @@ TEST_F(TestIndicatorNetworkService, CellDataDisabled)
         ).match());
 }
 
-TEST_F(TestIndicatorNetworkService, SimStates_UnLockSIM)
+TEST_F(TestIndicatorNetworkService, UnlockSIM)
 {
     // set flight mode off, wifi off, and cell data off, and sim in
     setGlobalConnectedState(NM_STATE_DISCONNECTED);

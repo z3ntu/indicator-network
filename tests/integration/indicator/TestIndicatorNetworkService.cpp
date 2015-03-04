@@ -99,6 +99,14 @@ protected:
                 "/com/canonical/indicator/network/phone");
     }
 
+    mh::MenuMatcher::Parameters unlockSimParameters(int simIndex)
+    {
+        return mh::MenuMatcher::Parameters(
+                ":1.3",
+                { { "notifications", "/com/canonical/indicator/network/unlocksim" + std::to_string(simIndex) } },
+                "/com/canonical/indicator/network/unlocksim" + std::to_string(simIndex));
+    }
+
     void startIndicator()
     {
         try
@@ -2195,6 +2203,15 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM)
                 )
                 .item(cellularSettings())
             )
+        ).match());
+
+    EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(0))
+        .item(mh::MenuItemMatcher()
+            .action("notifications.simunlock")
+            .string_attribute("x-canonical-type", "com.canonical.snapdecision.pinlock")
+            .string_attribute("x-canonical-pin-min-max", "notifications.pinMinMax")
+            .string_attribute("x-canonical-pin-popup", "notifications.popup")
+            .string_attribute("x-canonical-pin-error", "notifications.error")
         ).match());
 }
 

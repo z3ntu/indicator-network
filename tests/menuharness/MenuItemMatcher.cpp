@@ -167,6 +167,8 @@ struct MenuItemMatcher::Priv
     vector<MenuItemMatcher> m_items;
 
     bool m_activate = false;
+
+    shared_ptr<string> m_activateAction;
 };
 
 MenuItemMatcher MenuItemMatcher::checkbox()
@@ -218,6 +220,7 @@ MenuItemMatcher& MenuItemMatcher::operator=(const MenuItemMatcher& other)
     p->m_linkType = other.p->m_linkType;
     p->m_items = other.p->m_items;
     p->m_activate = other.p->m_activate;
+    p->m_activateAction = other.p->m_activateAction;
     return *this;
 }
 
@@ -356,6 +359,13 @@ MenuItemMatcher& MenuItemMatcher::item(MenuItemMatcher&& item)
 MenuItemMatcher& MenuItemMatcher::activate()
 {
     p->m_activate = true;
+    return *this;
+}
+
+MenuItemMatcher& MenuItemMatcher::activate(std::string const& action)
+{
+    p->m_activate = true;
+    p->m_activateAction = make_shared<string>(action);
     return *this;
 }
 
@@ -721,11 +731,18 @@ void MenuItemMatcher::match(
 
     if (p->m_activate)
     {
+        if (p->m_activateAction)
+        {
+            action = *p->m_activateAction;
+            idPair = split_action(action);
+            actionGroup = actions[idPair.first];
+        }
+
         if (action.empty())
         {
             matchResult.failure(
                     location,
-                    "Tried to activate action, but menu item has no action");
+                    "Tried to activate action, but no action was found");
         }
         else if(!actionGroup)
         {

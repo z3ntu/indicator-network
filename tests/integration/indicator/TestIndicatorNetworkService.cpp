@@ -101,12 +101,20 @@ protected:
 
     void startIndicator()
     {
-        indicator.reset(
-                new QProcessDBusService("com.canonical.indicator.network",
-                                        QDBusConnection::SessionBus,
-                                        NETWORK_SERVICE_BIN,
-                                        QStringList()));
-        indicator->start(dbusTestRunner.sessionConnection());
+        try
+        {
+            indicator.reset(
+                    new QProcessDBusService("com.canonical.indicator.network",
+                                            QDBusConnection::SessionBus,
+                                            NETWORK_SERVICE_BIN,
+                                            QStringList()));
+            indicator->start(dbusTestRunner.sessionConnection());
+        }
+        catch (std::exception const& e)
+        {
+            cout << "startIndicator(): " << e.what() << endl;
+            throw;
+        }
     }
 
     QString createWiFiDevice(int state, const QString& id = "0")

@@ -149,19 +149,18 @@ MenuMatcher& MenuMatcher::item(const MenuItemMatcher& item)
     return *this;
 }
 
-void MenuMatcher::match(MatchResult& parentMatchResult) const
+void MenuMatcher::match(MatchResult& matchResult) const
 {
     vector<unsigned int> location;
 
-    unsigned int waitCounter = 0;
     while (true)
     {
-        MatchResult matchResult;
+        MatchResult childMatchResult(matchResult.createChild());
 
         int menuSize = g_menu_model_get_n_items(p->m_menu.get());
         if (p->m_items.size() > (unsigned int) menuSize)
         {
-            matchResult.failure(
+            childMatchResult.failure(
                     location,
                     "Row count mismatch, expected " + to_string(p->m_items.size())
                             + " but found " + to_string(menuSize));
@@ -171,21 +170,20 @@ void MenuMatcher::match(MatchResult& parentMatchResult) const
             for (size_t i = 0; i < p->m_items.size(); ++i)
             {
                 const auto& matcher = p->m_items.at(i);
-                matcher.match(matchResult, location, p->m_menu, p->m_actions, i);
+                matcher.match(childMatchResult, location, p->m_menu, p->m_actions, i);
             }
         }
 
-        if (matchResult.success())
+        if (childMatchResult.success())
         {
-            parentMatchResult.merge(matchResult);
+            matchResult.merge(childMatchResult);
             break;
         }
         else
         {
-            ++waitCounter;
-            if (waitCounter >= 10 || matchResult.hardFailed())
+            if (matchResult.hasTimedOut())
             {
-                parentMatchResult.merge(matchResult);
+                matchResult.merge(childMatchResult);
                 break;
             }
             menuWaitForItems(p->m_menu);

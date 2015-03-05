@@ -40,7 +40,7 @@ public:
 
     ~MatchResult() = default;
 
-    void hardFailure();
+    MatchResult createChild() const;
 
     void failure(const std::vector<unsigned int>& location, const std::string& message);
 
@@ -48,7 +48,7 @@ public:
 
     bool success() const;
 
-    bool hardFailed() const;
+    bool hasTimedOut() const;
 
     std::string concat_failures() const;
 

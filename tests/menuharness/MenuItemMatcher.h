@@ -100,9 +100,9 @@ public:
 
     MenuItemMatcher& item(MenuItemMatcher&& item);
 
-    MenuItemMatcher& activate();
+    MenuItemMatcher& activate(const std::shared_ptr<GVariant>& parameter = nullptr);
 
-    MenuItemMatcher& activate(std::string const& action);
+    MenuItemMatcher& activate(std::string const& action, const std::shared_ptr<GVariant>& parameter = nullptr);
 
     void match(MatchResult& matchResult, const std::vector<unsigned int>& location,
           const std::shared_ptr<GMenuModel>& menu,

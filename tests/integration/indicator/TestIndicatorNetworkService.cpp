@@ -2193,7 +2193,6 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM)
     // activate “Unlock SIM” action
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
-            .state_icons({"simcard-locked", "nm-no-connection"})
             .mode(mh::MenuItemMatcher::Mode::starts_with)
             .item(flightModeSwitch())
             .item(mh::MenuItemMatcher()
@@ -2212,6 +2211,7 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM)
             .string_attribute("x-canonical-pin-min-max", "notifications.pinMinMax")
             .string_attribute("x-canonical-pin-popup", "notifications.popup")
             .string_attribute("x-canonical-pin-error", "notifications.error")
+            .activate(shared_ptr<GVariant>(g_variant_new_boolean(true), &mh::gvariant_deleter))
         ).match());
 }
 

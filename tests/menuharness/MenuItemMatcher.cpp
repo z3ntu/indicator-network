@@ -169,6 +169,8 @@ struct MenuItemMatcher::Priv
     bool m_activate = false;
 
     shared_ptr<string> m_activateAction;
+
+    shared_ptr<GVariant> m_activateParameter;
 };
 
 MenuItemMatcher MenuItemMatcher::checkbox()
@@ -221,6 +223,7 @@ MenuItemMatcher& MenuItemMatcher::operator=(const MenuItemMatcher& other)
     p->m_items = other.p->m_items;
     p->m_activate = other.p->m_activate;
     p->m_activateAction = other.p->m_activateAction;
+    p->m_activateParameter = other.p->m_activateParameter;
     return *this;
 }
 
@@ -356,16 +359,18 @@ MenuItemMatcher& MenuItemMatcher::item(MenuItemMatcher&& item)
     return *this;
 }
 
-MenuItemMatcher& MenuItemMatcher::activate()
+MenuItemMatcher& MenuItemMatcher::activate(const shared_ptr<GVariant>& parameter)
 {
     p->m_activate = true;
+    p->m_activateParameter = parameter;
     return *this;
 }
 
-MenuItemMatcher& MenuItemMatcher::activate(std::string const& action)
+MenuItemMatcher& MenuItemMatcher::activate(std::string const& action, const shared_ptr<GVariant>& parameter)
 {
     p->m_activate = true;
     p->m_activateAction = make_shared<string>(action);
+    p->m_activateParameter = parameter;
     return *this;
 }
 
@@ -753,9 +758,16 @@ void MenuItemMatcher::match(
         }
         else
         {
-            // TODO Add parameterized activation
-            g_action_group_activate_action(actionGroup.get(),
-                                           idPair.second.c_str(), nullptr);
+            if (p->m_activateParameter)
+            {
+                g_action_group_activate_action(actionGroup.get(), idPair.second.c_str(),
+                                               g_variant_ref(p->m_activateParameter.get()));
+            }
+            else
+            {
+                g_action_group_activate_action(actionGroup.get(), idPair.second.c_str(), nullptr);
+            }
+
             // FIXME this is a dodgy way to ensure the activation gets dispatched
             menuWaitForItems(menu);
         }

@@ -18,6 +18,7 @@
 
 #include <menuharness/MatchResult.h>
 
+#include <chrono>
 #include <map>
 #include <sstream>
 #include <iostream>
@@ -84,11 +85,11 @@ struct compare_vector
 
 struct MatchResult::Priv
 {
-    bool m_hardFailure = false;
-
     bool m_success = true;
 
     map<vector<unsigned int>, vector<string>, compare_vector> m_failures;
+
+    chrono::time_point<chrono::system_clock> m_timeout = chrono::system_clock::now() + chrono::seconds(10);
 };
 
 MatchResult::MatchResult() :
@@ -109,7 +110,6 @@ MatchResult::MatchResult(const MatchResult& other) :
 
 MatchResult& MatchResult::operator=(const MatchResult& other)
 {
-    p->m_hardFailure = other.p->m_hardFailure;
     p->m_success = other.p->m_success;
     p->m_failures= other.p->m_failures;
     return *this;
@@ -121,10 +121,11 @@ MatchResult& MatchResult::operator=(MatchResult&& other)
     return *this;
 }
 
-void MatchResult::hardFailure()
+MatchResult MatchResult::createChild() const
 {
-    p->m_hardFailure = true;
-    p->m_success = false;
+    MatchResult child;
+    child.p->m_timeout = p->m_timeout;
+    return child;
 }
 
 void MatchResult::failure(const vector<unsigned int>& location, const string& message)
@@ -140,7 +141,6 @@ void MatchResult::failure(const vector<unsigned int>& location, const string& me
 
 void MatchResult::merge(const MatchResult& other)
 {
-    p->m_hardFailure |= other.p->m_hardFailure;
     p->m_success &= other.p->m_success;
     for (const auto& e : other.p->m_failures)
     {
@@ -148,14 +148,15 @@ void MatchResult::merge(const MatchResult& other)
     }
 }
 
-bool MatchResult::hardFailed() const
-{
-    return p->m_hardFailure;
-}
-
 bool MatchResult::success() const
 {
     return p->m_success;
+}
+
+bool MatchResult::hasTimedOut() const
+{
+    auto now = chrono::system_clock::now();
+    return (now >= p->m_timeout);
 }
 
 string MatchResult::concat_failures() const

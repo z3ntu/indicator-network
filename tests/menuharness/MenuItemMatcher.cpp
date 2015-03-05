@@ -683,10 +683,9 @@ void MenuItemMatcher::match(
         }
         else
         {
-            unsigned int waitCounter = 0;
             while (true)
             {
-                MatchResult childMatchResult;
+                MatchResult childMatchResult(matchResult.createChild());
 
                 if (p->m_expectedSize
                         && *p->m_expectedSize
@@ -721,10 +720,8 @@ void MenuItemMatcher::match(
                 }
                 else
                 {
-                    ++waitCounter;
-                    if (waitCounter >= 10 || childMatchResult.hardFailed())
+                    if (matchResult.hasTimedOut())
                     {
-                        childMatchResult.hardFailure();
                         matchResult.merge(childMatchResult);
                         break;
                     }

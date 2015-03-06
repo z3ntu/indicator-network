@@ -99,10 +99,10 @@ protected:
                 "/com/canonical/indicator/network/phone");
     }
 
-    mh::MenuMatcher::Parameters unlockSimParameters(int simIndex)
+    mh::MenuMatcher::Parameters unlockSimParameters(std::string const& busName, int simIndex)
     {
         return mh::MenuMatcher::Parameters(
-                ":1.3",
+                busName,
                 { { "notifications", "/com/canonical/indicator/network/unlocksim" + std::to_string(simIndex) } },
                 "/com/canonical/indicator/network/unlocksim" + std::to_string(simIndex));
     }
@@ -2209,16 +2209,6 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM)
     // start the indicator
     ASSERT_NO_THROW(startIndicator());
 
-    EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(0))
-        .item(mh::MenuItemMatcher()
-            .action("notifications.simunlock")
-            .string_attribute("x-canonical-type", "com.canonical.snapdecision.pinlock")
-            .string_attribute("x-canonical-pin-min-max", "notifications.pinMinMax")
-            .string_attribute("x-canonical-pin-popup", "notifications.popup")
-            .string_attribute("x-canonical-pin-error", "notifications.error")
-            .activate(shared_ptr<GVariant>(g_variant_new_boolean(true), &mh::gvariant_deleter))
-        ).match());
-
     QSignalSpy notificationSpy(notificationsMockInterface(),
                                SIGNAL(MethodCalled(const QString &, const QVariantList &)));
 
@@ -2250,6 +2240,7 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM)
         ASSERT_EQ(0, args.size());
     }
 
+    std::string busName;
     {
         QVariantList const& call(notificationSpy.at(1));
         EXPECT_EQ("Notify", call.at(0));
@@ -2278,7 +2269,7 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM)
         ASSERT_TRUE(menuInfo.contains("actions"));
         ASSERT_TRUE(menuInfo.contains("busName"));
         ASSERT_TRUE(menuInfo.contains("menuPath"));
-        EXPECT_EQ(":1.3", menuInfo["busName"]);
+        busName = menuInfo["busName"].toString().toStdString();
         EXPECT_EQ("/com/canonical/indicator/network/unlocksim0", menuInfo["menuPath"]);
 
         QVariantMap actions;
@@ -2287,6 +2278,16 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM)
         ASSERT_TRUE(actions.contains("notifications"));
         EXPECT_EQ("/com/canonical/indicator/network/unlocksim0", actions["notifications"]);
     }
+
+    EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
+        .item(mh::MenuItemMatcher()
+            .action("notifications.simunlock")
+            .string_attribute("x-canonical-type", "com.canonical.snapdecision.pinlock")
+            .string_attribute("x-canonical-pin-min-max", "notifications.pinMinMax")
+            .string_attribute("x-canonical-pin-popup", "notifications.popup")
+            .string_attribute("x-canonical-pin-error", "notifications.error")
+            .activate(shared_ptr<GVariant>(g_variant_new_boolean(true), &mh::gvariant_deleter))
+        ).match());
 }
 
 } // namespace

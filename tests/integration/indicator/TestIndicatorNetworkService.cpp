@@ -2261,7 +2261,7 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM)
         ASSERT_TRUE(hints.contains("x-canonical-snap-decisions"));
         ASSERT_TRUE(hints.contains("x-canonical-snap-decisions-timeout"));
         EXPECT_EQ(true, hints["x-canonical-snap-decisions"]);
-        EXPECT_EQ(2147483647, hints["x-canonical-snap-decisions-timeout"]);
+        EXPECT_EQ(numeric_limits<int32_t>::max(), hints["x-canonical-snap-decisions-timeout"]);
 
         QVariantMap menuInfo;
         ASSERT_TRUE(qDBusArgumentToMap(hints["x-canonical-private-menu-model"], menuInfo));

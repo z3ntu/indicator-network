@@ -2221,7 +2221,10 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM)
             )
         ).match());
 
-    notificationSpy.wait(500);
+    if (notificationSpy.empty())
+    {
+        ASSERT_TRUE(notificationSpy.wait());
+    }
 
     ASSERT_EQ(2, notificationSpy.size());
 

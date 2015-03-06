@@ -804,7 +804,7 @@ void MenuItemMatcher::match(
             }
 
             // FIXME this is a dodgy way to ensure the activation gets dispatched
-            menuWaitForItems(menu);
+            menuWaitForItems(menu, 100);
         }
     }
 }

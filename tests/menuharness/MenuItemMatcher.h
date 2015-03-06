@@ -102,7 +102,11 @@ public:
 
     MenuItemMatcher& activate(const std::string& action = "", const std::shared_ptr<GVariant>& parameter = nullptr);
 
+    MenuItemMatcher& activate(const std::shared_ptr<GVariant>& parameter = nullptr);
+
     MenuItemMatcher& setActionState(const std::string& action, const std::shared_ptr<GVariant>& state);
+
+    MenuItemMatcher& setActionState(const std::shared_ptr<GVariant>& state);
 
     void match(MatchResult& matchResult, const std::vector<unsigned int>& location,
           const std::shared_ptr<GMenuModel>& menu,

@@ -100,7 +100,7 @@ public:
 
     MenuItemMatcher& item(MenuItemMatcher&& item);
 
-    MenuItemMatcher& activate(const std::string& action = "", const std::shared_ptr<GVariant>& parameter = nullptr);
+    MenuItemMatcher& activate(const std::string& action, const std::shared_ptr<GVariant>& parameter = nullptr);
 
     MenuItemMatcher& activate(const std::shared_ptr<GVariant>& parameter = nullptr);
 

@@ -2289,8 +2289,8 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM)
             .string_attribute("x-canonical-pin-min-max", "notifications.pinMinMax")
             .string_attribute("x-canonical-pin-popup", "notifications.popup")
             .string_attribute("x-canonical-pin-error", "notifications.error")
-            .setActionState("notifications.simunlock", shared_ptr<GVariant>(g_variant_new_string("1234"), &mh::gvariant_deleter))
-            .activate("notifications.simunlock", shared_ptr<GVariant>(g_variant_new_boolean(true), &mh::gvariant_deleter))
+            .setActionState(shared_ptr<GVariant>(g_variant_new_string("1234"), &mh::gvariant_deleter))
+            .activate(shared_ptr<GVariant>(g_variant_new_boolean(true), &mh::gvariant_deleter))
         ).match());
 }
 

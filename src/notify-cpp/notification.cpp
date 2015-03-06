@@ -104,6 +104,13 @@ Notification::setHintString(const std::string &key, const std::string &value)
 }
 
 void
+Notification::update()
+{
+    notify_notification_update(d->notification.get(), d->summary.get().c_str(),
+                               d->body.get().c_str(), d->icon.get().c_str());
+}
+
+void
 Notification::show()
 {
     GError *error = nullptr;

@@ -2282,6 +2282,9 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM)
         EXPECT_EQ("/com/canonical/indicator/network/unlocksim0", actions["notifications"]);
     }
 
+    QSignalSpy modemSpy(modemMockInterface(firstModem()),
+                        SIGNAL(MethodCalled(const QString &, const QVariantList &)));
+
     EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
         .item(mh::MenuItemMatcher()
             .action("notifications.simunlock")
@@ -2292,6 +2295,22 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM)
             .setActionState(shared_ptr<GVariant>(g_variant_new_string("1234"), &mh::gvariant_deleter))
             .activate(shared_ptr<GVariant>(g_variant_new_boolean(true), &mh::gvariant_deleter))
         ).match());
+
+    if (modemSpy.empty())
+    {
+        ASSERT_TRUE(modemSpy.wait());
+    }
+
+    ASSERT_EQ(1, modemSpy.size());
+
+    {
+        QVariantList const& call(modemSpy.at(0));
+        EXPECT_EQ("EnterPin", call.at(0));
+        QVariantList const& args(call.at(1).toList());
+        ASSERT_EQ(2, args.size());
+        EXPECT_EQ("pin", args.at(0));
+        EXPECT_EQ("1234", args.at(1));
+    }
 }
 
 } // namespace

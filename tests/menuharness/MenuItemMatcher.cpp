@@ -171,6 +171,10 @@ struct MenuItemMatcher::Priv
     shared_ptr<string> m_activateAction;
 
     shared_ptr<GVariant> m_activateParameter;
+
+    shared_ptr<string> m_setActionStateAction;
+
+    shared_ptr<GVariant> m_setActionState;
 };
 
 MenuItemMatcher MenuItemMatcher::checkbox()
@@ -224,6 +228,8 @@ MenuItemMatcher& MenuItemMatcher::operator=(const MenuItemMatcher& other)
     p->m_activate = other.p->m_activate;
     p->m_activateAction = other.p->m_activateAction;
     p->m_activateParameter = other.p->m_activateParameter;
+    p->m_setActionStateAction = other.p->m_setActionStateAction;
+    p->m_setActionState = other.p->m_setActionState;
     return *this;
 }
 
@@ -359,18 +365,18 @@ MenuItemMatcher& MenuItemMatcher::item(MenuItemMatcher&& item)
     return *this;
 }
 
-MenuItemMatcher& MenuItemMatcher::activate(const shared_ptr<GVariant>& parameter)
+MenuItemMatcher& MenuItemMatcher::activate(std::string const& action, const shared_ptr<GVariant>& parameter)
 {
     p->m_activate = true;
+    p->m_activateAction = action.empty() ? nullptr : make_shared<string>(action);
     p->m_activateParameter = parameter;
     return *this;
 }
 
-MenuItemMatcher& MenuItemMatcher::activate(std::string const& action, const shared_ptr<GVariant>& parameter)
+MenuItemMatcher& MenuItemMatcher::setActionState(const std::string& action, const std::shared_ptr<GVariant>& state)
 {
-    p->m_activate = true;
-    p->m_activateAction = make_shared<string>(action);
-    p->m_activateParameter = parameter;
+    p->m_setActionStateAction = action.empty() ? nullptr : make_shared<string>(action);
+    p->m_setActionState = state;
     return *this;
 }
 
@@ -728,6 +734,38 @@ void MenuItemMatcher::match(
                     menuWaitForItems(link);
                 }
             }
+        }
+    }
+
+    if (p->m_setActionState)
+    {
+        auto stateAction = action;
+        auto stateIdPair = idPair;
+        auto stateActionGroup = actionGroup;
+        if (p->m_setActionStateAction)
+        {
+            stateAction = *p->m_setActionStateAction;
+            stateIdPair = split_action(stateAction);
+            stateActionGroup = actions[stateIdPair.first];
+        }
+
+        if (stateAction.empty())
+        {
+            matchResult.failure(
+                    location,
+                    "Tried to set action state, but no action was found");
+        }
+        else if(!stateActionGroup)
+        {
+            matchResult.failure(
+                    location,
+                    "Tried to set action state for action group '" + stateIdPair.first
+                            + "', but action group wasn't found");
+        }
+        else
+        {
+            g_action_group_change_action_state(stateActionGroup.get(), stateIdPair.second.c_str(),
+                                               g_variant_ref(p->m_setActionState.get()));
         }
     }
 

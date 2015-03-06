@@ -103,8 +103,8 @@ protected:
     {
         return mh::MenuMatcher::Parameters(
                 busName,
-                { { "notifications", "/com/canonical/indicator/network/unlocksim" + std::to_string(simIndex) } },
-                "/com/canonical/indicator/network/unlocksim" + std::to_string(simIndex));
+                { { "notifications", "/com/canonical/indicator/network/unlocksim" + to_string(simIndex) } },
+                "/com/canonical/indicator/network/unlocksim" + to_string(simIndex));
     }
 
     void startIndicator()
@@ -118,7 +118,7 @@ protected:
                                             QStringList()));
             indicator->start(dbusTestRunner.sessionConnection());
         }
-        catch (std::exception const& e)
+        catch (exception const& e)
         {
             cout << "startIndicator(): " << e.what() << endl;
             throw;
@@ -1729,22 +1729,14 @@ TEST_F(TestIndicatorNetworkService, WifiStates_Connect1AP)
             )
             .item(wifiEnableSwitch(true))
             .item(mh::MenuItemMatcher()
-                .item(accessPoint("ADS", Secure::insecure, ApMode::adhoc, ConnectionStatus::disconnected, 20)
-                      .action("indicator.accesspoint.6"))
-                .item(accessPoint("CFT", Secure::insecure, ApMode::infra, ConnectionStatus::disconnected, 40)
-                      .action("indicator.accesspoint.7"))
-                .item(accessPoint("DGN", Secure::secure, ApMode::infra, ConnectionStatus::disconnected, 60)
-                      .action("indicator.accesspoint.3"))
-                .item(accessPoint("GDF", Secure::insecure, ApMode::adhoc, ConnectionStatus::disconnected, 60)
-                      .action("indicator.accesspoint.8"))
-                .item(accessPoint("JDR", Secure::secure, ApMode::adhoc, ConnectionStatus::disconnected, 40)
-                      .action("indicator.accesspoint.2"))
-                .item(accessPoint("JDY", Secure::secure, ApMode::adhoc, ConnectionStatus::disconnected, 80)
-                      .action("indicator.accesspoint.4"))
-                .item(accessPoint("NSD", Secure::secure, ApMode::infra, ConnectionStatus::disconnected, 20)
-                      .action("indicator.accesspoint.1"))
-                .item(accessPoint("SCE", Secure::insecure, ApMode::infra, ConnectionStatus::disconnected, 0)
-                      .action("indicator.accesspoint.5"))
+                .item(accessPoint("ADS", Secure::insecure, ApMode::adhoc, ConnectionStatus::disconnected, 20))
+                .item(accessPoint("CFT", Secure::insecure, ApMode::infra, ConnectionStatus::disconnected, 40))
+                .item(accessPoint("DGN", Secure::secure, ApMode::infra, ConnectionStatus::disconnected, 60))
+                .item(accessPoint("GDF", Secure::insecure, ApMode::adhoc, ConnectionStatus::disconnected, 60))
+                .item(accessPoint("JDR", Secure::secure, ApMode::adhoc, ConnectionStatus::disconnected, 40))
+                .item(accessPoint("JDY", Secure::secure, ApMode::adhoc, ConnectionStatus::disconnected, 80))
+                .item(accessPoint("NSD", Secure::secure, ApMode::infra, ConnectionStatus::disconnected, 20))
+                .item(accessPoint("SCE", Secure::insecure, ApMode::infra, ConnectionStatus::disconnected, 0))
             )
         ).match());
 

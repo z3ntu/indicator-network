@@ -373,9 +373,22 @@ MenuItemMatcher& MenuItemMatcher::activate(std::string const& action, const shar
     return *this;
 }
 
+MenuItemMatcher& MenuItemMatcher::activate(const shared_ptr<GVariant>& parameter)
+{
+    p->m_activate = true;
+    p->m_activateParameter = parameter;
+    return *this;
+}
+
 MenuItemMatcher& MenuItemMatcher::setActionState(const std::string& action, const std::shared_ptr<GVariant>& state)
 {
     p->m_setActionStateAction = action.empty() ? nullptr : make_shared<string>(action);
+    p->m_setActionState = state;
+    return *this;
+}
+
+MenuItemMatcher& MenuItemMatcher::setActionState(const std::shared_ptr<GVariant>& state)
+{
     p->m_setActionState = state;
     return *this;
 }

@@ -55,6 +55,8 @@ public:
     void setHint(const std::string &key, Variant value);
     void setHintString(const std::string &key, const std::string &value);
 
+    void update();
+
     void show();
     void close();
 

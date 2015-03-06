@@ -26,7 +26,7 @@ namespace util = unity::util;
 namespace menuharness
 {
 
-void waitForCore (GObject * obj, const string& signalName) {
+void waitForCore (GObject * obj, const string& signalName, unsigned int timeout) {
     shared_ptr<GMainLoop> loop(g_main_loop_new(nullptr, false), &g_main_loop_unref);
 
     /* Our two exit criteria */
@@ -38,7 +38,7 @@ void waitForCore (GObject * obj, const string& signalName) {
                 g_signal_handler_disconnect(obj, s);
             });
 
-    util::ResourcePtr<guint, function<void(guint)>> timer(g_timeout_add(200,
+    util::ResourcePtr<guint, function<void(guint)>> timer(g_timeout_add(timeout,
             [](gpointer user_data) -> gboolean
             {
                 g_main_loop_quit((GMainLoop *)user_data);
@@ -51,9 +51,9 @@ void waitForCore (GObject * obj, const string& signalName) {
     g_main_loop_run(loop.get());
 }
 
-void menuWaitForItems(const shared_ptr<GMenuModel>& menu)
+void menuWaitForItems(const shared_ptr<GMenuModel>& menu, unsigned int timeout)
 {
-    waitForCore(G_OBJECT(menu.get()), "items-changed");
+    waitForCore(G_OBJECT(menu.get()), "items-changed", timeout);
 }
 
 void g_object_deleter(gpointer object)

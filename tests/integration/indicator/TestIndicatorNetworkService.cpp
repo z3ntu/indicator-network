@@ -263,6 +263,28 @@ protected:
         ofono.SetProperty(propertyName, QDBusVariant(value)).waitForFinished();
     }
 
+    OrgFreedesktopDBusMockInterface* notificationsMockInterface()
+    {
+        return &dbusMock.mockInterface("org.freedesktop.Notifications",
+                                       "/org/freedesktop/Notifications",
+                                       "org.freedesktop.Notifications",
+                                       QDBusConnection::SessionBus);
+    }
+
+    bool qDBusArgumentToMap(QVariant const& variant, QVariantMap& map)
+    {
+        if (variant.canConvert<QDBusArgument>())
+        {
+            QDBusArgument value(variant.value<QDBusArgument>());
+            if (value.currentType() == QDBusArgument::MapType)
+            {
+                value >> map;
+                return true;
+            }
+        }
+        return false;
+    }
+
     QString firstModem()
     {
         return "/ril_0";
@@ -2187,6 +2209,19 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM)
     // start the indicator
     ASSERT_NO_THROW(startIndicator());
 
+    EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(0))
+        .item(mh::MenuItemMatcher()
+            .action("notifications.simunlock")
+            .string_attribute("x-canonical-type", "com.canonical.snapdecision.pinlock")
+            .string_attribute("x-canonical-pin-min-max", "notifications.pinMinMax")
+            .string_attribute("x-canonical-pin-popup", "notifications.popup")
+            .string_attribute("x-canonical-pin-error", "notifications.error")
+            .activate(shared_ptr<GVariant>(g_variant_new_boolean(true), &mh::gvariant_deleter))
+        ).match());
+
+    QSignalSpy notificationSpy(notificationsMockInterface(),
+                               SIGNAL(MethodCalled(const QString &, const QVariantList &)));
+
     // check indicator is a locked sim card and a 0-bar wifi icon.
     // check sim status shows “SIM Locked”, with locked sim card icon and a “Unlock SIM” button beneath.
     // check that the “Unlock SIM” button has the correct action name.
@@ -2204,15 +2239,54 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM)
             )
         ).match());
 
-    EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(0))
-        .item(mh::MenuItemMatcher()
-            .action("notifications.simunlock")
-            .string_attribute("x-canonical-type", "com.canonical.snapdecision.pinlock")
-            .string_attribute("x-canonical-pin-min-max", "notifications.pinMinMax")
-            .string_attribute("x-canonical-pin-popup", "notifications.popup")
-            .string_attribute("x-canonical-pin-error", "notifications.error")
-            .activate(shared_ptr<GVariant>(g_variant_new_boolean(true), &mh::gvariant_deleter))
-        ).match());
+    notificationSpy.wait(500);
+
+    ASSERT_EQ(2, notificationSpy.size());
+
+    {
+        QVariantList const& call(notificationSpy.at(0));
+        EXPECT_EQ("GetServerInformation", call.at(0));
+        QVariantList const& args(call.at(1).toList());
+        ASSERT_EQ(0, args.size());
+    }
+
+    {
+        QVariantList const& call(notificationSpy.at(1));
+        EXPECT_EQ("Notify", call.at(0));
+        QVariantList const& args(call.at(1).toList());
+        ASSERT_EQ(8, args.size());
+        EXPECT_EQ("indicator-network", args.at(0));
+        EXPECT_EQ(0, args.at(1));
+        EXPECT_EQ("", args.at(2));
+        EXPECT_EQ("Enter SIM PIN", args.at(3));
+        EXPECT_EQ("", args.at(4));
+        EXPECT_EQ(QStringList(), args.at(5));
+        EXPECT_EQ(-1, args.at(7));
+
+        QVariantMap hints;
+        ASSERT_TRUE(qDBusArgumentToMap(args.at(6), hints));
+        ASSERT_EQ(3, hints.size());
+        ASSERT_TRUE(hints.contains("x-canonical-private-menu-model"));
+        ASSERT_TRUE(hints.contains("x-canonical-snap-decisions"));
+        ASSERT_TRUE(hints.contains("x-canonical-snap-decisions-timeout"));
+        EXPECT_EQ(true, hints["x-canonical-snap-decisions"]);
+        EXPECT_EQ(2147483647, hints["x-canonical-snap-decisions-timeout"]);
+
+        QVariantMap menuInfo;
+        ASSERT_TRUE(qDBusArgumentToMap(hints["x-canonical-private-menu-model"], menuInfo));
+        ASSERT_EQ(3, menuInfo.size());
+        ASSERT_TRUE(menuInfo.contains("actions"));
+        ASSERT_TRUE(menuInfo.contains("busName"));
+        ASSERT_TRUE(menuInfo.contains("menuPath"));
+        EXPECT_EQ(":1.3", menuInfo["busName"]);
+        EXPECT_EQ("/com/canonical/indicator/network/unlocksim0", menuInfo["menuPath"]);
+
+        QVariantMap actions;
+        ASSERT_TRUE(qDBusArgumentToMap(menuInfo["actions"], actions));
+        ASSERT_EQ(1, actions.size());
+        ASSERT_TRUE(actions.contains("notifications"));
+        EXPECT_EQ("/com/canonical/indicator/network/unlocksim0", actions["notifications"]);
+    }
 }
 
 } // namespace

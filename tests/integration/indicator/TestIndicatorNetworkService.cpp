@@ -2209,7 +2209,7 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM)
     // start the indicator
     ASSERT_NO_THROW(startIndicator());
 
-    QSignalSpy notificationSpy(notificationsMockInterface(),
+    QSignalSpy notificationsSpy(notificationsMockInterface(),
                                SIGNAL(MethodCalled(const QString &, const QVariantList &)));
 
     // check indicator is a locked sim card and a 0-bar wifi icon.
@@ -2229,23 +2229,23 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM)
             )
         ).match());
 
-    if (notificationSpy.empty())
+    // check that the "GetServerInformation" method was called
+    // check that the "Notify" method was called twice
+    // check method arguments are correct
+    std::string busName;
+    if (notificationsSpy.empty())
     {
-        ASSERT_TRUE(notificationSpy.wait());
+        ASSERT_TRUE(notificationsSpy.wait());
     }
-
-    ASSERT_EQ(3, notificationSpy.size());
-
+    ASSERT_EQ(3, notificationsSpy.size());
     {
-        QVariantList const& call(notificationSpy.at(0));
+        QVariantList const& call(notificationsSpy.at(0));
         EXPECT_EQ("GetServerInformation", call.at(0));
         QVariantList const& args(call.at(1).toList());
         ASSERT_EQ(0, args.size());
     }
-
-    std::string busName;
     {
-        QVariantList const& call(notificationSpy.at(1));
+        QVariantList const& call(notificationsSpy.at(1));
         EXPECT_EQ("Notify", call.at(0));
         QVariantList const& args(call.at(1).toList());
         ASSERT_EQ(8, args.size());
@@ -2281,9 +2281,8 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM)
         ASSERT_TRUE(actions.contains("notifications"));
         EXPECT_EQ("/com/canonical/indicator/network/unlocksim0", actions["notifications"]);
     }
-
     {
-        QVariantList const& call(notificationSpy.at(2));
+        QVariantList const& call(notificationsSpy.at(2));
         EXPECT_EQ("Notify", call.at(0));
         QVariantList const& args(call.at(1).toList());
         ASSERT_EQ(8, args.size());
@@ -2319,9 +2318,10 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM)
         ASSERT_TRUE(actions.contains("notifications"));
         EXPECT_EQ("/com/canonical/indicator/network/unlocksim0", actions["notifications"]);
     }
+    notificationsSpy.clear();
 
-    // cancel pin entry
-    notificationSpy.clear();
+    // cancel the "enter pin" notification
+    QSignalSpy notificationDaemonSpy(&dbusMock.notificationDaemonInterface(), SIGNAL(NotificationClosed(uint, uint)));
 
     EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
         .item(mh::MenuItemMatcher()
@@ -2333,20 +2333,30 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM)
             .activate(shared_ptr<GVariant>(g_variant_new_boolean(false), &mh::gvariant_deleter))
         ).match());
 
-    if (notificationSpy.empty())
+    // check that the "NotificationClosed" signal was emitted
+    if (notificationDaemonSpy.empty())
     {
-        ASSERT_TRUE(notificationSpy.wait());
+        ASSERT_TRUE(notificationDaemonSpy.wait());
     }
+    ASSERT_EQ(1, notificationDaemonSpy.size());
+    EXPECT_EQ(notificationDaemonSpy.first(), QVariantList() << QVariant(1) << QVariant(1));
+    notificationDaemonSpy.clear();
 
-    ASSERT_EQ(1, notificationSpy.size());
-
+    // check that the "CloseNotification" method was called
+    // check method arguments are correct
+    if (notificationsSpy.empty())
     {
-        QVariantList const& call(notificationSpy.at(0));
+        ASSERT_TRUE(notificationsSpy.wait());
+    }    
+    ASSERT_EQ(1, notificationsSpy.size());
+    {
+        QVariantList const& call(notificationsSpy.at(0));
         EXPECT_EQ("CloseNotification", call.at(0));
         QVariantList const& args(call.at(1).toList());
         ASSERT_EQ(1, args.size());
         EXPECT_EQ("1", args[0]);
     }
+    notificationsSpy.clear();
 
     // re-activate “Unlock SIM” action
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
@@ -2362,7 +2372,30 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM)
             )
         ).match());
 
-    // enter incorrect pin
+    // check that the "Notify" method was called twice
+    // check method arguments are correct
+    if (notificationsSpy.empty())
+    {
+        ASSERT_TRUE(notificationsSpy.wait());
+    }
+    ASSERT_EQ(2, notificationsSpy.size());
+    {
+        QVariantList const& call(notificationsSpy.at(0));
+        EXPECT_EQ("Notify", call.at(0));
+        QVariantList const& args(call.at(1).toList());
+        ASSERT_GT(args.size(), 1);
+        EXPECT_EQ(0, args.at(1));
+    }
+    {
+        QVariantList const& call(notificationsSpy.at(1));
+        EXPECT_EQ("Notify", call.at(0));
+        QVariantList const& args(call.at(1).toList());
+        ASSERT_GT(args.size(), 1);
+        EXPECT_EQ(2, args.at(1));
+    }
+    notificationsSpy.clear();
+
+    // enter correct pin
     QSignalSpy modemSpy(modemMockInterface(firstModem()),
                         SIGNAL(MethodCalled(const QString &, const QVariantList &)));
 
@@ -2376,13 +2409,22 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM)
             .setActionState(shared_ptr<GVariant>(g_variant_new_string("1234"), &mh::gvariant_deleter))
         ).match());
 
+    // check that the "NotificationClosed" signal was emitted
+    if (notificationDaemonSpy.empty())
+    {
+        ASSERT_TRUE(notificationDaemonSpy.wait());
+    }
+    ASSERT_EQ(1, notificationDaemonSpy.size());
+    EXPECT_EQ(notificationDaemonSpy.first(), QVariantList() << QVariant(2) << QVariant(1));
+    notificationDaemonSpy.clear();
+
+    // check that the "EnterPin" method was called
+    // check method arguments are correct
     if (modemSpy.empty())
     {
         ASSERT_TRUE(modemSpy.wait());
     }
-
     ASSERT_EQ(1, modemSpy.size());
-
     {
         QVariantList const& call(modemSpy.at(0));
         EXPECT_EQ("EnterPin", call.at(0));
@@ -2391,34 +2433,23 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM)
         EXPECT_EQ("pin", args.at(0));
         EXPECT_EQ("1234", args.at(1));
     }
+    modemSpy.clear();
 
-//    modemSpy.clear();
-
-//    EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
-//        .item(mh::MenuItemMatcher()
-//            .action("notifications.simunlock")
-//            .string_attribute("x-canonical-type", "com.canonical.snapdecision.pinlock")
-//            .string_attribute("x-canonical-pin-min-max", "notifications.pinMinMax")
-//            .string_attribute("x-canonical-pin-popup", "notifications.popup")
-//            .string_attribute("x-canonical-pin-error", "notifications.error")
-//            .setActionState(shared_ptr<GVariant>(g_variant_new_string("1234"), &mh::gvariant_deleter))
-//        ).match());
-
-//    if (modemSpy.empty())
-//    {
-//        ASSERT_TRUE(modemSpy.wait());
-//    }
-
-//    ASSERT_EQ(1, modemSpy.size());
-
-//    {
-//        QVariantList const& call(modemSpy.at(0));
-//        EXPECT_EQ("EnterPin", call.at(0));
-//        QVariantList const& args(call.at(1).toList());
-//        ASSERT_EQ(2, args.size());
-//        EXPECT_EQ("pin", args.at(0));
-//        EXPECT_EQ("1234", args.at(1));
-//    }
+    // check that the "CloseNotification" method was called
+    // check method arguments are correct
+    if (notificationsSpy.empty())
+    {
+        ASSERT_TRUE(notificationsSpy.wait());
+    }
+    ASSERT_EQ(1, notificationsSpy.size());
+    {
+        QVariantList const& call(notificationsSpy.at(0));
+        EXPECT_EQ("CloseNotification", call.at(0));
+        QVariantList const& args(call.at(1).toList());
+        ASSERT_EQ(1, args.size());
+        EXPECT_EQ("2", args[0]);
+    }
+    notificationsSpy.clear();
 }
 
 } // namespace

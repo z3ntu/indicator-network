@@ -175,8 +175,7 @@ protected:
                             randomMac(),
                             apMode == ApMode::adhoc ? NM_802_11_MODE_ADHOC : NM_802_11_MODE_INFRA,
                             0, 0, strength,
-                            secure == Secure::secure ? NM_802_11_AP_SEC_KEY_MGMT_PSK : NM_802_11_AP_SEC_NONE,
-                            secure == Secure::secure ? NM_802_11_AP_FLAGS_PRIVACY : NM_802_11_AP_FLAGS_NONE);
+                            secure == Secure::secure ? NM_802_11_AP_SEC_KEY_MGMT_PSK : NM_802_11_AP_SEC_NONE);
         reply.waitForFinished();
         return reply;
     }

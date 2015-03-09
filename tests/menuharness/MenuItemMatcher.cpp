@@ -775,6 +775,13 @@ void MenuItemMatcher::match(
                     "Tried to set action state for action group '" + stateIdPair.first
                             + "', but action group wasn't found");
         }
+        else if (!g_action_group_has_action(stateActionGroup.get(), stateIdPair.second.c_str()))
+        {
+            matchResult.failure(
+                    location,
+                    "Tried to set action state for action '" + stateAction
+                            + "', but action was not found");
+        }
         else
         {
             g_action_group_change_action_state(stateActionGroup.get(), stateIdPair.second.c_str(),
@@ -803,6 +810,12 @@ void MenuItemMatcher::match(
                     location,
                     "Tried to activate action group '" + idPair.first
                             + "', but action group wasn't found");
+        }
+        else if (!g_action_group_has_action(actionGroup.get(), idPair.second.c_str()))
+        {
+            matchResult.failure(
+                    location,
+                    "Tried to activate action '" + action + "', but action was not found");
         }
         else
         {

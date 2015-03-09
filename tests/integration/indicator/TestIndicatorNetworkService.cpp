@@ -2234,7 +2234,7 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM)
         ASSERT_TRUE(notificationSpy.wait());
     }
 
-    ASSERT_EQ(2, notificationSpy.size());
+    ASSERT_EQ(3, notificationSpy.size());
 
     {
         QVariantList const& call(notificationSpy.at(0));
@@ -2282,6 +2282,87 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM)
         EXPECT_EQ("/com/canonical/indicator/network/unlocksim0", actions["notifications"]);
     }
 
+    {
+        QVariantList const& call(notificationSpy.at(2));
+        EXPECT_EQ("Notify", call.at(0));
+        QVariantList const& args(call.at(1).toList());
+        ASSERT_EQ(8, args.size());
+        EXPECT_EQ("indicator-network", args.at(0));
+        EXPECT_EQ(1, args.at(1));
+        EXPECT_EQ("", args.at(2));
+        EXPECT_EQ("Enter SIM PIN", args.at(3));
+        EXPECT_EQ("", args.at(4));
+        EXPECT_EQ(QStringList(), args.at(5));
+        EXPECT_EQ(-1, args.at(7));
+
+        QVariantMap hints;
+        ASSERT_TRUE(qDBusArgumentToMap(args.at(6), hints));
+        ASSERT_EQ(3, hints.size());
+        ASSERT_TRUE(hints.contains("x-canonical-private-menu-model"));
+        ASSERT_TRUE(hints.contains("x-canonical-snap-decisions"));
+        ASSERT_TRUE(hints.contains("x-canonical-snap-decisions-timeout"));
+        EXPECT_EQ(true, hints["x-canonical-snap-decisions"]);
+        EXPECT_EQ(numeric_limits<int32_t>::max(), hints["x-canonical-snap-decisions-timeout"]);
+
+        QVariantMap menuInfo;
+        ASSERT_TRUE(qDBusArgumentToMap(hints["x-canonical-private-menu-model"], menuInfo));
+        ASSERT_EQ(3, menuInfo.size());
+        ASSERT_TRUE(menuInfo.contains("actions"));
+        ASSERT_TRUE(menuInfo.contains("busName"));
+        ASSERT_TRUE(menuInfo.contains("menuPath"));
+        EXPECT_EQ(busName, menuInfo["busName"].toString().toStdString());
+        EXPECT_EQ("/com/canonical/indicator/network/unlocksim0", menuInfo["menuPath"]);
+
+        QVariantMap actions;
+        ASSERT_TRUE(qDBusArgumentToMap(menuInfo["actions"], actions));
+        ASSERT_EQ(1, actions.size());
+        ASSERT_TRUE(actions.contains("notifications"));
+        EXPECT_EQ("/com/canonical/indicator/network/unlocksim0", actions["notifications"]);
+    }
+
+    // cancel pin entry
+    notificationSpy.clear();
+
+    EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
+        .item(mh::MenuItemMatcher()
+            .action("notifications.simunlock")
+            .string_attribute("x-canonical-type", "com.canonical.snapdecision.pinlock")
+            .string_attribute("x-canonical-pin-min-max", "notifications.pinMinMax")
+            .string_attribute("x-canonical-pin-popup", "notifications.popup")
+            .string_attribute("x-canonical-pin-error", "notifications.error")
+            .activate(shared_ptr<GVariant>(g_variant_new_boolean(false), &mh::gvariant_deleter))
+        ).match());
+
+    if (notificationSpy.empty())
+    {
+        ASSERT_TRUE(notificationSpy.wait());
+    }
+
+    ASSERT_EQ(1, notificationSpy.size());
+
+    {
+        QVariantList const& call(notificationSpy.at(0));
+        EXPECT_EQ("CloseNotification", call.at(0));
+        QVariantList const& args(call.at(1).toList());
+        ASSERT_EQ(1, args.size());
+        EXPECT_EQ("1", args[0]);
+    }
+
+    // re-activate “Unlock SIM” action
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .item(flightModeSwitch())
+            .item(mh::MenuItemMatcher()
+                .item(modemInfo("", "SIM Locked", "simcard-locked", true)
+                      .string_attribute("x-canonical-modem-locked-action", "indicator.modem.1::locked")
+                      .activate("indicator.modem.1::locked")
+                )
+                .item(cellularSettings())
+            )
+        ).match());
+
+    // enter incorrect pin
     QSignalSpy modemSpy(modemMockInterface(firstModem()),
                         SIGNAL(MethodCalled(const QString &, const QVariantList &)));
 
@@ -2293,7 +2374,6 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM)
             .string_attribute("x-canonical-pin-popup", "notifications.popup")
             .string_attribute("x-canonical-pin-error", "notifications.error")
             .setActionState(shared_ptr<GVariant>(g_variant_new_string("1234"), &mh::gvariant_deleter))
-            .activate(shared_ptr<GVariant>(g_variant_new_boolean(true), &mh::gvariant_deleter))
         ).match());
 
     if (modemSpy.empty())
@@ -2311,6 +2391,34 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM)
         EXPECT_EQ("pin", args.at(0));
         EXPECT_EQ("1234", args.at(1));
     }
+
+//    modemSpy.clear();
+
+//    EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
+//        .item(mh::MenuItemMatcher()
+//            .action("notifications.simunlock")
+//            .string_attribute("x-canonical-type", "com.canonical.snapdecision.pinlock")
+//            .string_attribute("x-canonical-pin-min-max", "notifications.pinMinMax")
+//            .string_attribute("x-canonical-pin-popup", "notifications.popup")
+//            .string_attribute("x-canonical-pin-error", "notifications.error")
+//            .setActionState(shared_ptr<GVariant>(g_variant_new_string("1234"), &mh::gvariant_deleter))
+//        ).match());
+
+//    if (modemSpy.empty())
+//    {
+//        ASSERT_TRUE(modemSpy.wait());
+//    }
+
+//    ASSERT_EQ(1, modemSpy.size());
+
+//    {
+//        QVariantList const& call(modemSpy.at(0));
+//        EXPECT_EQ("EnterPin", call.at(0));
+//        QVariantList const& args(call.at(1).toList());
+//        ASSERT_EQ(2, args.size());
+//        EXPECT_EQ("pin", args.at(0));
+//        EXPECT_EQ("1234", args.at(1));
+//    }
 }
 
 } // namespace

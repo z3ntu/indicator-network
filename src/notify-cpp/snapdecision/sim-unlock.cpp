@@ -237,7 +237,7 @@ SimUnlock::pinMinMax()
 void
 SimUnlock::update()
 {
-    d->m_notification->update();
+    d->m_notification->show();
 }
 
 void

@@ -2197,7 +2197,7 @@ TEST_F(TestIndicatorNetworkService, CellDataDisabled)
         ).match());
 }
 
-TEST_F(TestIndicatorNetworkService, UnlockSIM)
+TEST_F(TestIndicatorNetworkService, UnlockSIM_MenuContents)
 {
     // set flight mode off, wifi off, and cell data off, and sim in
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
@@ -2319,8 +2319,87 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM)
     }
     notificationsSpy.clear();
 
-    // cancel the "enter pin" notification
-    QSignalSpy notificationDaemonSpy(&dbusMock.notificationDaemonInterface(), SIGNAL(NotificationClosed(uint, uint)));
+    // check contents of x-canonical-private-menu-model
+    EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
+        .item(mh::MenuItemMatcher()
+            .action("notifications.simunlock")
+            .string_attribute("x-canonical-type", "com.canonical.snapdecision.pinlock")
+            .string_attribute("x-canonical-pin-min-max", "notifications.pinMinMax")
+            .string_attribute("x-canonical-pin-popup", "notifications.popup")
+            .string_attribute("x-canonical-pin-error", "notifications.error")
+        ).match());
+}
+
+TEST_F(TestIndicatorNetworkService, UnlockSIM_Cancel)
+{
+    // set flight mode off, wifi off, and cell data off, and sim in
+    setGlobalConnectedState(NM_STATE_DISCONNECTED);
+
+    // set sim locked
+    setSimManagerProperty(firstModem(), "PinRequired", "pin");
+
+    // start the indicator
+    ASSERT_NO_THROW(startIndicator());
+
+    QSignalSpy notificationsSpy(notificationsMockInterface(),
+                               SIGNAL(MethodCalled(const QString &, const QVariantList &)));
+
+    // check indicator is a locked sim card and a 0-bar wifi icon.
+    // check sim status shows “SIM Locked”, with locked sim card icon and a “Unlock SIM” button beneath.
+    // check that the “Unlock SIM” button has the correct action name.
+    // activate “Unlock SIM” action
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .item(flightModeSwitch())
+            .item(mh::MenuItemMatcher()
+                .item(modemInfo("", "SIM Locked", "simcard-locked", true)
+                      .string_attribute("x-canonical-modem-locked-action", "indicator.modem.1::locked")
+                      .activate("indicator.modem.1::locked")
+                )
+                .item(cellularSettings())
+            )
+        ).match());
+
+    // check that the "GetServerInformation" method was called
+    // check that the "Notify" method was called twice
+    // check method arguments are correct
+    std::string busName;
+    if (notificationsSpy.empty())
+    {
+        ASSERT_TRUE(notificationsSpy.wait());
+    }
+    ASSERT_EQ(3, notificationsSpy.size());
+    {
+        QVariantList const& call(notificationsSpy.at(0));
+        EXPECT_EQ("GetServerInformation", call.at(0));
+        ASSERT_EQ(0, call.at(1).toList().size());
+    }
+    {
+        QVariantList const& call(notificationsSpy.at(1));
+        EXPECT_EQ("Notify", call.at(0));
+        QVariantList const& args(call.at(1).toList());
+        ASSERT_EQ(8, args.size());
+        EXPECT_EQ(0, args.at(1));
+    }
+    {
+        QVariantList const& call(notificationsSpy.at(2));
+        EXPECT_EQ("Notify", call.at(0));
+        QVariantList const& args(call.at(1).toList());
+        ASSERT_EQ(8, args.size());
+        EXPECT_EQ(1, args.at(1));
+
+        QVariantMap hints;
+        QVariantMap menuInfo;
+        ASSERT_TRUE(qDBusArgumentToMap(args.at(6), hints));
+        ASSERT_TRUE(qDBusArgumentToMap(hints["x-canonical-private-menu-model"], menuInfo));
+        busName = menuInfo["busName"].toString().toStdString();
+    }
+    notificationsSpy.clear();
+
+    // cancel the notification
+    QSignalSpy notificationClosedSpy(&dbusMock.notificationDaemonInterface(),
+                                     SIGNAL(NotificationClosed(uint, uint)));
 
     EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
         .item(mh::MenuItemMatcher()
@@ -2333,13 +2412,13 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM)
         ).match());
 
     // check that the "NotificationClosed" signal was emitted
-    if (notificationDaemonSpy.empty())
+    if (notificationClosedSpy.empty())
     {
-        ASSERT_TRUE(notificationDaemonSpy.wait());
+        ASSERT_TRUE(notificationClosedSpy.wait());
     }
-    ASSERT_EQ(1, notificationDaemonSpy.size());
-    EXPECT_EQ(notificationDaemonSpy.first(), QVariantList() << QVariant(1) << QVariant(1));
-    notificationDaemonSpy.clear();
+    ASSERT_EQ(1, notificationClosedSpy.size());
+    EXPECT_EQ(notificationClosedSpy.first(), QVariantList() << QVariant(1) << QVariant(1));
+    notificationClosedSpy.clear();
 
     // check that the "CloseNotification" method was called
     // check method arguments are correct
@@ -2372,7 +2451,7 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM)
         ).match());
 
     // check that the "Notify" method was called twice
-    // check method arguments are correct
+    // check method arguments are correct (new notification index should be 2)
     if (notificationsSpy.empty())
     {
         ASSERT_TRUE(notificationsSpy.wait());
@@ -2382,19 +2461,126 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM)
         QVariantList const& call(notificationsSpy.at(0));
         EXPECT_EQ("Notify", call.at(0));
         QVariantList const& args(call.at(1).toList());
-        ASSERT_GT(args.size(), 1);
+        ASSERT_EQ(8, args.size());
         EXPECT_EQ(0, args.at(1));
     }
     {
         QVariantList const& call(notificationsSpy.at(1));
         EXPECT_EQ("Notify", call.at(0));
         QVariantList const& args(call.at(1).toList());
-        ASSERT_GT(args.size(), 1);
+        ASSERT_EQ(8, args.size());
         EXPECT_EQ(2, args.at(1));
     }
     notificationsSpy.clear();
 
+    // cancel the notification again
+    EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
+        .item(mh::MenuItemMatcher()
+            .action("notifications.simunlock")
+            .string_attribute("x-canonical-type", "com.canonical.snapdecision.pinlock")
+            .string_attribute("x-canonical-pin-min-max", "notifications.pinMinMax")
+            .string_attribute("x-canonical-pin-popup", "notifications.popup")
+            .string_attribute("x-canonical-pin-error", "notifications.error")
+            .activate(shared_ptr<GVariant>(g_variant_new_boolean(false), &mh::gvariant_deleter))
+        ).match());
+
+    // check that the "NotificationClosed" signal was emitted (new notification index should be 2)
+    if (notificationClosedSpy.empty())
+    {
+        ASSERT_TRUE(notificationClosedSpy.wait());
+    }
+    ASSERT_EQ(1, notificationClosedSpy.size());
+    EXPECT_EQ(notificationClosedSpy.first(), QVariantList() << QVariant(2) << QVariant(1));
+    notificationClosedSpy.clear();
+
+    // check that the "CloseNotification" method was called
+    // check method arguments are correct (new notification index should be 2)
+    if (notificationsSpy.empty())
+    {
+        ASSERT_TRUE(notificationsSpy.wait());
+    }
+    ASSERT_EQ(1, notificationsSpy.size());
+    {
+        QVariantList const& call(notificationsSpy.at(0));
+        EXPECT_EQ("CloseNotification", call.at(0));
+        QVariantList const& args(call.at(1).toList());
+        ASSERT_EQ(1, args.size());
+        EXPECT_EQ("2", args[0]);
+    }
+    notificationsSpy.clear();
+}
+
+TEST_F(TestIndicatorNetworkService, UnlockSIM_CorrectPin)
+{
+    // set flight mode off, wifi off, and cell data off, and sim in
+    setGlobalConnectedState(NM_STATE_DISCONNECTED);
+
+    // set sim locked
+    setSimManagerProperty(firstModem(), "PinRequired", "pin");
+
+    // start the indicator
+    ASSERT_NO_THROW(startIndicator());
+
+    QSignalSpy notificationsSpy(notificationsMockInterface(),
+                               SIGNAL(MethodCalled(const QString &, const QVariantList &)));
+
+    // check indicator is a locked sim card and a 0-bar wifi icon.
+    // check sim status shows “SIM Locked”, with locked sim card icon and a “Unlock SIM” button beneath.
+    // check that the “Unlock SIM” button has the correct action name.
+    // activate “Unlock SIM” action
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .item(flightModeSwitch())
+            .item(mh::MenuItemMatcher()
+                .item(modemInfo("", "SIM Locked", "simcard-locked", true)
+                      .string_attribute("x-canonical-modem-locked-action", "indicator.modem.1::locked")
+                      .activate("indicator.modem.1::locked")
+                )
+                .item(cellularSettings())
+            )
+        ).match());
+
+    // check that the "GetServerInformation" method was called
+    // check that the "Notify" method was called twice
+    // check method arguments are correct
+    std::string busName;
+    if (notificationsSpy.empty())
+    {
+        ASSERT_TRUE(notificationsSpy.wait());
+    }
+    ASSERT_EQ(3, notificationsSpy.size());
+    {
+        QVariantList const& call(notificationsSpy.at(0));
+        EXPECT_EQ("GetServerInformation", call.at(0));
+        ASSERT_EQ(0, call.at(1).toList().size());
+    }
+    {
+        QVariantList const& call(notificationsSpy.at(1));
+        EXPECT_EQ("Notify", call.at(0));
+        QVariantList const& args(call.at(1).toList());
+        ASSERT_EQ(8, args.size());
+        EXPECT_EQ(0, args.at(1));
+    }
+    {
+        QVariantList const& call(notificationsSpy.at(2));
+        EXPECT_EQ("Notify", call.at(0));
+        QVariantList const& args(call.at(1).toList());
+        ASSERT_EQ(8, args.size());
+        EXPECT_EQ(1, args.at(1));
+
+        QVariantMap hints;
+        QVariantMap menuInfo;
+        ASSERT_TRUE(qDBusArgumentToMap(args.at(6), hints));
+        ASSERT_TRUE(qDBusArgumentToMap(hints["x-canonical-private-menu-model"], menuInfo));
+        busName = menuInfo["busName"].toString().toStdString();
+    }
+    notificationsSpy.clear();
+
     // enter correct pin
+    QSignalSpy notificationClosedSpy(&dbusMock.notificationDaemonInterface(),
+                                     SIGNAL(NotificationClosed(uint, uint)));
+
     QSignalSpy modemSpy(modemMockInterface(firstModem()),
                         SIGNAL(MethodCalled(const QString &, const QVariantList &)));
 
@@ -2409,13 +2595,13 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM)
         ).match());
 
     // check that the "NotificationClosed" signal was emitted
-    if (notificationDaemonSpy.empty())
+    if (notificationClosedSpy.empty())
     {
-        ASSERT_TRUE(notificationDaemonSpy.wait());
+        ASSERT_TRUE(notificationClosedSpy.wait());
     }
-    ASSERT_EQ(1, notificationDaemonSpy.size());
-    EXPECT_EQ(notificationDaemonSpy.first(), QVariantList() << QVariant(2) << QVariant(1));
-    notificationDaemonSpy.clear();
+    ASSERT_EQ(1, notificationClosedSpy.size());
+    EXPECT_EQ(notificationClosedSpy.first(), QVariantList() << QVariant(1) << QVariant(1));
+    notificationClosedSpy.clear();
 
     // check that the "EnterPin" method was called
     // check method arguments are correct
@@ -2446,7 +2632,7 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM)
         EXPECT_EQ("CloseNotification", call.at(0));
         QVariantList const& args(call.at(1).toList());
         ASSERT_EQ(1, args.size());
-        EXPECT_EQ("2", args[0]);
+        EXPECT_EQ("1", args[0]);
     }
     notificationsSpy.clear();
 }

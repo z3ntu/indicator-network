@@ -147,9 +147,10 @@ protected:
                 hardwareAddress.append(":");
             }
             int r = qrand() % ((high + 1) - low) + low;
-            hardwareAddress.append(QString::number(r, 16));
+            hardwareAddress.append(QString("%1").arg(r, 2, 16, QChar('0')));
             first = false;
         }
+
         return hardwareAddress;
     }
 

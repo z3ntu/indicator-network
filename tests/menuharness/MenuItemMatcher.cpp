@@ -787,6 +787,9 @@ void MenuItemMatcher::match(
             g_action_group_change_action_state(stateActionGroup.get(), stateIdPair.second.c_str(),
                                                g_variant_ref(p->m_setActionState.get()));
         }
+
+        // FIXME this is a dodgy way to ensure the action state change gets dispatched
+        menuWaitForItems(menu, 100);
     }
 
     if (p->m_activate)

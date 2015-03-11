@@ -23,6 +23,8 @@
 #include <iostream>
 #include <memory>
 
+#include <QCoreApplication>
+
 #include <string.h>
 #include <libintl.h>
 
@@ -30,18 +32,6 @@
 #include <libnotify/notify.h>
 
 #include <config.h>
-
-static class MainLoop
-{
-    GMainLoop *ptr;
-public:
-    MainLoop() { ptr = g_main_loop_new(nullptr, FALSE); }
-   ~MainLoop() { g_main_loop_unref(ptr);             }
-
-    void run()  { g_main_loop_run(ptr);  }
-    void quit() { g_main_loop_quit(ptr); }
-} mainloop;
-
 
 struct sigaction act;
 static void
@@ -53,21 +43,17 @@ signal_handler(int signo) {
     case SIGINT:
     case SIGQUIT:
     case SIGTERM:
-        mainloop.quit();
+        QCoreApplication::exit();
+        notify_uninit();
         break;
     }
 }
 
-static gboolean
-stop_main_loop(gpointer)
-{
-    mainloop.quit();
-    return FALSE;
-}
-
 int
-main(int, char *[])
+main(int argc, char **argv)
 {
+    QCoreApplication app(argc, argv);
+
     act.sa_handler = signal_handler;
     sigaction(SIGHUP, &act, 0);
     sigaction(SIGINT, &act, 0);
@@ -93,17 +79,5 @@ main(int, char *[])
     // unlockModem is dispatched from GMainLoop
     connectivityService->unlockModem().connect([menu](const std::string &name){ menu->unlockModem(name); });
 
-    if (getenv("VALGRIND") != 0) {
-        g_timeout_add(1000, (GSourceFunc)stop_main_loop, nullptr);
-        mainloop.run();
-
-        menu.reset();
-        // give gio time to do cleanup.
-        g_timeout_add(500, (GSourceFunc)stop_main_loop, nullptr);
-        mainloop.run();
-    } else {
-        mainloop.run();
-    }
-
-    notify_uninit();
+    return app.exec();
 }

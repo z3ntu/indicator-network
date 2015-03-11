@@ -26,7 +26,6 @@
 #include <core/property.h>
 
 #include <services/URfkillInterface.h>
-#include <services/URfkillDeviceInterface.h>
 #include <services/URfkillKillswitchInterface.h>
 
 namespace platform {
@@ -73,7 +72,6 @@ public:
 
     KillSwitch() = delete;
     KillSwitch(std::shared_ptr<OrgFreedesktopURfkillInterface> urfkill,
-               std::shared_ptr<OrgFreedesktopURfkillDeviceInterface> device,
                std::shared_ptr<OrgFreedesktopURfkillKillswitchInterface> killSwitch);
     ~KillSwitch();
 

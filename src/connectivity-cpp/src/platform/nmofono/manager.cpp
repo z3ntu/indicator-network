@@ -44,7 +44,7 @@ struct Manager::State
     std::thread worker;
 };
 
-struct Manager::Private : public QObject
+class Manager::Private : public QObject
 {
     Q_OBJECT
 public:
@@ -84,9 +84,9 @@ public:
     }
 
 public Q_SLOTS:
-    void flightModeChanged(bool flight_mode)
+    void flightModeChanged(bool flightMode)
     {
-        if (flight_mode)
+        if (flightMode)
             m_flightMode.set(networking::Manager::FlightModeStatus::on);
         else
             m_flightMode.set(networking::Manager::FlightModeStatus::off);
@@ -180,11 +180,11 @@ Manager::Manager() : p(new Manager::Private())
     /// @todo offload the initialization to a thread or something
     /// @todo those Id() thingies
 
-    auto urfkill_killswitch = std::make_shared<OrgFreedesktopURfkillKillswitchInterface>("org.freedesktop.URfkill.Killswitch",
+    auto urfkillKillswitch = std::make_shared<OrgFreedesktopURfkillKillswitchInterface>("org.freedesktop.URfkill.Killswitch",
                                                                                          "/org/freedesktop/URfkill/WLAN",
                                                                                          QDBusConnection::systemBus());
     p->m_wifiKillSwitch = std::make_shared<KillSwitch>(p->urfkill,
-                                                       urfkill_killswitch);
+                                                       urfkillKillswitch);
 
     p->m_wifiKillSwitch->state().changed().connect(std::bind(&Private::updateHasWifi, p.get()));
 

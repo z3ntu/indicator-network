@@ -223,7 +223,7 @@ Manager::Manager() : p(new Manager::Private())
     });
 
     QObject::connect(p->urfkill.get(), SIGNAL(FlightModeChanged(bool)), p.get(), SLOT(flightModeChanged(bool)));
-    p->flightModeChanged(false); ///!
+    p->flightModeChanged(p->urfkill->IsFlightMode());
 
     /// @todo set by the default connections.
     p->m_characteristics.set(networking::Link::Characteristics::empty);
@@ -277,7 +277,7 @@ Manager::enableFlightMode()
 #ifdef INDICATOR_NETWORK_TRACE_MESSAGES
     std::cout << __PRETTY_FUNCTION__ << std::endl;
 #endif
-    if (!p->urfkill->FlightMode(true).value())
+    if (!p->urfkill->FlightMode(true))
         throw std::runtime_error("Failed to enable flightmode.");
 }
 
@@ -287,7 +287,7 @@ Manager::disableFlightMode()
 #ifdef INDICATOR_NETWORK_TRACE_MESSAGES
     std::cout << __PRETTY_FUNCTION__ << std::endl;
 #endif
-    if (!p->urfkill->FlightMode(false).value())
+    if (!p->urfkill->FlightMode(false))
         throw std::runtime_error("Failed to disable flightmode");
 }
 

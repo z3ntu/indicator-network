@@ -72,7 +72,7 @@ KillSwitch::block()
         throw KillSwitch::exception::HardBlocked();
 
     try {
-        if (!d->urfkill->Block(1, true).value()) ///!
+        if (!d->urfkill->Block(1, true)) ///!
             throw KillSwitch::exception::Failed("Failed to block killswitch");
     } catch (std::exception &e) {
         throw KillSwitch::exception::Failed(e.what());
@@ -83,7 +83,7 @@ void
 KillSwitch::unblock()
 {
     try {
-        if (!d->urfkill->Block(1, false).value()) ///!
+        if (!d->urfkill->Block(1, false)) ///!
             throw KillSwitch::exception::Failed("Failed to unblock killswitch");
     } catch (std::exception &e) {
         throw KillSwitch::exception::Failed(e.what());

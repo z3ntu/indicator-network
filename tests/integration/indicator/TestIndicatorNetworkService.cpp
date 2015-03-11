@@ -1427,7 +1427,7 @@ TEST_F(TestIndicatorNetworkService, FlightMode_WifiOn)
 
     // set wifi on
     auto& urfkillInterface = dbusMock.urfkillInterface();
-    urfkillInterface.Block(1, true);
+    urfkillInterface.Block(1, true).waitForFinished();
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
             .mode(mh::MenuItemMatcher::Mode::starts_with)

@@ -22,7 +22,7 @@ set_source_files_properties(
 )
 
 qt5_add_dbus_interface(
-    CONNECTIVITY_CPP_BACKEND_SRC
+    CONNECTIVITY_BACKEND_SRC
     "/usr/share/dbus-1/interfaces/org.freedesktop.URfkill.xml"
     services/URfkillInterface
 )
@@ -34,19 +34,19 @@ set_source_files_properties(
 )
 
 qt5_add_dbus_interface(
-    CONNECTIVITY_CPP_BACKEND_SRC
+    CONNECTIVITY_BACKEND_SRC
     "/usr/share/dbus-1/interfaces/org.freedesktop.URfkill.Killswitch.xml"
     services/URfkillKillswitchInterface
 )
 
 add_library(
-    connectivity-cpp-backend
+    connectivity-backend
     STATIC
-    ${CONNECTIVITY_CPP_BACKEND_SRC}
+    ${CONNECTIVITY_BACKEND_SRC}
 )
 
 qt5_use_modules(
-    connectivity-cpp-backend
+    connectivity-backend
     DBus
 )
 

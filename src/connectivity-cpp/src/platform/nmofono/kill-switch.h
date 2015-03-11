@@ -25,7 +25,8 @@
 
 #include <core/property.h>
 
-#include <services/urfkill.h>
+#include <services/URfkillInterface.h>
+#include <services/URfkillKillswitchInterface.h>
 
 namespace platform {
 namespace nmofono {

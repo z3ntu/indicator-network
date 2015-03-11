@@ -64,7 +64,7 @@ public:
     const core::Property<std::uint32_t>& characteristics() const override;
 
 private:
-    void device_added(const core::dbus::types::ObjectPath &path);
+    void device_added(const QDBusObjectPath &path);
 };
 
 #endif

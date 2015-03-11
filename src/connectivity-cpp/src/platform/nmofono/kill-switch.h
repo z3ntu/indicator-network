@@ -36,7 +36,7 @@ namespace nmofono {
 
 class platform::nmofono::KillSwitch
 {
-    struct Private;
+    class Private;
     std::unique_ptr<Private> d;
 
 public:

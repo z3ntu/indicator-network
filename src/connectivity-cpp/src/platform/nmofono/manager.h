@@ -37,7 +37,7 @@ namespace nmofono {
 
 class platform::nmofono::Manager : public connectivity::networking::Manager
 {
-    struct Private;
+    class Private;
     struct State;
     std::unique_ptr<Private> p;
 

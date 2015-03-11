@@ -45,15 +45,8 @@ set(CONNECTIVITY_INTERFACES
 )
 add_custom_target(QtCreatorHeaderHack SOURCES ${CONNECTIVITY_INTERFACES})
 
-# list these here to have them visible in Qt Creator
-set(DBUS_INTERFACES
-    dbus-cpp/services/nm.h
-    dbus-cpp/services/ofono.h
-    dbus-cpp/services/urfkill.h
-)
-add_custom_target(QtCreatorHeaderHack2 SOURCES ${DBUS_INTERFACES})
-
 add_subdirectory(data)
+add_subdirectory(dbus-cpp)
 #add_subdirectory(doc)
 add_subdirectory(examples)
 add_subdirectory(src)

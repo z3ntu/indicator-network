@@ -10,6 +10,7 @@ find_package(PkgConfig REQUIRED)
 include_directories(backend)
 include_directories(include)
 include_directories(dbus-cpp)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/backend)
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/backend)
 
 pkg_check_modules(

@@ -21,8 +21,9 @@
 #include "manager.h"
 #include "wifi/link.h"
 #include "set_name_for_thread.h"
-#include <services/nm.h>
+#include <NetworkManagerInterface.h>
 
+#include <NetworkManager.h>
 #include <core/dbus/asio/executor.h>
 #include <thread>
 
@@ -49,7 +50,7 @@ class Manager::Private : public QObject
 {
     Q_OBJECT
 public:
-    std::shared_ptr<org::freedesktop::NetworkManager::Interface::NetworkManager> nm;
+    std::shared_ptr<OrgFreedesktopNetworkManagerInterface> nm;
 
     core::Property<connectivity::networking::Manager::FlightModeStatus> m_flightMode;
     core::Property<std::set<std::shared_ptr<connectivity::networking::Link>>> m_links;
@@ -161,6 +162,8 @@ Manager::updateNetworkingStatus(std::uint32_t status)
 
 Manager::Manager() : p(new Manager::Private())
 {
+    QDBusConnection systemConnection(QDBusConnection::systemBus());
+
     try {
         p->m_state.reset(new State);
     } catch (...) {
@@ -168,8 +171,7 @@ Manager::Manager() : p(new Manager::Private())
         throw;
     }
 
-    auto nm_service = std::make_shared<NM::Service>(p->m_state->m_bus);
-    p->nm = nm_service->nm;
+    p->nm = std::make_shared<OrgFreedesktopNetworkManagerInterface>(NM_DBUS_SERVICE, NM_DBUS_PATH, systemConnection);
 
     /// @todo add a watcher for the service
     /// @todo exceptions
@@ -179,8 +181,9 @@ Manager::Manager() : p(new Manager::Private())
     p->m_wifiKillSwitch = std::make_shared<KillSwitch>();
     QObject::connect(p->m_wifiKillSwitch.get(), SIGNAL(stateChanged()), p.get(), SLOT(updateHasWifi()));
 
-    p->nm->device_added->connect(std::bind(&Manager::device_added, this, std::placeholders::_1));
-    for(const auto &path : p->nm->get_devices()) {
+    QObject::connect(p->nm.get(), &OrgFreedesktopNetworkManagerInterface::DeviceAdded, this, &Manager::device_added);
+    QList<QDBusObjectPath> devices(p->nm->GetDevices());
+    for(const auto &path : devices) {
         device_added(path);
     }
 
@@ -232,7 +235,7 @@ Manager::Manager() : p(new Manager::Private())
 }
 
 void
-Manager::device_added(const dbus::types::ObjectPath &path)
+Manager::device_added(const QDBusObjectPath &path)
 {
 #ifdef INDICATOR_NETWORK_TRACE_MESSAGES
     std::cout << "Device Added:" << path.as_string() << std::endl;

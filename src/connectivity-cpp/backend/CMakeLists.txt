@@ -39,6 +39,46 @@ qt5_add_dbus_interface(
     services/URfkillKillswitchInterface
 )
 
+set_source_files_properties(
+    "${DATA_DIR}/nm-device.xml"
+    "${DATA_DIR}/nm-device-wifi.xml"
+    "${DATA_DIR}/nm-access-point.xml"
+    PROPERTIES
+    NO_NAMESPACE YES
+)
+
+set_source_files_properties(
+    "${DATA_DIR}/nm-manager.xml"
+    PROPERTIES
+    NO_NAMESPACE YES
+    INCLUDE "DBusTypes.h"
+)
+
+qt5_add_dbus_interface(
+    CONNECTIVITY_BACKEND_SRC
+    "${DATA_DIR}/nm-manager.xml"
+    NetworkManagerInterface
+)
+
+qt5_add_dbus_interface(
+    CONNECTIVITY_BACKEND_SRC
+    "${DATA_DIR}/nm-device.xml"
+    NetworkManagerDeviceInterface
+)
+
+qt5_add_dbus_interface(
+    CONNECTIVITY_BACKEND_SRC
+    "${DATA_DIR}/nm-device-wifi.xml"
+    NetworkManagerDeviceWirelessInterface
+)
+
+qt5_add_dbus_interface(
+    CONNECTIVITY_BACKEND_SRC
+    "${DATA_DIR}/nm-access-point.xml"
+    NetworkManagerAccessPointInterface
+)
+
+
 add_library(
     connectivity-backend
     STATIC

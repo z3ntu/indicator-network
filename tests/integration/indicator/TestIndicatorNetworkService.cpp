@@ -1317,7 +1317,7 @@ TEST_F(TestIndicatorNetworkService, FlightMode_WifiOff)
     // check that AP list is empty
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
-            .state_icons({"gsm-3g-high", "nm-signal-0"})
+            .state_icons({"gsm-3g-high", "network-cellular-pre-edge"})
             .mode(mh::MenuItemMatcher::Mode::starts_with)
             .item(flightModeSwitch(false))
             .item(mh::MenuItemMatcher()
@@ -1427,7 +1427,7 @@ TEST_F(TestIndicatorNetworkService, FlightMode_WifiOn)
 
     // set wifi on
     auto& urfkillInterface = dbusMock.urfkillInterface();
-    urfkillInterface.Block(1, true);
+    urfkillInterface.Block(1, true).waitForFinished();
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
             .mode(mh::MenuItemMatcher::Mode::starts_with)

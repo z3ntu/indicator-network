@@ -180,11 +180,10 @@ Manager::Manager() : p(new Manager::Private())
     /// @todo offload the initialization to a thread or something
     /// @todo those Id() thingies
 
-    auto urfkillKillswitch = std::make_shared<OrgFreedesktopURfkillKillswitchInterface>("org.freedesktop.URfkill.Killswitch",
+    auto urfkillKillswitch = std::make_shared<OrgFreedesktopURfkillKillswitchInterface>("org.freedesktop.URfkill",
                                                                                          "/org/freedesktop/URfkill/WLAN",
                                                                                          QDBusConnection::systemBus());
-    p->m_wifiKillSwitch = std::make_shared<KillSwitch>(p->urfkill,
-                                                       urfkillKillswitch);
+    p->m_wifiKillSwitch = std::make_shared<KillSwitch>(p->urfkill, urfkillKillswitch);
 
     p->m_wifiKillSwitch->state().changed().connect(std::bind(&Private::updateHasWifi, p.get()));
 

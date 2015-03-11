@@ -168,8 +168,9 @@ Manager::Manager() : p(new Manager::Private())
     /// @todo offload the initialization to a thread or something
     /// @todo those Id() thingies
 
-    p->m_wifiKillSwitch = std::make_shared<KillSwitch>(p->urfkill,
-                                                       p->urfkill->switches[fdo::URfkill::Interface::Killswitch::Type::wlan]);
+    p->m_wifiKillSwitch = nullptr;
+///!    p->m_wifiKillSwitch = std::make_shared<KillSwitch>(p->urfkill,
+///!                                                       p->urfkill->switches[fdo::URfkill::Interface::Killswitch::Type::wlan]);
     p->m_wifiKillSwitch->state().changed().connect(std::bind(&Private::updateHasWifi, p.get()));
 
     p->nm->device_added->connect(std::bind(&Manager::device_added, this, std::placeholders::_1));

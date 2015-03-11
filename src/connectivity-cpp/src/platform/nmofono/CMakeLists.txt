@@ -41,3 +41,5 @@ target_link_libraries(
     ${DBUSCPP_LIBRARIES}
     ${GLIB_LIBRARIES}
 )
+
+set_target_properties(platform_nmofono PROPERTIES AUTOMOC TRUE)

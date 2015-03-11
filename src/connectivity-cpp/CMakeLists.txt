@@ -9,6 +9,7 @@ find_package(PkgConfig REQUIRED)
 
 include_directories(include)
 include_directories(dbus-cpp)
+include_directories(${CMAKE_CURRENT_BINARY_DIR}/backend)
 
 pkg_check_modules(
     PROPERTIESCPP REQUIRED
@@ -45,6 +46,7 @@ set(CONNECTIVITY_INTERFACES
 )
 add_custom_target(QtCreatorHeaderHack SOURCES ${CONNECTIVITY_INTERFACES})
 
+add_subdirectory(backend)
 add_subdirectory(data)
 add_subdirectory(dbus-cpp)
 #add_subdirectory(doc)

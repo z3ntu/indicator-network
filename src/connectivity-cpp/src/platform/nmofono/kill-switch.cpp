@@ -26,28 +26,25 @@ class KillSwitch::Private : public QObject
     Q_OBJECT
 public:
     std::shared_ptr<OrgFreedesktopURfkillInterface> urfkill;
-    std::shared_ptr<OrgFreedesktopURfkillDeviceInterface> device;
     std::shared_ptr<OrgFreedesktopURfkillKillswitchInterface> killSwitch;
 
     core::Property<KillSwitch::State> state;
 
     Private(std::shared_ptr<OrgFreedesktopURfkillInterface> urfkill,
-            std::shared_ptr<OrgFreedesktopURfkillDeviceInterface> device,
             std::shared_ptr<OrgFreedesktopURfkillKillswitchInterface> killSwitch)
         : urfkill(urfkill),
-          device(device),
           killSwitch(killSwitch)
     {
         connect(killSwitch.get(), SIGNAL(StateChanged()), this, SLOT(stateChanged()));
         stateChanged(killSwitch->state());
     }
 
-    void stateChanged(int value)
+    void stateChanged(int stateIndex)
     {
-        if (value >= static_cast<int>(State::first_) &&
-            value <= static_cast<int>(State::last_))
+        if (stateIndex >= static_cast<int>(State::first_) &&
+            stateIndex <= static_cast<int>(State::last_))
         {
-            state.set(static_cast<State>(value));
+            state.set(static_cast<State>(stateIndex));
         }
     }
 
@@ -60,10 +57,9 @@ public Q_SLOTS:
 
 
 KillSwitch::KillSwitch(std::shared_ptr<OrgFreedesktopURfkillInterface> urfkill,
-                       std::shared_ptr<OrgFreedesktopURfkillDeviceInterface> device,
                        std::shared_ptr<OrgFreedesktopURfkillKillswitchInterface> killSwitch)
 {
-    d.reset(new Private(urfkill, device, killSwitch));
+    d.reset(new Private(urfkill, killSwitch));
 }
 
 KillSwitch::~KillSwitch()
@@ -76,7 +72,7 @@ KillSwitch::block()
         throw KillSwitch::exception::HardBlocked();
 
     try {
-        if (!d->urfkill->Block(d->device->type(), true))
+        if (!d->urfkill->Block(1, true).value()) ///!
             throw KillSwitch::exception::Failed("Failed to block killswitch");
     } catch (std::exception &e) {
         throw KillSwitch::exception::Failed(e.what());
@@ -87,7 +83,7 @@ void
 KillSwitch::unblock()
 {
     try {
-        if (!d->urfkill->Block(d->device->type(), false))
+        if (!d->urfkill->Block(1, false).value()) ///!
             throw KillSwitch::exception::Failed("Failed to unblock killswitch");
     } catch (std::exception &e) {
         throw KillSwitch::exception::Failed(e.what());

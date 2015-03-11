@@ -26,6 +26,7 @@
 #include <core/property.h>
 
 #include <services/URfkillInterface.h>
+#include <services/URfkillDeviceInterface.h>
 #include <services/URfkillKillswitchInterface.h>
 
 namespace platform {
@@ -62,15 +63,18 @@ public:
 
     enum class State
     {
-        not_available,
-        unblocked,
-        soft_blocked,
-        hard_blocked
+        not_available = -1,
+        first_ = not_available,
+        unblocked = 0,
+        soft_blocked = 1,
+        hard_blocked = 2,
+        last_ = hard_blocked
     };
 
     KillSwitch() = delete;
-    KillSwitch(std::shared_ptr<org::freedesktop::URfkill::Interface::URfkill> urfkill,
-               std::shared_ptr<org::freedesktop::URfkill::Interface::Killswitch> killSwitch);
+    KillSwitch(std::shared_ptr<OrgFreedesktopURfkillInterface> urfkill,
+               std::shared_ptr<OrgFreedesktopURfkillDeviceInterface> device,
+               std::shared_ptr<OrgFreedesktopURfkillKillswitchInterface> killSwitch);
     ~KillSwitch();
 
     /// @throws exception::Failed if the switch fails to block

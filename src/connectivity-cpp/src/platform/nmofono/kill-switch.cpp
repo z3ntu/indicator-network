@@ -20,46 +20,50 @@
 #include "kill-switch.h"
 
 using namespace platform::nmofono;
-namespace URfkill = org::freedesktop::URfkill;
 
-struct KillSwitch::Private
+class KillSwitch::Private : public QObject
 {
-    std::shared_ptr<URfkill::Interface::URfkill> urfkill;
-    std::shared_ptr<URfkill::Interface::Killswitch> killSwitch;
+    Q_OBJECT
+public:
+    std::shared_ptr<OrgFreedesktopURfkillInterface> urfkill;
+    std::shared_ptr<OrgFreedesktopURfkillDeviceInterface> device;
+    std::shared_ptr<OrgFreedesktopURfkillKillswitchInterface> killSwitch;
+
     core::Property<KillSwitch::State> state;
 
-    Private(std::shared_ptr<URfkill::Interface::URfkill> urfkill,
-            std::shared_ptr<URfkill::Interface::Killswitch> killSwitch)
+    Private(std::shared_ptr<OrgFreedesktopURfkillInterface> urfkill,
+            std::shared_ptr<OrgFreedesktopURfkillDeviceInterface> device,
+            std::shared_ptr<OrgFreedesktopURfkillKillswitchInterface> killSwitch)
         : urfkill(urfkill),
+          device(device),
           killSwitch(killSwitch)
-    {}
-
-    void stateChanged(URfkill::Interface::Killswitch::State value)
     {
-        switch(value) {
-        case URfkill::Interface::Killswitch::State::not_available:
-            state.set(KillSwitch::State::not_available);
-            break;
-        case URfkill::Interface::Killswitch::State::unblocked:
-            state.set(KillSwitch::State::unblocked);
-            break;
-        case URfkill::Interface::Killswitch::State::hard_blocked:
-            state.set(KillSwitch::State::hard_blocked);
-            break;
-        case URfkill::Interface::Killswitch::State::soft_blocked:
-            state.set(KillSwitch::State::soft_blocked);
-            break;
+        connect(killSwitch.get(), SIGNAL(StateChanged()), this, SLOT(stateChanged()));
+        stateChanged(killSwitch->state());
+    }
+
+    void stateChanged(int value)
+    {
+        if (value >= static_cast<int>(State::first_) &&
+            value <= static_cast<int>(State::last_))
+        {
+            state.set(static_cast<State>(value));
         }
+    }
+
+public Q_SLOTS:
+    void stateChanged()
+    {
+        stateChanged(killSwitch->state());
     }
 };
 
 
-KillSwitch::KillSwitch(std::shared_ptr<URfkill::Interface::URfkill> urfkill,
-                       std::shared_ptr<URfkill::Interface::Killswitch> killSwitch)
+KillSwitch::KillSwitch(std::shared_ptr<OrgFreedesktopURfkillInterface> urfkill,
+                       std::shared_ptr<OrgFreedesktopURfkillDeviceInterface> device,
+                       std::shared_ptr<OrgFreedesktopURfkillKillswitchInterface> killSwitch)
 {
-    d.reset(new Private(urfkill, killSwitch));
-    killSwitch->state.changed().connect(std::bind(&Private::stateChanged, d.get(), std::placeholders::_1));
-    d->stateChanged(killSwitch->state.get());
+    d.reset(new Private(urfkill, device, killSwitch));
 }
 
 KillSwitch::~KillSwitch()
@@ -72,7 +76,7 @@ KillSwitch::block()
         throw KillSwitch::exception::HardBlocked();
 
     try {
-        if (!d->urfkill->block(d->killSwitch->type, true))
+        if (!d->urfkill->Block(d->device->type(), true))
             throw KillSwitch::exception::Failed("Failed to block killswitch");
     } catch (std::exception &e) {
         throw KillSwitch::exception::Failed(e.what());
@@ -83,7 +87,7 @@ void
 KillSwitch::unblock()
 {
     try {
-        if (!d->urfkill->block(d->killSwitch->type, false))
+        if (!d->urfkill->Block(d->device->type(), false))
             throw KillSwitch::exception::Failed("Failed to unblock killswitch");
     } catch (std::exception &e) {
         throw KillSwitch::exception::Failed(e.what());
@@ -96,3 +100,4 @@ KillSwitch::state() const
     return d->state;
 }
 
+#include "kill-switch.moc"

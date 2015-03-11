@@ -39,6 +39,18 @@ qt5_add_dbus_interface(
     services/URfkillKillswitchInterface
 )
 
+set_source_files_properties(
+    "/usr/share/dbus-1/interfaces/org.freedesktop.URfkill.Device.xml"
+    PROPERTIES
+    NO_NAMESPACE YES
+)
+
+qt5_add_dbus_interface(
+    CONNECTIVITY_BACKEND_SRC
+    "/usr/share/dbus-1/interfaces/org.freedesktop.URfkill.Device.xml"
+    services/URfkillDeviceInterface
+)
+
 add_library(
     connectivity-backend
     STATIC
@@ -49,4 +61,3 @@ qt5_use_modules(
     connectivity-backend
     DBus
 )
-

@@ -61,11 +61,12 @@ public:
     core::Property<bool> m_wifiEnabled  ;
     std::shared_ptr<KillSwitch> m_wifiKillSwitch;
 
+public Q_SLOTS:
     void updateHasWifi()
     {
-        if (m_wifiKillSwitch->state().get() != KillSwitch::State::not_available) {
+        if (m_wifiKillSwitch->state() != KillSwitch::State::not_available) {
             m_hasWifi.set(true);
-            if (m_wifiKillSwitch->state().get() == KillSwitch::State::unblocked)
+            if (m_wifiKillSwitch->state() == KillSwitch::State::unblocked)
                 m_wifiEnabled.set(true);
             else
                 m_wifiEnabled.set(false);
@@ -82,7 +83,6 @@ public:
         m_wifiEnabled.set(haswifi);
     }
 
-public Q_SLOTS:
     void flightModeChanged(bool flightMode)
     {
         if (flightMode)
@@ -176,7 +176,7 @@ Manager::Manager() : p(new Manager::Private())
     /// @todo those Id() thingies
 
     p->m_wifiKillSwitch = std::make_shared<KillSwitch>();
-    p->m_wifiKillSwitch->state().changed().connect(std::bind(&Private::updateHasWifi, p.get()));
+    QObject::connect(p->m_wifiKillSwitch.get(), SIGNAL(stateChanged()), p.get(), SLOT(updateHasWifi()));
 
     p->nm->device_added->connect(std::bind(&Manager::device_added, this, std::placeholders::_1));
     for(const auto &path : p->nm->get_devices()) {

@@ -15,6 +15,7 @@
  *
  * Authors:
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
+ *     Marcus Tomlinson <marcus.tomlinson@canonical.com>
  */
 
 #ifndef PLATFORM_NMOFONO_KILLSWITCH
@@ -22,8 +23,6 @@
 
 #include <exception>
 #include <memory>
-
-#include <core/property.h>
 
 #include <services/URfkillInterface.h>
 #include <services/URfkillKillswitchInterface.h>
@@ -82,12 +81,12 @@ public:
     /// @throws exception::Failed if the switch fails to unblock
     void unblock();
 
+    State state() const;
     bool flightMode(bool enable);
     bool isFlightMode();
 
-    const core::Property<State> &state() const;
-
 Q_SIGNALS:
+    void stateChanged();
     void flightModeChanged(bool);
 };
 

@@ -21,54 +21,33 @@
 
 using namespace platform::nmofono;
 
-class KillSwitch::Private : public QObject
+class KillSwitch::Private
 {
-    Q_OBJECT
 public:
     std::shared_ptr<OrgFreedesktopURfkillInterface> urfkill;
     std::shared_ptr<OrgFreedesktopURfkillKillswitchInterface> killSwitch;
 
-    core::Property<KillSwitch::State> state;
-
     Private(std::shared_ptr<OrgFreedesktopURfkillInterface> urfkill,
             std::shared_ptr<OrgFreedesktopURfkillKillswitchInterface> killSwitch)
         : urfkill(urfkill),
-          killSwitch(killSwitch)
-    {
-        connect(killSwitch.get(), SIGNAL(StateChanged()), this, SLOT(stateChanged()));
-        stateChanged(killSwitch->state());
-    }
-
-    void stateChanged(int stateIndex)
-    {
-        if (stateIndex >= static_cast<int>(State::first_) &&
-            stateIndex <= static_cast<int>(State::last_))
-        {
-            state.set(static_cast<State>(stateIndex));
-        }
-    }
-
-public Q_SLOTS:
-    void stateChanged()
-    {
-        stateChanged(killSwitch->state());
-    }
+          killSwitch(killSwitch) {}
 };
 
 
 KillSwitch::KillSwitch()
 {
     auto urfkill = std::make_shared<OrgFreedesktopURfkillInterface>("org.freedesktop.URfkill",
-                                                                  "/org/freedesktop/URfkill",
-                                                                  QDBusConnection::systemBus());
+                                                                    "/org/freedesktop/URfkill",
+                                                                    QDBusConnection::systemBus());
 
-    auto urfkillKillswitch = std::make_shared<OrgFreedesktopURfkillKillswitchInterface>("org.freedesktop.URfkill",
-                                                                                         "/org/freedesktop/URfkill/WLAN",
-                                                                                         QDBusConnection::systemBus());
+    auto killSwitch = std::make_shared<OrgFreedesktopURfkillKillswitchInterface>("org.freedesktop.URfkill",
+                                                                                 "/org/freedesktop/URfkill/WLAN",
+                                                                                 QDBusConnection::systemBus());
 
     connect(urfkill.get(), SIGNAL(FlightModeChanged(bool)), this, SIGNAL(flightModeChanged(bool)));
+    connect(killSwitch.get(), SIGNAL(StateChanged()), this, SIGNAL(stateChanged()));
 
-    d.reset(new Private(urfkill, urfkillKillswitch));
+    d.reset(new Private(urfkill, killSwitch));
 }
 
 KillSwitch::~KillSwitch()
@@ -77,7 +56,7 @@ KillSwitch::~KillSwitch()
 void
 KillSwitch::block()
 {
-    if (d->state.get() == KillSwitch::State::hard_blocked)
+    if (state() == KillSwitch::State::hard_blocked)
         throw KillSwitch::exception::HardBlocked();
 
     try {
@@ -99,6 +78,17 @@ KillSwitch::unblock()
     }
 }
 
+KillSwitch::State KillSwitch::state() const
+{
+    int stateIndex = d->killSwitch->state();
+    if (stateIndex >= static_cast<int>(State::first_) &&
+        stateIndex <= static_cast<int>(State::last_))
+    {
+        return static_cast<KillSwitch::State>(stateIndex);
+    }
+    return KillSwitch::State::not_available;
+}
+
 bool KillSwitch::flightMode(bool enable)
 {
     return d->urfkill->FlightMode(enable);
@@ -108,11 +98,3 @@ bool KillSwitch::isFlightMode()
 {
     return d->urfkill->IsFlightMode();
 }
-
-const core::Property<KillSwitch::State> &
-KillSwitch::state() const
-{
-    return d->state;
-}
-
-#include "kill-switch.moc"

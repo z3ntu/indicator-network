@@ -48,8 +48,6 @@ struct Link::Private
     org::freedesktop::NetworkManager::Interface::NetworkManager nm;
 
     KillSwitch::Ptr killSwitch;
-    // hack hack
-    std::vector<core::ScopedConnection> switchConnection;
 
     std::map<AccessPoint::Key, std::shared_ptr<GroupedAccessPoint>> grouper;
     bool disabled;
@@ -96,9 +94,11 @@ Link::Link(const NM::Interface::Device& dev,
         // std::uint32_t reason    = std::get<2>(args);
         updateDeviceState(new_state);
     });
-    p->switchConnection.emplace_back(p->killSwitch->state().changed().connect([this](platform::nmofono::KillSwitch::State){
+
+    QObject::connect(p->killSwitch.get(), &KillSwitch::stateChanged, [this]()
+    {
         updateDeviceState(p->lastState);
-    }));
+    });
 }
 
 Link::~Link()
@@ -387,7 +387,7 @@ Link::updateDeviceState(std::uint32_t new_state)
         // make sure to set activeConnection before changing the status
         updateActiveConnection(core::dbus::types::ObjectPath("/"));
 
-        switch(p->killSwitch->state().get()) {
+        switch(p->killSwitch->state()) {
         case KillSwitch::State::hard_blocked:
         case KillSwitch::State::soft_blocked:
             p->status_.set(Status::disabled);

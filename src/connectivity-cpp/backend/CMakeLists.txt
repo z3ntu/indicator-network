@@ -21,6 +21,7 @@ set_source_files_properties(
     "${DATA_DIR}/nm-device.xml"
     "${DATA_DIR}/nm-device-wifi.xml"
     "${DATA_DIR}/nm-access-point.xml"
+    "${DATA_DIR}/nm-active-connection.xml"
     "/usr/share/dbus-1/interfaces/org.freedesktop.URfkill.xml"
     "/usr/share/dbus-1/interfaces/org.freedesktop.URfkill.Device.xml"
     "/usr/share/dbus-1/interfaces/org.freedesktop.URfkill.Killswitch.xml"
@@ -29,6 +30,7 @@ set_source_files_properties(
 )
 
 set_source_files_properties(
+    "${DATA_DIR}/nm-settings-connection.xml"
     "${DATA_DIR}/nm-manager.xml"
     PROPERTIES
     NO_NAMESPACE YES
@@ -75,6 +77,18 @@ qt5_add_dbus_interface(
     CONNECTIVITY_BACKEND_SRC
     "${DATA_DIR}/nm-access-point.xml"
     NetworkManagerAccessPointInterface
+)
+
+qt5_add_dbus_interface(
+    CONNECTIVITY_BACKEND_SRC
+    "${DATA_DIR}/nm-active-connection.xml"
+    NetworkManagerActiveConnectionInterface
+)
+
+qt5_add_dbus_interface(
+    CONNECTIVITY_BACKEND_SRC
+    "${DATA_DIR}/nm-settings-connection.xml"
+    NetworkManagerSettingsConnectionInterface
 )
 
 add_library(

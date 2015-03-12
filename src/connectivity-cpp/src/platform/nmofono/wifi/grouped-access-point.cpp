@@ -45,7 +45,7 @@ struct GroupedAccessPoint::Private {
     void update_strength(double);
     void update_lasttime(std::chrono::system_clock::time_point newTime);
     void disconnect(const std::shared_ptr<platform::nmofono::wifi::AccessPoint> &ap);
-    bool has_object(const core::dbus::types::ObjectPath &p) const;
+    bool has_object(const QDBusObjectPath &p) const;
 };
 
 GroupedAccessPoint::Private::~Private() {
@@ -132,7 +132,7 @@ void GroupedAccessPoint::Private::update_strength(double)
     }
 }
 
-bool GroupedAccessPoint::Private::has_object(const core::dbus::types::ObjectPath &p) const {
+bool GroupedAccessPoint::Private::has_object(const QDBusObjectPath &p) const {
     for(const auto &i : aplist) {
         if(i->object_path() == p) {
             return true;
@@ -151,7 +151,7 @@ GroupedAccessPoint::~GroupedAccessPoint() {
 
 }
 
-const core::dbus::types::ObjectPath GroupedAccessPoint::object_path() const {
+QDBusObjectPath GroupedAccessPoint::object_path() const {
     std::lock_guard<std::mutex> l(p->m);
     return p->aplist.at(0)->object_path();
 }
@@ -168,13 +168,13 @@ const core::Property<std::chrono::system_clock::time_point>& GroupedAccessPoint:
     return p->lastTime;
 }
 
-const std::string& GroupedAccessPoint::ssid() const
+const QString& GroupedAccessPoint::ssid() const
 {
     std::lock_guard<std::mutex> l(p->m);
     return p->aplist.at(0)->ssid();
 }
 
-const std::vector<std::int8_t>& GroupedAccessPoint::raw_ssid() const
+const QByteArray& GroupedAccessPoint::raw_ssid() const
 {
     std::lock_guard<std::mutex> l(p->m);
     return p->aplist.at(0)->raw_ssid();
@@ -207,7 +207,7 @@ int GroupedAccessPoint::num_aps() const {
     return (int)p->aplist.size();
 }
 
-bool GroupedAccessPoint::has_object(const core::dbus::types::ObjectPath &path) const {
+bool GroupedAccessPoint::has_object(const QDBusObjectPath &path) const {
     std::lock_guard<std::mutex> l(p->m);
     return p->has_object(path);
 }

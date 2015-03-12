@@ -22,6 +22,8 @@
 
 #include <core/property.h>
 
+#include <QObject>
+
 namespace connectivity {
 namespace networking {
 
@@ -30,7 +32,7 @@ namespace networking {
 #endif
 
 class CONNECTIVITY_CPP_EXPORT
-Link
+Link: public QObject
 {
 public:
     typedef std::shared_ptr<Link> Ptr;

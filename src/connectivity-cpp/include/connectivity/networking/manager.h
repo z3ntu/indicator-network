@@ -28,6 +28,8 @@
 
 #include <memory>
 
+#include <QObject>
+
 namespace connectivity {
 namespace networking {
 
@@ -49,7 +51,7 @@ namespace networking {
  * - \ref networking-status "Getting the networking status."
  */
 class CONNECTIVITY_CPP_EXPORT
-Manager
+Manager: public QObject
 {
 public:
     Manager &operator=(const Manager&) = delete;

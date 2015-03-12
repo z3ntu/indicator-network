@@ -23,6 +23,9 @@
 #include <string>
 #include <core/property.h>
 
+#include <QObject>
+#include <QString>
+
 namespace connectivity {
 namespace networking {
 namespace wifi {
@@ -33,7 +36,7 @@ namespace wifi {
 
 /// @private
 class CONNECTIVITY_CPP_EXPORT
-AccessPoint
+AccessPoint: public QObject
 {
 public:
     typedef std::shared_ptr<AccessPoint> Ptr;
@@ -44,7 +47,7 @@ public:
      */
     virtual const core::Property<double>& strength() const = 0;
 
-    virtual const std::string& ssid() const = 0;
+    virtual const QString& ssid()     const = 0;
     virtual bool secured()            const = 0;
     virtual bool adhoc()              const = 0;
 };

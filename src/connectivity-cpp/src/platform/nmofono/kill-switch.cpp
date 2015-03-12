@@ -15,6 +15,7 @@
  *
  * Authors:
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
+ *     Marcus Tomlinson <marcus.tomlinson@canonical.com>
  */
 
 #include "kill-switch.h"

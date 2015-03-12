@@ -18,8 +18,8 @@
  *     Marcus Tomlinson <marcus.tomlinson@canonical.com>
  */
 
-#include "kill-switch.h"
-#include "backend-utils.h"
+#include <platform/nmofono/kill-switch.h>
+#include <backend-utils.h>
 
 #include <URfkillInterface.h>
 #include <URfkillKillswitchInterface.h>

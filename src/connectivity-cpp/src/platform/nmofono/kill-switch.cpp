@@ -21,6 +21,9 @@
 #include "kill-switch.h"
 #include "backend-utils.h"
 
+#include <services/URfkillInterface.h>
+#include <services/URfkillKillswitchInterface.h>
+
 using namespace backend;
 using namespace platform::nmofono;
 
@@ -53,15 +56,15 @@ public:
 };
 
 
-KillSwitch::KillSwitch()
+KillSwitch::KillSwitch(const QDBusConnection& systemBus)
 {
     auto urfkill = std::make_shared<OrgFreedesktopURfkillInterface>(cBusName,
                                                                     cURfkillPath,
-                                                                    QDBusConnection::systemBus());
+                                                                    systemBus);
 
     auto killSwitch = std::make_shared<OrgFreedesktopURfkillKillswitchInterface>(cBusName,
                                                                                  cURfkillKillswitchPath,
-                                                                                 QDBusConnection::systemBus());
+                                                                                 systemBus);
 
     connect(urfkill.get(), SIGNAL(FlightModeChanged(bool)), this, SIGNAL(flightModeChanged(bool)));
     connect(killSwitch.get(), SIGNAL(StateChanged()), this, SIGNAL(stateChanged()));

@@ -32,7 +32,7 @@ Manager::createInstance()
 {
     std::unique_ptr<Manager> mgr;
     try {
-        mgr.reset(new platform::nmofono::Manager);
+        mgr.reset(new platform::nmofono::Manager(QDBusConnection::systemBus()));
     } catch(std::exception &e) {
         /// @bug dbus-cpp internal logic exploded
         // If this happens, indicator-network is in an unknown state with no clear way of

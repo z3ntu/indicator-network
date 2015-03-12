@@ -36,15 +36,6 @@ namespace dbus = core::dbus;
 namespace platform {
 namespace nmofono {
 
-struct Manager::State
-{
-    State();
-    ~State();
-
-    std::shared_ptr<core::dbus::Bus> m_bus;
-    std::thread worker;
-};
-
 class Manager::Private : public QObject
 {
     Q_OBJECT
@@ -56,7 +47,6 @@ public:
     core::Property<std::set<std::shared_ptr<connectivity::networking::Service>>> m_services;
     core::Property<connectivity::networking::Manager::NetworkingStatus> m_status;
     core::Property<std::uint32_t> m_characteristics;
-    std::unique_ptr<State> m_state;
 
     core::Property<bool> m_hasWifi;
     core::Property<bool> m_wifiEnabled  ;
@@ -95,43 +85,6 @@ public Q_SLOTS:
 }
 }
 
-Manager::State::State()
-{
-    try {
-        m_bus = std::make_shared<dbus::Bus>(dbus::WellKnownBus::system);
-    } catch(const std::runtime_error &e) {
-        std::cerr << "Failed to connect to the bus: " << e.what() << std::endl;
-        throw;
-    }
-
-    auto executor = dbus::asio::make_executor(m_bus);
-    m_bus->install_executor(executor);
-    worker = std::move(std::thread([this]()
-    {
-        try {
-            m_bus->run();
-        } catch(std::exception &e) {
-            /// @bug dbus-cpp internal logic exploded
-           // If this happens, indicator-network is in an unknown state with no clear way of
-           // recovering. The only reasonable way out is a graceful exit.
-           std::cerr << __PRETTY_FUNCTION__ << " Failed to run dbus service: " << e.what() << std::endl;
-           std::quick_exit(0);
-        }
-    }));
-    location::set_name_for_thread(
-                worker,
-                "OfonoNmConnectivityManagerWorkerThread");
-}
-
-Manager::State::~State()
-{
-    if (worker.joinable())
-    {
-        m_bus->stop();
-        worker.join();
-    }
-}
-
 void
 Manager::updateNetworkingStatus(uint status)
 {
@@ -159,17 +112,8 @@ Manager::updateNetworkingStatus(uint status)
     }
 }
 
-Manager::Manager() : p(new Manager::Private())
+Manager::Manager(const QDBusConnection& systemConnection) : p(new Manager::Private())
 {
-    QDBusConnection systemConnection(QDBusConnection::systemBus());
-
-    try {
-        p->m_state.reset(new State);
-    } catch (...) {
-
-        throw;
-    }
-
     p->nm = std::make_shared<OrgFreedesktopNetworkManagerInterface>(NM_DBUS_SERVICE, NM_DBUS_PATH, systemConnection);
 
     /// @todo add a watcher for the service
@@ -177,7 +121,7 @@ Manager::Manager() : p(new Manager::Private())
     /// @todo offload the initialization to a thread or something
     /// @todo those Id() thingies
 
-    p->m_wifiKillSwitch = std::make_shared<KillSwitch>();
+    p->m_wifiKillSwitch = std::make_shared<KillSwitch>(systemConnection);
     QObject::connect(p->m_wifiKillSwitch.get(), SIGNAL(stateChanged()), p.get(), SLOT(updateHasWifi()));
 
     connect(p->nm.get(), &OrgFreedesktopNetworkManagerInterface::DeviceAdded, this, &Manager::device_added);

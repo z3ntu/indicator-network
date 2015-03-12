@@ -24,8 +24,7 @@
 #include <exception>
 #include <memory>
 
-#include <services/URfkillInterface.h>
-#include <services/URfkillKillswitchInterface.h>
+#include <QDBusConnection>
 
 namespace platform {
 namespace nmofono {
@@ -71,7 +70,7 @@ public:
         last_ = hard_blocked
     };
 
-    KillSwitch();
+    KillSwitch(const QDBusConnection& systemBus);
     ~KillSwitch();
 
     /// @throws exception::Failed if the switch fails to block

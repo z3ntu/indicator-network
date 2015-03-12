@@ -22,14 +22,9 @@
 #include <connectivity/networking/manager.h>
 #include <core/dbus/types/object_path.h>
 
+#include <QDBusConnection>
 #include <QDBusObjectPath>
 #include <QVariantMap>
-
-namespace core {
-namespace dbus {
-    class Bus;
-}
-}
 
 namespace platform {
 namespace nmofono {
@@ -49,7 +44,7 @@ Q_OBJECT
 
 public:
 
-    Manager();
+    Manager(const QDBusConnection& systemBus);
 
     // Public API
     void enableFlightMode() override;

@@ -19,7 +19,9 @@
  */
 
 #include "kill-switch.h"
+#include "backend-utils.h"
 
+using namespace backend;
 using namespace platform::nmofono;
 
 static QString const cBusName = "org.freedesktop.URfkill";
@@ -77,7 +79,7 @@ KillSwitch::block()
         throw KillSwitch::exception::HardBlocked();
 
     try {
-        if (!d->urfkill->Block(static_cast<uint>(Private::DeviceType::wlan), true))
+        if (!utils::getOrThrow(d->urfkill->Block(static_cast<uint>(Private::DeviceType::wlan), true)))
             throw KillSwitch::exception::Failed("Failed to block killswitch");
     } catch (std::exception &e) {
         throw KillSwitch::exception::Failed(e.what());
@@ -88,7 +90,7 @@ void
 KillSwitch::unblock()
 {
     try {
-        if (!d->urfkill->Block(static_cast<uint>(Private::DeviceType::wlan), false))
+        if (!utils::getOrThrow(d->urfkill->Block(static_cast<uint>(Private::DeviceType::wlan), false)))
             throw KillSwitch::exception::Failed("Failed to unblock killswitch");
     } catch (std::exception &e) {
         throw KillSwitch::exception::Failed(e.what());
@@ -108,10 +110,10 @@ KillSwitch::State KillSwitch::state() const
 
 bool KillSwitch::flightMode(bool enable)
 {
-    return d->urfkill->FlightMode(enable);
+    return utils::getOrThrow(d->urfkill->FlightMode(enable));
 }
 
 bool KillSwitch::isFlightMode()
 {
-    return d->urfkill->IsFlightMode();
+    return utils::getOrThrow(d->urfkill->IsFlightMode());
 }

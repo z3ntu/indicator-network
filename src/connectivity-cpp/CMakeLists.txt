@@ -7,6 +7,7 @@ include(CTest)
 
 find_package(PkgConfig REQUIRED)
 
+include_directories(backend)
 include_directories(include)
 include_directories(dbus-cpp)
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/backend)

@@ -73,6 +73,7 @@ add_library(
     connectivity-backend
     STATIC
     ${CONNECTIVITY_BACKEND_SRC}
+    backend-utils.h
 )
 
 qt5_use_modules(

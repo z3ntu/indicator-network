@@ -214,7 +214,16 @@ Manager::Manager() : p(new Manager::Private())
     });
 
     QObject::connect(p->m_wifiKillSwitch.get(), SIGNAL(flightModeChanged(bool)), p.get(), SLOT(flightModeChanged(bool)));
-    p->flightModeChanged(p->m_wifiKillSwitch->isFlightMode());
+    try
+    {
+        p->flightModeChanged(p->m_wifiKillSwitch->isFlightMode());
+    }
+    catch (std::exception const& e)
+    {
+        std::cerr << __PRETTY_FUNCTION__ << ": " << e.what() << std::endl;
+        std::cerr << "Failed to retrieve initial flight mode state, assuming state is false." << std::endl;
+        p->flightModeChanged(false);
+    }
 
     /// @todo set by the default connections.
     p->m_characteristics.set(networking::Link::Characteristics::empty);

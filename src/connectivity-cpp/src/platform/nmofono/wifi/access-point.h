@@ -22,17 +22,10 @@
 
 #include <connectivity/networking/wifi/access-point.h>
 
-#include <services/nm.h>
+#include <NetworkManagerAccessPointInterface.h>
+#include <NetworkManagerActiveConnectionInterface.h>
 
 #include <chrono>
-
-namespace core {
-namespace dbus {
-namespace types {
-class ObjectPath;
-}
-}
-}
 
 namespace platform {
 namespace nmofono {
@@ -40,11 +33,13 @@ namespace wifi {
 
 class AccessPoint : public connectivity::networking::wifi::AccessPoint
 {
+    Q_OBJECT
+
 public:
     typedef std::shared_ptr<AccessPoint> Ptr;
 
     struct Key {
-        std::string ssid;
+        QString ssid;
         uint32_t flags;
         uint32_t secflags;
         uint32_t mode;
@@ -86,7 +81,7 @@ public:
     friend class Key;
 
 
-    AccessPoint(const org::freedesktop::NetworkManager::Interface::AccessPoint &ap);
+    AccessPoint(std::shared_ptr<OrgFreedesktopNetworkManagerAccessPointInterface> ap);
     const core::Property<double>& strength() const;
     virtual ~AccessPoint() = default;
 
@@ -95,24 +90,27 @@ public:
     // lastConnected->time_since_epoch().count() is 0
     const core::Property<std::chrono::system_clock::time_point>& lastConnected() const;
 
-    const std::string& ssid() const override;
-    const std::vector<std::int8_t>& raw_ssid() const;
+    const QString& ssid() const override;
+    const QByteArray& raw_ssid() const;
 
     bool secured() const override;
 
     bool adhoc() const override;
 
-    const core::dbus::types::ObjectPath object_path() const;
+    QDBusObjectPath object_path() const;
 
     bool operator==(const platform::nmofono::wifi::AccessPoint &other) const;
     bool operator!=(const platform::nmofono::wifi::AccessPoint &other) const { return !(*this == other); };
 
+private Q_SLOTS:
+    void ap_properties_changed(const QVariantMap &properties);
+
 private:
     core::Property<double> m_strength;
     core::Property<std::chrono::system_clock::time_point> m_lastConnected;
-    org::freedesktop::NetworkManager::Interface::AccessPoint m_ap;
-    std::string m_ssid;
-    std::vector<std::int8_t> m_raw_ssid;
+    std::shared_ptr<OrgFreedesktopNetworkManagerAccessPointInterface> m_ap;
+    QString m_ssid;
+    QByteArray m_raw_ssid;
     bool m_secured;
     bool m_adhoc;
 

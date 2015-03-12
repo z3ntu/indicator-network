@@ -20,10 +20,12 @@
 #ifndef PLATFORM_TEST_WIFI_LINK
 #define PLATFORM_TEST_WIFI_LINK
 
-#include <services/nm.h>
 #include "../kill-switch.h"
 
 #include <connectivity/networking/wifi/link.h>
+
+#include <NetworkManagerInterface.h>
+#include <NetworkManagerDeviceInterface.h>
 
 namespace platform {
 namespace nmofono {
@@ -33,20 +35,14 @@ namespace wifi {
 }
 }
 
-namespace core {
-namespace dbus {
-namespace types {
-class ObjectPath;
-}
-}
-}
-
 class platform::nmofono::wifi::Link : public connectivity::networking::wifi::Link
 {
+    Q_OBJECT
+
 public:
 
-    Link(const org::freedesktop::NetworkManager::Interface::Device& dev,
-         const org::freedesktop::NetworkManager::Interface::NetworkManager& nm,
+    Link(std::shared_ptr<OrgFreedesktopNetworkManagerDeviceInterface> dev,
+         std::shared_ptr<OrgFreedesktopNetworkManagerInterface> nm,
          KillSwitch::Ptr killSwitch);
     ~Link();
 
@@ -66,19 +62,20 @@ public:
     void connect_to(std::shared_ptr<connectivity::networking::wifi::AccessPoint> accessPoint) override;
     const core::Property<std::shared_ptr<connectivity::networking::wifi::AccessPoint>>& activeAccessPoint() override;
 
-
     // private API
 
-    void updateDeviceState(std::uint32_t new_state);
-    void updateActiveConnection(const core::dbus::types::ObjectPath &path);
+    void updateDeviceState(uint new_state);
+    void updateActiveConnection(const QDBusObjectPath &path);
 
-    const core::dbus::types::ObjectPath& device_path() const;
+    QDBusObjectPath device_path() const;
+
+private Q_SLOTS:
+    void ap_added(const QDBusObjectPath &path);
+    void ap_removed(const QDBusObjectPath &path);
+    void update_grouped();
+    void state_changed(uint new_state, uint old_state, uint reason);
 
 private:
-    void ap_added(const core::dbus::types::ObjectPath &path);
-    void ap_removed(const core::dbus::types::ObjectPath &path);
-    void update_grouped();
-
     struct Private;
     std::unique_ptr<Private> p;
 };

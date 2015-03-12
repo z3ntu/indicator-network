@@ -22,17 +22,16 @@
 #include "wifi/link.h"
 #include "set_name_for_thread.h"
 #include <NetworkManagerInterface.h>
+#include <NetworkManagerDeviceInterface.h>
 
 #include <NetworkManager.h>
 #include <core/dbus/asio/executor.h>
 #include <thread>
+#include <QDebug>
 
 using namespace platform::nmofono;
 namespace networking = connectivity::networking;
 namespace dbus = core::dbus;
-namespace fdo = org::freedesktop;
-namespace NM = fdo::NetworkManager;
-
 
 namespace platform {
 namespace nmofono {
@@ -134,7 +133,7 @@ Manager::State::~State()
 }
 
 void
-Manager::updateNetworkingStatus(std::uint32_t status)
+Manager::updateNetworkingStatus(uint status)
 {
     switch(status) {
     case NM_STATE_UNKNOWN:
@@ -181,40 +180,15 @@ Manager::Manager() : p(new Manager::Private())
     p->m_wifiKillSwitch = std::make_shared<KillSwitch>();
     QObject::connect(p->m_wifiKillSwitch.get(), SIGNAL(stateChanged()), p.get(), SLOT(updateHasWifi()));
 
-    QObject::connect(p->nm.get(), &OrgFreedesktopNetworkManagerInterface::DeviceAdded, this, &Manager::device_added);
+    connect(p->nm.get(), &OrgFreedesktopNetworkManagerInterface::DeviceAdded, this, &Manager::device_added);
     QList<QDBusObjectPath> devices(p->nm->GetDevices());
     for(const auto &path : devices) {
         device_added(path);
     }
 
-    p->nm->device_removed->connect([this](const dbus::types::ObjectPath &path){
-#ifdef INDICATOR_NETWORK_TRACE_MESSAGES
-        std::cout << "Device Removed:" << path.as_string() << std::endl;
-#endif
-        auto links = p->m_links.get();
-        for (const auto &dev : links) {
-            if (std::dynamic_pointer_cast<wifi::Link>(dev)->device_path() == path) {
-                links.erase(dev);
-                break;
-            }
-        }
-        p->m_links.set(links);
-
-        p->updateHasWifi();
-    });
-
-    updateNetworkingStatus(p->nm->state->get());
-    p->nm->properties_changed->connect([this](NM::Interface::NetworkManager::Signal::PropertiesChanged::ArgumentType map) {
-        for (auto entry : map) {
-            const std::string &key = entry.first;
-            if (key == "ActiveConnections") {
-
-            } else if (key == "PrimaryConnection") {
-            } else if (key == "State") {
-                updateNetworkingStatus(entry.second.as<std::uint32_t>());
-            }
-        }
-    });
+    connect(p->nm.get(), &OrgFreedesktopNetworkManagerInterface::DeviceRemoved, this, &Manager::device_removed);
+    updateNetworkingStatus(p->nm->state());
+    connect(p->nm.get(), &OrgFreedesktopNetworkManagerInterface::PropertiesChanged, this, &Manager::nm_properties_changed);
 
     QObject::connect(p->m_wifiKillSwitch.get(), SIGNAL(flightModeChanged(bool)), p.get(), SLOT(flightModeChanged(bool)));
     try
@@ -235,10 +209,38 @@ Manager::Manager() : p(new Manager::Private())
 }
 
 void
+Manager::nm_properties_changed(const QVariantMap &properties)
+{
+    auto stateIt = properties.find("State");
+    if (stateIt != properties.cend())
+    {
+        updateNetworkingStatus(stateIt->toUInt());
+    }
+}
+
+void
+Manager::device_removed(const QDBusObjectPath &path)
+{
+#ifdef INDICATOR_NETWORK_TRACE_MESSAGES
+        qDebug() << "Device Removed:" << path.path();
+#endif
+    auto links = p->m_links.get();
+    for (const auto &dev : links) {
+        if (std::dynamic_pointer_cast<wifi::Link>(dev)->device_path() == path) {
+            links.erase(dev);
+            break;
+        }
+    }
+    p->m_links.set(links);
+
+    p->updateHasWifi();
+}
+
+void
 Manager::device_added(const QDBusObjectPath &path)
 {
 #ifdef INDICATOR_NETWORK_TRACE_MESSAGES
-    std::cout << "Device Added:" << path.as_string() << std::endl;
+    qDebug() << "Device Added:" << path.path();
 #endif
     auto links = p->m_links.get();
 
@@ -251,17 +253,17 @@ Manager::device_added(const QDBusObjectPath &path)
 
     connectivity::networking::Link::Ptr link;
     try {
-        NM::Interface::Device dev(p->nm->service,
-                                  p->nm->service->object_for_path(path));
-        if (dev.type() == NM::Interface::Device::Type::wifi) {
+        auto dev = std::make_shared<OrgFreedesktopNetworkManagerDeviceInterface>(
+            NM_DBUS_SERVICE, path.path(), p->nm->connection());
+        if (dev->deviceType() == NM_DEVICE_TYPE_WIFI) {
             link = std::make_shared<wifi::Link>(dev,
-                                                *p->nm.get(),
+                                                p->nm,
                                                 p->m_wifiKillSwitch);
         }
     } catch (const std::exception &e) {
-        std::cerr << __PRETTY_FUNCTION__ << ": failed to create Device proxy for "<< path.as_string() << ": " << std::endl
-                  << "\t" << e.what() << std::endl
-                  << "\tIgnoring." << std::endl;
+        qDebug() << __PRETTY_FUNCTION__ << ": failed to create Device proxy for "<< path.path() << ": ";
+        qDebug() << "\t" << e.what();
+        qDebug() << "\tIgnoring.";
         return;
     }
 
@@ -351,7 +353,7 @@ Manager::enableWifi()
             // try to unblock. throws if fails.
             p->m_wifiKillSwitch->unblock();
         }
-        p->nm->wireless_enabled->set(true);
+        p->nm->setWimaxEnabled(true);
     } catch(std::runtime_error &e) {
         std::cerr << __PRETTY_FUNCTION__ << ": " << e.what() << std::endl;
         return false;
@@ -370,7 +372,7 @@ Manager::disableWifi()
             // block the device. that will disable it also
             p->m_wifiKillSwitch->block();
         }
-        p->nm->wireless_enabled->set(false);
+        p->nm->setWirelessEnabled(false);
     } catch(std::runtime_error &e) {
         std::cerr << __PRETTY_FUNCTION__ << ": " << e.what() << std::endl;
         return false;

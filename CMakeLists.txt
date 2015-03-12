@@ -18,7 +18,10 @@ if(${trace_messages})
   add_definitions(-DINDICATOR_NETWORK_TRACE_MESSAGES)
 endif()
 
-add_definitions(-DQT_NO_SIGNALS_SLOTS_KEYWORDS=1)
+add_definitions(
+  -DQT_NO_SIGNALS_SLOTS_KEYWORDS=1
+  -DQT_NO_EMIT=1
+)
 
 find_package(PkgConfig REQUIRED)
 include(EnableCoverageReport)

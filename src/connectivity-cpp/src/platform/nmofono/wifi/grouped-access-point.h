@@ -22,17 +22,10 @@
 
 #include <connectivity/networking/wifi/access-point.h>
 
-#include <services/nm.h>
-
 #include <chrono>
 
-namespace core {
-namespace dbus {
-namespace types {
-class ObjectPath;
-}
-}
-}
+#include <QDBusObjectPath>
+#include <QString>
 
 namespace platform {
 namespace nmofono {
@@ -56,20 +49,20 @@ public:
     // lastConnected->time_since_epoch().count() is 0
     const core::Property<std::chrono::system_clock::time_point>& lastConnected() const;
 
-    const std::string& ssid() const override;
-    const std::vector<std::int8_t>& raw_ssid() const;
+    const QString& ssid() const override;
+    const QByteArray& raw_ssid() const;
 
     bool secured() const override;
 
     bool adhoc() const override;
 
-    const core::dbus::types::ObjectPath object_path() const;
+    QDBusObjectPath object_path() const;
 
     void add_ap(std::shared_ptr<platform::nmofono::wifi::AccessPoint> &ap);
     void remove_ap(std::shared_ptr<platform::nmofono::wifi::AccessPoint> &ap);
     int num_aps() const;
 
-    bool has_object(const core::dbus::types::ObjectPath &path) const;
+    bool has_object(const QDBusObjectPath &path) const;
 
 private:
     struct Private;

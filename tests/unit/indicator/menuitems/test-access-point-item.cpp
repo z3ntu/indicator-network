@@ -44,7 +44,7 @@ public:
         return m_strength;
     }
 
-    MOCK_CONST_METHOD0(ssid, std::string&());
+    MOCK_CONST_METHOD0(ssid, const QString&());
 
     MOCK_CONST_METHOD0(secured, bool());
 
@@ -63,7 +63,7 @@ TEST_F(TestAccessPointItem, ExportBasicActionsAndMenu)
 {
     shared_ptr<MockAccessPoint> accessPoint = make_shared<
             NiceMock<MockAccessPoint>>();
-    static std::string ssidtext("the ssid");
+    static QString ssidtext("the ssid");
     ON_CALL(*accessPoint, ssid()).WillByDefault(ReturnRef(ssidtext));
     ON_CALL(*accessPoint, secured()).WillByDefault(Return(true));
     ON_CALL(*accessPoint, adhoc()).WillByDefault(Return(false));

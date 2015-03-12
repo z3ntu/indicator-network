@@ -18,26 +18,34 @@
  */
 
 #include "access-point.h"
-#include <glib.h>
+
+#include <QTextCodec>
+#include <NetworkManager.h>
 
 namespace platform {
 namespace nmofono {
 namespace wifi {
 
 
-AccessPoint::AccessPoint(const org::freedesktop::NetworkManager::Interface::AccessPoint &ap)
+AccessPoint::AccessPoint(std::shared_ptr<OrgFreedesktopNetworkManagerAccessPointInterface> ap)
         : m_ap(ap)
 {
-    m_secured = m_ap.flags->get() == NM_802_11_AP_FLAGS_PRIVACY;
-    /// @todo check for the other modes also..
-    m_adhoc = m_ap.mode->get() != NM_802_11_MODE_INFRA;
+    uint flags = m_ap->flags();
+    uint mode = m_ap->mode();
 
-    std::string ssid;
+    m_secured = (flags == NM_802_11_AP_FLAGS_PRIVACY);
+    /// @todo check for the other modes also..
+    m_adhoc = (mode != NM_802_11_MODE_INFRA);
+
+    QString ssid;
     // Note: raw_ssid is _not_ guaranteed to be null terminated.
-    m_raw_ssid = m_ap.ssid->get();
-    if(g_utf8_validate((const char*)(&m_raw_ssid[0]), m_raw_ssid.size(), nullptr)) {
-        ssid = std::string(m_raw_ssid.begin(), m_raw_ssid.end());
-    } else {
+    m_raw_ssid = m_ap->ssid();
+
+    QTextCodec::ConverterState state;
+    QTextCodec *codec = QTextCodec::codecForName("UTF-8");
+    const QString text = codec->toUnicode(m_raw_ssid.constData(), m_raw_ssid.size(), &state);
+    if (state.invalidChars > 0)
+    {
         for (auto c : m_raw_ssid) {
             if (isprint(c)) {
                 ssid += (char)c;
@@ -48,29 +56,38 @@ AccessPoint::AccessPoint(const org::freedesktop::NetworkManager::Interface::Acce
             }
         }
     }
+    else
+    {
+        ssid = QString::fromUtf8(m_raw_ssid);
+    }
+
     m_ssid = ssid;
 
-    m_strength.set(m_ap.strength->get());
-    m_ap.properties_changed->connect([this](org::freedesktop::NetworkManager::Interface::AccessPoint::Signal::PropertiesChanged::ArgumentType map){
-        for (const auto &entry : map) {
-            if (entry.first == "Strength") {
-                m_strength.set(entry.second.as<std::int8_t>());
-            }
-        }
-    });
+    m_strength.set(m_ap->strength());
 
-    m_flags = m_ap.flags->get();
+    connect(m_ap.get(), &OrgFreedesktopNetworkManagerAccessPointInterface::PropertiesChanged, this, &AccessPoint::ap_properties_changed);
+
+    m_flags = flags;
     /* NetworkManager seems to set the wpa and rns flags
      * for AccessPoints on the same network in a total random manner.
      * Sometimes only wpa_flags or rns_flags is set and sometimes
      * they both are set but always to the same value
      */
-    m_secflags = m_ap.wpa_flags->get()|m_ap.rsn_flags->get();
-    m_mode = m_ap.mode->get();
+    m_secflags = m_ap->wpaFlags() | m_ap->rsnFlags();
+    m_mode = mode;
 }
 
-const core::dbus::types::ObjectPath AccessPoint::object_path() const {
-    return m_ap.object->path();
+void AccessPoint::ap_properties_changed(const QVariantMap &properties)
+{
+    auto strengthIt = properties.find("Strength");
+    if (strengthIt != properties.cend())
+    {
+        m_strength.set(qvariant_cast<uchar>(*strengthIt));
+    }
+}
+
+QDBusObjectPath AccessPoint::object_path() const {
+    return QDBusObjectPath(m_ap->path());
 }
 
 const core::Property<double>& AccessPoint::strength() const
@@ -83,12 +100,12 @@ const core::Property<std::chrono::system_clock::time_point>& AccessPoint::lastCo
     return m_lastConnected;
 }
 
-const std::string& AccessPoint::ssid() const
+const QString& AccessPoint::ssid() const
 {
     return m_ssid;
 }
 
-const std::vector<std::int8_t>& AccessPoint::raw_ssid() const
+const QByteArray& AccessPoint::raw_ssid() const
 {
     return m_raw_ssid;
 }

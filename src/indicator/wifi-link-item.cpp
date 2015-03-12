@@ -177,7 +177,7 @@ public:
         for (auto ap : added) {
 
             /// @todo handle hidden APs all the way
-            if (ap->ssid().empty())
+            if (ap->ssid().isEmpty())
                 continue;
 
             bool isActive = (ap == m_activeAccessPoint);

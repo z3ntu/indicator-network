@@ -19,6 +19,7 @@
 #ifndef DBUSTYPES_H_
 #define DBUSTYPES_H_
 
+#include <QDBusMetaType>
 #include <QtCore>
 #include <QString>
 #include <QVariantMap>

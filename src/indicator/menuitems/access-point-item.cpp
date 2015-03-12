@@ -60,7 +60,7 @@ public:
         std::string actionId = "accesspoint." + std::to_string(id);
         std::string strengthActionId = actionId + "::strength";
 
-        m_item = std::make_shared<MenuItem>(m_accessPoint->ssid(),
+        m_item = std::make_shared<MenuItem>(m_accessPoint->ssid().toStdString(),
                                             "indicator." + actionId);
 
 

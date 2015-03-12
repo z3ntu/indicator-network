@@ -22,6 +22,9 @@
 #include <connectivity/networking/manager.h>
 #include <core/dbus/types/object_path.h>
 
+#include <QDBusObjectPath>
+#include <QVariantMap>
+
 namespace core {
 namespace dbus {
     class Bus;
@@ -37,11 +40,12 @@ namespace nmofono {
 
 class platform::nmofono::Manager : public connectivity::networking::Manager
 {
+Q_OBJECT
     class Private;
     struct State;
-    std::unique_ptr<Private> p;
+    std::shared_ptr<Private> p;
 
-    void updateNetworkingStatus(std::uint32_t);
+    void updateNetworkingStatus(uint state);
 
 public:
 
@@ -63,8 +67,10 @@ public:
     const core::Property<connectivity::networking::Manager::NetworkingStatus> & status() const override;
     const core::Property<std::uint32_t>& characteristics() const override;
 
-private:
+private Q_SLOTS:
     void device_added(const QDBusObjectPath &path);
+    void device_removed(const QDBusObjectPath &path);
+    void nm_properties_changed(const QVariantMap &properties);
 };
 
 #endif

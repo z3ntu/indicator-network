@@ -69,18 +69,20 @@ protected:
 
     void SetUp() override
     {
-//        dbusTestRunner.registerService(
-//                DBusServicePtr(
-//                        new QProcessDBusService(
-//                                "", QDBusConnection::SessionBus,
-//                                "/usr/bin/bustle-pcap",
-//                                QStringList{"-e", "/tmp/bustle-session.log"})));
-//        dbusTestRunner.registerService(
-//                DBusServicePtr(
-//                        new QProcessDBusService(
-//                                "", QDBusConnection::SystemBus,
-//                                "/usr/bin/bustle-pcap",
-//                                QStringList{"-y", "/tmp/bustle-system.log"})));
+#ifdef BUSTLE_DEBUG
+        dbusTestRunner.registerService(
+                DBusServicePtr(
+                        new QProcessDBusService(
+                                "", QDBusConnection::SessionBus,
+                                "/usr/bin/bustle-pcap",
+                                QStringList{"-e", "/tmp/bustle-session.log"})));
+        dbusTestRunner.registerService(
+                DBusServicePtr(
+                        new QProcessDBusService(
+                                "", QDBusConnection::SystemBus,
+                                "/usr/bin/bustle-pcap",
+                                QStringList{"-y", "/tmp/bustle-system.log"})));
+#endif
 
         dbusMock.registerNetworkManager();
         dbusMock.registerNotificationDaemon();
@@ -89,6 +91,12 @@ protected:
         dbusMock.registerURfkill();
 
         dbusTestRunner.startServices();
+
+        // Identify the test when looking at Bustle logs
+        QDBusConnection systemConnection = dbusTestRunner.systemConnection();
+        systemConnection.registerService("org.TestIndicatorNetworkService");
+        QDBusConnection sessionConnection = dbusTestRunner.sessionConnection();
+        sessionConnection.registerService("org.TestIndicatorNetworkService");
     }
 
     static mh::MenuMatcher::Parameters phoneParameters()

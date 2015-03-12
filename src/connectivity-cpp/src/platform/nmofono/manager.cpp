@@ -122,7 +122,7 @@ Manager::Manager(const QDBusConnection& systemConnection) : p(new Manager::Priva
     /// @todo those Id() thingies
 
     p->m_wifiKillSwitch = std::make_shared<KillSwitch>(systemConnection);
-    QObject::connect(p->m_wifiKillSwitch.get(), SIGNAL(stateChanged()), p.get(), SLOT(updateHasWifi()));
+    connect(p->m_wifiKillSwitch.get(), SIGNAL(stateChanged()), p.get(), SLOT(updateHasWifi()));
 
     connect(p->nm.get(), &OrgFreedesktopNetworkManagerInterface::DeviceAdded, this, &Manager::device_added);
     QList<QDBusObjectPath> devices(p->nm->GetDevices());
@@ -134,7 +134,7 @@ Manager::Manager(const QDBusConnection& systemConnection) : p(new Manager::Priva
     updateNetworkingStatus(p->nm->state());
     connect(p->nm.get(), &OrgFreedesktopNetworkManagerInterface::PropertiesChanged, this, &Manager::nm_properties_changed);
 
-    QObject::connect(p->m_wifiKillSwitch.get(), SIGNAL(flightModeChanged(bool)), p.get(), SLOT(flightModeChanged(bool)));
+    connect(p->m_wifiKillSwitch.get(), SIGNAL(flightModeChanged(bool)), p.get(), SLOT(flightModeChanged(bool)));
     try
     {
         p->flightModeChanged(p->m_wifiKillSwitch->isFlightMode());

@@ -34,8 +34,10 @@ namespace nmofono {
 }
 }
 
-class platform::nmofono::KillSwitch
+class platform::nmofono::KillSwitch : public QObject
 {
+    Q_OBJECT
+
     class Private;
     std::unique_ptr<Private> d;
 
@@ -70,9 +72,7 @@ public:
         last_ = hard_blocked
     };
 
-    KillSwitch() = delete;
-    KillSwitch(std::shared_ptr<OrgFreedesktopURfkillInterface> urfkill,
-               std::shared_ptr<OrgFreedesktopURfkillKillswitchInterface> killSwitch);
+    KillSwitch();
     ~KillSwitch();
 
     /// @throws exception::Failed if the switch fails to block
@@ -82,7 +82,13 @@ public:
     /// @throws exception::Failed if the switch fails to unblock
     void unblock();
 
+    bool flightMode(bool enable);
+    bool isFlightMode();
+
     const core::Property<State> &state() const;
+
+Q_SIGNALS:
+    void flightModeChanged(bool);
 };
 
 #endif

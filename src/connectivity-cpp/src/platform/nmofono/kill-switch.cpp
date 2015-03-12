@@ -56,10 +56,19 @@ public Q_SLOTS:
 };
 
 
-KillSwitch::KillSwitch(std::shared_ptr<OrgFreedesktopURfkillInterface> urfkill,
-                       std::shared_ptr<OrgFreedesktopURfkillKillswitchInterface> killSwitch)
+KillSwitch::KillSwitch()
 {
-    d.reset(new Private(urfkill, killSwitch));
+    auto urfkill = std::make_shared<OrgFreedesktopURfkillInterface>("org.freedesktop.URfkill",
+                                                                  "/org/freedesktop/URfkill",
+                                                                  QDBusConnection::systemBus());
+
+    auto urfkillKillswitch = std::make_shared<OrgFreedesktopURfkillKillswitchInterface>("org.freedesktop.URfkill",
+                                                                                         "/org/freedesktop/URfkill/WLAN",
+                                                                                         QDBusConnection::systemBus());
+
+    connect(urfkill.get(), SIGNAL(FlightModeChanged(bool)), this, SIGNAL(flightModeChanged(bool)));
+
+    d.reset(new Private(urfkill, urfkillKillswitch));
 }
 
 KillSwitch::~KillSwitch()
@@ -88,6 +97,16 @@ KillSwitch::unblock()
     } catch (std::exception &e) {
         throw KillSwitch::exception::Failed(e.what());
     }
+}
+
+bool KillSwitch::flightMode(bool enable)
+{
+    return d->urfkill->FlightMode(enable);
+}
+
+bool KillSwitch::isFlightMode()
+{
+    return d->urfkill->IsFlightMode();
 }
 
 const core::Property<KillSwitch::State> &

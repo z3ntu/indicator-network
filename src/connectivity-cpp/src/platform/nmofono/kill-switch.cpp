@@ -22,9 +22,25 @@
 
 using namespace platform::nmofono;
 
+static QString const cBusName = "org.freedesktop.URfkill";
+static QString const cURfkillPath = "/org/freedesktop/URfkill";
+static QString const cURfkillKillswitchPath = "/org/freedesktop/URfkill/WLAN";
+
 class KillSwitch::Private
 {
 public:
+    enum class DeviceType
+    {
+        wlan = 1,
+        bluetooth = 2,
+        uwb = 3,
+        wimax = 4,
+        wwan = 5,
+        gps = 6,
+        fm = 7,
+        nfc = 8
+    };
+
     std::shared_ptr<OrgFreedesktopURfkillInterface> urfkill;
     std::shared_ptr<OrgFreedesktopURfkillKillswitchInterface> killSwitch;
 
@@ -37,12 +53,12 @@ public:
 
 KillSwitch::KillSwitch()
 {
-    auto urfkill = std::make_shared<OrgFreedesktopURfkillInterface>("org.freedesktop.URfkill",
-                                                                    "/org/freedesktop/URfkill",
+    auto urfkill = std::make_shared<OrgFreedesktopURfkillInterface>(cBusName,
+                                                                    cURfkillPath,
                                                                     QDBusConnection::systemBus());
 
-    auto killSwitch = std::make_shared<OrgFreedesktopURfkillKillswitchInterface>("org.freedesktop.URfkill",
-                                                                                 "/org/freedesktop/URfkill/WLAN",
+    auto killSwitch = std::make_shared<OrgFreedesktopURfkillKillswitchInterface>(cBusName,
+                                                                                 cURfkillKillswitchPath,
                                                                                  QDBusConnection::systemBus());
 
     connect(urfkill.get(), SIGNAL(FlightModeChanged(bool)), this, SIGNAL(flightModeChanged(bool)));
@@ -61,7 +77,7 @@ KillSwitch::block()
         throw KillSwitch::exception::HardBlocked();
 
     try {
-        if (!d->urfkill->Block(1, true)) ///!
+        if (!d->urfkill->Block(static_cast<uint>(Private::DeviceType::wlan), true))
             throw KillSwitch::exception::Failed("Failed to block killswitch");
     } catch (std::exception &e) {
         throw KillSwitch::exception::Failed(e.what());
@@ -72,7 +88,7 @@ void
 KillSwitch::unblock()
 {
     try {
-        if (!d->urfkill->Block(1, false)) ///!
+        if (!d->urfkill->Block(static_cast<uint>(Private::DeviceType::wlan), false))
             throw KillSwitch::exception::Failed("Failed to unblock killswitch");
     } catch (std::exception &e) {
         throw KillSwitch::exception::Failed(e.what());

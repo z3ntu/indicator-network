@@ -25,7 +25,7 @@
 
 #include <core/property.h>
 
-#include "dbus-cpp/services/ofono.h"
+#include "dbus-cpp/services/ofono.h" ///!
 
 /**
  * all signals and property changes emitted from GMainLoop

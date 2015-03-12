@@ -17,7 +17,7 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#include "access-point.h"
+#include "access-point-impl.h"
 
 #include <QTextCodec>
 #include <NetworkManager.h>
@@ -63,7 +63,7 @@ AccessPoint::AccessPoint(std::shared_ptr<OrgFreedesktopNetworkManagerAccessPoint
 
     m_ssid = ssid;
 
-    m_strength.set(m_ap->strength());
+    m_strength = m_ap->strength();
 
     connect(m_ap.get(), &OrgFreedesktopNetworkManagerAccessPointInterface::PropertiesChanged, this, &AccessPoint::ap_properties_changed);
 
@@ -82,7 +82,8 @@ void AccessPoint::ap_properties_changed(const QVariantMap &properties)
     auto strengthIt = properties.find("Strength");
     if (strengthIt != properties.cend())
     {
-        m_strength.set(qvariant_cast<uchar>(*strengthIt));
+        m_strength = qvariant_cast<uchar>(*strengthIt);
+        Q_EMIT strengthUpdated(m_strength);
     }
 }
 
@@ -90,12 +91,12 @@ QDBusObjectPath AccessPoint::object_path() const {
     return QDBusObjectPath(m_ap->path());
 }
 
-const core::Property<double>& AccessPoint::strength() const
+double AccessPoint::strength() const
 {
     return m_strength;
 }
 
-const core::Property<std::chrono::system_clock::time_point>& AccessPoint::lastConnected() const
+std::chrono::system_clock::time_point AccessPoint::lastConnected() const
 {
     return m_lastConnected;
 }

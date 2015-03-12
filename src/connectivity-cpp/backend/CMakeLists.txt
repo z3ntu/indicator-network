@@ -40,13 +40,13 @@ set_source_files_properties(
 qt5_add_dbus_interface(
     CONNECTIVITY_BACKEND_SRC
     "/usr/share/dbus-1/interfaces/org.freedesktop.URfkill.xml"
-    services/URfkillInterface
+    URfkillInterface
 )
 
 qt5_add_dbus_interface(
     CONNECTIVITY_BACKEND_SRC
     "/usr/share/dbus-1/interfaces/org.freedesktop.URfkill.Device.xml"
-    services/URfkillDeviceInterface
+    URfkillDeviceInterface
 )
 
 qt5_add_dbus_interface(

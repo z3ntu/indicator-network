@@ -38,19 +38,13 @@ namespace
 class MockAccessPoint : public networking::wifi::AccessPoint
 {
 public:
-    const core::Property<double>&
-    strength () const
-    {
-        return m_strength;
-    }
-
     MOCK_CONST_METHOD0(ssid, const QString&());
 
     MOCK_CONST_METHOD0(secured, bool());
 
     MOCK_CONST_METHOD0(adhoc, bool());
 
-    core::Property<double> m_strength;
+    MOCK_CONST_METHOD0(strength, double());
 };
 
 class TestAccessPointItem : public Test
@@ -67,7 +61,7 @@ TEST_F(TestAccessPointItem, ExportBasicActionsAndMenu)
     ON_CALL(*accessPoint, ssid()).WillByDefault(ReturnRef(ssidtext));
     ON_CALL(*accessPoint, secured()).WillByDefault(Return(true));
     ON_CALL(*accessPoint, adhoc()).WillByDefault(Return(false));
-    accessPoint->m_strength = 70.0;
+    ON_CALL(*accessPoint, strength()).WillByDefault(Return(70.0));
 
     auto accessPointItem = make_shared<AccessPointItem>(accessPoint);
 
@@ -86,7 +80,7 @@ TEST_F(TestAccessPointItem, ExportBasicActionsAndMenu)
     ASSERT_FALSE(strengthAction.get() == nullptr);
     EXPECT_EQ(70, strengthAction->state().as<uint8_t>());
 
-    accessPoint->m_strength = 20.0;
+    ON_CALL(*accessPoint, strength()).WillByDefault(Return(20.0));
     EXPECT_EQ(20, strengthAction->state().as<uint8_t>());
 }
 

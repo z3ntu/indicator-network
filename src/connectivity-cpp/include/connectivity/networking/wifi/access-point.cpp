@@ -14,23 +14,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  * Authors:
- *     Jussi Pakkanen <jussi.pakkanen@canonical.com>
+ *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#ifndef CONNECTIVITY_UTIL_H
-#define CONNECTIVITY_UTIL_H
-
-namespace core {
-namespace dbus {
-class Error;
-}
-}
+#include "access-point.h"
 
 namespace connectivity {
+namespace networking {
+namespace wifi {
 
-void throw_dbus_exception(const core::dbus::Error &e);
-
+AccessPoint::AccessPoint()
+{
 }
 
+AccessPoint::~AccessPoint()
+{
+}
 
-#endif
+}
+}
+}

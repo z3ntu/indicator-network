@@ -28,6 +28,7 @@ target_link_libraries(
     menuitems-cpp-unit-tests
     test-utils
     menumodel_cpp
+    connectivity-cpp
     ${QTDBUSMOCK_LDFLAGS}
     ${QTDBUSTEST_LDFLAGS}
     ${QMENUMODEL_LDFLAGS}

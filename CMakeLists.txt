@@ -95,6 +95,7 @@ include_directories(${QMENUMODEL_INCLUDE_DIRS})
 pkg_check_modules(GIO REQUIRED gio-2.0>=${GLIB_REQUIRED_VERSION})
 include_directories(${GIO_INCLUDE_DIRS})
 
+set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 find_package(GObjectIntrospection 0.9.12)

@@ -29,7 +29,6 @@ urfkillswitch.h
 )
 
 qt5_use_modules(i-n-sniffer Core DBus)
-set_target_properties(i-n-sniffer PROPERTIES AUTOMOC TRUE)
 
 install(
   TARGETS i-n-sniffer

@@ -38,16 +38,18 @@ class AccessPoint;
 
 class GroupedAccessPoint : public connectivity::networking::wifi::AccessPoint
 {
+    Q_OBJECT
 
 public:
     GroupedAccessPoint(std::shared_ptr<platform::nmofono::wifi::AccessPoint> &ap);
-    const core::Property<double>& strength() const;
+    double strength() const;
     virtual ~GroupedAccessPoint();
 
     // time when last connected to this access point
     // for APs that have never been connected the
     // lastConnected->time_since_epoch().count() is 0
-    const core::Property<std::chrono::system_clock::time_point>& lastConnected() const;
+    Q_PROPERTY(std::chrono::system_clock::time_point lastConnected READ lastConnected NOTIFY lastConnectedUpdated)
+    std::chrono::system_clock::time_point lastConnected() const;
 
     const QString& ssid() const override;
     const QByteArray& raw_ssid() const;
@@ -63,6 +65,9 @@ public:
     int num_aps() const;
 
     bool has_object(const QDBusObjectPath &path) const;
+
+Q_SIGNALS:
+    void lastConnectedUpdated(std::chrono::system_clock::time_point lastConnected);
 
 private:
     struct Private;

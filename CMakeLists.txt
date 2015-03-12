@@ -19,8 +19,7 @@ if(${trace_messages})
 endif()
 
 add_definitions(
-  -DQT_NO_SIGNALS_SLOTS_KEYWORDS=1
-  -DQT_NO_EMIT=1
+  -DQT_NO_KEYWORDS=1
 )
 
 find_package(PkgConfig REQUIRED)

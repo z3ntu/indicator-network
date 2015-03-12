@@ -20,11 +20,10 @@
 #ifndef CONNECTIVITY_NETWORKING_WIFI_ACCESS_POINT
 #define CONNECTIVITY_NETWORKING_WIFI_ACCESS_POINT
 
-#include <string>
-#include <core/property.h>
-
 #include <QObject>
 #include <QString>
+
+#include <memory>
 
 namespace connectivity {
 namespace networking {
@@ -38,18 +37,25 @@ namespace wifi {
 class CONNECTIVITY_CPP_EXPORT
 AccessPoint: public QObject
 {
+    Q_OBJECT
+
 public:
     typedef std::shared_ptr<AccessPoint> Ptr;
-    virtual ~AccessPoint() = default;
+    AccessPoint();
+    virtual ~AccessPoint();
 
     /* from 0.00 to 100.00,
      *  -1 not available
      */
-    virtual const core::Property<double>& strength() const = 0;
+    Q_PROPERTY(double strength READ strength NOTIFY strengthUpdated)
+    virtual double strength() const = 0;
 
     virtual const QString& ssid()     const = 0;
     virtual bool secured()            const = 0;
     virtual bool adhoc()              const = 0;
+
+Q_SIGNALS:
+    void strengthUpdated(double strength);
 };
 
 }
@@ -57,3 +63,4 @@ public:
 }
 
 #endif
+

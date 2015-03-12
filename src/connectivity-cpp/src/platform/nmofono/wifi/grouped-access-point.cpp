@@ -18,7 +18,7 @@
  */
 
 #include "grouped-access-point.h"
-#include "access-point.h"
+#include "access-point-impl.h"
 #include <vector>
 #include <stdexcept>
 #include <algorithm>
@@ -30,45 +30,44 @@ namespace nmofono {
 namespace wifi {
 
 
-struct GroupedAccessPoint::Private {
-    ~Private();
+class GroupedAccessPoint::Private : public QObject
+{
+    Q_OBJECT
+public:
+    Private(GroupedAccessPoint& parent) :
+            m_parent(parent), m_strength(.0)
+    {
+    }
+
+    ~Private() = default;
+    GroupedAccessPoint& m_parent;
     std::vector<std::shared_ptr<platform::nmofono::wifi::AccessPoint>> aplist;
 
-    std::map<std::shared_ptr<platform::nmofono::wifi::AccessPoint>, core::Connection> conns1;
-    std::map<std::shared_ptr<platform::nmofono::wifi::AccessPoint>, core::Connection> conns2;
-    core::Property<double> strength;
-    core::Property<std::chrono::system_clock::time_point> lastTime;
-    std::mutex m;
+    double m_strength;
+    std::chrono::system_clock::time_point m_lastTime;
 
-    void add_ap(std::shared_ptr<platform::nmofono::wifi::AccessPoint> &ap);
-    void remove_ap(std::shared_ptr<platform::nmofono::wifi::AccessPoint> &ap);
+    void add_ap(std::shared_ptr<platform::nmofono::wifi::AccessPoint> ap);
+    void remove_ap(std::shared_ptr<platform::nmofono::wifi::AccessPoint> ap);
+    bool has_object(const QDBusObjectPath &p) const;
+
+    void setStrength(double s)
+    {
+        m_strength = s;
+        Q_EMIT m_parent.strengthUpdated(m_strength);
+    }
+
+    void setLastTime(std::chrono::system_clock::time_point newTime)
+    {
+        m_lastTime = newTime;
+        Q_EMIT m_parent.lastConnectedUpdated(m_lastTime);
+    }
+
+public Q_SLOTS:
     void update_strength(double);
     void update_lasttime(std::chrono::system_clock::time_point newTime);
-    void disconnect(const std::shared_ptr<platform::nmofono::wifi::AccessPoint> &ap);
-    bool has_object(const QDBusObjectPath &p) const;
 };
 
-GroupedAccessPoint::Private::~Private() {
-    try
-    {
-        for(const auto &i : aplist)
-        {
-            disconnect(i);
-        }
-    } catch(...) {
-        std::cerr << "Problem in destructor " << __PRETTY_FUNCTION__ << std::endl;
-    }
-}
-
-void GroupedAccessPoint::Private::disconnect(const std::shared_ptr<platform::nmofono::wifi::AccessPoint> &ap) {
-    assert(conns1.find(ap) != conns1.end());
-    conns1.find(ap)->second.disconnect();
-    conns1.erase(ap);
-    assert(conns2.find(ap) != conns2.end());
-    conns2.find(ap)->second.disconnect();
-}
-
-void GroupedAccessPoint::Private::add_ap(std::shared_ptr<platform::nmofono::wifi::AccessPoint> &ap)
+void GroupedAccessPoint::Private::add_ap(std::shared_ptr<platform::nmofono::wifi::AccessPoint> ap)
 {
     if(!aplist.empty())
     {
@@ -80,16 +79,16 @@ void GroupedAccessPoint::Private::add_ap(std::shared_ptr<platform::nmofono::wifi
         }
     }
     aplist.push_back(ap);
-    if(ap->strength().get() > strength.get())
+    if (ap->strength() > m_strength)
     {
-        strength.set(ap->strength().get());
+        setStrength(ap->strength());
     }
-    update_lasttime(ap->lastConnected().get());
-    conns1.insert(std::make_pair(ap, ap->strength().changed().connect([this](double newValue) { this->update_strength(newValue); })));
-    conns2.insert(std::make_pair(ap, ap->lastConnected().changed().connect([this](std::chrono::system_clock::time_point newTime) { this->update_lasttime(newTime); })));
+    update_lasttime(ap->lastConnected());
+    connect(ap.get(), &connectivity::networking::wifi::AccessPoint::strengthUpdated, this, &Private::update_strength);
+    connect(ap.get(), &platform::nmofono::wifi::AccessPoint::lastConnectedUpdated, this, &Private::update_lasttime);
 }
 
-void GroupedAccessPoint::Private::remove_ap(std::shared_ptr<platform::nmofono::wifi::AccessPoint> &ap) {
+void GroupedAccessPoint::Private::remove_ap(std::shared_ptr<platform::nmofono::wifi::AccessPoint> ap) {
     std::vector<std::shared_ptr<platform::nmofono::wifi::AccessPoint>> new_aps;
     for(const auto &i: aplist) {
         if(i->object_path() != ap->object_path()) {
@@ -98,13 +97,11 @@ void GroupedAccessPoint::Private::remove_ap(std::shared_ptr<platform::nmofono::w
     }
     assert(!new_aps.empty());
     if(new_aps.size() >= aplist.size()) {
-        std::cerr << "Tried to remove an AP that has not been added." << std::endl;
+        qWarning() << "Tried to remove an AP that has not been added.";
         return;
     }
-    disconnect(ap);
-    conns2.erase(ap);
     aplist.clear();
-    strength.set(0);
+    setStrength(.0);
     // Do not reset lasttime because it does not change.
     for(auto &i : new_aps) {
         add_ap(i);
@@ -114,9 +111,9 @@ void GroupedAccessPoint::Private::remove_ap(std::shared_ptr<platform::nmofono::w
 
 void GroupedAccessPoint::Private::update_lasttime(std::chrono::system_clock::time_point newTime)
 {
-    if(newTime > lastTime.get())
+    if(newTime > m_lastTime)
     {
-        lastTime.set(newTime);
+        setLastTime(newTime);
     }
 }
 
@@ -125,10 +122,10 @@ void GroupedAccessPoint::Private::update_strength(double)
     auto nselem = std::max_element(aplist.begin(), aplist.end(), [](
                   const std::shared_ptr<platform::nmofono::wifi::AccessPoint> &a,
                   std::shared_ptr<platform::nmofono::wifi::AccessPoint> &b) {
-        return a->strength().get() < b->strength().get(); });
-    double newstrength = (*nselem)->strength().get();
-    if(std::abs(newstrength - strength.get()) > 0.01) {
-        strength.set(newstrength);
+        return a->strength() < b->strength(); });
+    double newstrength = (*nselem)->strength();
+    if(std::abs(newstrength - m_strength) > 0.01) {
+        setStrength(newstrength);
     }
 }
 
@@ -142,73 +139,61 @@ bool GroupedAccessPoint::Private::has_object(const QDBusObjectPath &p) const {
 }
 
 GroupedAccessPoint::GroupedAccessPoint(std::shared_ptr<platform::nmofono::wifi::AccessPoint> &ap)
-        : p(new Private())
+        : p(new Private(*this))
 {
     p->add_ap(ap);
 }
 
 GroupedAccessPoint::~GroupedAccessPoint() {
-
 }
 
 QDBusObjectPath GroupedAccessPoint::object_path() const {
-    std::lock_guard<std::mutex> l(p->m);
     return p->aplist.at(0)->object_path();
 }
 
-const core::Property<double>& GroupedAccessPoint::strength() const
+double GroupedAccessPoint::strength() const
 {
-    std::lock_guard<std::mutex> l(p->m);
-    return p->strength;
+    return p->m_strength;
 }
 
-const core::Property<std::chrono::system_clock::time_point>& GroupedAccessPoint::lastConnected() const
+std::chrono::system_clock::time_point GroupedAccessPoint::lastConnected() const
 {
-    std::lock_guard<std::mutex> l(p->m);
-    return p->lastTime;
+    return p->m_lastTime;
 }
 
 const QString& GroupedAccessPoint::ssid() const
 {
-    std::lock_guard<std::mutex> l(p->m);
     return p->aplist.at(0)->ssid();
 }
 
 const QByteArray& GroupedAccessPoint::raw_ssid() const
 {
-    std::lock_guard<std::mutex> l(p->m);
     return p->aplist.at(0)->raw_ssid();
 }
 
 bool GroupedAccessPoint::secured() const
 {
-    std::lock_guard<std::mutex> l(p->m);
     return p->aplist.at(0)->secured();
 }
 
 bool GroupedAccessPoint::adhoc() const
 {
-    std::lock_guard<std::mutex> l(p->m);
     return p->aplist.at(0)->adhoc();
 }
 
 void GroupedAccessPoint::add_ap(std::shared_ptr<platform::nmofono::wifi::AccessPoint> &ap) {
-    std::lock_guard<std::mutex> l(p->m);
     p->add_ap(ap);
 }
 
 void GroupedAccessPoint::remove_ap(std::shared_ptr<platform::nmofono::wifi::AccessPoint> &ap) {
-    std::lock_guard<std::mutex> l(p->m);
     p->remove_ap(ap);
 }
 
 int GroupedAccessPoint::num_aps() const {
-    std::lock_guard<std::mutex> l(p->m);
     return (int)p->aplist.size();
 }
 
 bool GroupedAccessPoint::has_object(const QDBusObjectPath &path) const {
-    std::lock_guard<std::mutex> l(p->m);
     return p->has_object(path);
 }
 
@@ -216,3 +201,5 @@ bool GroupedAccessPoint::has_object(const QDBusObjectPath &path) const {
 }
 }
 }
+
+#include "grouped-access-point.moc"

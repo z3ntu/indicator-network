@@ -28,14 +28,16 @@
 
 namespace networking = connectivity::networking;
 
-class RootState::Private : public std::enable_shared_from_this<Private>
+class RootState::Private : public QObject, public std::enable_shared_from_this<RootState::Private>
 {
+    Q_OBJECT
+
 public:
     std::shared_ptr<networking::Manager> m_manager;
     ModemManager::Ptr m_modemManager;
     core::Property<Variant> m_state;
     networking::wifi::AccessPoint::Ptr m_activeAP;
-    std::shared_ptr<core::ScopedConnection> m_activeAP_conn;
+    std::unique_ptr<QMetaObject::Connection> m_activeAP_conn;
 
     std::string m_label;
 
@@ -55,10 +57,11 @@ public:
 
     void updateModem(Modem::WeakPtr weakModem);
 
-    void updateNetworkingIcon();
-
     Variant createIcon(const std::string name);
     void updateRootState();
+
+public Q_SLOTS:
+    void updateNetworkingIcon();
 };
 
 RootState::Private::Private(std::shared_ptr<networking::Manager> manager, ModemManager::Ptr modemManager)
@@ -235,25 +238,26 @@ RootState::Private::updateNetworkingIcon()
                     if (m_activeAP)
                     {
                         // connect updateNetworkingIcon() to changes in AP strength
-                        auto that = shared_from_this();
-                        m_activeAP_conn = std::make_shared<core::ScopedConnection>(
-                            m_activeAP->strength().changed().connect([that](double)
-                            {
-                                GMainLoopDispatch([that](){
-                                    that->updateNetworkingIcon();
-                                });
-                            })
-                        );
+                            m_activeAP_conn.reset(
+                                    new QMetaObject::Connection(
+                                            QObject::connect(
+                                                    m_activeAP.get(),
+                                                    &networking::wifi::AccessPoint::strengthUpdated,
+                                                    this,
+                                                    &Private::updateNetworkingIcon)));
                     }
                     else
                     {
                         // there is no active AP, so we disconnect from strength updates
-                        m_activeAP_conn = nullptr;
+                        if (m_activeAP_conn)
+                        {
+                            QObject::disconnect(*m_activeAP_conn);
+                        }
                     }
                 }
 
                 if (m_activeAP) {
-                    strength = m_activeAP->strength().get();
+                    strength = m_activeAP->strength();
                     secured  = m_activeAP->secured();
                 }
 
@@ -398,3 +402,5 @@ RootState::state()
 {
     return d->m_state;
 }
+
+#include "root-state.moc"

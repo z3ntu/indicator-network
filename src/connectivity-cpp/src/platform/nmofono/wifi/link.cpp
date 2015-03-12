@@ -18,7 +18,7 @@
  */
 
 #include "link.h"
-#include "access-point.h"
+#include "access-point-impl.h"
 #include "grouped-access-point.h"
 #include<cassert>
 
@@ -58,8 +58,6 @@ struct Link::Private
     QString name;
     std::shared_ptr<OrgFreedesktopNetworkManagerConnectionActiveInterface> activeConnection;
     bool connecting;
-
-    std::mutex updateActiveConnectionMutex;
 };
 
 Link::Private::Private(std::shared_ptr<OrgFreedesktopNetworkManagerDeviceInterface> dev,
@@ -445,8 +443,6 @@ Link::updateDeviceState(uint new_state)
 void
 Link::updateActiveConnection(const QDBusObjectPath &path)
 {
-    std::lock_guard<std::mutex> lock(p->updateActiveConnectionMutex);
-
     // clear the one we have.
     if (path == QDBusObjectPath("/")) {
         p->activeAccessPoint.set(connectivity::networking::wifi::AccessPoint::Ptr());

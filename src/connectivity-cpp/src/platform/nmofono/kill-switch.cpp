@@ -21,8 +21,8 @@
 #include "kill-switch.h"
 #include "backend-utils.h"
 
-#include <services/URfkillInterface.h>
-#include <services/URfkillKillswitchInterface.h>
+#include <URfkillInterface.h>
+#include <URfkillKillswitchInterface.h>
 
 using namespace backend;
 using namespace platform::nmofono;

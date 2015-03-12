@@ -28,8 +28,10 @@ namespace networking = connectivity::networking;
 #include <functional>
 #include <vector>
 
-class AccessPointItem::Private : public std::enable_shared_from_this<Private>
+class AccessPointItem::Private : public QObject, public std::enable_shared_from_this<AccessPointItem::Private>
 {
+    Q_OBJECT
+
 public:
     AccessPointItem *q;
 
@@ -38,12 +40,9 @@ public:
 
     core::Signal<void> m_activated;
 
-    std::vector<core::Connection> m_connections;
-
     Action::Ptr m_actionActivate;
     Action::Ptr m_actionStrength;
     MenuItem::Ptr m_item;
-
 
     Private() = delete;
     explicit Private(AccessPointItem *parent, networking::wifi::AccessPoint::Ptr accessPoint, bool isActive = false)
@@ -72,20 +71,9 @@ public:
 
         m_actionStrength = std::make_shared<Action>(strengthActionId,
                                                     nullptr,
-                                                    TypedVariant<std::uint8_t>(m_accessPoint->strength().get()));
+                                                    TypedVariant<std::uint8_t>(m_accessPoint->strength()));
 
-        auto weak = std::weak_ptr<Private>(shared_from_this());
-        auto con = m_accessPoint->strength().changed().connect([weak](double value)
-        {
-            auto that = weak.lock();
-            if (!that)
-                return;
-            GMainLoopDispatch([that, value]()
-            {
-               that->setStrength(value);
-            });
-        });
-        m_connections.push_back(con);
+        connect(m_accessPoint.get(), &networking::wifi::AccessPoint::strengthUpdated, this, &Private::setStrength);
 
         m_actionActivate = std::make_shared<Action>(actionId,
                                                     nullptr,
@@ -103,10 +91,9 @@ public:
 
     virtual ~Private()
     {
-        for (auto con : m_connections)
-            con.disconnect();
     }
 
+public Q_SLOTS:
     void setStrength(double value)
     {
         /// @todo narrow_cast<>;
@@ -141,3 +128,5 @@ AccessPointItem::activated()
 {
     return d->m_activated;
 }
+
+#include "access-point-item.moc"

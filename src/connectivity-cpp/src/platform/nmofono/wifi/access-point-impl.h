@@ -82,13 +82,14 @@ public:
 
 
     AccessPoint(std::shared_ptr<OrgFreedesktopNetworkManagerAccessPointInterface> ap);
-    const core::Property<double>& strength() const;
+    double strength() const;
     virtual ~AccessPoint() = default;
 
     // time when last connected to this access point
     // for APs that have never been connected the
     // lastConnected->time_since_epoch().count() is 0
-    const core::Property<std::chrono::system_clock::time_point>& lastConnected() const;
+    Q_PROPERTY(std::chrono::system_clock::time_point lastConnected READ lastConnected NOTIFY lastConnectedUpdated)
+    std::chrono::system_clock::time_point lastConnected() const;
 
     const QString& ssid() const override;
     const QByteArray& raw_ssid() const;
@@ -102,12 +103,15 @@ public:
     bool operator==(const platform::nmofono::wifi::AccessPoint &other) const;
     bool operator!=(const platform::nmofono::wifi::AccessPoint &other) const { return !(*this == other); };
 
+Q_SIGNALS:
+    void lastConnectedUpdated(std::chrono::system_clock::time_point lastConnected);
+
 private Q_SLOTS:
     void ap_properties_changed(const QVariantMap &properties);
 
 private:
-    core::Property<double> m_strength;
-    core::Property<std::chrono::system_clock::time_point> m_lastConnected;
+    double m_strength;
+    std::chrono::system_clock::time_point m_lastConnected;
     std::shared_ptr<OrgFreedesktopNetworkManagerAccessPointInterface> m_ap;
     QString m_ssid;
     QByteArray m_raw_ssid;

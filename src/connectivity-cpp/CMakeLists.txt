@@ -7,11 +7,9 @@ include(CTest)
 
 find_package(PkgConfig REQUIRED)
 
-include_directories(backend)
-include_directories(include)
-include_directories(dbus-cpp)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/backend)
-include_directories(${CMAKE_CURRENT_BINARY_DIR}/backend)
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/backend")
+include_directories("${CMAKE_CURRENT_BINARY_DIR}/backend")
 
 pkg_check_modules(
     PROPERTIESCPP REQUIRED
@@ -50,7 +48,6 @@ add_custom_target(QtCreatorHeaderHack SOURCES ${CONNECTIVITY_INTERFACES})
 
 add_subdirectory(backend)
 add_subdirectory(data)
-add_subdirectory(dbus-cpp)
 #add_subdirectory(doc)
 #add_subdirectory(examples)
 add_subdirectory(src)

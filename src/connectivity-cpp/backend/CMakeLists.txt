@@ -15,8 +15,6 @@
 # Authors:
 #     Marcus Tomlinson <marcus.tomlinson@canonical.com>
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-
 set_source_files_properties(
     "${DATA_DIR}/nm-device.xml"
     "${DATA_DIR}/nm-device-wifi.xml"

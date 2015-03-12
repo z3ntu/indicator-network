@@ -17,8 +17,19 @@
 
 set_source_files_properties(
     "/usr/share/dbus-1/interfaces/org.freedesktop.URfkill.xml"
+    "/usr/share/dbus-1/interfaces/org.freedesktop.URfkill.Killswitch.xml"
+    "${DATA_DIR}/nm-device.xml"
+    "${DATA_DIR}/nm-device-wifi.xml"
+    "${DATA_DIR}/nm-access-point.xml"
+    "${DATA_DIR}/nm-manager.xml"
     PROPERTIES
     NO_NAMESPACE YES
+)
+
+set_source_files_properties(
+    "${DATA_DIR}/nm-manager.xml"
+    PROPERTIES
+    INCLUDE "DBusTypes.h"
 )
 
 qt5_add_dbus_interface(
@@ -27,37 +38,10 @@ qt5_add_dbus_interface(
     services/URfkillInterface
 )
 
-set_source_files_properties(
-    "/usr/share/dbus-1/interfaces/org.freedesktop.URfkill.Killswitch.xml"
-    PROPERTIES
-    NO_NAMESPACE YES
-)
-
 qt5_add_dbus_interface(
     CONNECTIVITY_BACKEND_SRC
     "/usr/share/dbus-1/interfaces/org.freedesktop.URfkill.Killswitch.xml"
     services/URfkillKillswitchInterface
-)
-
-set_source_files_properties(
-    "${DATA_DIR}/nm-device.xml"
-    "${DATA_DIR}/nm-device-wifi.xml"
-    "${DATA_DIR}/nm-access-point.xml"
-    PROPERTIES
-    NO_NAMESPACE YES
-)
-
-set_source_files_properties(
-    "${DATA_DIR}/nm-manager.xml"
-    PROPERTIES
-    NO_NAMESPACE YES
-    INCLUDE "DBusTypes.h"
-)
-
-qt5_add_dbus_interface(
-    CONNECTIVITY_BACKEND_SRC
-    "${DATA_DIR}/nm-manager.xml"
-    NetworkManagerInterface
 )
 
 qt5_add_dbus_interface(
@@ -76,6 +60,12 @@ qt5_add_dbus_interface(
     CONNECTIVITY_BACKEND_SRC
     "${DATA_DIR}/nm-access-point.xml"
     NetworkManagerAccessPointInterface
+)
+
+qt5_add_dbus_interface(
+    CONNECTIVITY_BACKEND_SRC
+    "${DATA_DIR}/nm-manager.xml"
+    NetworkManagerInterface
 )
 
 

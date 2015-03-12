@@ -49,7 +49,6 @@ class Manager::Private : public QObject
     Q_OBJECT
 public:
     std::shared_ptr<org::freedesktop::NetworkManager::Interface::NetworkManager> nm;
-    std::shared_ptr<OrgFreedesktopURfkillInterface> urfkill;
 
     core::Property<connectivity::networking::Manager::FlightModeStatus> m_flightMode;
     core::Property<std::set<std::shared_ptr<connectivity::networking::Link>>> m_links;
@@ -171,20 +170,12 @@ Manager::Manager() : p(new Manager::Private())
     auto nm_service = std::make_shared<NM::Service>(p->m_state->m_bus);
     p->nm = nm_service->nm;
 
-    p->urfkill = std::make_shared<OrgFreedesktopURfkillInterface>("org.freedesktop.URfkill",
-                                                                  "/org/freedesktop/URfkill",
-                                                                  QDBusConnection::systemBus());
-
     /// @todo add a watcher for the service
     /// @todo exceptions
     /// @todo offload the initialization to a thread or something
     /// @todo those Id() thingies
 
-    auto urfkillKillswitch = std::make_shared<OrgFreedesktopURfkillKillswitchInterface>("org.freedesktop.URfkill",
-                                                                                         "/org/freedesktop/URfkill/WLAN",
-                                                                                         QDBusConnection::systemBus());
-    p->m_wifiKillSwitch = std::make_shared<KillSwitch>(p->urfkill, urfkillKillswitch);
-
+    p->m_wifiKillSwitch = std::make_shared<KillSwitch>();
     p->m_wifiKillSwitch->state().changed().connect(std::bind(&Private::updateHasWifi, p.get()));
 
     p->nm->device_added->connect(std::bind(&Manager::device_added, this, std::placeholders::_1));
@@ -221,8 +212,8 @@ Manager::Manager() : p(new Manager::Private())
         }
     });
 
-    QObject::connect(p->urfkill.get(), SIGNAL(FlightModeChanged(bool)), p.get(), SLOT(flightModeChanged(bool)));
-    p->flightModeChanged(p->urfkill->IsFlightMode());
+    QObject::connect(p->m_wifiKillSwitch.get(), SIGNAL(flightModeChanged(bool)), p.get(), SLOT(flightModeChanged(bool)));
+    p->flightModeChanged(p->m_wifiKillSwitch->isFlightMode());
 
     /// @todo set by the default connections.
     p->m_characteristics.set(networking::Link::Characteristics::empty);
@@ -276,7 +267,7 @@ Manager::enableFlightMode()
 #ifdef INDICATOR_NETWORK_TRACE_MESSAGES
     std::cout << __PRETTY_FUNCTION__ << std::endl;
 #endif
-    if (!p->urfkill->FlightMode(true))
+    if (!p->m_wifiKillSwitch->flightMode(true))
         throw std::runtime_error("Failed to enable flightmode.");
 }
 
@@ -286,7 +277,7 @@ Manager::disableFlightMode()
 #ifdef INDICATOR_NETWORK_TRACE_MESSAGES
     std::cout << __PRETTY_FUNCTION__ << std::endl;
 #endif
-    if (!p->urfkill->FlightMode(false))
+    if (!p->m_wifiKillSwitch->flightMode(false))
         throw std::runtime_error("Failed to disable flightmode");
 }
 

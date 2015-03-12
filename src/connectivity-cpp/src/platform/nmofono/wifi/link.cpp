@@ -55,7 +55,7 @@ struct Link::Private
     std::map<AccessPoint::Key, std::shared_ptr<GroupedAccessPoint>> grouper;
     bool disabled;
     std::uint32_t lastState;
-    std::string name;
+    QString name;
     std::shared_ptr<OrgFreedesktopNetworkManagerConnectionActiveInterface> activeConnection;
     bool connecting;
 
@@ -81,8 +81,7 @@ Link::Link(std::shared_ptr<OrgFreedesktopNetworkManagerDeviceInterface> dev,
     p->characteristics_.set(Link::Characteristics::empty);
     p->status_.set(Status::disabled);
 
-    //FIXME What does this do?
-//    p->name = p->dev.device_interface->get();
+    p->name = p->dev->interface();
 
     connect(&p->wireless, &OrgFreedesktopNetworkManagerDeviceWirelessInterface::AccessPointAdded, this, &Link::ap_added);
     connect(&p->wireless, &OrgFreedesktopNetworkManagerDeviceWirelessInterface::AccessPointRemoved, this, &Link::ap_removed);
@@ -285,7 +284,7 @@ Link::id() const
 std::string
 Link::name() const
 {
-    return p->name;
+    return p->name.toStdString();
 }
 
 const Property<std::set<std::shared_ptr<networking::wifi::AccessPoint> > >&

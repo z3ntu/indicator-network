@@ -21,7 +21,7 @@
 #define CONNECTIVITY_SERVICE_H
 
 #include <connectivity/networking/manager.h>
-#include<core/signal.h>
+#include <core/signal.h>
 
 class ConnectivityService
 {

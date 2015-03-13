@@ -20,7 +20,7 @@
 #include "link.h"
 #include "access-point-impl.h"
 #include "grouped-access-point.h"
-#include<cassert>
+#include <cassert>
 
 #include <NetworkManagerActiveConnectionInterface.h>
 #include <NetworkManagerDeviceWirelessInterface.h>

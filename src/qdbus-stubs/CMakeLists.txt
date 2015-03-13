@@ -20,11 +20,6 @@ set_source_files_properties(
     "${DATA_DIR}/nm-device-wifi.xml"
     "${DATA_DIR}/nm-access-point.xml"
     "${DATA_DIR}/nm-active-connection.xml"
-    "${DATA_DIR}/ofono-connection-manager.xml"
-    "${DATA_DIR}/ofono-manager.xml"
-    "${DATA_DIR}/ofono-modem.xml"
-    "${DATA_DIR}/ofono-network-registration.xml"
-    "${DATA_DIR}/ofono-sim-manager.xml"
     "/usr/share/dbus-1/interfaces/org.freedesktop.URfkill.xml"
     "/usr/share/dbus-1/interfaces/org.freedesktop.URfkill.Device.xml"
     "/usr/share/dbus-1/interfaces/org.freedesktop.URfkill.Killswitch.xml"
@@ -92,36 +87,6 @@ qt5_add_dbus_interface(
     CONNECTIVITY_BACKEND_SRC
     "${DATA_DIR}/nm-settings-connection.xml"
     NetworkManagerSettingsConnectionInterface
-)
-
-qt5_add_dbus_interface(
-    CONNECTIVITY_BACKEND_SRC
-    "${DATA_DIR}/ofono-connection-manager.xml"
-    OfonoConnectionManager
-)
-
-qt5_add_dbus_interface(
-    CONNECTIVITY_BACKEND_SRC
-    "${DATA_DIR}/ofono-manager.xml"
-    OfonoManager
-)
-
-qt5_add_dbus_interface(
-    CONNECTIVITY_BACKEND_SRC
-    "${DATA_DIR}/ofono-modem.xml"
-    OfonoModem
-)
-
-qt5_add_dbus_interface(
-    CONNECTIVITY_BACKEND_SRC
-    "${DATA_DIR}/ofono-network-registration.xml"
-    OfonoNetworkRegistration
-)
-
-qt5_add_dbus_interface(
-    CONNECTIVITY_BACKEND_SRC
-    "${DATA_DIR}/ofono-sim-manager.xml"
-    OfonoSimManager
 )
 
 add_library(

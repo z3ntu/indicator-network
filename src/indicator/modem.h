@@ -20,12 +20,15 @@
 #ifndef MODEM_H
 #define MODEM_H
 
-#include <string>
+#include <map>
 #include <memory>
+#include <string>
+
+#include <QString>
 
 #include <core/property.h>
 
-#include "dbus-cpp/services/ofono.h" ///!
+class QOfonoModem;
 
 /**
  * all signals and property changes emitted from GMainLoop
@@ -53,6 +56,26 @@ public:
         not_available
     };
 
+    enum class Status
+    {
+        unregistered,
+        registered,
+        searching,
+        denied,
+        unknown,
+        roaming
+    };
+
+    enum class Technology
+    {
+        notAvailable,
+        gsm,
+        edge,
+        umts,
+        hspa,
+        lte
+    };
+
     typedef std::shared_ptr<Modem> Ptr;
     typedef std::weak_ptr<Modem> WeakPtr;
 
@@ -71,21 +94,21 @@ public:
     };
 
     Modem() = delete;
-    explicit Modem(org::ofono::Interface::Modem::Ptr ofonoModem);
+    explicit Modem(std::shared_ptr<QOfonoModem> ofonoModem);
     virtual ~Modem();
 
-    org::ofono::Interface::Modem::Ptr ofonoModem() const;
+//    org::ofono::Interface::Modem::Ptr ofonoModem() const;
 
-    bool enterPin(PinType type,
-                  const std::string &pin);
+    void enterPin(PinType type,
+                  const QString &pin);
 
-    bool resetPin(PinType type,
-                  const std::string &puk,
-                  const std::string &pin);
+    void resetPin(PinType type,
+                  const QString &puk,
+                  const QString &pin);
 
-    bool changePin(PinType type,
-                   const std::string &oldPin,
-                   const std::string &newPin);
+    void changePin(PinType type,
+                   const QString &oldPin,
+                   const QString &newPin);
 
     const core::Property<bool> &online();
 
@@ -93,54 +116,21 @@ public:
     const core::Property<PinType> &requiredPin();
     const core::Property<std::map<PinType, std::uint8_t>> &retries();
 
-    const core::Property<std::string> &operatorName();
-    const core::Property<org::ofono::Interface::NetworkRegistration::Status> &status();
+    const core::Property<QString> &operatorName();
+    const core::Property<Status> &status();
     const core::Property<std::int8_t> &strength();
-    const core::Property<org::ofono::Interface::NetworkRegistration::Technology> &technology();
+    const core::Property<Technology> &technology();
 
     const core::Property<bool> &dataEnabled();
 
-    const core::Property<std::string> &simIdentifier();
+    const core::Property<QString> &simIdentifier();
     int index();
 
-    const std::string &name() const;
+    QString name() const;
 
-    static const std::string strengthIcon(int8_t strength)
-    {
-        /* Using same values as used by Android, not linear (LP: #1329945)*/
-        if (strength >= 39)
-            return "gsm-3g-full";
-        else if (strength >= 26)
-            return "gsm-3g-high";
-        else if (strength >= 16)
-            return "gsm-3g-medium";
-        else if (strength >= 6)
-            return "gsm-3g-low";
-        else
-            return "gsm-3g-none";
-    }
+    static std::string strengthIcon(int8_t strength);
 
-    static const std::string technologyIcon(org::ofono::Interface::NetworkRegistration::Technology tech)
-    {
-        switch (tech){
-        case org::ofono::Interface::NetworkRegistration::Technology::notAvailable:
-        case org::ofono::Interface::NetworkRegistration::Technology::gsm:
-            return "network-cellular-pre-edge";
-        case org::ofono::Interface::NetworkRegistration::Technology::edge:
-            return "network-cellular-edge";
-        case org::ofono::Interface::NetworkRegistration::Technology::umts:
-            return "network-cellular-3g";
-        case org::ofono::Interface::NetworkRegistration::Technology::hspa:
-            return "network-cellular-hspa";
-        /// @todo oFono can't tell us about hspa+ yet
-        //case org::ofono::Interface::NetworkRegistration::Technology::hspaplus:
-        //    break;
-        case org::ofono::Interface::NetworkRegistration::Technology::lte:
-            return "network-cellular-lte";
-        }
-        // shouldn't be reached
-        return "";
-    }
+    static std::string technologyIcon(Technology tech);
 };
 
 #endif

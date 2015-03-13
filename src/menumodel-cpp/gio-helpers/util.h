@@ -141,6 +141,7 @@ class SessionBus
 
 public:
     typedef std::shared_ptr<SessionBus> Ptr;
+    typedef std::unique_ptr<SessionBus> UPtr;
 
     SessionBus()
     {
@@ -222,6 +223,8 @@ class BusName
     }
 
 public:
+    typedef std::unique_ptr<BusName> UPtr;
+
     BusName(std::string name,
             std::function<void(std::string)> acquired,
             std::function<void(std::string)> lost,

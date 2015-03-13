@@ -43,6 +43,8 @@ set(NETWORK_SERVICE_SOURCES
     nmofono/wifi/grouped-access-point-impl.cpp
     nmofono/wifi/wifi-link-impl.cpp
 
+    factory.cpp
+    indicator-network-service.cpp
     modem.cpp
     modem-manager.cpp
     sim-unlock-dialog.cpp

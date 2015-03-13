@@ -17,9 +17,8 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#include "service.h"
+#include <factory.h>
 #include <DBusTypes.h>
-#include "connectivity-service/connectivity-service.h"
 
 #include <iostream>
 #include <memory>
@@ -34,9 +33,12 @@
 
 #include <config.h>
 
+using namespace std;
+
 struct sigaction act;
 static void
 signal_handler(int signo) {
+    // FIXME You can't just call normal methods in a signal handler
     std::cerr << "*** Received " << strsignal(signo) << ". ***"<< std::endl;
 
     switch(signo) {
@@ -71,10 +73,9 @@ main(int argc, char **argv)
 
     notify_init(GETTEXT_PACKAGE);
 
-    std::shared_ptr<networking::Manager> manager = networking::Manager::createInstance();
-
-    std::shared_ptr<Service> menu {new Service(manager)};
-    std::unique_ptr<ConnectivityService> connectivityService {new ConnectivityService(manager)};
+    Factory factory;
+    shared_ptr<MenuBuilder> menu = factory.newMenuBuilder();
+    unique_ptr<ConnectivityService> connectivityService = factory.newConnectivityService();
 
     // unlockAllModems is dispatched from GMainLoop
     connectivityService->unlockAllModems().connect([menu](){ menu->unlockAllModems(); });

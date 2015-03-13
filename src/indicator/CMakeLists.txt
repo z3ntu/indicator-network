@@ -17,6 +17,12 @@ pkg_check_modules(
 )
 include_directories(${NETWORKMANAGER_INCLUDE_DIRS})
 
+pkg_check_modules(
+    QOFONO REQUIRED
+    qofono-qt5
+)
+include_directories(${QOFONO_INCLUDE_DIRS})
+
 include_directories("${CMAKE_SOURCE_DIR}/src")
 include_directories("${CMAKE_BINARY_DIR}/src/qdbus-stubs")
 include_directories("${CMAKE_SOURCE_DIR}/src/qdbus-stubs")
@@ -77,7 +83,7 @@ target_link_libraries(
     ${GLIB_LIBRARIES}
     ${GIO_LIBRARIES}
     ${NOTIFY_LIBRARIES}
-    ${OFONO_LIBRARIES}
+    ${QOFONO_LIBRARIES}
 )
 
 ###########################

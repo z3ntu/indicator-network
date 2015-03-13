@@ -1628,19 +1628,19 @@ TEST_F(TestIndicatorNetworkService, WifiStates_SSIDs)
 
     // prepend a non-utf8 character to the end of AP 1's SSID
     auto ap1 = createAccessPoint("1", "NSD", device, 20, Secure::secure, ApMode::infra);
-    setNmProperty(ap1, NM_DBUS_INTERFACE_ACCESS_POINT, "Ssid", QByteArray(1, 0) + QByteArray("NSD"));
+    setNmProperty(ap1, NM_DBUS_INTERFACE_ACCESS_POINT, "Ssid", QByteArray(1, -1) + QByteArray("NSD"));
 
     // append a non-utf8 character to the end of AP 2's SSID
     auto ap2 = createAccessPoint("2", "DGN", device, 20, Secure::secure, ApMode::infra);
-    setNmProperty(ap2, NM_DBUS_INTERFACE_ACCESS_POINT, "Ssid", QByteArray("DGN") + QByteArray(1, 0));
+    setNmProperty(ap2, NM_DBUS_INTERFACE_ACCESS_POINT, "Ssid", QByteArray("DGN") + QByteArray(1, -1));
 
     // insert a non-utf8 character into AP 3's SSID
     auto ap3 = createAccessPoint("3", "JDY", device, 20, Secure::secure, ApMode::infra);
-    setNmProperty(ap3, NM_DBUS_INTERFACE_ACCESS_POINT, "Ssid", QByteArray("JD") + QByteArray(1, 0) + QByteArray("Y"));
+    setNmProperty(ap3, NM_DBUS_INTERFACE_ACCESS_POINT, "Ssid", QByteArray("JD") + QByteArray(1, -1) + QByteArray("Y"));
 
     // use only non-utf8 characters for AP 4's SSID
     auto ap4 = createAccessPoint("4", "---", device, 20, Secure::secure, ApMode::infra);
-    setNmProperty(ap4, NM_DBUS_INTERFACE_ACCESS_POINT, "Ssid", QByteArray(4, 0));
+    setNmProperty(ap4, NM_DBUS_INTERFACE_ACCESS_POINT, "Ssid", QByteArray(4, -1));
 
     // leave AP 5's SSID blank
     auto ap5 = createAccessPoint("5", "", device, 20, Secure::secure, ApMode::infra);

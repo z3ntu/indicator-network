@@ -33,7 +33,8 @@ add_executable(
 
 include_directories(
     ${CMAKE_SOURCE_DIR}/src/connectivity-cpp/include
-    ${CMAKE_SOURCE_DIR}/src/connectivity-cpp/dbus-cpp
+    ${CMAKE_SOURCE_DIR}/src/connectivity-cpp/backend
+    ${CMAKE_BINARY_DIR}/src/connectivity-cpp/backend
 )
 target_link_libraries(
     indicator-network-service

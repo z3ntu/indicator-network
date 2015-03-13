@@ -20,7 +20,7 @@
 #ifndef PLATFORM_NMOFONO_WIFI_ACCESS_POINT
 #define PLATFORM_NMOFONO_WIFI_ACCESS_POINT
 
-#include <connectivity/networking/wifi/access-point.h>
+#include <nmofono/wifi/access-point.h>
 
 #include <NetworkManagerAccessPointInterface.h>
 #include <NetworkManagerActiveConnectionInterface.h>

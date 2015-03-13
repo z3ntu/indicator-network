@@ -17,7 +17,7 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#include "access-point-impl.h"
+#include <nmofono/wifi/access-point-impl.h>
 
 #include <QTextCodec>
 #include <NetworkManager.h>

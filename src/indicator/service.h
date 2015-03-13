@@ -20,7 +20,7 @@
 #ifndef SERVICE_H
 #define SERVICE_H
 
-#include <connectivity/networking/manager.h>
+#include <nmofono/manager.h>
 namespace networking = connectivity::networking;
 
 #include <functional>

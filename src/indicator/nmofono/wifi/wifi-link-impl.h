@@ -20,9 +20,8 @@
 #ifndef PLATFORM_TEST_WIFI_LINK
 #define PLATFORM_TEST_WIFI_LINK
 
-#include "../kill-switch.h"
-
-#include <connectivity/networking/wifi/link.h>
+#include <nmofono/kill-switch-impl.h>
+#include <nmofono/wifi/wifi-link.h>
 
 #include <NetworkManagerInterface.h>
 #include <NetworkManagerDeviceInterface.h>

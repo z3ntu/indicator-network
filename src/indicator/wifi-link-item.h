@@ -20,7 +20,7 @@
 #ifndef WIFI_LINK_ITEM_H
 #define WIFI_LINK_ITEM_H
 
-#include <connectivity/networking/wifi/link.h>
+#include <nmofono/wifi/wifi-link.h>
 
 #include "menuitems/item.h"
 

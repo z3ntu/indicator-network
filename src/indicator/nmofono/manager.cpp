@@ -17,20 +17,27 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#include "access-point.h"
+#include <nmofono/manager-impl.h>
 
-namespace connectivity {
-namespace networking {
-namespace wifi {
 
-AccessPoint::AccessPoint()
+using namespace connectivity::networking;
+
+Manager::Manager()
 {
 }
 
-AccessPoint::~AccessPoint()
+std::unique_ptr<Manager>
+Manager::createInstance()
 {
-}
-
-}
-}
+    std::unique_ptr<Manager> mgr;
+    try {
+        mgr.reset(new platform::nmofono::Manager(QDBusConnection::systemBus()));
+    } catch(std::exception &e) {
+        /// @bug dbus-cpp internal logic exploded
+        // If this happens, indicator-network is in an unknown state with no clear way of
+        // recovering. The only reasonable way out is a graceful exit.
+        std::cerr << __PRETTY_FUNCTION__ << " Failed to connect to managerinstance: " << e.what() << std::endl;
+        std::quick_exit(0);
+    }
+    return mgr;
 }

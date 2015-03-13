@@ -20,7 +20,7 @@
 #ifndef CONNECTIVITY_NETWORKING_SERVICE
 #define CONNECTIVITY_NETWORKING_SERVICE
 
-#include <connectivity/networking/link.h>
+#include <nmofono/link.h>
 
 #include <memory>
 

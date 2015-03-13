@@ -18,7 +18,7 @@
  */
 
 #include "service.h"
-#include <connectivity-cpp/backend/DBusTypes.h>
+#include <DBusTypes.h>
 #include "connectivity-service/connectivity-service.h"
 
 #include <iostream>

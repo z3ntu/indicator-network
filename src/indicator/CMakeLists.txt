@@ -1,11 +1,48 @@
 
-include_directories("${CMAKE_SOURCE_DIR}/src/")
+pkg_check_modules(
+    PROPERTIESCPP REQUIRED
+    properties-cpp
+)
+include_directories(${PROPERTIESCPP_INCLUDE_DIRS})
+
+pkg_check_modules(
+    DBUSCPP REQUIRED
+    dbus-cpp
+)
+include_directories(${DBUSCPP_INCLUDE_DIRS})
+
+pkg_check_modules(
+    NETWORKMANAGER REQUIRED
+    NetworkManager
+)
+include_directories(${NETWORKMANAGER_INCLUDE_DIRS})
+
+include_directories("${CMAKE_SOURCE_DIR}/src")
+include_directories("${CMAKE_BINARY_DIR}/src/qdbus-stubs")
+include_directories("${CMAKE_SOURCE_DIR}/src/qdbus-stubs")
+
+# list these here to have them visible in Qt Creator
+file(
+        GLOB_RECURSE NETWORK_SERVICE_HEADERS
+        RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/*.h"
+)
+add_custom_target(QtCreatorHeaderHack SOURCES ${NETWORK_SERVICE_HEADERS})
 
 set(NETWORK_SERVICE_SOURCES
-    indicator-network-service.cpp
+    ${NETWORK_SERVICE_HEADERS}
 
-    service.h
-    indicator-menu.h
+    nmofono/kill-switch-impl.cpp
+    nmofono/manager.cpp
+    nmofono/manager-impl.cpp
+    nmofono/manager-impl.h
+    nmofono/service-impl.cpp
+    nmofono/service-impl.h
+    nmofono/wifi/access-point.cpp
+    nmofono/wifi/access-point-impl.cpp
+    nmofono/wifi/grouped-access-point-impl.cpp
+    nmofono/wifi/wifi-link-impl.cpp
+
     modem.cpp
     modem-manager.cpp
     quick-access-section.cpp
@@ -19,32 +56,40 @@ set(NETWORK_SERVICE_SOURCES
     connectivity-service/connectivity-service.cpp
 
     menuitems/access-point-item.cpp
-    menuitems/item.h
     menuitems/modem-info-item.cpp
-    menuitems/section.h
-    menuitems/switch-item.h
-    menuitems/text-item.h
 )
 
-add_executable(
-  indicator-network-service
+add_library(
+  indicator-network-service-static
+  STATIC
   ${NETWORK_SERVICE_SOURCES}
 )
 
-include_directories(
-    ${CMAKE_SOURCE_DIR}/src/connectivity-cpp/include
-    ${CMAKE_SOURCE_DIR}/src/connectivity-cpp/dbus-cpp
-)
 target_link_libraries(
-    indicator-network-service
+    indicator-network-service-static
     menumodel_cpp
     notify_cpp
     url_dispatcher_cpp
-    connectivity-cpp
+    qdbus-stubs
+    ${DBUSCPP_LIBRARIES}
     ${GLIB_LIBRARIES}
     ${GIO_LIBRARIES}
     ${NOTIFY_LIBRARIES}
     ${OFONO_LIBRARIES}
+)
+
+###########################
+# Executable
+###########################
+
+add_executable(
+  indicator-network-service
+  main.cpp
+)
+
+target_link_libraries(
+    indicator-network-service
+    indicator-network-service-static
 )
 
 

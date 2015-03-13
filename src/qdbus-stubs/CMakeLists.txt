@@ -90,12 +90,12 @@ qt5_add_dbus_interface(
 )
 
 add_library(
-    connectivity-backend
+    qdbus-stubs
     STATIC
     ${CONNECTIVITY_BACKEND_SRC}
 )
 
 qt5_use_modules(
-    connectivity-backend
+    qdbus-stubs
     DBus
 )

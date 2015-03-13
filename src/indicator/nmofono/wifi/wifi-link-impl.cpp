@@ -17,10 +17,10 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#include "link.h"
-#include "access-point-impl.h"
-#include "grouped-access-point.h"
-#include<cassert>
+#include <nmofono/wifi/wifi-link-impl.h>
+#include <nmofono/wifi/access-point-impl.h>
+#include <nmofono/wifi/grouped-access-point-impl.h>
+#include <cassert>
 
 #include <NetworkManagerActiveConnectionInterface.h>
 #include <NetworkManagerDeviceWirelessInterface.h>

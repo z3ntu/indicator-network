@@ -19,8 +19,7 @@
 #ifndef PLATFORM_NMOFONO_MANAGER
 #define PLATFORM_NMOFONO_MANAGER
 
-#include <connectivity/networking/manager.h>
-#include <core/dbus/types/object_path.h>
+#include <nmofono/manager.h>
 
 #include <QDBusConnection>
 #include <QDBusObjectPath>

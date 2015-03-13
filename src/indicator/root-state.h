@@ -20,7 +20,7 @@
 #ifndef ROOT_STATE_MANAGER
 #define ROOT_STATE_MANAGER
 
-#include <connectivity/networking/manager.h>
+#include <nmofono/manager.h>
 #include "modem-manager.h"
 
 #include "menumodel-cpp/gio-helpers/variant.h"

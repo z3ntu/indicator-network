@@ -20,8 +20,8 @@
 #ifndef CONNECTIVITY_SERVICE_H
 #define CONNECTIVITY_SERVICE_H
 
-#include <connectivity/networking/manager.h>
-#include<core/signal.h>
+#include <nmofono/manager.h>
+#include <core/signal.h>
 
 class ConnectivityService
 {

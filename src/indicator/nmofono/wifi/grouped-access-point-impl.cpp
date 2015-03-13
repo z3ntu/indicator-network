@@ -17,8 +17,8 @@
  *     Jussi Pakkanen <jussi.pakkanen@canonical.com>
  */
 
-#include "grouped-access-point.h"
-#include "access-point-impl.h"
+#include <nmofono/wifi/grouped-access-point-impl.h>
+#include <nmofono/wifi/access-point-impl.h>
 #include <vector>
 #include <stdexcept>
 #include <algorithm>
@@ -202,4 +202,4 @@ bool GroupedAccessPoint::has_object(const QDBusObjectPath &path) const {
 }
 }
 
-#include "grouped-access-point.moc"
+#include "grouped-access-point-impl.moc"

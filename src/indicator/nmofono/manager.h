@@ -20,8 +20,8 @@
 #ifndef CONNECTIVITY_NETWORKING_MANAGER
 #define CONNECTIVITY_NETWORKING_MANAGER
 
-#include <connectivity/networking/link.h>
-#include <connectivity/networking/service.h>
+#include <nmofono/link.h>
+#include <nmofono/service.h>
 
 #include <core/property.h>
 #include <core/signal.h>

@@ -20,8 +20,8 @@
 #ifndef CONNECTIVITY_NETWORKING_WIFI_LINK
 #define CONNECTIVITY_NETWORKING_WIFI_LINK
 
-#include <connectivity/networking/link.h>
-#include <connectivity/networking/wifi/access-point.h>
+#include <nmofono/link.h>
+#include <nmofono/wifi/access-point.h>
 
 #include <core/property.h>
 

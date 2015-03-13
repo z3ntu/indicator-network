@@ -17,7 +17,7 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#include "access-point.h"
+#include <nmofono/wifi/access-point.h>
 
 namespace connectivity {
 namespace networking {

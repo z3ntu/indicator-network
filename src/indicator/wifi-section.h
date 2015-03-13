@@ -20,7 +20,7 @@
 #ifndef WIFI_SECTION_H
 #define WIFI_SECTION_H
 
-#include <connectivity/networking/manager.h>
+#include <nmofono/manager.h>
 
 #include "menuitems/section.h"
 

@@ -18,9 +18,8 @@
  *     Marcus Tomlinson <marcus.tomlinson@canonical.com>
  */
 
-#include "manager.h"
-#include "wifi/link.h"
-#include "set_name_for_thread.h"
+#include <nmofono/manager-impl.h>
+#include <nmofono/wifi/wifi-link-impl.h>
 #include <NetworkManagerInterface.h>
 #include <NetworkManagerDeviceInterface.h>
 
@@ -324,4 +323,4 @@ Manager::disableWifi()
     return true;
 }
 
-#include "manager.moc"
+#include "manager-impl.moc"

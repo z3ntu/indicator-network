@@ -17,8 +17,7 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#include "platform/nmofono/manager.h"
-#include <connectivity/networking/manager.h>
+#include <nmofono/manager-impl.h>
 
 
 using namespace connectivity::networking;

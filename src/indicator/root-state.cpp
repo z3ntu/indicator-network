@@ -21,8 +21,8 @@
 
 #include <functional>
 
-#include <connectivity/networking/wifi/link.h>
-#include <connectivity/networking/wifi/access-point.h>
+#include <nmofono/wifi/wifi-link.h>
+#include <nmofono/wifi/access-point.h>
 
 #include <menumodel-cpp/gio-helpers/util.h>
 

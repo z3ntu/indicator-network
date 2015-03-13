@@ -21,7 +21,7 @@
 #define QUICK_ACCESS_SECTION_H
 
 #include "menuitems/section.h"
-#include <connectivity/networking/manager.h>
+#include <nmofono/manager.h>
 
 /**
  * all signals and property changes emitted from GMainLoop

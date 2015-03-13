@@ -20,7 +20,7 @@
 #ifndef ACCESS_POINT_ITEM_H
 #define ACCESS_POINT_ITEM_H
 
-#include <connectivity/networking/wifi/access-point.h>
+#include <nmofono/wifi/access-point.h>
 #include "item.h"
 
 class AccessPointItem : public Item

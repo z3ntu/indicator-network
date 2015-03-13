@@ -42,7 +42,6 @@ set(CONNECTIVITY_INTERFACES
 )
 add_custom_target(QtCreatorHeaderHack SOURCES ${CONNECTIVITY_INTERFACES})
 
-add_subdirectory(backend)
 add_subdirectory(data)
 #add_subdirectory(doc)
 #add_subdirectory(examples)

@@ -17,11 +17,9 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#include "wwan-section.h"
-
-#include "wwan-link-item.h"
-
-#include "menuitems/text-item.h"
+#include <sections/wwan-section.h>
+#include <menuitems/wwan-link-item.h>
+#include <menuitems/text-item.h>
 
 #include "menumodel-cpp/action-group-merger.h"
 #include "menumodel-cpp/menu-merger.h"

@@ -3,10 +3,11 @@ set(CONNECTIVITY_CPP_VERSION_MAJOR 0)
 set(CONNECTIVITY_CPP_VERSION_MINOR 0)
 set(CONNECTIVITY_CPP_VERSION_PATCH 1)
 
-include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
-include_directories("${CMAKE_CURRENT_SOURCE_DIR}/backend")
-include_directories("${CMAKE_CURRENT_BINARY_DIR}/backend")
-
+include_directories(
+    "${CMAKE_CURRENT_SOURCE_DIR}/include"
+    "${CMAKE_CURRENT_SOURCE_DIR}/backend"
+    "${CMAKE_CURRENT_BINARY_DIR}/backend"
+)
 pkg_check_modules(
     PROPERTIESCPP REQUIRED
     properties-cpp

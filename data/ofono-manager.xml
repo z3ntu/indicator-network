@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='utf8'?>
+<node name="/">
+  <interface name="org.ofono.Manager">
+    <method name="GetModems">
+    <annotation name="org.qtproject.QtDBus.QtTypeName.Out0" value="QVector&lt;QPair&lt;QDBusObjectPath, QVariantMap>>"/>
+      <arg direction="out" name="modems" type="a(oa{sv})"/>
+    </method>
+
+    <signal name="ModemAdded">
+      <arg type="o" name="path"/>
+      <annotation name="org.qtproject.QtDBus.QtTypeName.In1" value="QVariantMap"/>
+      <arg type="a{sv}" name="properties"/>
+    </signal>
+
+    <signal name="ModemRemoved">
+      <arg type="o" name="path"/>
+    </signal>
+  </interface>
+</node>

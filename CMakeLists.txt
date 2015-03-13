@@ -107,7 +107,7 @@ set(COMMON_FLAGS "-Wall -Wextra -Wpedantic -fno-permissive -fPIC -fvisibility=hi
 # "nice bug" in cmake... http://www.cmake.org/Bug/view.php?id=15058
 # let's not set C_FLAGS as it will break pthreads detection \o/
 #set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11 ${COMMON_FLAGS}")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 ${COMMON_FLAGS} -fno-strict-aliasing -fvisibility-inlines-hidden")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 ${COMMON_FLAGS} -fno-strict-aliasing -fvisibility-inlines-hidden")
 
 configure_file(
   "config.h.in"

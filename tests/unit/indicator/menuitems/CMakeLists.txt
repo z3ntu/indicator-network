@@ -2,7 +2,6 @@
 set(
     MENUITEMS_CPP_UNIT_TESTS_SRC
     test-access-point-item.cpp
-    ${CMAKE_SOURCE_DIR}/src/indicator/menuitems/access-point-item.cpp
     test-switch-item.cpp
 )
 
@@ -20,8 +19,6 @@ qt5_use_modules(
 
 include_directories(
     ${CMAKE_CURRENT_BINARY_DIR}
-    ${CMAKE_SOURCE_DIR}/src/connectivity-cpp/include
-    ${CMAKE_SOURCE_DIR}/src/connectivity-cpp/dbus-cpp
 )
 
 target_link_libraries(

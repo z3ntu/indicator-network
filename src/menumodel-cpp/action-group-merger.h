@@ -95,6 +95,7 @@ class ActionGroupMerger
 
 public:
     typedef std::shared_ptr<ActionGroupMerger> Ptr;
+    typedef std::unique_ptr<ActionGroupMerger> UPtr;
 
     explicit ActionGroupMerger(const std::string &prefix = "")
         : m_prefix {prefix}

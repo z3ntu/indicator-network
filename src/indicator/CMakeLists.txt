@@ -101,4 +101,3 @@ install(
   TARGETS indicator-network-service
   RUNTIME DESTINATION "${CMAKE_INSTALL_LIBEXECDIR}/indicator-network/"
 )
-

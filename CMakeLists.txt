@@ -102,7 +102,7 @@ find_package(GObjectIntrospection 0.9.12)
 
 include_directories(${CMAKE_BINARY_DIR})
 
-set(COMMON_FLAGS "-Wall -Wextra -Wpedantic -fno-permissive -fPIC -fvisibility=hidden -pthread -DQT_NO_KEYWORDS")
+set(COMMON_FLAGS "-Wall -Wextra -Wpedantic -fno-permissive -fPIC -fvisibility=hidden -pthread")
 
 # "nice bug" in cmake... http://www.cmake.org/Bug/view.php?id=15058
 # let's not set C_FLAGS as it will break pthreads detection \o/

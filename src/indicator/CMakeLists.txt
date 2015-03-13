@@ -45,16 +45,16 @@ set(NETWORK_SERVICE_SOURCES
 
     modem.cpp
     modem-manager.cpp
-    quick-access-section.cpp
     sim-unlock-dialog.cpp
     root-state.cpp
-    wifi-link-item.cpp
-    wifi-section.cpp
-    wwan-link-item.cpp
-    wwan-section.cpp
+    sections/quick-access-section.cpp
+    sections/wifi-section.cpp
+    sections/wwan-section.cpp
 
     connectivity-service/connectivity-service.cpp
 
+    menuitems/wifi-link-item.cpp
+    menuitems/wwan-link-item.cpp
     menuitems/access-point-item.cpp
     menuitems/modem-info-item.cpp
 )

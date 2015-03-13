@@ -36,9 +36,9 @@ namespace networking = connectivity::networking;
 #include "root-state.h"
 #include "modem-manager.h"
 
-#include "quick-access-section.h"
-#include "wifi-section.h"
-#include "wwan-section.h"
+#include <sections/quick-access-section.h>
+#include <sections/wifi-section.h>
+#include <sections/wwan-section.h>
 
 class Service
 {

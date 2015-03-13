@@ -17,14 +17,12 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#include "wifi-section.h"
-
-#include "wifi-link-item.h"
+#include <sections/wifi-section.h>
+#include <menuitems/wifi-link-item.h>
+#include <menuitems/switch-item.h>
+#include <menuitems/text-item.h>
 
 #include "url-dispatcher-cpp/url-dispatcher.h"
-
-#include "menuitems/switch-item.h"
-#include "menuitems/text-item.h"
 
 #include "menumodel-cpp/action-group.h"
 #include "menumodel-cpp/action-group-merger.h"

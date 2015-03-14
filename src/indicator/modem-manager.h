@@ -61,7 +61,7 @@ public:
     QList<Modem::Ptr> modems();
 
 Q_SIGNALS:
-    void modemsUpdated();
+    void modemsUpdated(QList<Modem::Ptr> modems);
 };
 
 #endif

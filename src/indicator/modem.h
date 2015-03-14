@@ -25,15 +25,17 @@
 #include <string>
 
 #include <QString>
-#include <core/property.h>
+#include <QObject>
 
 class QOfonoModem;
 
 /**
  * all signals and property changes emitted from GMainLoop
  */
-class Modem
+class Modem: public QObject
 {
+    Q_OBJECT
+
     class Private;
     std::shared_ptr<Private> d;
 
@@ -93,7 +95,9 @@ public:
     };
 
     Modem() = delete;
+
     explicit Modem(std::shared_ptr<QOfonoModem> ofonoModem);
+
     virtual ~Modem();
 
 //    org::ofono::Interface::Modem::Ptr ofonoModem() const;
@@ -109,27 +113,64 @@ public:
                    const QString &oldPin,
                    const QString &newPin);
 
-    const core::Property<bool> &online();
+    Q_PROPERTY(bool online READ online NOTIFY onlineUpdated)
+    bool online() const;
 
-    const core::Property<SimStatus> &simStatus();
-    const core::Property<PinType> &requiredPin();
-    const core::Property<std::map<PinType, std::uint8_t>> &retries();
+    Q_PROPERTY(Modem::SimStatus simStatus READ simStatus NOTIFY simStatusUpdated)
+    SimStatus simStatus() const;
 
-    const core::Property<QString> &operatorName();
-    const core::Property<Status> &status();
-    const core::Property<std::int8_t> &strength();
-    const core::Property<Technology> &technology();
+    Q_PROPERTY(Modem::PinType requiredPin READ requiredPin NOTIFY requiredPinUpdated)
+    PinType requiredPin() const;
 
-    const core::Property<bool> &dataEnabled();
+//    Q_PROPERTY(bool retries READ retries NOTIFY retriesUpdated)
+    const std::map<PinType, std::uint8_t> &retries() const;
 
-    const core::Property<QString> &simIdentifier();
-    int index();
+    Q_PROPERTY(QString operatorName READ operatorName NOTIFY operatorNameUpdated)
+    const QString &operatorName() const;
+
+    Q_PROPERTY(Modem::Status status READ status NOTIFY statusUpdated)
+    Status status() const;
+
+    Q_PROPERTY(std::int8_t strength READ strength NOTIFY strengthUpdated)
+    std::int8_t strength() const;
+
+    Q_PROPERTY(Modem::Technology technology READ technology NOTIFY technologyUpdated)
+    Technology technology() const;
+
+    Q_PROPERTY(bool dataEnabled READ dataEnabled NOTIFY dataEnabledUpdated)
+    bool dataEnabled() const;
+
+    Q_PROPERTY(QString simIdentifier READ simIdentifier NOTIFY simIdentifierUpdated)
+    const QString &simIdentifier() const;
+
+    int index() const;
 
     QString name() const;
 
     static std::string strengthIcon(int8_t strength);
 
     static std::string technologyIcon(Technology tech);
+
+Q_SIGNALS:
+    void onlineUpdated(bool);
+
+    void simStatusUpdated(SimStatus);
+
+    void requiredPinUpdated(PinType);
+
+    void retriesUpdated();
+
+    void operatorNameUpdated(const QString &);
+
+    void statusUpdated(Status);
+
+    void strengthUpdated(std::int8_t);
+
+    void technologyUpdated(Technology);
+
+    void dataEnabledUpdated(bool);
+
+    void simIdentifierUpdated(const QString &);
 };
 
 #endif

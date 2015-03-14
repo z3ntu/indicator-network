@@ -35,6 +35,7 @@ class ModemManager::Private : public QObject, public std::enable_shared_from_thi
 {
     Q_OBJECT
 public:
+    ModemManager& p;
 
     QMap<QString, Modem::Ptr> m_modems;
 
@@ -44,7 +45,8 @@ public:
 
     QList<Modem::Ptr> m_pendingUnlocks;
 
-    Private()
+    Private(ModemManager& parent) :
+        p(parent)
     {
         m_unlockDialog = make_shared<SimUnlockDialog>();
 //        m_unlockDialog->ready().connect([this](){
@@ -96,12 +98,13 @@ public Q_SLOTS:
             m_modems[path] = modem;
         }
 
-        m_unlockDialog->showSimIdentifiers().set(m_modems.size() > 1);
+        Q_EMIT p.modemsUpdated(p.modems());
+        m_unlockDialog->setShowSimIdentifiers(m_modems.size() > 1);
     }
 };
 
 ModemManager::ModemManager()
-    : d{new Private}
+    : d{new Private(*this)}
 {
 }
 
@@ -141,7 +144,7 @@ ModemManager::unlockAllModems()
     for (auto& m : d->m_modems)
     {
 #ifdef INDICATOR_NETWORK_TRACE_MESSAGES
-        qDebug() << "Unlocking " << m->simIdentifier().get();
+        qDebug() << "Unlocking " << m->simIdentifier();
 #endif
         unlockModem(m);
     }

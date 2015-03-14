@@ -75,21 +75,23 @@ class Modem::Private : public QObject, public std::enable_shared_from_this<Priva
     Q_OBJECT
 
 public:
-    core::Property<bool> m_online;
+    Modem& p;
+
+    bool m_online;
 
     shared_ptr<QOfonoModem> m_ofonoModem;
-    core::Property<Modem::SimStatus> m_simStatus;
-    core::Property<Modem::PinType> m_requiredPin;
-    core::Property<std::map<Modem::PinType, std::uint8_t>> m_retries;
+    Modem::SimStatus m_simStatus;
+    Modem::PinType m_requiredPin;
+    map<Modem::PinType, uint8_t> m_retries;
 
-    core::Property<QString> m_operatorName;
-    core::Property<Modem::Status> m_status;
-    core::Property<std::int8_t> m_strength;
-    core::Property<Modem::Technology> m_technology;
+    QString m_operatorName;
+    Modem::Status m_status;
+    int8_t m_strength;
+    Modem::Technology m_technology;
 
-    core::Property<bool> m_dataEnabled;
+    bool m_dataEnabled;
 
-    core::Property<QString> m_simIdentifier;
+    QString m_simIdentifier;
     int m_index = -1;
 
     QSet<QString> m_interfaces;
@@ -175,12 +177,117 @@ public:
 
     void update();
 
-    Private(shared_ptr<QOfonoModem> ofonoModem);
+    Private(Modem& parent, shared_ptr<QOfonoModem> ofonoModem);
 
 public Q_SLOTS:
-    void onlineChanged(bool online)
+    void setOnline(bool online)
     {
-        m_online.set(online);
+        if (m_online == online)
+        {
+            return;
+        }
+
+        m_online = online;
+        Q_EMIT p.onlineUpdated(m_online);
+    }
+
+    void setSimIdentifier(const QString& simIdentifier)
+    {
+        if (m_simIdentifier == simIdentifier)
+        {
+            return;
+        }
+
+        m_simIdentifier = simIdentifier;
+        Q_EMIT p.simIdentifierUpdated(m_simIdentifier);
+    }
+
+    void setRequiredPin(Modem::PinType requiredPin)
+    {
+        if (m_requiredPin == requiredPin)
+        {
+            return;
+        }
+
+        m_requiredPin = requiredPin;
+        Q_EMIT p.requiredPinUpdated(m_requiredPin);
+    }
+
+    void setRetries(const map<Modem::PinType, uint8_t>& retries)
+    {
+        if (m_retries == retries)
+        {
+            return;
+        }
+
+        m_retries = retries;
+        Q_EMIT p.retriesUpdated();
+    }
+
+    void setSimStatus(Modem::SimStatus simStatus)
+    {
+        if (m_simStatus == simStatus)
+        {
+            return;
+        }
+
+        m_simStatus = simStatus;
+        Q_EMIT p.simStatusUpdated(m_simStatus);
+    }
+
+    void setOperatorName(const QString& operatorName)
+    {
+        if (m_operatorName == operatorName)
+        {
+            return;
+        }
+
+        m_operatorName = operatorName;
+        Q_EMIT p.operatorNameUpdated(m_operatorName);
+    }
+
+    void setStatus(Modem::Status status)
+    {
+        if (m_status == status)
+        {
+            return;
+        }
+
+        m_status = status;
+        Q_EMIT p.statusUpdated(m_status);
+    }
+
+    void setStrength(int8_t strength)
+    {
+        if (m_strength == strength)
+        {
+            return;
+        }
+
+        m_strength = strength;
+        Q_EMIT p.strengthUpdated(m_strength);
+    }
+
+    void setTechnology(Modem::Technology technology)
+    {
+        if (m_technology == technology)
+        {
+            return;
+        }
+
+        m_technology = technology;
+        Q_EMIT p.technologyUpdated(m_technology);
+    }
+
+    void setDataEnabled(bool dataEnabled)
+    {
+        if (m_dataEnabled == dataEnabled)
+        {
+            return;
+        }
+
+        m_dataEnabled = dataEnabled;
+        Q_EMIT p.dataEnabledUpdated(m_dataEnabled);
     }
 
     void interfacesChanged(const QStringList& values)
@@ -237,13 +344,13 @@ public Q_SLOTS:
     }
 };
 
-Modem::Private::Private(shared_ptr<QOfonoModem> ofonoModem)
-    : m_ofonoModem{ofonoModem}
+Modem::Private::Private(Modem& parent, shared_ptr<QOfonoModem> ofonoModem)
+    : p(parent), m_ofonoModem{ofonoModem}
 {
     auto that = shared_from_this();
 
-    connect(m_ofonoModem.get(), &QOfonoModem::onlineChanged, this, &Private::onlineChanged);
-    m_online.set(m_ofonoModem->online());
+    connect(m_ofonoModem.get(), &QOfonoModem::onlineChanged, this, &Private::setOnline);
+    setOnline(m_ofonoModem->online());
 
     connect(m_ofonoModem.get(), &QOfonoModem::interfacesChanged, this, &Private::interfacesChanged);
     interfacesChanged(m_ofonoModem->interfaces());
@@ -252,13 +359,13 @@ Modem::Private::Private(shared_ptr<QOfonoModem> ofonoModem)
     ///       for now just provide the defaults
     auto path = m_ofonoModem->modemPath();
     if (path == "/ril_0") {
-        m_simIdentifier.set("SIM 1");
+        setSimIdentifier("SIM 1");
         m_index = 1;
     } else if (path == "/ril_1") {
-        m_simIdentifier.set("SIM 2");
+        setSimIdentifier("SIM 2");
         m_index = 2;
     } else {
-        m_simIdentifier.set(path);
+        setSimIdentifier(path);
     }
 }
 
@@ -271,13 +378,13 @@ Modem::Private::update()
         switch(m_simManager->pinRequired())
         {
         case QOfonoSimManager::PinType::NoPin:
-            m_requiredPin.set(PinType::none);
+            setRequiredPin(PinType::none);
             break;
         case QOfonoSimManager::PinType::SimPin:
-            m_requiredPin.set(PinType::pin);
+            setRequiredPin(PinType::pin);
             break;
         case QOfonoSimManager::PinType::SimPuk:
-            m_requiredPin.set(PinType::puk);
+            setRequiredPin(PinType::puk);
             break;
         default:
             throw std::runtime_error("Ofono requires a PIN we have not been prepared to handle (" +
@@ -302,59 +409,59 @@ Modem::Private::update()
 //                break;
 //            }
 //        }
-        m_retries.set(tmp);
+        setRetries(tmp);
 
         // update simStatus
         bool present = m_simManager->present();
         if (!present)
         {
-            m_simStatus.set(SimStatus::missing);
+            setSimStatus(SimStatus::missing);
         }
         else if (m_requiredPin == PinType::none)
         {
-            m_simStatus.set(SimStatus::ready);
+            setSimStatus(SimStatus::ready);
         }
         else
         {
-            if (m_retries->count(PinType::puk) != 0
-                    && m_retries->at(PinType::puk) == 0)
+            if (m_retries.count(PinType::puk) != 0
+                    && m_retries.at(PinType::puk) == 0)
             {
-                m_simStatus.set(SimStatus::permanentlyLocked);
+                setSimStatus(SimStatus::permanentlyLocked);
             }
             else
             {
-                m_simStatus.set(SimStatus::locked);
+                setSimStatus(SimStatus::locked);
             }
         }
 
     } else {
-        m_requiredPin.set(PinType::none);
-        m_retries.set({});
-        m_simStatus.set(SimStatus::not_available);
+        setRequiredPin(PinType::none);
+        setRetries({});
+        setSimStatus(SimStatus::not_available);
     }
 
     if (m_networkRegistration)
     {
-        m_operatorName.set(m_networkRegistration->name());
-        m_status.set(str2status(m_networkRegistration->status()));
-        m_strength.set(m_networkRegistration->strength());
-        m_technology.set(str2technology(m_networkRegistration->technology()));
+        setOperatorName(m_networkRegistration->name());
+        setStatus(str2status(m_networkRegistration->status()));
+        setStrength(m_networkRegistration->strength());
+        setTechnology(str2technology(m_networkRegistration->technology()));
     }
     else
     {
-        m_operatorName.set("");
-        m_status.set(Modem::Status::unknown);
-        m_strength.set(-1);
-        m_technology.set(Modem::Technology::notAvailable);
+        setOperatorName("");
+        setStatus(Modem::Status::unknown);
+        setStrength(-1);
+        setTechnology(Modem::Technology::notAvailable);
     }
 
     if (m_connectionManager)
     {
-        m_dataEnabled.set(m_connectionManager->powered());
+        setDataEnabled(m_connectionManager->powered());
     }
     else
     {
-        m_dataEnabled.set(false);
+        setDataEnabled(false);
     }
 }
 
@@ -396,7 +503,7 @@ std::string Modem::technologyIcon(Modem::Technology tech)
 }
 
 Modem::Modem(shared_ptr<QOfonoModem> ofonoModem)
-    : d{new Private(ofonoModem)}
+    : d{new Private(*this, ofonoModem)}
 {
 }
 
@@ -479,67 +586,68 @@ Modem::changePin(PinType type, const QString &oldPin, const QString &newPin)
     throw std::logic_error("code should not be reached.");
 }
 
-const core::Property<bool> &
-Modem::online()
+bool
+Modem::online() const
 {
     return d->m_online;
 }
 
-const core::Property<Modem::SimStatus> &
-Modem::simStatus()
+Modem::SimStatus
+Modem::simStatus() const
 {
     return d->m_simStatus;
 }
 
-const core::Property<Modem::PinType> &
-Modem::requiredPin()
+Modem::PinType
+Modem::requiredPin() const
 {
     return d->m_requiredPin;
 }
 
-const core::Property<std::map<Modem::PinType, std::uint8_t> > &
-Modem::retries()
+const std::map<Modem::PinType, std::uint8_t>&
+Modem::retries() const
 {
     return d->m_retries;
 }
 
-const core::Property<QString> &
-Modem::operatorName()
+const QString&
+Modem::operatorName()  const
 {
     return d->m_operatorName;
 }
 
-const core::Property<Modem::Status> &
-Modem::status()
+Modem::Status
+Modem::status() const
 {
     return d->m_status;
 }
 
-const core::Property<std::int8_t> &
-Modem::strength()
+std::int8_t
+Modem::strength() const
 {
     return d->m_strength;
 }
 
-const core::Property<Modem::Technology> &
-Modem::technology()
+Modem::Technology
+Modem::technology() const
 {
     return d->m_technology;
 }
-const core::Property<QString> &
-Modem::simIdentifier()
+
+const QString&
+Modem::simIdentifier() const
 {
     return d->m_simIdentifier;
 }
 
-const core::Property<bool> &
-Modem::dataEnabled()
+bool
+Modem::dataEnabled() const
 {
     return d->m_dataEnabled;
 }
 
 int
-Modem::index()
+Modem::index() const
 {
     return d->m_index;
 }

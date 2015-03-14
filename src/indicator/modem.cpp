@@ -21,12 +21,12 @@
 
 #include <ofono/dbus.h>
 
-#undef QT_NO_KEYWORDS
+#define slots
 #include <qofono-qt5/qofonomodem.h>
 #include <qofono-qt5/qofonosimmanager.h>
 #include <qofono-qt5/qofononetworkregistration.h>
 #include <qofono-qt5/qofonoconnectionmanager.h>
-#define QT_NO_KEYWORDS = 1
+#undef slots
 
 using namespace std;
 

@@ -25,7 +25,6 @@
 #include <string>
 
 #include <QString>
-
 #include <core/property.h>
 
 class QOfonoModem;

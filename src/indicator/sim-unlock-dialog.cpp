@@ -91,9 +91,9 @@ public:
 
     notify::snapdecision::SimUnlock::Ptr m_sd;
 
-    std::string m_newPin;
-    std::string m_oldPin;
-    std::string m_pukCode;
+    QString m_newPin;
+    QString m_oldPin;
+    QString m_pukCode;
 
     std::recursive_mutex m_updateMutex;
 
@@ -114,7 +114,9 @@ public:
         }
 
         if (m_modem->enterPin(Modem::PinType::pin, pin))
+        {
             return true;
+        }
 
         m_sd->showError(_("Sorry, incorrect PIN"));
         --retries;

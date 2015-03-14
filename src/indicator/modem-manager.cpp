@@ -17,16 +17,17 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#include "modem-manager.h"
-#include <menumodel-cpp/gio-helpers/util.h>
+#include <algorithm>
 #include <notify-cpp/snapdecision/sim-unlock.h>
 #include "sim-unlock-dialog.h"
+#include "modem-manager.h"
 
-#include <algorithm>
-#undef QT_NO_KEYWORDS
+#include <QMap>
+
+#define slots
 #include <qofono-qt5/qofonomanager.h>
 #include <qofono-qt5/qofonomodem.h>
-#define QT_NO_KEYWORDS = 1
+#undef slots
 
 using namespace std;
 
@@ -110,66 +111,60 @@ ModemManager::~ModemManager()
 void
 ModemManager::unlockModem(Modem::Ptr modem)
 {
-//    try {
-//        auto modems = d->m_modems.get();
-//
-//        if (std::count(modems.begin(), modems.end(), modem) == 0
-//                || d->m_unlockDialog->modem() == modem
-//                || std::count(d->m_pendingUnlocks.begin(), d->m_pendingUnlocks.end(), modem) != 0)
-//            return;
-//
-//        if (d->m_unlockDialog->state() == SimUnlockDialog::State::ready
-//                && d->m_pendingUnlocks.size() == 0)
-//            d->m_unlockDialog->unlock(modem);
-//        else
-//            d->m_pendingUnlocks.push_back(modem);
-//    } catch(const std::exception &e) {
-//        // Something unexpected has happened. As an example, unity8 might have
-//        // crashed taking the notification server with it. There is no graceful
-//        // and reliable way to recover so die and get restarted.
-//        // See also https://bugs.launchpad.net/unity-notifications/+bug/1238990
-//        std::cerr << __PRETTY_FUNCTION__ << " sim unlocking failed: " << e.what() << "\n";
-//        std::quick_exit(0);
-//    }
+    try {
+        if (!d->m_modems.values().contains(modem)
+                || d->m_unlockDialog->modem() == modem
+                || std::count(d->m_pendingUnlocks.begin(), d->m_pendingUnlocks.end(), modem) != 0)
+            return;
+
+        if (d->m_unlockDialog->state() == SimUnlockDialog::State::ready
+                && d->m_pendingUnlocks.size() == 0)
+            d->m_unlockDialog->unlock(modem);
+        else
+            d->m_pendingUnlocks.push_back(modem);
+    } catch(const std::exception &e) {
+        // Something unexpected has happened. As an example, unity8 might have
+        // crashed taking the notification server with it. There is no graceful
+        // and reliable way to recover so die and get restarted.
+        // See also https://bugs.launchpad.net/unity-notifications/+bug/1238990
+        std::cerr << __PRETTY_FUNCTION__ << " sim unlocking failed: " << e.what() << "\n";
+        std::quick_exit(0);
+    }
 }
 
 void
 ModemManager::unlockAllModems()
 {
-//#ifdef INDICATOR_NETWORK_TRACE_MESSAGES
-//    std::cout << __PRETTY_FUNCTION__ << std::endl;
-//#endif
-//    std::multimap<int, Modem::Ptr, Modem::Compare> sorted;
-//    for (auto m : d->m_modems.get()) {
-//        sorted.insert(std::make_pair(m->index(), m));
-//    }
-//    for (auto pair : sorted) {
-//#ifdef INDICATOR_NETWORK_TRACE_MESSAGES
-//        std::cout << "Unlocking " << pair.second->simIdentifier().get() << std::endl;
-//#endif
-//        unlockModem(pair.second);
-//    }
+#ifdef INDICATOR_NETWORK_TRACE_MESSAGES
+    std::cout << __PRETTY_FUNCTION__ << std::endl;
+#endif
+    for (auto& m : d->m_modems)
+    {
+#ifdef INDICATOR_NETWORK_TRACE_MESSAGES
+        qDebug() << "Unlocking " << m->simIdentifier().get();
+#endif
+        unlockModem(m);
+    }
 }
 
 void
-ModemManager::unlockModemByName(const std::string &name)
+ModemManager::unlockModemByName(const QString &name)
 {
-//#ifdef INDICATOR_NETWORK_TRACE_MESSAGES
-//    std::cout << __PRETTY_FUNCTION__ << std::endl;
-//#endif
-//    for (auto const &m : d->m_modems.get()) {
-//        if (m->name() == name) {
-//            unlockModem(m);
-//            return;
-//        }
-//    }
+#ifdef INDICATOR_NETWORK_TRACE_MESSAGES
+    std::cout << __PRETTY_FUNCTION__ << std::endl;
+#endif
+    auto it = d->m_modems.find(name);
+    if (it != d->m_modems.cend())
+    {
+        unlockModem(it.value());
+    }
 }
 
 
-const core::Property<std::set<Modem::Ptr>> &
+QList<Modem::Ptr>
 ModemManager::modems()
 {
-//    return d->m_modems;
+    return d->m_modems.values();
 }
 
 #include "modem-manager.moc"

@@ -69,20 +69,27 @@ protected:
 
     void SetUp() override
     {
-#ifdef BUSTLE_DEBUG
-        dbusTestRunner.registerService(
-                DBusServicePtr(
-                        new QProcessDBusService(
-                                "", QDBusConnection::SessionBus,
-                                "/usr/bin/bustle-pcap",
-                                QStringList{"-e", "/tmp/bustle-session.log"})));
-        dbusTestRunner.registerService(
-                DBusServicePtr(
-                        new QProcessDBusService(
-                                "", QDBusConnection::SystemBus,
-                                "/usr/bin/bustle-pcap",
-                                QStringList{"-y", "/tmp/bustle-system.log"})));
-#endif
+        if (qEnvironmentVariableIsSet("TEST_WITH_BUSTLE"))
+        {
+            const TestInfo* const test_info =
+                    UnitTest::GetInstance()->current_test_info();
+
+            QDir::temp().mkpath("indicator-network-tests");
+            QDir testDir(QDir::temp().filePath("indicator-network-tests"));
+
+            dbusTestRunner.registerService(
+                    DBusServicePtr(
+                            new QProcessDBusService(
+                                    "", QDBusConnection::SessionBus,
+                                    "/usr/bin/bustle-pcap",
+                                    QStringList{"-e", testDir.filePath(QString("%1-%2").arg(test_info->name(), "session.log"))})));
+            dbusTestRunner.registerService(
+                    DBusServicePtr(
+                            new QProcessDBusService(
+                                    "", QDBusConnection::SystemBus,
+                                    "/usr/bin/bustle-pcap",
+                                    QStringList{"-y", testDir.filePath(QString("%1-%2").arg(test_info->name(), "system.log"))})));
+        }
 
         dbusMock.registerNetworkManager();
         dbusMock.registerNotificationDaemon();

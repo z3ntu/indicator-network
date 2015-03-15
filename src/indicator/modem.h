@@ -32,7 +32,7 @@ class QOfonoModem;
 /**
  * all signals and property changes emitted from GMainLoop
  */
-class Modem: public QObject
+class Modem: public QObject, public std::enable_shared_from_this<Modem>
 {
     Q_OBJECT
 
@@ -171,6 +171,8 @@ Q_SIGNALS:
     void dataEnabledUpdated(bool);
 
     void simIdentifierUpdated(const QString &);
+
+    void updated(Modem::Ptr);
 };
 
 #endif

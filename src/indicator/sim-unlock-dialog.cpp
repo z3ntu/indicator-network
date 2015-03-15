@@ -121,10 +121,10 @@ public:
         }
 
         // FIXME: API is async now
-        if (m_modem->enterPin(Modem::PinType::pin, pin))
-        {
-            return true;
-        }
+//        if (m_modem->enterPin(Modem::PinType::pin, pin))
+//        {
+//            return true;
+//        }
 
         m_sd->showError(_("Sorry, incorrect PIN"));
         --retries;
@@ -147,16 +147,16 @@ public:
         }
 
         // FIXME: This has changed to an async API
-        if (!m_modem->resetPin(Modem::PinType::puk, puk, newPin)) {
-            m_sd->showError(_("Sorry, incorrect PUK"));
-            --retries;
-            if (retries == 1) {
-                showLastPukAttemptPopup();
-            } else if (retries == 0) {
-                showSimPermanentlyBlockedPopup([this](){ m_sd->close(); });
-            }
-            return false;
-        }
+//        if (!m_modem->resetPin(Modem::PinType::puk, puk, newPin)) {
+//            m_sd->showError(_("Sorry, incorrect PUK"));
+//            --retries;
+//            if (retries == 1) {
+//                showLastPukAttemptPopup();
+//            } else if (retries == 0) {
+//                showSimPermanentlyBlockedPopup([this](){ m_sd->close(); });
+//            }
+//            return false;
+//        }
         return true;
     }
 

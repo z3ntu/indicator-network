@@ -23,8 +23,9 @@
 
 #include "menumodel-cpp/menu.h"
 
-class WwanLinkItem::Private : public std::enable_shared_from_this<Private>
+class WwanLinkItem::Private : public QObject
 {
+    Q_OBJECT
 public:
 
     ActionGroupMerger::Ptr m_actionGroupMerger;
@@ -35,23 +36,20 @@ public:
 
     ModemInfoItem::Ptr m_infoItem;
 
-    core::Property<bool> m_showIdentifier;
+    bool m_showIdentifier = false;
 
     Private() = delete;
     Private(Modem::Ptr modem, ModemManager::Ptr modemManager);
-    void ConstructL();
 
-    void update();
     void unlockSim();
+
+Q_SIGNALS:
+    void update();
 };
 
 WwanLinkItem::Private::Private(Modem::Ptr modem, ModemManager::Ptr modemManager)
     : m_modem{modem},
       m_modemManager{modemManager}
-{}
-
-void
-WwanLinkItem::Private::ConstructL()
 {
     m_actionGroupMerger = std::make_shared<ActionGroupMerger>();
     m_menu = std::make_shared<Menu>();
@@ -62,32 +60,23 @@ WwanLinkItem::Private::ConstructL()
     m_actionGroupMerger->add(*m_infoItem);
     m_menu->append(*m_infoItem);
 
-    m_showIdentifier.set(false);
-    m_showIdentifier.changed().connect(std::bind(&Private::update, this));
-
     // already synced with GMainLoop
-    m_modem->online().changed().connect(std::bind(&Private::update, this));
-    m_modem->simStatus().changed().connect(std::bind(&Private::update, this));
-    m_modem->operatorName().changed().connect(std::bind(&Private::update, this));
-    m_modem->status().changed().connect(std::bind(&Private::update, this));
-    m_modem->strength().changed().connect(std::bind(&Private::update, this));
-    m_modem->technology().changed().connect(std::bind(&Private::update, this));
-    m_modem->simIdentifier().changed().connect(std::bind(&Private::update, this));
+    connect(m_modem.get(), &Modem::updated, this, &Private::update);
     update();
 }
 
 void
 WwanLinkItem::Private::update()
 {
-    if (m_showIdentifier.get()) {
-        m_infoItem->setSimIdentifierText(m_modem->simIdentifier().get());
+    if (m_showIdentifier) {
+        m_infoItem->setSimIdentifierText(m_modem->simIdentifier().toStdString());
     } else {
         m_infoItem->setSimIdentifierText("");
     }
     /// @todo implement me.
     m_infoItem->setConnectivityIcon("");
 
-    switch(m_modem->simStatus().get()) {
+    switch(m_modem->simStatus()) {
     case Modem::SimStatus::missing:
         m_infoItem->setStatusIcon("no-simcard");
         m_infoItem->setStatusText(_("No SIM"));
@@ -111,31 +100,31 @@ WwanLinkItem::Private::update()
         m_infoItem->setLocked(false);
         m_infoItem->setRoaming(false);
 
-        if (m_modem->online().get()) {
-            switch (m_modem->status().get()) {
-            case org::ofono::Interface::NetworkRegistration::Status::unregistered:
+        if (m_modem->online()) {
+            switch (m_modem->status()) {
+            case Modem::Status::unregistered:
                 m_infoItem->setStatusIcon("gsm-3g-disabled");
                 m_infoItem->setStatusText(_("Unregistered"));
                 break;
-            case org::ofono::Interface::NetworkRegistration::Status::unknown:
+            case Modem::Status::unknown:
                 m_infoItem->setStatusIcon("gsm-3g-disabled");
                 m_infoItem->setStatusText(_("Unknown"));
                 break;
-            case org::ofono::Interface::NetworkRegistration::Status::denied:
+            case Modem::Status::denied:
                 m_infoItem->setStatusIcon("gsm-3g-disabled");
                 m_infoItem->setStatusText(_("Denied"));
                 break;
-            case org::ofono::Interface::NetworkRegistration::Status::searching:
+            case Modem::Status::searching:
                 m_infoItem->setStatusIcon("gsm-3g-disabled");
                 m_infoItem->setStatusText(_("Searching"));
                 break;
-            case org::ofono::Interface::NetworkRegistration::Status::roaming:
+            case Modem::Status::roaming:
                 m_infoItem->setRoaming(true);
                 /* fallthrough */
-            case org::ofono::Interface::NetworkRegistration::Status::registered:
-                if (m_modem->strength().get() != 0) {
-                    m_infoItem->setStatusIcon(Modem::strengthIcon(m_modem->strength().get()));
-                    m_infoItem->setStatusText(m_modem->operatorName());
+            case Modem::Status::registered:
+                if (m_modem->strength() != 0) {
+                    m_infoItem->setStatusIcon(Modem::strengthIcon(m_modem->strength()));
+                    m_infoItem->setStatusText(m_modem->operatorName().toStdString());
                 } else {
                     m_infoItem->setStatusIcon("gsm-3g-no-service");
                     m_infoItem->setStatusText(_("No Signal"));
@@ -161,7 +150,6 @@ WwanLinkItem::WwanLinkItem(Modem::Ptr modem, ModemManager::Ptr modemManager)
     : d{new Private(modem, modemManager)}
 
 {
-    d->ConstructL();
 }
 
 WwanLinkItem::~WwanLinkItem()
@@ -182,5 +170,8 @@ WwanLinkItem::menuModel()
 void
 WwanLinkItem::showSimIdentifier(bool value)
 {
-    d->m_showIdentifier.set(value);
+    d->m_showIdentifier = value;
+    d->update();
 }
+
+#include "wwan-link-item.moc"

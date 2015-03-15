@@ -347,8 +347,6 @@ public Q_SLOTS:
 Modem::Private::Private(Modem& parent, shared_ptr<QOfonoModem> ofonoModem)
     : p(parent), m_ofonoModem{ofonoModem}
 {
-    auto that = shared_from_this();
-
     connect(m_ofonoModem.get(), &QOfonoModem::onlineChanged, this, &Private::setOnline);
     setOnline(m_ofonoModem->online());
 

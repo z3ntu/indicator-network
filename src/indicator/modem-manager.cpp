@@ -98,7 +98,7 @@ public Q_SLOTS:
             m_modems[path] = modem;
         }
 
-        Q_EMIT p.modemsUpdated(p.modems());
+        Q_EMIT p.modemsUpdated(m_modems.values());
         m_unlockDialog->setShowSimIdentifiers(m_modems.size() > 1);
     }
 };

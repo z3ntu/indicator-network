@@ -51,6 +51,7 @@ public:
 
     Private() = delete;
     Private(std::shared_ptr<networking::Manager> manager, ModemManager::Ptr modemManager);
+    void ConstructL();
 
     Variant createIcon(const std::string name);
 
@@ -67,6 +68,10 @@ void modemsChanged(const QList<Modem::Ptr> &modems);
 RootState::Private::Private(std::shared_ptr<networking::Manager> manager, ModemManager::Ptr modemManager)
     : m_manager{manager},
       m_modemManager{modemManager}
+{
+}
+
+void RootState::Private::ConstructL()
 {
     auto that = shared_from_this();
 
@@ -376,6 +381,7 @@ RootState::Private::updateRootState()
 RootState::RootState(std::shared_ptr<connectivity::networking::Manager> manager, ModemManager::Ptr modemManager)
     : d{new Private(manager, modemManager)}
 {
+    d->ConstructL();
 }
 
 RootState::~RootState()

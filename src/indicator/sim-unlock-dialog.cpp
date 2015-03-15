@@ -106,7 +106,7 @@ public:
 
     std::vector<QMetaObject::Connection> m_connections;
 
-    bool m_showSimIdentifiers;
+    bool m_showSimIdentifiers = false;
 
     /// @todo see comment in reset()
     bool m_doCleanUp;
@@ -239,7 +239,6 @@ SimUnlockDialog::Private::Private(SimUnlockDialog& parent)
 //    m_sd->pinEntered().connect(std::bind(&Private::pinEntered, this, std::placeholders::_1));
     m_sd->closed().connect(std::bind(&Private::closed, this));
 
-    p.setShowSimIdentifiers(false);
     reset();
 }
 
@@ -414,9 +413,9 @@ SimUnlockDialog::Private::reset()
     m_doCleanUp = true;
 }
 
-SimUnlockDialog::SimUnlockDialog()
+SimUnlockDialog::SimUnlockDialog() :
+        d(new Private(*this))
 {
-    d.reset(new Private(*this));
 }
 
 SimUnlockDialog::~SimUnlockDialog()

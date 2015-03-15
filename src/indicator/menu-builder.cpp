@@ -17,7 +17,7 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#include <indicator-network-service.h>
+#include <menu-builder.h>
 
 #include <factory.h>
 

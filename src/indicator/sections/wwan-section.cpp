@@ -28,8 +28,9 @@
 
 #include "url-dispatcher-cpp/url-dispatcher.h"
 
-class WwanSection::Private
+class WwanSection::Private: public QObject
 {
+    Q_OBJECT
 public:
 
     ActionGroupMerger::Ptr m_actionGroupMerger;
@@ -51,17 +52,13 @@ public:
 
     Private() = delete;
     Private(ModemManager::Ptr modemManager);
-    void ConstructL();
 
-    void modemsChanged(const std::set<Modem::Ptr> &modems);
+public Q_SLOTS:
+    void modemsChanged(const QList<Modem::Ptr> &modems);
 };
 
 WwanSection::Private::Private(ModemManager::Ptr modemManager)
     : m_modemManager{modemManager}
-{}
-
-void
-WwanSection::Private::ConstructL()
 {
     m_actionGroupMerger = std::make_shared<ActionGroupMerger>();
     m_menuMerger = std::make_shared<MenuMerger>();
@@ -89,16 +86,18 @@ WwanSection::Private::ConstructL()
     m_actionGroupMerger->add(*m_openCellularSettings);
 
     // already synced with GMainLoop
-    m_modemManager->modems().changed().connect(std::bind(&Private::modemsChanged, this, std::placeholders::_1));
+    connect(m_modemManager.get(), &ModemManager::modemsUpdated, this, &Private::modemsChanged);
     modemsChanged(m_modemManager->modems());
 }
 
 void
-WwanSection::Private::modemsChanged(const std::set<Modem::Ptr> &modems)
+WwanSection::Private::modemsChanged(const QList<Modem::Ptr> &modems)
 {
     std::set<Modem::Ptr> current;
     for (auto element : m_items)
+    {
         current.insert(element.first);
+    }
 
     std::set<Modem::Ptr> removed;
     std::set_difference(current.begin(), current.end(),
@@ -155,7 +154,6 @@ WwanSection::Private::modemsChanged(const std::set<Modem::Ptr> &modems)
 WwanSection::WwanSection(ModemManager::Ptr modemManager)
     : d{new Private(modemManager)}
 {
-    d->ConstructL();
 }
 
 WwanSection::~WwanSection()
@@ -186,3 +184,5 @@ WwanSection::unlockModem(const std::string &name)
 {
     d->m_modemManager->unlockModemByName(QString::fromStdString(name));
 }
+
+#include "wwan-section.moc"

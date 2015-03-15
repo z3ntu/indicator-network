@@ -43,7 +43,7 @@ public:
 
     void unlockSim();
 
-Q_SIGNALS:
+public Q_SLOTS:
     void update();
 };
 

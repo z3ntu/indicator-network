@@ -463,6 +463,8 @@ Modem::Private::update()
     {
         setDataEnabled(false);
     }
+
+    Q_EMIT p.updated(p.shared_from_this());
 }
 
 std::string Modem::strengthIcon(int8_t strength)

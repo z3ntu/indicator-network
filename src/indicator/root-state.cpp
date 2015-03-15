@@ -51,26 +51,22 @@ public:
 
     Private() = delete;
     Private(std::shared_ptr<networking::Manager> manager, ModemManager::Ptr modemManager);
-    void ConstructL();
-
-    void modemsChanged(const std::set<Modem::Ptr> &modems);
-
-    void updateModem(Modem::WeakPtr weakModem);
 
     Variant createIcon(const std::string name);
-    void updateRootState();
 
 public Q_SLOTS:
+    void updateModem(Modem::Ptr modem);
+
     void updateNetworkingIcon();
+
+    void updateRootState();
+
+void modemsChanged(const QList<Modem::Ptr> &modems);
 };
 
 RootState::Private::Private(std::shared_ptr<networking::Manager> manager, ModemManager::Ptr modemManager)
     : m_manager{manager},
       m_modemManager{modemManager}
-{}
-
-void
-RootState::Private::ConstructL()
 {
     auto that = shared_from_this();
 
@@ -81,9 +77,9 @@ RootState::Private::ConstructL()
         });
     });
 
-    modemsChanged(m_modemManager->modems().get());
+    modemsChanged(m_modemManager->modems());
     // modem properties and signals already synced with GMainLoop
-    m_modemManager->modems().changed().connect(std::bind(&Private::modemsChanged, this, std::placeholders::_1));
+    QObject::connect(m_modemManager.get(), &ModemManager::modemsUpdated, this, &Private::modemsChanged);
 
     m_manager->status().changed().connect([that](connectivity::networking::Manager::NetworkingStatus)
     {
@@ -105,7 +101,7 @@ RootState::Private::ConstructL()
 }
 
 void
-RootState::Private::modemsChanged(const std::set<Modem::Ptr> &modems)
+RootState::Private::modemsChanged(const QList<Modem::Ptr> &modems)
 {
     std::set<Modem::Ptr> current;
     for (auto element : m_cellularIcons)
@@ -126,39 +122,28 @@ RootState::Private::modemsChanged(const std::set<Modem::Ptr> &modems)
     m_activeModem = -1;
     for (auto modem : added) {
         // modem properties and signals already synced with GMainLoop
-        modem->online().changed().connect(std::bind(&Private::updateModem, this, Modem::WeakPtr(modem)));
-        modem->simStatus().changed().connect(std::bind(&Private::updateModem, this, Modem::WeakPtr(modem)));
-        modem->status().changed().connect(std::bind(&Private::updateModem, this, Modem::WeakPtr(modem)));
-        modem->technology().changed().connect(std::bind(&Private::updateModem, this, Modem::WeakPtr(modem)));
-        modem->strength().changed().connect(std::bind(&Private::updateModem, this, Modem::WeakPtr(modem)));
-        modem->dataEnabled().changed().connect(std::bind(&Private::updateModem, this, Modem::WeakPtr(modem)));
+        connect(modem.get(), &Modem::updated, this, &Private::updateModem);
         updateModem(modem);
     }
 }
 
 void
-RootState::Private::updateModem(Modem::WeakPtr weakModem)
+RootState::Private::updateModem(Modem::Ptr modem)
 {
-    auto modem = weakModem.lock();
-    if (!modem) {
-        std::cerr << std::string(__PRETTY_FUNCTION__) << ": modem expired" << std::endl;
-        return;
-    }
-
-    if (modem->dataEnabled().get())
+    if (modem->dataEnabled())
     {
         m_activeModem = modem->index();
     }
     m_modemTechIcons.erase(modem->index());
     m_cellularIcons[modem] = "";
 
-    if (!modem->online().get()) {
+    if (!modem->online()) {
         // modem offline, nothing to show
         updateRootState();
         return;
     }
 
-    switch(modem->simStatus().get()) {
+    switch(modem->simStatus()) {
     case Modem::SimStatus::missing:
         // no need to show anything in the panel
         break;
@@ -171,21 +156,21 @@ RootState::Private::updateModem(Modem::WeakPtr weakModem)
         break;
     case Modem::SimStatus::ready:
     {
-        switch (modem->status().get()) {
-        case org::ofono::Interface::NetworkRegistration::Status::unregistered:
-        case org::ofono::Interface::NetworkRegistration::Status::unknown:
-        case org::ofono::Interface::NetworkRegistration::Status::searching:
+        switch (modem->status()) {
+        case Modem::Status::unregistered:
+        case Modem::Status::unknown:
+        case Modem::Status::searching:
             m_cellularIcons[modem] = "gsm-3g-disabled";
             break;
-        case org::ofono::Interface::NetworkRegistration::Status::denied:
+        case Modem::Status::denied:
             /// @todo we might need network-error for this
             m_cellularIcons[modem] = "gsm-3g-disabled";
             break;
-        case org::ofono::Interface::NetworkRegistration::Status::registered:
-        case org::ofono::Interface::NetworkRegistration::Status::roaming:
-            if (modem->strength().get() != 0) {
-                m_cellularIcons[modem] = Modem::strengthIcon(modem->strength().get());
-                m_modemTechIcons[modem->index()] = Modem::technologyIcon(modem->technology().get());
+        case Modem::Status::registered:
+        case Modem::Status::roaming:
+            if (modem->strength() != 0) {
+                m_cellularIcons[modem] = Modem::strengthIcon(modem->strength());
+                m_modemTechIcons[modem->index()] = Modem::technologyIcon(modem->technology());
             } else {
                 m_cellularIcons[modem] = "gsm-3g-no-service";
 
@@ -238,20 +223,20 @@ RootState::Private::updateNetworkingIcon()
                     if (m_activeAP)
                     {
                         // connect updateNetworkingIcon() to changes in AP strength
-                            m_activeAP_conn.reset(
-                                    new QMetaObject::Connection(
-                                            QObject::connect(
-                                                    m_activeAP.get(),
-                                                    &networking::wifi::AccessPoint::strengthUpdated,
-                                                    this,
-                                                    &Private::updateNetworkingIcon)));
+                        auto c = QObject::connect(
+                                m_activeAP.get(),
+                                &networking::wifi::AccessPoint::strengthUpdated,
+                                this,
+                                &Private::updateNetworkingIcon);
+                        m_activeAP_conn.reset(new QMetaObject::Connection(c));
                     }
                     else
                     {
                         // there is no active AP, so we disconnect from strength updates
                         if (m_activeAP_conn)
                         {
-                            QObject::disconnect(*m_activeAP_conn);
+                            disconnect(*m_activeAP_conn);
+                            m_activeAP_conn.release();
                         }
                     }
                 }
@@ -343,8 +328,8 @@ RootState::Private::updateRootState()
     }
 
     // if any of the modems is roaming, show the roaming icon
-    for (auto modem : m_modemManager->modems().get()) {
-        if (modem->status().get() == org::ofono::Interface::NetworkRegistration::Status::roaming) {
+    for (auto modem : m_modemManager->modems()) {
+        if (modem->status() == Modem::Status::roaming) {
             icons.push_back("network-cellular-roaming");
             break;
         }
@@ -391,7 +376,6 @@ RootState::Private::updateRootState()
 RootState::RootState(std::shared_ptr<connectivity::networking::Manager> manager, ModemManager::Ptr modemManager)
     : d{new Private(manager, modemManager)}
 {
-    d->ConstructL();
 }
 
 RootState::~RootState()

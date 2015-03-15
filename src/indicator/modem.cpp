@@ -43,7 +43,7 @@ static Modem::Status str2status(const QString& str)
         return Modem::Status::searching;
     if (str == "denied")
         return Modem::Status::denied;
-    if (str == "unknown")
+    if (str == "unknown" || str.isEmpty())
         return Modem::Status::unknown;
     if (str == "roaming")
         return Modem::Status::roaming;

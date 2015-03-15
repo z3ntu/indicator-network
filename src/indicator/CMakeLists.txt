@@ -50,7 +50,7 @@ set(NETWORK_SERVICE_SOURCES
     nmofono/wifi/wifi-link-impl.cpp
 
     factory.cpp
-    indicator-network-service.cpp
+    menu-builder.cpp
     modem.cpp
     modem-manager.cpp
     sim-unlock-dialog.cpp

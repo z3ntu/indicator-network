@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include <indicator-network-service.h>
+#include <menu-builder.h>
 #include <indicator-menu.h>
 #include <root-state.h>
 #include <connectivity-service/connectivity-service.h>

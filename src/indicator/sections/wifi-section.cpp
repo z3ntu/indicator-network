@@ -31,8 +31,9 @@
 
 using namespace connectivity;
 
-class WifiSection::Private : public std::enable_shared_from_this<Private>
+class WifiSection::Private : public QObject
 {
+    Q_OBJECT
 public:
     std::shared_ptr<connectivity::networking::Manager> m_manager;
 
@@ -48,56 +49,27 @@ public:
     Private() = delete;
     Private(std::shared_ptr<connectivity::networking::Manager> manager)
         : m_manager{manager}
-    {}
-
-    void
-    ConstructL()
     {
         m_actionGroupMerger = std::make_shared<ActionGroupMerger>();
         m_menu = std::make_shared<Menu>();
         m_settingsMenu = std::make_shared<Menu>();
 
-
         m_switch = std::make_shared<SwitchItem>(_("Wi-Fi"), "wifi", "enable");
 
         /// @todo don't now really care about actully being able to detach the whole
         ///       wifi chipset. on touch devices we always have wifi.
-        if (m_manager->hasWifi().get()) {
+        if (m_manager->hasWifi()) {
             m_actionGroupMerger->add(*m_switch);
             m_menu->append(*m_switch);
             m_settingsMenu->append(*m_switch);
         }
 
-        auto that = shared_from_this();
-
-        m_switch->state().set(m_manager->wifiEnabled().get());
-        m_manager->wifiEnabled().changed().connect([that](bool value) {
-            GMainLoopDispatch([that, value]()
-            {
-                that->m_switch->state().set(value);
-            });
-        });
-        m_switch->activated().connect([this](){
-            if (m_switch->state().get()) {
-                if (!m_manager->enableWifi()) {
-                    /// try to work around the switch getting out of state on unity8 side
-                    m_switch->state().set(false);
-                }
-            } else {
-                if (!m_manager->disableWifi())
-                    m_switch->state().set(true);
-            }
-        });
-
+        m_switch->setState(m_manager->wifiEnabled());
+        connect(m_manager.get(), &networking::Manager::wifiEnabledUpdated, m_switch.get(), &SwitchItem::setState);
+        connect(m_switch.get(), &SwitchItem::activated, this, &Private::switchActivated);
 
         updateLinks();
-        m_manager->links().changed().connect([that](std::set<networking::Link::Ptr>)
-        {
-            GMainLoopDispatch([that]()
-            {
-                    that->updateLinks();
-            });
-        });
+        connect(m_manager.get(), &networking::Manager::linksUpdated, this, &Private::updateLinks);
 
         m_openWifiSettings = std::make_shared<TextItem>(_("Wi-Fi settings…"), "wifi", "settings");
         m_openWifiSettings->activated().connect([](){
@@ -111,6 +83,7 @@ public:
         m_menu->append(*m_openWifiSettings);
     }
 
+public Q_SLOTS:
     void updateLinks()
     {
         // remove all and recreate. we have top 1 now anyway
@@ -121,7 +94,7 @@ public:
             m_wifiLink.reset();
         }
 
-        for (auto link : m_manager->links().get()) {
+        for (auto link : m_manager->links()) {
             auto wifi_link = std::dynamic_pointer_cast<networking::wifi::Link>(link);
             m_wifiLink = std::make_shared<WifiLinkItem>(wifi_link);
 
@@ -134,13 +107,25 @@ public:
         }
     }
 
-public:
+    void switchActivated()
+    {
+        if (m_switch->state()) {
+            if (!m_manager->enableWifi()) {
+                /// try to work around the switch getting out of state on unity8 side
+                m_switch->setState(false);
+            }
+        } else {
+            if (!m_manager->disableWifi())
+            {
+                m_switch->setState(true);
+            }
+        }
+    }
 };
 
 WifiSection::WifiSection(std::shared_ptr<connectivity::networking::Manager> manager)
     : d{new Private(manager)}
 {
-    d->ConstructL();
 }
 
 WifiSection::~WifiSection()
@@ -163,3 +148,5 @@ WifiSection::settingsModel()
 {
     return d->m_settingsMenu;
 }
+
+#include "wifi-section.moc"

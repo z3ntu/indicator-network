@@ -52,28 +52,11 @@ namespace networking {
 class CONNECTIVITY_CPP_EXPORT
 Manager: public QObject
 {
+    Q_OBJECT
 public:
     Manager &operator=(const Manager&) = delete;
     virtual ~Manager()                 = default;
     Manager(const Manager&)            = delete;
-
-    /**
-     * @brief Creates a new instance of a networking Manager.
-     *
-     * \snippet example_networking_status.cpp create manager
-     *
-     * Applications should call this function just once.
-     * If application needs to share the instance internally the std::unique_ptr
-     * can be transformed into a std::shared_ptr:
-     * @code
-     *     std::shared_ptr<Manager> mgr{std::move(Manager::createInstance())};
-     * @endcode
-     *
-     * @note This call may block.
-     *
-     * @return std::unique_ptr to new instance of a networking manager.
-     */
-    static std::unique_ptr<Manager> createInstance();
 
     /// @private
     enum class FlightModeStatus {
@@ -104,17 +87,20 @@ public:
     virtual void disableFlightMode() = 0;
 
     /// @private
-    virtual const core::Property<FlightModeStatus>& flightMode() const = 0;
+    Q_PROPERTY(Manager::FlightModeStatus flightMode READ flightMode NOTIFY flightModeUpdated)
+    virtual FlightModeStatus flightMode() const = 0;
 
     /// @private
-    virtual const core::Property<std::set<Link::Ptr>>&    links() const = 0;
+    Q_PROPERTY(std::set<Link::Ptr> links READ links NOTIFY linksUpdated)
+    virtual const std::set<Link::Ptr>& links() const = 0;
 
     /**
      * status of the overall system networking
      *
      * \snippet example_networking_status.cpp subscribe networking status changes
      */
-    virtual const core::Property<NetworkingStatus> &status() const = 0;
+    Q_PROPERTY(Manager::NetworkingStatus status READ status NOTIFY statusUpdated)
+    virtual NetworkingStatus status() const = 0;
 
     /**
      * characteristics of the overall system networking
@@ -124,12 +110,31 @@ public:
      *
      * \snippet example_networking_status.cpp subscribe characteristics changes
      */
-    virtual const core::Property<std::uint32_t>& characteristics() const = 0;
+    Q_PROPERTY(std::uint32_t characteristics READ characteristics NOTIFY characteristicsUpdated)
+    virtual std::uint32_t characteristics() const = 0;
 
-    virtual const core::Property<bool>& hasWifi() const = 0;
-    virtual const core::Property<bool>& wifiEnabled() const = 0;
+    Q_PROPERTY(bool hasWifi READ hasWifi NOTIFY hasWifiUpdated)
+    virtual bool hasWifi() const = 0;
+
+    Q_PROPERTY(bool wifiEnabled READ wifiEnabled NOTIFY wifiEnabledUpdated)
+    virtual bool wifiEnabled() const = 0;
+
     virtual bool enableWifi() = 0;
+
     virtual bool disableWifi() = 0;
+
+Q_SIGNALS:
+    void flightModeUpdated(FlightModeStatus);
+
+    void linksUpdated(const std::set<Link::Ptr>&);
+
+    void statusUpdated(NetworkingStatus);
+
+    void characteristicsUpdated(std::uint32_t);
+
+    void hasWifiUpdated(bool);
+
+    void wifiEnabledUpdated(bool);
 
 protected:
     /**

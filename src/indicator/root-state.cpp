@@ -28,14 +28,16 @@
 
 namespace networking = connectivity::networking;
 
-class RootState::Private : public QObject, public std::enable_shared_from_this<RootState::Private>
+class RootState::Private : public QObject
 {
     Q_OBJECT
 
 public:
+    RootState& p;
+
     std::shared_ptr<networking::Manager> m_manager;
     ModemManager::Ptr m_modemManager;
-    core::Property<Variant> m_state;
+    Variant m_state;
     networking::wifi::AccessPoint::Ptr m_activeAP;
     std::unique_ptr<QMetaObject::Connection> m_activeAP_conn;
 
@@ -50,8 +52,7 @@ public:
     int m_activeModem = -1;
 
     Private() = delete;
-    Private(std::shared_ptr<networking::Manager> manager, ModemManager::Ptr modemManager);
-    void ConstructL();
+    Private(RootState& parent, std::shared_ptr<networking::Manager> manager, ModemManager::Ptr modemManager);
 
     Variant createIcon(const std::string name);
 
@@ -65,41 +66,19 @@ public Q_SLOTS:
 void modemsChanged(const QList<Modem::Ptr> &modems);
 };
 
-RootState::Private::Private(std::shared_ptr<networking::Manager> manager, ModemManager::Ptr modemManager)
-    : m_manager{manager},
+RootState::Private::Private(RootState& parent, std::shared_ptr<networking::Manager> manager, ModemManager::Ptr modemManager)
+    : p{parent},
+      m_manager{manager},
       m_modemManager{modemManager}
 {
-}
-
-void RootState::Private::ConstructL()
-{
-    auto that = shared_from_this();
-
-    m_manager->flightMode().changed().connect([that](connectivity::networking::Manager::FlightModeStatus)
-    {
-        GMainLoopDispatch([that](){
-            that->updateRootState();
-        });
-    });
+    connect(m_manager.get(), &networking::Manager::flightModeUpdated, this, &Private::updateRootState);
 
     modemsChanged(m_modemManager->modems());
     // modem properties and signals already synced with GMainLoop
-    QObject::connect(m_modemManager.get(), &ModemManager::modemsUpdated, this, &Private::modemsChanged);
+    connect(m_modemManager.get(), &ModemManager::modemsUpdated, this, &Private::modemsChanged);
 
-    m_manager->status().changed().connect([that](connectivity::networking::Manager::NetworkingStatus)
-    {
-        GMainLoopDispatch([that](){
-            that->updateNetworkingIcon();
-        });
-    });
-
-    m_manager->links().changed().connect([that](std::set<connectivity::networking::Link::Ptr>)
-    {
-        GMainLoopDispatch([that](){
-            that->updateNetworkingIcon();
-        });
-    });
-
+    connect(m_manager.get(), &networking::Manager::statusUpdated, this, &Private::updateNetworkingIcon);
+    connect(m_manager.get(), &networking::Manager::linksUpdated, this, &Private::updateNetworkingIcon);
 
     // will also call updateRootState()
     updateNetworkingIcon();
@@ -200,7 +179,7 @@ RootState::Private::updateNetworkingIcon()
 {
     m_networkingIcon.clear();
 
-    switch (m_manager->status().get()) {
+    switch (m_manager->status()) {
     case networking::Manager::NetworkingStatus::offline:
         m_networkingIcon = "nm-no-connection";
         //a11ydesc = _("Network (none)");
@@ -210,8 +189,8 @@ RootState::Private::updateNetworkingIcon()
         // some sort of connection animation
         break;
     case networking::Manager::NetworkingStatus::online:
-        for (auto link : m_manager->links().get()) {
-            if (link->status().get() != networking::Link::Status::online)
+        for (auto link : m_manager->links()) {
+            if (link->status() != networking::Link::Status::online)
                 continue;
             if (link->type() == networking::Link::Type::wifi) {
 
@@ -221,10 +200,10 @@ RootState::Private::updateNetworkingIcon()
                 bool secured = false;
 
                 // check if the currently active AP has changed
-                if (m_activeAP != wifiLink->activeAccessPoint().get())
+                if (m_activeAP != wifiLink->activeAccessPoint())
                 {
                     // locally store the active AP
-                    m_activeAP = wifiLink->activeAccessPoint().get();
+                    m_activeAP = wifiLink->activeAccessPoint();
                     if (m_activeAP)
                     {
                         // connect updateNetworkingIcon() to changes in AP strength
@@ -315,7 +294,7 @@ RootState::Private::updateRootState()
     std::vector<std::string> icons;
     std::map<std::string, Variant> state;
 
-    switch(m_manager->flightMode().get()) {
+    switch(m_manager->flightMode()) {
     case networking::Manager::FlightModeStatus::off:
         break;
     case networking::Manager::FlightModeStatus::on:
@@ -375,20 +354,20 @@ RootState::Private::updateRootState()
         state["icons"] = TypedVariant<std::vector<Variant>>(iconVariants);
     }
 
-    m_state.set(TypedVariant<std::map<std::string, Variant>>(state));
+    m_state = TypedVariant<std::map<std::string, Variant>>(state);
+    Q_EMIT p.stateUpdated(m_state);
 }
 
 RootState::RootState(std::shared_ptr<connectivity::networking::Manager> manager, ModemManager::Ptr modemManager)
-    : d{new Private(manager, modemManager)}
+    : d{new Private(*this, manager, modemManager)}
 {
-    d->ConstructL();
 }
 
 RootState::~RootState()
 {}
 
-const core::Property<Variant> &
-RootState::state()
+const Variant &
+RootState::state() const
 {
     return d->m_state;
 }

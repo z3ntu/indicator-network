@@ -34,6 +34,8 @@ namespace networking {
 class CONNECTIVITY_CPP_EXPORT
 Link: public QObject
 {
+    Q_OBJECT
+
 public:
     typedef std::shared_ptr<Link> Ptr;
 
@@ -102,10 +104,12 @@ public:
     virtual Type type() const = 0;
 
     /// @private
-    virtual const core::Property<std::uint32_t>& characteristics() const = 0;
+    Q_PROPERTY(std::uint32_t characteristics READ characteristics NOTIFY characteristicsUpdated)
+    virtual std::uint32_t characteristics() const = 0;
 
     /// @private
-    virtual const core::Property<Status>& status() const = 0;
+    Q_PROPERTY(connectivity::networking::Link::Status status READ status NOTIFY statusUpdated)
+    virtual Status status() const = 0;
 
     /// @private
     typedef unsigned int Id;
@@ -114,7 +118,12 @@ public:
     virtual Id id() const = 0;
 
     /// @private
-    virtual std::string name() const = 0;
+    virtual QString name() const = 0;
+
+Q_SIGNALS:
+    void characteristicsUpdated(std::uint32_t);
+
+    void statusUpdated(Status);
 
 protected:
     /// @private

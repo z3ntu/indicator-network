@@ -37,7 +37,7 @@ class platform::nmofono::Manager : public connectivity::networking::Manager
 Q_OBJECT
     class Private;
     struct State;
-    std::shared_ptr<Private> p;
+    std::shared_ptr<Private> d;
 
     void updateNetworkingStatus(uint state);
 
@@ -48,17 +48,17 @@ public:
     // Public API
     void enableFlightMode() override;
     void disableFlightMode() override;
-    const core::Property<connectivity::networking::Manager::FlightModeStatus>& flightMode() const override;
+    connectivity::networking::Manager::FlightModeStatus flightMode() const override;
 
-    const core::Property<bool>& hasWifi() const override;
-    const core::Property<bool>& wifiEnabled() const override;
+    bool hasWifi() const override;
+    bool wifiEnabled() const override;
 
     bool enableWifi() override;
     bool disableWifi() override;
 
-    const core::Property<std::set<std::shared_ptr<connectivity::networking::Link>>>& links() const;
-    const core::Property<connectivity::networking::Manager::NetworkingStatus> & status() const override;
-    const core::Property<std::uint32_t>& characteristics() const override;
+    const std::set<std::shared_ptr<connectivity::networking::Link>>& links() const;
+    connectivity::networking::Manager::NetworkingStatus status() const override;
+    std::uint32_t characteristics() const override;
 
 private Q_SLOTS:
     void device_added(const QDBusObjectPath &path);

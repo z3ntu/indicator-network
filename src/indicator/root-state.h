@@ -21,15 +21,17 @@
 #define ROOT_STATE_MANAGER
 
 #include <nmofono/manager.h>
-#include "modem-manager.h"
+#include <modem-manager.h>
 
 #include "menumodel-cpp/gio-helpers/variant.h"
 
 /**
  * all signals and property changes emitted from GMainLoop
  */
-class RootState
+class RootState: public QObject
 {
+    Q_OBJECT
+
     class Private;
     std::shared_ptr<Private> d;
 
@@ -40,7 +42,11 @@ public:
     RootState(std::shared_ptr<connectivity::networking::Manager> manager, ModemManager::Ptr modemManager);
     virtual ~RootState();
 
-    const core::Property<Variant> &state();
+    Q_PROPERTY(Variant state READ state NOTIFY stateUpdated)
+    const Variant& state() const;
+
+Q_SIGNALS:
+    void stateUpdated(const Variant& state);
 };
 
 #endif

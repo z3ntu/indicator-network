@@ -39,6 +39,8 @@ namespace wifi {
 class CONNECTIVITY_CPP_EXPORT
 Link : public connectivity::networking::Link
 {
+    Q_OBJECT
+
 public:
     typedef std::shared_ptr<Link> Ptr;
     typedef unsigned int Id;
@@ -47,11 +49,19 @@ public:
     Link(const Link&) = delete;
     virtual ~Link() = default;
 
-    virtual const core::Property<std::set<AccessPoint::Ptr>>& accessPoints() const = 0;
+    Q_PROPERTY(std::set<connectivity::networking::wifi::AccessPoint::Ptr> accessPoints READ accessPoints NOTIFY accessPointsUpdated)
+    virtual const std::set<AccessPoint::Ptr>& accessPoints() const = 0;
 
     virtual void connect_to(AccessPoint::Ptr accessPoint) = 0;
 
-    virtual const core::Property<AccessPoint::Ptr>& activeAccessPoint() = 0;
+    Q_PROPERTY(connectivity::networking::wifi::AccessPoint::Ptr activeAccessPoint READ activeAccessPoint NOTIFY activeAccessPointUpdated)
+    virtual AccessPoint::Ptr activeAccessPoint() = 0;
+
+Q_SIGNALS:
+    void accessPointsUpdated(const std::set<AccessPoint::Ptr>&);
+
+    void activeAccessPointUpdated(AccessPoint::Ptr);
+
 };
 
 }

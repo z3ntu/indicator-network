@@ -17,37 +17,26 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#ifndef TEXT_ITEM_H
-#define TEXT_ITEM_H
+#include <menuitems/text-item.h>
 
-#include "item.h"
-
-#include "menumodel-cpp/menu-item.h"
-#include "menumodel-cpp/action.h"
-
-class TextItem : public Item
+TextItem::TextItem(const std::string &label, const std::string &prefix, const std::string &name)
 {
-    Q_OBJECT
+    std::string action_name = prefix + "." + name;
 
-public:
-    typedef std::shared_ptr<TextItem> Ptr;
+    m_action = std::make_shared<Action>(action_name, nullptr);
+    m_actionGroup->add(m_action);
+    connect(m_action.get(), &Action::activated, this, &TextItem::activated);
+    m_item = std::make_shared<MenuItem>(label, std::string("indicator.") + action_name);
+}
 
-    TextItem() = delete;
-    virtual ~TextItem() = default;
-    TextItem(const std::string &label, const std::string &prefix, const std::string &name);
+void
+TextItem::setLabel(const std::string &label)
+{
+    m_item->setLabel(label);
+}
 
-    void
-    setLabel(const std::string &label);
+MenuItem::Ptr
+TextItem::menuItem() {
+    return m_item;
+}
 
-    virtual MenuItem::Ptr
-    menuItem();
-
-Q_SIGNALS:
-    void activated();
-
-private:
-    Action::Ptr m_action;
-    MenuItem::Ptr m_item;
-};
-
-#endif // TEXT_ITEM_H

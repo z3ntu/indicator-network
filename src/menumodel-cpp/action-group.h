@@ -27,66 +27,32 @@
 #include "action.h"
 #include "gio-helpers/util.h"
 
-#include <core/signal.h>
+#include <QObject>
 
-class ActionGroup
+class ActionGroup: public QObject
 {
+    Q_OBJECT
+
     std::string m_prefix;
     std::set<Action::Ptr> m_actions;
-    core::Signal<Action::Ptr> m_actionAdded;
-    core::Signal<Action::Ptr> m_actionRemoved;
 
 public:
     typedef std::shared_ptr<ActionGroup> Ptr;
 
-    ActionGroup(const std::string &prefix = "")
-        : m_prefix {prefix}
-    {
-    }
+    ActionGroup(const std::string &prefix = "");
 
-    std::set<Action::Ptr> actions()
-    {
-        return m_actions;
-    }
+    std::set<Action::Ptr> actions();
 
-    void add(Action::Ptr action)
-    {
-        auto iter = m_actions.find(action);
-        if (iter != m_actions.end()) {
-            /// @todo throw something.
-            std::cerr << "Trying to add action which was already added before." << std::endl;
-            return;
-        }
-        m_actions.insert(action);
-        m_actionAdded(action);
-    }
+    void add(Action::Ptr action);
 
-    void remove(Action::Ptr action)
-    {
-        auto iter = m_actions.find(action);
-        if (iter == m_actions.end()) {
-            /// @todo throw something.
-            std::cerr << "Trying to remove action which was not added before." << std::endl;
-            return;
-        }
-        m_actionRemoved(action);
-        m_actions.erase(action);
-    }
+    void remove(Action::Ptr action);
 
-    bool contains(Action::Ptr action)
-    {
-        return m_actions.find(action) != m_actions.end();
-    }
+    bool contains(Action::Ptr action);
 
-    core::Signal<Action::Ptr> &actionAdded()
-    {
-        return m_actionAdded;
-    }
+Q_SIGNALS:
+    void actionAdded(Action::Ptr);
 
-    core::Signal<Action::Ptr> &actionRemoved()
-    {
-        return m_actionRemoved;
-    }
+    void actionRemoved(Action::Ptr);
 };
 
 #endif // ACTION_GROUP_MERGER_H

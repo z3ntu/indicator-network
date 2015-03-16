@@ -25,33 +25,27 @@
 
 namespace networking = connectivity::networking;
 
-#include <functional>
 #include <vector>
 
-class AccessPointItem::Private : public QObject, public std::enable_shared_from_this<AccessPointItem::Private>
+class AccessPointItem::Private : public QObject
 {
     Q_OBJECT
 
 public:
-    AccessPointItem *q;
+    AccessPointItem& q;
 
     networking::wifi::AccessPoint::Ptr m_accessPoint;
     bool m_isActive;
-
-    core::Signal<void> m_activated;
 
     Action::Ptr m_actionActivate;
     Action::Ptr m_actionStrength;
     MenuItem::Ptr m_item;
 
     Private() = delete;
-    explicit Private(AccessPointItem *parent, networking::wifi::AccessPoint::Ptr accessPoint, bool isActive = false)
+    explicit Private(AccessPointItem& parent, networking::wifi::AccessPoint::Ptr accessPoint, bool isActive = false)
         : q{parent},
           m_accessPoint{accessPoint},
           m_isActive{isActive}
-    {}
-
-    void ConstructL()
     {
         static int id = 0;
         ++id; /// @todo guard me.
@@ -77,16 +71,11 @@ public:
 
         m_actionActivate = std::make_shared<Action>(actionId,
                                                     nullptr,
-                                                    TypedVariant<bool>(m_isActive),
-                                                    [this](Variant){
-                ///@ todo something weird is happening as the unity8 side is not changing the state..
-        });
-        m_actionActivate->activated().connect([this](Variant){
-            m_activated();
-        });
+                                                    TypedVariant<bool>(m_isActive));
+        connect(m_actionActivate.get(), &Action::activated, &q, &AccessPointItem::activated);
 
-        q->actionGroup()->add(m_actionActivate);
-        q->actionGroup()->add(m_actionStrength);
+        q.actionGroup()->add(m_actionActivate);
+        q.actionGroup()->add(m_actionStrength);
     }
 
     virtual ~Private()
@@ -102,9 +91,8 @@ public Q_SLOTS:
 };
 
 AccessPointItem::AccessPointItem(networking::wifi::AccessPoint::Ptr accessPoint, bool isActive)
-    : d{new Private(this, accessPoint, isActive)}
+    : d{new Private(*this, accessPoint, isActive)}
 {
-    d->ConstructL();
 }
 
 AccessPointItem::~AccessPointItem()
@@ -121,12 +109,6 @@ MenuItem::Ptr
 AccessPointItem::menuItem()
 {
     return d->m_item;
-}
-
-core::Signal<void> &
-AccessPointItem::activated()
-{
-    return d->m_activated;
 }
 
 #include "access-point-item.moc"

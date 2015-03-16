@@ -153,8 +153,8 @@ RootState::Private::updateModem(Modem::Ptr modem)
         case Modem::Status::registered:
         case Modem::Status::roaming:
             if (modem->strength() != 0) {
-                m_cellularIcons[modem] = Modem::strengthIcon(modem->strength());
-                m_modemTechIcons[modem->index()] = Modem::technologyIcon(modem->technology());
+                m_cellularIcons[modem] = Modem::strengthIcon(modem->strength()).toStdString();
+                m_modemTechIcons[modem->index()] = Modem::technologyIcon(modem->technology()).toStdString();
             } else {
                 m_cellularIcons[modem] = "gsm-3g-no-service";
 

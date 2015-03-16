@@ -31,9 +31,6 @@
 using namespace platform::nmofono::wifi;
 namespace networking = connectivity::networking;
 
-using core::Property;
-
-
 struct Link::Private: public QObject
 {
     Q_OBJECT

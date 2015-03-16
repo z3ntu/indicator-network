@@ -147,9 +147,9 @@ public:
 
     QString name() const;
 
-    static std::string strengthIcon(int8_t strength);
+    static QString strengthIcon(int8_t strength);
 
-    static std::string technologyIcon(Technology tech);
+    static QString technologyIcon(Technology tech);
 
 Q_SIGNALS:
     void onlineUpdated(bool);

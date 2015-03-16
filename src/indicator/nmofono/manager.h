@@ -21,7 +21,6 @@
 #define CONNECTIVITY_NETWORKING_MANAGER
 
 #include <nmofono/link.h>
-#include <nmofono/service.h>
 
 #include <core/property.h>
 #include <core/signal.h>
@@ -109,9 +108,6 @@ public:
 
     /// @private
     virtual const core::Property<std::set<Link::Ptr>>&    links() const = 0;
-
-    /// @private
-    virtual const core::Property<std::set<Service::Ptr>>& services() const = 0;
 
     /**
      * status of the overall system networking

@@ -43,7 +43,6 @@ public:
 
     core::Property<connectivity::networking::Manager::FlightModeStatus> m_flightMode;
     core::Property<std::set<std::shared_ptr<connectivity::networking::Link>>> m_links;
-    core::Property<std::set<std::shared_ptr<connectivity::networking::Service>>> m_services;
     core::Property<connectivity::networking::Manager::NetworkingStatus> m_status;
     core::Property<std::uint32_t> m_characteristics;
 
@@ -252,12 +251,6 @@ const core::Property<std::set<std::shared_ptr<networking::Link> > >&
 Manager::links() const
 {
     return p->m_links;
-}
-
-const core::Property<std::set<std::shared_ptr<networking::Service>>>&
-Manager::services() const
-{
-    return p->m_services;
 }
 
 const core::Property<networking::Manager::NetworkingStatus> &

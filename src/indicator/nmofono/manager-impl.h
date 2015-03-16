@@ -57,7 +57,6 @@ public:
     bool disableWifi() override;
 
     const core::Property<std::set<std::shared_ptr<connectivity::networking::Link>>>& links() const;
-    const core::Property<std::set<std::shared_ptr<connectivity::networking::Service>>>&services() const override;
     const core::Property<connectivity::networking::Manager::NetworkingStatus> & status() const override;
     const core::Property<std::uint32_t>& characteristics() const override;
 

@@ -55,6 +55,14 @@ public:
 
 public Q_SLOTS:
     void modemsChanged(const QList<Modem::Ptr> &modems);
+
+    void openCellularSettings()
+    {
+        UrlDispatcher::send("settings:///system/cellular", [](std::string url, bool success){
+            if (!success)
+                std::cerr << "URL Dispatcher failed on " << url << std::endl;
+        });
+    }
 };
 
 WwanSection::Private::Private(ModemManager::Ptr modemManager)
@@ -77,12 +85,7 @@ WwanSection::Private::Private(ModemManager::Ptr modemManager)
     m_topMenu->append(m_topItem);
 
     m_openCellularSettings = std::make_shared<TextItem>(_("Cellular settings…"), "cellular", "settings");
-    m_openCellularSettings->activated().connect([](){
-        UrlDispatcher::send("settings:///system/cellular", [](std::string url, bool success){
-            if (!success)
-                std::cerr << "URL Dispatcher failed on " << url << std::endl;
-        });
-    });
+    connect(m_openCellularSettings.get(), &TextItem::activated, this, &Private::openCellularSettings);
     m_actionGroupMerger->add(*m_openCellularSettings);
 
     // already synced with GMainLoop

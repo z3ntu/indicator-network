@@ -50,6 +50,9 @@ Q_SIGNALS:
     // triggered when the user activates a state change
     void activated();
 
+private Q_SLOTS:
+    void actionActivated(const Variant&);
+
 private:
     bool m_state;
 

@@ -72,18 +72,21 @@ public:
         connect(m_manager.get(), &networking::Manager::linksUpdated, this, &Private::updateLinks);
 
         m_openWifiSettings = std::make_shared<TextItem>(_("Wi-Fi settings…"), "wifi", "settings");
-        m_openWifiSettings->activated().connect([](){
-            UrlDispatcher::send("settings:///system/wifi", [](std::string url, bool success){
-                if (!success)
-                    std::cerr << "URL Dispatcher failed on " << url << std::endl;
-            });
-        });
+        connect(m_openWifiSettings.get(), &TextItem::activated, this, &Private::openWiFiSettings);
 
         m_actionGroupMerger->add(*m_openWifiSettings);
         m_menu->append(*m_openWifiSettings);
     }
 
 public Q_SLOTS:
+    void openWiFiSettings()
+    {
+        UrlDispatcher::send("settings:///system/wifi", [](std::string url, bool success){
+            if (!success)
+                std::cerr << "URL Dispatcher failed on " << url << std::endl;
+        });
+    }
+
     void updateLinks()
     {
         // remove all and recreate. we have top 1 now anyway

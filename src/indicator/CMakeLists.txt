@@ -61,6 +61,7 @@ set(NETWORK_SERVICE_SOURCES
 
     menuitems/access-point-item.cpp
     menuitems/switch-item.cpp
+    menuitems/text-item.cpp
     menuitems/wifi-link-item.cpp
     menuitems/wwan-link-item.cpp
     menuitems/modem-info-item.cpp

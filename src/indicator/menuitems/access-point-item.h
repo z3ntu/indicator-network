@@ -25,6 +25,8 @@
 
 class AccessPointItem : public Item
 {
+    Q_OBJECT
+
     class Private;
     std::shared_ptr<Private> d;
 
@@ -38,7 +40,9 @@ public:
     void setActive(bool value);
 
     virtual MenuItem::Ptr menuItem();
-    core::Signal<void> &activated();
+
+Q_SIGNALS:
+    void activated();
 };
 
 #endif // ACCESS_POINT_ITEM_H

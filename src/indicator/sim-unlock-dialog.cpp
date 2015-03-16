@@ -234,10 +234,10 @@ SimUnlockDialog::Private::Private(SimUnlockDialog& parent)
     : p(parent), m_doCleanUp{true}
 {
     m_sd = std::make_shared<notify::snapdecision::SimUnlock>();
-    m_sd->cancelled().connect(std::bind(&Private::cancelled, this));
+    connect(m_sd.get(), &notify::snapdecision::SimUnlock::cancelled, this, &Private::cancelled);
     // FIXME Connect to signal
 //    m_sd->pinEntered().connect(std::bind(&Private::pinEntered, this, std::placeholders::_1));
-    m_sd->closed().connect(std::bind(&Private::closed, this));
+    connect(m_sd.get(), &notify::snapdecision::SimUnlock::closed, this, &Private::closed);
 
     reset();
 }
@@ -250,9 +250,9 @@ SimUnlockDialog::Private::update()
     if (!m_modem || !m_sd)
         return;
 
-    m_sd->title().set("");
-    m_sd->body().set("");
-    m_sd->pinMinMax().set({0, 0});
+    m_sd->setTitle("");
+    m_sd->setBody("");
+    m_sd->setPinMinMax({0, 0});
 
     std::map<Modem::PinType, std::pair<std::uint8_t, std::uint8_t>> lengths;
     lengths = {{Modem::PinType::pin, {4, 8}},
@@ -295,7 +295,7 @@ SimUnlockDialog::Private::update()
                                                            m_modem->simIdentifier().toStdString());
             break;
         }
-        m_sd->pinMinMax().set(lengths[type]);
+        m_sd->setPinMinMax(lengths[type]);
 
         std::string attempts;
         if (retries.find(type) != retries.end()) {
@@ -304,25 +304,25 @@ SimUnlockDialog::Private::update()
             g_free(tmp);
         }
 
-        m_sd->title().set(title);
-        m_sd->body().set(attempts);
+        m_sd->setTitle(QString::fromStdString(title));
+        m_sd->setBody(QString::fromStdString(attempts));
         break;
     }
     case EnterPinStates::enterNewPin:
-        m_sd->body().set("Create new PIN");
-        m_sd->title().set(ubuntu::i18n::argumentSubstitute(_("Enter new %{1} PIN"),
+        m_sd->setBody("Create new PIN");
+        m_sd->setTitle(QString::fromStdString(ubuntu::i18n::argumentSubstitute(_("Enter new %{1} PIN"),
                                                            m_showSimIdentifiers ?
                                                                m_modem->simIdentifier().toStdString()
-                                                             : "SIM"));
-        m_sd->pinMinMax().set(lengths[Modem::PinType::pin]);
+                                                             : "SIM")));
+        m_sd->setPinMinMax(lengths[Modem::PinType::pin]);
         break;
     case EnterPinStates::confirmNewPin:
-        m_sd->body().set("Create new PIN");
-        m_sd->title().set(ubuntu::i18n::argumentSubstitute(_("Confirm new %{1} PIN"),
+        m_sd->setBody("Create new PIN");
+        m_sd->setTitle(QString::fromStdString(ubuntu::i18n::argumentSubstitute(_("Confirm new %{1} PIN"),
                                                            m_showSimIdentifiers ?
                                                                m_modem->simIdentifier().toStdString()
-                                                             : "SIM"));
-        m_sd->pinMinMax().set(lengths[Modem::PinType::pin]);
+                                                             : "SIM")));
+        m_sd->setPinMinMax(lengths[Modem::PinType::pin]);
         break;
     }
 

@@ -130,8 +130,7 @@ ModemManager::unlockModem(Modem::Ptr modem)
         // crashed taking the notification server with it. There is no graceful
         // and reliable way to recover so die and get restarted.
         // See also https://bugs.launchpad.net/unity-notifications/+bug/1238990
-        std::cerr << __PRETTY_FUNCTION__ << " sim unlocking failed: " << e.what() << "\n";
-        std::quick_exit(0);
+        qWarning() << __PRETTY_FUNCTION__ << " sim unlocking failed: " << QString::fromStdString(e.what());
     }
 }
 
@@ -139,7 +138,7 @@ void
 ModemManager::unlockAllModems()
 {
 #ifdef INDICATOR_NETWORK_TRACE_MESSAGES
-    std::cout << __PRETTY_FUNCTION__ << std::endl;
+    qDebug() << __PRETTY_FUNCTION__;
 #endif
     for (auto& m : d->m_modems)
     {
@@ -154,7 +153,7 @@ void
 ModemManager::unlockModemByName(const QString &name)
 {
 #ifdef INDICATOR_NETWORK_TRACE_MESSAGES
-    std::cout << __PRETTY_FUNCTION__ << std::endl;
+    qDebug() << __PRETTY_FUNCTION__ ;
 #endif
     auto it = d->m_modems.find(name);
     if (it != d->m_modems.cend())

@@ -447,6 +447,7 @@ Modem::Private::update()
     }
     else
     {
+        qWarning() << "No network registration available for" << m_ofonoModem->modemPath();
         setOperatorName("");
         setStatus(Modem::Status::unknown);
         setStrength(-1);
@@ -465,7 +466,7 @@ Modem::Private::update()
     Q_EMIT p.updated(p.shared_from_this());
 }
 
-std::string Modem::strengthIcon(int8_t strength)
+QString Modem::strengthIcon(int8_t strength)
 {
     /* Using same values as used by Android, not linear (LP: #1329945)*/
     if (strength >= 39)
@@ -480,7 +481,7 @@ std::string Modem::strengthIcon(int8_t strength)
         return "gsm-3g-none";
 }
 
-std::string Modem::technologyIcon(Modem::Technology tech)
+QString Modem::technologyIcon(Modem::Technology tech)
 {
     switch (tech){
     case Modem::Technology::notAvailable:

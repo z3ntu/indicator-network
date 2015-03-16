@@ -72,7 +72,7 @@ public:
     operator bool() const { return m_variant.get() != nullptr; }
 
     template<typename T>
-    T as()
+    T as() const
     {
         T value;
         Codec<T>::decode_argument(*this, value);

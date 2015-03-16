@@ -32,8 +32,10 @@ namespace networking = connectivity::networking;
 #include <algorithm>
 #include <locale>
 
-class WifiLinkItem::Private : public std::enable_shared_from_this<Private>
+class WifiLinkItem::Private : public QObject
 {
+    Q_OBJECT
+
 public:
     ActionGroupMerger::Ptr m_actionGroupMerger;
 
@@ -72,9 +74,6 @@ public:
     ~Private() {}
     Private(networking::wifi::Link::Ptr link)
         : m_link {link}
-    {}
-
-    void ConstructL()
     {
         m_actionGroupMerger = std::make_shared<ActionGroupMerger>();
 
@@ -108,25 +107,11 @@ public:
             return a_upper < b_upper;
         };
 
-        auto that = shared_from_this();
+        updateAccessPoints(m_link->accessPoints());
+        connect(m_link.get(), &networking::wifi::Link::accessPointsUpdated, this, &Private::updateAccessPoints);
 
-        updateAccessPoints(m_link->accessPoints().get());
-        m_link->accessPoints().changed().connect([that](std::set<networking::wifi::AccessPoint::Ptr> accessPoints)
-        {
-            GMainLoopDispatch([that, accessPoints]()
-            {
-                that->updateAccessPoints(accessPoints);
-            });
-        });
-
-        updateActiveAccessPoint(m_link->activeAccessPoint().get());
-        m_link->activeAccessPoint().changed().connect([that](networking::wifi::AccessPoint::Ptr ap)
-        {
-            GMainLoopDispatch([that, ap]()
-            {
-                that->updateActiveAccessPoint(ap);
-            });
-        });
+        updateActiveAccessPoint(m_link->activeAccessPoint());
+        connect(m_link.get(), &networking::wifi::Link::activeAccessPointUpdated, this, &Private::updateActiveAccessPoint);
 
         m_otherNetwork = std::make_shared<TextItem>(_("Other network…"), "wifi", "othernetwork");
         //m_actionGroupMerger->add(*m_otherNetwork);
@@ -143,7 +128,8 @@ public:
         m_item = MenuItem::newSection(m_rootMerger);
     }
 
-    void updateAccessPoints(std::set<networking::wifi::AccessPoint::Ptr> accessPoints)
+public Q_SLOTS:
+    void updateAccessPoints(const std::set<networking::wifi::AccessPoint::Ptr>& accessPoints)
     {
         /// @todo previously connected
         /// @todo apply visibility policy.
@@ -225,7 +211,6 @@ public:
 WifiLinkItem::WifiLinkItem(connectivity::networking::wifi::Link::Ptr link)
     : d{new Private(link)}
 {
-    d->ConstructL();
 }
 
 WifiLinkItem::~WifiLinkItem()
@@ -242,3 +227,5 @@ WifiLinkItem::menuItem()
 {
     return d->m_item;
 }
+
+#include "wifi-link-item.moc"

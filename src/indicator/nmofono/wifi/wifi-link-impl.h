@@ -51,32 +51,30 @@ public:
 
     Type type() const override;
     Id id() const override;
-    std::string name() const override;
+    QString name() const override;
 
-    const core::Property<std::uint32_t>& characteristics() const override;
-    const core::Property<Status>& status() const override;
+    std::uint32_t characteristics() const override;
+    Status status() const override;
 
-    const core::Property<std::set<std::shared_ptr<connectivity::networking::wifi::AccessPoint>>>& accessPoints() const override;
-    const core::Property<std::set<std::shared_ptr<connectivity::networking::wifi::AccessPoint>>>& rawAccessPoints() const;
+    const std::set<std::shared_ptr<connectivity::networking::wifi::AccessPoint>>& accessPoints() const override;
+    Q_PROPERTY(std::set<connectivity::networking::wifi::AccessPoint::Ptr> rawAccessPoints READ rawAccessPoints NOTIFY rawAccessPointsUpdated)
+    const std::set<std::shared_ptr<connectivity::networking::wifi::AccessPoint>>& rawAccessPoints() const;
     void connect_to(std::shared_ptr<connectivity::networking::wifi::AccessPoint> accessPoint) override;
-    const core::Property<std::shared_ptr<connectivity::networking::wifi::AccessPoint>>& activeAccessPoint() override;
+    std::shared_ptr<connectivity::networking::wifi::AccessPoint> activeAccessPoint() override;
 
     // private API
 
-    void updateDeviceState(uint new_state);
-    void updateActiveConnection(const QDBusObjectPath &path);
+//    void updateDeviceState(uint new_state);
+//    void updateActiveConnection(const QDBusObjectPath &path);
 
     QDBusObjectPath device_path() const;
 
-private Q_SLOTS:
-    void ap_added(const QDBusObjectPath &path);
-    void ap_removed(const QDBusObjectPath &path);
-    void update_grouped();
-    void state_changed(uint new_state, uint old_state, uint reason);
+Q_SIGNALS:
+    void rawAccessPointsUpdated(const std::set<connectivity::networking::wifi::AccessPoint::Ptr>&);
 
 private:
     struct Private;
-    std::unique_ptr<Private> p;
+    std::unique_ptr<Private> d;
 };
 
 #endif

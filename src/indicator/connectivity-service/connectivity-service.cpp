@@ -83,8 +83,9 @@ struct Introspectable
 };
 }
 
-class ConnectivityService::Private : public std::enable_shared_from_this<Private>
+class ConnectivityService::Private : public QObject, public std::enable_shared_from_this<Private>
 {
+    Q_OBJECT
 public:
     std::thread m_connectivityServiceWorker;
 
@@ -111,9 +112,11 @@ public:
     void ConstructL();
     ~Private();
 
-    void updateNetworkingStatus();
 
     std::string introspectXml();
+
+public Q_SLOTS:
+    void updateNetworkingStatus();
 };
 
 ConnectivityService::Private::Private(std::shared_ptr<networking::Manager> manager)
@@ -124,12 +127,9 @@ void
 ConnectivityService::Private::ConstructL()
 {
     auto that = shared_from_this();
-    m_manager->characteristics().changed().connect(
-                [that](int){ GMainLoopDispatch([that](){ that->updateNetworkingStatus(); }); });
+    connect(m_manager.get(), &networking::Manager::characteristicsUpdated, this, &Private::updateNetworkingStatus);
 
-    typedef connectivity::networking::Manager::NetworkingStatus NetworkingStatus;
-    m_manager->status().changed().connect(
-                [that](NetworkingStatus){ GMainLoopDispatch([that](){ that->updateNetworkingStatus(); }); });
+    connect(m_manager.get(), &networking::Manager::statusUpdated, this, &Private::updateNetworkingStatus);
 
     m_bus = std::make_shared<core::dbus::Bus>(core::dbus::WellKnownBus::session);
 
@@ -246,7 +246,7 @@ ConnectivityService::Private::updateNetworkingStatus()
     std::vector<std::string> old_limitations = m_limitations->get();
     std::string old_status = m_status->get();
 
-    switch(m_manager->status().get()) {
+    switch(m_manager->status()) {
     case networking::Manager::NetworkingStatus::offline:
         m_status->set("offline");
         break;
@@ -263,7 +263,7 @@ ConnectivityService::Private::updateNetworkingStatus()
 
 
     std::vector<std::string> limitations;
-    auto characteristics = m_manager->characteristics().get();
+    auto characteristics = m_manager->characteristics();
     if ((characteristics & networking::Link::Characteristics::is_bandwidth_limited) != 0) {
         limitations.push_back("bandwith");
     }
@@ -362,3 +362,4 @@ ConnectivityService::unlockModem()
     return d->m_unlockModem;
 }
 
+#include "connectivity-service.moc"

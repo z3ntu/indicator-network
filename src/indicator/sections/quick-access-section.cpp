@@ -26,8 +26,10 @@
 
 namespace networking = connectivity::networking;
 
-class QuickAccessSection::Private : public std::enable_shared_from_this<Private>
+class QuickAccessSection::Private : public QObject
 {
+    Q_OBJECT
+
 public:
     ActionGroupMerger::Ptr m_actionGroupMerger;
     Menu::Ptr m_menu;
@@ -38,62 +40,56 @@ public:
 
     Private() = delete;
     Private(std::shared_ptr<networking::Manager> manager);
-    void ConstructL();
+
+public Q_SLOTS:
+    void flightModeUpdated(networking::Manager::FlightModeStatus value)
+    {
+        switch (value) {
+        case networking::Manager::FlightModeStatus::off:
+            m_flightModeSwitch->setState(false);
+            break;
+        case networking::Manager::FlightModeStatus::on:
+            m_flightModeSwitch->setState(true);
+            break;
+        }
+    }
+
+    void flightModeSwitchActivated()
+    {
+        bool state = m_flightModeSwitch->state();
+        if (state) {
+            try {
+                m_manager->enableFlightMode();
+            } catch (const std::exception &e) {
+                std::cerr << e.what() << std::endl;
+            }
+        } else {
+            try {
+                m_manager->disableFlightMode();
+            } catch (const std::exception &e) {
+                std::cerr << e.what() << std::endl;
+            }
+        }
+    }
 };
 
 QuickAccessSection::Private::Private(std::shared_ptr<networking::Manager> manager)
     : m_manager{manager}
-{}
-
-void
-QuickAccessSection::Private::ConstructL()
 {
     m_actionGroupMerger = std::make_shared<ActionGroupMerger>();
     m_menu = std::make_shared<Menu>();
 
-    auto that = shared_from_this();
-
     m_flightModeSwitch = std::make_shared<SwitchItem>(_("Flight Mode"), "airplane", "enabled");
-    switch (m_manager->flightMode().get()) {
+    switch (m_manager->flightMode()) {
     case networking::Manager::FlightModeStatus::off:
-        m_flightModeSwitch->state().set(false);
+        m_flightModeSwitch->setState(false);
         break;
     case networking::Manager::FlightModeStatus::on:
-        m_flightModeSwitch->state().set(true);
+        m_flightModeSwitch->setState(true);
         break;
     }
-    m_manager->flightMode().changed().connect([that](networking::Manager::FlightModeStatus value){
-        GMainLoopDispatch([that, value]
-        {
-            switch (value) {
-            case networking::Manager::FlightModeStatus::off:
-                that->m_flightModeSwitch->state().set(false);
-                break;
-            case networking::Manager::FlightModeStatus::on:
-                that->m_flightModeSwitch->state().set(true);
-                break;
-            }
-        });
-    });
-    m_flightModeSwitch->activated().connect([this](){
-        bool state = m_flightModeSwitch->state().get();
-        auto manager = m_manager;
-        GMainLoopDispatch([manager, state](){
-            if (state) {
-                try {
-                    manager->enableFlightMode();
-                } catch (const std::exception &e) {
-                    std::cerr << e.what() << std::endl;
-                }
-            } else {
-                try {
-                    manager->disableFlightMode();
-                } catch (const std::exception &e) {
-                    std::cerr << e.what() << std::endl;
-                }
-            }
-        }, G_PRIORITY_LOW, true);
-    });
+    connect(m_manager.get(), &networking::Manager::flightModeUpdated, this, &Private::flightModeUpdated);
+    connect(m_flightModeSwitch.get(), &SwitchItem::activated, this, &Private::flightModeSwitchActivated);
 
     m_actionGroupMerger->add(*m_flightModeSwitch);
     m_menu->append(*m_flightModeSwitch);
@@ -102,12 +98,10 @@ QuickAccessSection::Private::ConstructL()
 QuickAccessSection::QuickAccessSection(std::shared_ptr<networking::Manager> manager)
     : d{new Private(manager)}
 {
-    d->ConstructL();
 }
 
 QuickAccessSection::~QuickAccessSection()
 {
-
 }
 
 ActionGroup::Ptr
@@ -121,3 +115,5 @@ QuickAccessSection::menuModel()
 {
     return d->m_menu;
 }
+
+#include "quick-access-section.moc"

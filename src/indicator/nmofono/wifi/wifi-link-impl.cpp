@@ -34,159 +34,289 @@ namespace networking = connectivity::networking;
 using core::Property;
 
 
-struct Link::Private
+struct Link::Private: public QObject
 {
-    Private(std::shared_ptr<OrgFreedesktopNetworkManagerDeviceInterface> dev,
+    Q_OBJECT
+
+public:
+    Private(Link& parent,
+            std::shared_ptr<OrgFreedesktopNetworkManagerDeviceInterface> dev,
             std::shared_ptr<OrgFreedesktopNetworkManagerInterface> nm,
-            KillSwitch::Ptr killSwitch);
+            KillSwitch::Ptr killSwitch)
+       : p(parent),
+         m_dev(dev),
+         m_wireless(NM_DBUS_SERVICE, dev->path(), dev->connection()),
+         m_nm(nm),
+         m_killSwitch(killSwitch),
+         m_disabled(true),
+         m_lastState(NM_STATE_UNKNOWN),
+         m_connecting(false)
+    {
+    }
 
-    core::Property<std::uint32_t> characteristics_;
-    core::Property<connectivity::networking::Link::Status> status_;
-    core::Property<std::set<std::shared_ptr<connectivity::networking::wifi::AccessPoint>>> rawAccessPoints;
-    core::Property<std::set<std::shared_ptr<connectivity::networking::wifi::AccessPoint>>> groupedAccessPoints;
-    core::Property<std::shared_ptr<connectivity::networking::wifi::AccessPoint>> activeAccessPoint;
+    Link& p;
 
-    std::shared_ptr<OrgFreedesktopNetworkManagerDeviceInterface> dev;
-    OrgFreedesktopNetworkManagerDeviceWirelessInterface wireless;
-    std::shared_ptr<OrgFreedesktopNetworkManagerInterface> nm;
+    std::uint32_t m_characteristics = Link::Characteristics::empty;
+    connectivity::networking::Link::Status m_status = Status::disabled;
+    std::set<std::shared_ptr<connectivity::networking::wifi::AccessPoint>> m_rawAccessPoints;
+    std::set<std::shared_ptr<connectivity::networking::wifi::AccessPoint>> m_groupedAccessPoints;
+    std::shared_ptr<connectivity::networking::wifi::AccessPoint> m_activeAccessPoint;
 
-    KillSwitch::Ptr killSwitch;
+    std::shared_ptr<OrgFreedesktopNetworkManagerDeviceInterface> m_dev;
+    OrgFreedesktopNetworkManagerDeviceWirelessInterface m_wireless;
+    std::shared_ptr<OrgFreedesktopNetworkManagerInterface> m_nm;
 
-    std::map<AccessPoint::Key, std::shared_ptr<GroupedAccessPoint>> grouper;
-    bool disabled;
-    std::uint32_t lastState;
-    QString name;
-    std::shared_ptr<OrgFreedesktopNetworkManagerConnectionActiveInterface> activeConnection;
-    bool connecting;
+    KillSwitch::Ptr m_killSwitch;
+
+    std::map<AccessPoint::Key, std::shared_ptr<GroupedAccessPoint>> m_grouper;
+    bool m_disabled = false;
+    std::uint32_t m_lastState = 0;
+    QString m_name;
+    std::shared_ptr<OrgFreedesktopNetworkManagerConnectionActiveInterface> m_activeConnection;
+    bool m_connecting = false;
+
+    void setStatus(Status status)
+    {
+        if (m_status == status)
+        {
+            return;
+        }
+
+        m_status = status;
+        Q_EMIT p.statusUpdated(m_status);
+    }
+
+    void updateDeviceState(uint new_state)
+    {
+        m_lastState = new_state;
+        switch (new_state){
+        case NM_DEVICE_STATE_DISCONNECTED:
+        case NM_DEVICE_STATE_DEACTIVATING:
+            if (m_connecting) {
+                // ignore these while doing connect_to()
+                break;
+            }
+            /* fallthrough */
+        case NM_DEVICE_STATE_UNKNOWN:
+        case NM_DEVICE_STATE_UNMANAGED:
+        case NM_DEVICE_STATE_UNAVAILABLE:
+        case NM_DEVICE_STATE_FAILED:
+        {
+            // make sure to set activeConnection before changing the status
+            updateActiveConnection(QDBusObjectPath("/"));
+
+            switch(m_killSwitch->state()) {
+            case KillSwitch::State::hard_blocked:
+            case KillSwitch::State::soft_blocked:
+                setStatus(Status::disabled);
+                break;
+            case KillSwitch::State::not_available:
+            case KillSwitch::State::unblocked:
+                setStatus(Status::offline);
+            }
+            break;
+        }
+        case NM_DEVICE_STATE_PREPARE:
+        case NM_DEVICE_STATE_CONFIG:
+        case NM_DEVICE_STATE_NEED_AUTH:
+        case NM_DEVICE_STATE_IP_CONFIG:
+        case NM_DEVICE_STATE_IP_CHECK:
+        {
+            // make sure to set activeConnection before changing the status
+            QDBusObjectPath path = m_dev->activeConnection();
+            // for some reason the path is not always set on these
+            // states. Let's not clear the active connection as obviously
+            // we have one.
+            if (path != QDBusObjectPath("/"))
+            {
+                updateActiveConnection(path);
+            }
+            setStatus(Status::connecting);
+            break;
+        }
+        case NM_DEVICE_STATE_SECONDARIES:
+        {
+            // make sure to set activeConnection before changing the status
+            updateActiveConnection(m_dev->activeConnection());
+            setStatus(Status::connected);
+            break;
+        }
+        case NM_DEVICE_STATE_ACTIVATED:
+        {
+            // make sure to set activeConnection before changing the status
+            updateActiveConnection(m_dev->activeConnection());
+            setStatus(Status::online);
+            break;
+        }}
+
+    }
+
+    /// '/' path means invalid.
+    void updateActiveConnection(const QDBusObjectPath &path)
+    {
+        // clear the one we have.
+        if (path == QDBusObjectPath("/")) {
+            m_activeAccessPoint.reset();
+            Q_EMIT p.activeAccessPointUpdated(m_activeAccessPoint);
+            m_activeConnection.reset();
+            return;
+        }
+
+        // already up-to-date
+        if (m_activeConnection && m_activeConnection->path() == path.path())
+        {
+            return;
+        }
+
+        try {
+            m_activeConnection = std::make_shared<
+                    OrgFreedesktopNetworkManagerConnectionActiveInterface>(
+                    NM_DBUS_SERVICE, path.path(), m_dev->connection());
+            uint state = m_activeConnection->state();
+            switch (state) {
+            case NM_ACTIVE_CONNECTION_STATE_UNKNOWN:
+            case NM_ACTIVE_CONNECTION_STATE_ACTIVATING:
+            case NM_ACTIVE_CONNECTION_STATE_ACTIVATED:
+            case NM_ACTIVE_CONNECTION_STATE_DEACTIVATING:
+            case NM_ACTIVE_CONNECTION_STATE_DEACTIVATED:
+                ;
+
+                // for Wi-Fi devices specific_object is the AccessPoint object.
+                QDBusObjectPath ap_path = m_activeConnection->specificObject();
+                for (auto &ap : m_groupedAccessPoints) {
+                    auto shap =  std::dynamic_pointer_cast<GroupedAccessPoint>(ap);
+                    if (shap->has_object(ap_path)) {
+                        m_activeAccessPoint = ap;
+                        Q_EMIT p.activeAccessPointUpdated(m_activeAccessPoint);
+                        break;
+                    }
+                }
+            }
+        } catch (std::exception &e) {
+            qWarning() << "failed to get active connection:";
+            qWarning() << "\tpath: " << path.path();
+            qWarning() << "\t" << QString::fromStdString(e.what());
+        }
+    }
+
+
+public Q_SLOTS:
+    void ap_added(const QDBusObjectPath &path)
+    {
+        try {
+            for (auto ap : m_rawAccessPoints) {
+                if (std::dynamic_pointer_cast<AccessPoint>(ap)->object_path() == path) {
+                    // already in the list
+                    return;
+                }
+            }
+
+            platform::nmofono::wifi::AccessPoint::Ptr shap;
+            try {
+                auto ap = std::make_shared<
+                        OrgFreedesktopNetworkManagerAccessPointInterface>(
+                        NM_DBUS_SERVICE, path.path(), m_dev->connection());
+                shap = std::make_shared<platform::nmofono::wifi::AccessPoint>(ap);
+            } catch(const std::exception &e) {
+                qWarning() << __PRETTY_FUNCTION__ << ": failed to create AccessPoint proxy for "<< path.path() << ": ";
+                qWarning() << "\t" << QString::fromStdString(e.what());
+                qWarning() << "\tIgnoring.";
+                return;
+            }
+
+            m_rawAccessPoints.insert(shap);
+            Q_EMIT p.rawAccessPointsUpdated(m_rawAccessPoints);
+
+            auto k = AccessPoint::Key(shap);
+            if(m_grouper.find(k) != m_grouper.end()) {
+                m_grouper[k]->add_ap(shap);
+            } else {
+                m_grouper[k] = std::make_shared<GroupedAccessPoint>(shap);
+            }
+            update_grouped();
+        } catch(const std::exception &e) {
+            /// @bug dbus-cpp internal logic exploded
+            // If this happens, indicator-network is in an unknown state with no clear way of
+            // recovering. The only reasonable way out is a graceful exit.
+            std::cerr << __PRETTY_FUNCTION__ << " Failed to run dbus service: " << e.what() << std::endl;
+            std::quick_exit(0);
+        }
+    }
+
+    void ap_removed(const QDBusObjectPath &path)
+    {
+        platform::nmofono::wifi::AccessPoint::Ptr shap;
+
+        auto list = m_rawAccessPoints;
+        for (const auto &ap : list) {
+            if (std::dynamic_pointer_cast<AccessPoint>(ap)->object_path() == path) {
+                shap = std::dynamic_pointer_cast<platform::nmofono::wifi::AccessPoint>(ap);
+                list.erase(ap);
+                break;
+            }
+        }
+        if (!shap) {
+            qWarning() << __PRETTY_FUNCTION__ << ": Tried to remove access point " << path.path() << " that has not been added.";
+            return;
+        }
+        m_rawAccessPoints = list;
+        Q_EMIT p.rawAccessPointsUpdated(m_rawAccessPoints);
+
+        for (auto &e : m_grouper) {
+            if (!e.second->has_object(path))
+                continue;
+
+            if(e.second->num_aps() == 1) {
+                m_grouper.erase(e.first);
+            } else {
+                e.second->remove_ap(shap);
+            }
+            break;
+        }
+        update_grouped();
+    }
+
+    void update_grouped() {
+        std::set<std::shared_ptr<connectivity::networking::wifi::AccessPoint>> new_grouped;
+        for(auto &i : m_grouper) {
+            new_grouped.insert(i.second);
+        }
+        m_groupedAccessPoints = new_grouped;
+        Q_EMIT p.accessPointsUpdated(m_groupedAccessPoints);
+    }
+
+    void state_changed(uint new_state, uint, uint)
+    {
+        updateDeviceState(new_state);
+    }
+
+    void kill_switch_updated()
+    {
+        updateDeviceState(m_lastState);
+    }
 };
-
-Link::Private::Private(std::shared_ptr<OrgFreedesktopNetworkManagerDeviceInterface> dev,
-                       std::shared_ptr<OrgFreedesktopNetworkManagerInterface> nm,
-                       KillSwitch::Ptr killSwitch)
-    : dev(dev),
-      wireless(NM_DBUS_SERVICE, dev->path(), dev->connection()),
-      nm(nm),
-      killSwitch(killSwitch),
-      disabled(true),
-      lastState(NM_STATE_UNKNOWN),
-      connecting(false)
-{}
 
 Link::Link(std::shared_ptr<OrgFreedesktopNetworkManagerDeviceInterface> dev,
            std::shared_ptr<OrgFreedesktopNetworkManagerInterface> nm,
            platform::nmofono::KillSwitch::Ptr killSwitch)
-    : p(new Private(dev, nm, killSwitch)) {
-    p->characteristics_.set(Link::Characteristics::empty);
-    p->status_.set(Status::disabled);
+    : d(new Private(*this, dev, nm, killSwitch)) {
+    d->m_name = d->m_dev->interface();
 
-    p->name = p->dev->interface();
-
-    connect(&p->wireless, &OrgFreedesktopNetworkManagerDeviceWirelessInterface::AccessPointAdded, this, &Link::ap_added);
-    connect(&p->wireless, &OrgFreedesktopNetworkManagerDeviceWirelessInterface::AccessPointRemoved, this, &Link::ap_removed);
-    QList<QDBusObjectPath> aps = p->wireless.GetAccessPoints();
+    connect(&d->m_wireless, &OrgFreedesktopNetworkManagerDeviceWirelessInterface::AccessPointAdded, d.get(), &Private::ap_added);
+    connect(&d->m_wireless, &OrgFreedesktopNetworkManagerDeviceWirelessInterface::AccessPointRemoved, d.get(), &Private::ap_removed);
+    QList<QDBusObjectPath> aps = d->m_wireless.GetAccessPoints();
     for (const auto& path : aps) {
-        ap_added(path);
+        d->ap_added(path);
     }
 
-    connect(p->dev.get(), &OrgFreedesktopNetworkManagerDeviceInterface::StateChanged, this, &Link::state_changed);
-    updateDeviceState(p->dev->state());
+    connect(d->m_dev.get(), &OrgFreedesktopNetworkManagerDeviceInterface::StateChanged, d.get(), &Private::state_changed);
+    d->updateDeviceState(d->m_dev->state());
 
-    QObject::connect(p->killSwitch.get(), &KillSwitch::stateChanged, [this]()
-    {
-        updateDeviceState(p->lastState);
-    });
+    connect(d->m_killSwitch.get(), &KillSwitch::stateChanged, d.get(), &Private::kill_switch_updated);
 }
 
 Link::~Link()
 {}
-
-void Link::state_changed(uint new_state, uint, uint)
-{
-    updateDeviceState(new_state);
-}
-
-void Link::ap_added(const QDBusObjectPath &path)
-{
-    try {
-        for (auto ap : p->rawAccessPoints.get()) {
-            if (std::dynamic_pointer_cast<AccessPoint>(ap)->object_path() == path) {
-                // already in the list
-                return;
-            }
-        }
-
-        platform::nmofono::wifi::AccessPoint::Ptr shap;
-        try {
-            auto ap = std::make_shared<
-                    OrgFreedesktopNetworkManagerAccessPointInterface>(
-                    NM_DBUS_SERVICE, path.path(), p->dev->connection());
-            shap = std::make_shared<platform::nmofono::wifi::AccessPoint>(ap);
-        } catch(const std::exception &e) {
-            qWarning() << __PRETTY_FUNCTION__ << ": failed to create AccessPoint proxy for "<< path.path() << ": ";
-            qWarning() << "\t" << QString::fromStdString(e.what());
-            qWarning() << "\tIgnoring.";
-            return;
-        }
-
-        auto list = p->rawAccessPoints.get();
-        list.insert(shap);
-        p->rawAccessPoints.set(list);
-
-        auto k = AccessPoint::Key(shap);
-        if(p->grouper.find(k) != p->grouper.end()) {
-            p->grouper[k]->add_ap(shap);
-        } else {
-            p->grouper[k] = std::make_shared<GroupedAccessPoint>(shap);
-        }
-        update_grouped();
-    } catch(const std::exception &e) {
-        /// @bug dbus-cpp internal logic exploded
-        // If this happens, indicator-network is in an unknown state with no clear way of
-        // recovering. The only reasonable way out is a graceful exit.
-        std::cerr << __PRETTY_FUNCTION__ << " Failed to run dbus service: " << e.what() << std::endl;
-        std::quick_exit(0);
-    }
-}
-
-void Link::ap_removed(const QDBusObjectPath &path)
-{
-    platform::nmofono::wifi::AccessPoint::Ptr shap;
-
-    auto list = p->rawAccessPoints.get();
-    for (const auto &ap : list) {
-        if (std::dynamic_pointer_cast<AccessPoint>(ap)->object_path() == path) {
-            shap = std::dynamic_pointer_cast<platform::nmofono::wifi::AccessPoint>(ap);
-            list.erase(ap);
-            break;
-        }
-    }
-    if (!shap) {
-        qWarning() << __PRETTY_FUNCTION__ << ": Tried to remove access point " << path.path() << " that has not been added.";
-        return;
-    }
-    p->rawAccessPoints.set(list);
-
-    for (auto &e : p->grouper) {
-        if (!e.second->has_object(path))
-            continue;
-
-        if(e.second->num_aps() == 1) {
-            p->grouper.erase(e.first);
-        } else {
-            e.second->remove_ap(shap);
-        }
-        break;
-    }
-    update_grouped();
-}
-
-void Link::update_grouped() {
-    std::set<std::shared_ptr<connectivity::networking::wifi::AccessPoint>> new_grouped;
-    for(auto &i : p->grouper) {
-        new_grouped.insert(i.second);
-    }
-    p->groupedAccessPoints.set(new_grouped);
-}
 
 void
 Link::enable()
@@ -196,12 +326,12 @@ Link::enable()
 #endif
 
     try {
-        if (p->killSwitch->state() != KillSwitch::State::unblocked) {
+        if (d->m_killSwitch->state() != KillSwitch::State::unblocked) {
             // try to unblock. throws if fails.
-            p->killSwitch->unblock();
+            d->m_killSwitch->unblock();
         }
-        p->nm->setWirelessEnabled(true);
-        p->dev->setAutoconnect(true);
+        d->m_nm->setWirelessEnabled(true);
+        d->m_dev->setAutoconnect(true);
     } catch(std::runtime_error &e) {
         /// @todo when toggling enable()/disable() rapidly the default timeout of
         ///       1 second in dbus::core::Property is not long enough..
@@ -220,8 +350,8 @@ Link::enable()
      * for now we get somewhat similar result by toggling the Autoconnect property,
      * but this breaks the possible setting we will have for autoconnecting later.
      */
-    dev.autoconnect->set(true);
-    disabled = false;
+    m_dev.autoconnect->set(true);
+    m_disabled = false;
 #endif
 }
 
@@ -235,13 +365,13 @@ Link::disable()
     /// @todo for now just disable wireless completely.
     ///        this only works properly when there is one wifi adapter on the system
     try {
-        if (p->killSwitch->state() == KillSwitch::State::unblocked) {
+        if (d->m_killSwitch->state() == KillSwitch::State::unblocked) {
             // block the device. that will disable it also
-            p->killSwitch->block();
+            d->m_killSwitch->block();
             return;
         }
-        p->nm->setWirelessEnabled(false);
-        p->dev->setAutoconnect(false);
+        d->m_nm->setWirelessEnabled(false);
+        d->m_dev->setAutoconnect(false);
     } catch(std::runtime_error &e) {
         /// @todo when toggling enable()/disable() rapidly the default timeout of
         ///       1 second in dbus::core::Property is not long enough..
@@ -251,7 +381,7 @@ Link::disable()
 
 #if 0
     /** @todo remove this after NM 0.9.9 is available. check comment in enable() */
-    dev.disconnect();
+    m_dev.disconnect();
 #endif
 }
 
@@ -261,16 +391,16 @@ Link::type() const
     return Type::wifi;
 }
 
-const Property<std::uint32_t>&
+uint32_t
 Link::characteristics() const
 {
-    return p->characteristics_;
+    return d->m_characteristics;
 }
 
-const Property<networking::Link::Status>&
+networking::Link::Status
 Link::status() const
 {
-    return p->status_;
+    return d->m_status;
 }
 
 networking::Link::Id
@@ -279,28 +409,28 @@ Link::id() const
     return 0;
 }
 
-std::string
+QString
 Link::name() const
 {
-    return p->name.toStdString();
+    return d->m_name;
 }
 
-const Property<std::set<std::shared_ptr<networking::wifi::AccessPoint> > >&
+const std::set<std::shared_ptr<networking::wifi::AccessPoint> >&
 Link::rawAccessPoints() const
 {
-    return p->rawAccessPoints;
+    return d->m_rawAccessPoints;
 }
 
-const core::Property<std::set<std::shared_ptr<connectivity::networking::wifi::AccessPoint>>>&
+const std::set<std::shared_ptr<connectivity::networking::wifi::AccessPoint>>&
 Link::accessPoints() const {
-    return p->groupedAccessPoints;
+    return d->m_groupedAccessPoints;
 }
 
 void
 Link::connect_to(std::shared_ptr<networking::wifi::AccessPoint> accessPoint)
 {
     try {
-        p->connecting = true;
+        d->m_connecting = true;
         QByteArray ssid;
         std::shared_ptr<GroupedAccessPoint> ap = std::dynamic_pointer_cast<GroupedAccessPoint>(accessPoint);
         // The accesspoint interface does not provide this property so we need to coax it out of
@@ -313,12 +443,12 @@ Link::connect_to(std::shared_ptr<networking::wifi::AccessPoint> accessPoint)
             ssid = bap->raw_ssid();
         }
         std::shared_ptr<OrgFreedesktopNetworkManagerSettingsConnectionInterface> found;
-        QList<QDBusObjectPath> connections = p->dev->availableConnections();
+        QList<QDBusObjectPath> connections = d->m_dev->availableConnections();
         for (auto &path : connections) {
             auto con = std::make_shared<OrgFreedesktopNetworkManagerSettingsConnectionInterface>(
-                    NM_DBUS_SERVICE, path.path(), p->dev->connection());
+                    NM_DBUS_SERVICE, path.path(), d->m_dev->connection());
             QVariantDictMap settings = con->GetSettings();
-            auto wirelessIt = settings.find("802-11-wireless");
+            auto wirelessIt = settings.find("802-11-m_wireless");
             if (wirelessIt != settings.cend())
             {
                 auto ssidIt = wirelessIt->find("ssid");
@@ -339,8 +469,8 @@ Link::connect_to(std::shared_ptr<networking::wifi::AccessPoint> accessPoint)
 
         QDBusObjectPath ac("/");
         if (found) {
-            ac = p->nm->ActivateConnection(QDBusObjectPath(found->path()),
-                                           QDBusObjectPath(p->dev->path()),
+            ac = d->m_nm->ActivateConnection(QDBusObjectPath(found->path()),
+                                           QDBusObjectPath(d->m_dev->path()),
                     ap->object_path());
         } else {
             QVariantDictMap conf;
@@ -350,14 +480,14 @@ Link::connect_to(std::shared_ptr<networking::wifi::AccessPoint> accessPoint)
             QVariantMap wireless_conf;
             wireless_conf["ssid"] = ap->raw_ssid();
 
-            conf["802-11-wireless"] = wireless_conf;
-            auto ret = p->nm->AddAndActivateConnection(
-                    conf, QDBusObjectPath(p->dev->path()), ap->object_path());
+            conf["802-11-m_wireless"] = wireless_conf;
+            auto ret = d->m_nm->AddAndActivateConnection(
+                    conf, QDBusObjectPath(d->m_dev->path()), ap->object_path());
             ret.waitForFinished();
             ac = ret.argumentAt<1>();
         }
-        updateActiveConnection(ac);
-        p->connecting = false;
+        d->updateActiveConnection(ac);
+        d->m_connecting = false;
     } catch(const std::exception &e) {
         // @bug default timeout expired: LP(#1361642)
         // If this happens, indicator-network is in an unknown state with no clear way of
@@ -367,124 +497,14 @@ Link::connect_to(std::shared_ptr<networking::wifi::AccessPoint> accessPoint)
     }
 }
 
-const Property<std::shared_ptr<networking::wifi::AccessPoint> >&
+std::shared_ptr<networking::wifi::AccessPoint>
 Link::activeAccessPoint()
 {
-    return p->activeAccessPoint;
+    return d->m_activeAccessPoint;
 }
-
-void
-Link::updateDeviceState(uint new_state)
-{
-    p->lastState = new_state;
-    switch (new_state){
-    case NM_DEVICE_STATE_DISCONNECTED:
-    case NM_DEVICE_STATE_DEACTIVATING:
-        if (p->connecting) {
-            // ignore these while doing connect_to()
-            break;
-        }
-        /* fallthrough */
-    case NM_DEVICE_STATE_UNKNOWN:
-    case NM_DEVICE_STATE_UNMANAGED:
-    case NM_DEVICE_STATE_UNAVAILABLE:
-    case NM_DEVICE_STATE_FAILED:
-    {
-        // make sure to set activeConnection before changing the status
-        updateActiveConnection(QDBusObjectPath("/"));
-
-        switch(p->killSwitch->state()) {
-        case KillSwitch::State::hard_blocked:
-        case KillSwitch::State::soft_blocked:
-            p->status_.set(Status::disabled);
-            break;
-        case KillSwitch::State::not_available:
-        case KillSwitch::State::unblocked:
-            p->status_.set(Status::offline);
-        }
-        break;
-    }
-    case NM_DEVICE_STATE_PREPARE:
-    case NM_DEVICE_STATE_CONFIG:
-    case NM_DEVICE_STATE_NEED_AUTH:
-    case NM_DEVICE_STATE_IP_CONFIG:
-    case NM_DEVICE_STATE_IP_CHECK:
-    {
-        // make sure to set activeConnection before changing the status
-        QDBusObjectPath path = p->dev->activeConnection();
-        // for some reason the path is not always set on these
-        // states. Let's not clear the active connection as obviously
-        // we have one.
-        if (path != QDBusObjectPath("/"))
-        {
-            updateActiveConnection(path);
-        }
-        p->status_.set(Status::connecting);
-        break;
-    }
-    case NM_DEVICE_STATE_SECONDARIES:
-    {
-        // make sure to set activeConnection before changing the status
-        updateActiveConnection(p->dev->activeConnection());
-        p->status_.set(Status::connected);
-        break;
-    }
-    case NM_DEVICE_STATE_ACTIVATED:
-    {
-        // make sure to set activeConnection before changing the status
-        updateActiveConnection(p->dev->activeConnection());
-        p->status_.set(Status::online);
-        break;
-    }}
-
-}
-
-/// '/' path means invalid.
-void
-Link::updateActiveConnection(const QDBusObjectPath &path)
-{
-    // clear the one we have.
-    if (path == QDBusObjectPath("/")) {
-        p->activeAccessPoint.set(connectivity::networking::wifi::AccessPoint::Ptr());
-        p->activeConnection.reset();
-        return;
-    }
-
-    // already up-to-date
-    if (p->activeConnection && p->activeConnection->path() == path.path())
-        return;
-
-    try {
-        p->activeConnection = std::make_shared<
-                OrgFreedesktopNetworkManagerConnectionActiveInterface>(
-                NM_DBUS_SERVICE, path.path(), p->dev->connection());
-        uint state = p->activeConnection->state();
-        switch (state) {
-        case NM_ACTIVE_CONNECTION_STATE_UNKNOWN:
-        case NM_ACTIVE_CONNECTION_STATE_ACTIVATING:
-        case NM_ACTIVE_CONNECTION_STATE_ACTIVATED:
-        case NM_ACTIVE_CONNECTION_STATE_DEACTIVATING:
-        case NM_ACTIVE_CONNECTION_STATE_DEACTIVATED:
-            ;
-
-            // for Wi-Fi devices specific_object is the AccessPoint object.
-            QDBusObjectPath ap_path = p->activeConnection->specificObject();
-            for (auto &ap : p->groupedAccessPoints.get()) {
-                auto shap =  std::dynamic_pointer_cast<GroupedAccessPoint>(ap);
-                if (shap->has_object(ap_path)) {
-                    p->activeAccessPoint.set(ap);
-                    break;
-                }
-            }
-        }
-    } catch (std::exception &e) {
-        qWarning() << "failed to get active connection:";
-        qWarning() << "\tpath: " << path.path();
-        qWarning() << "\t" << QString::fromStdString(e.what());
-    }
-}
-
 
 QDBusObjectPath Link::device_path() const {
-    return QDBusObjectPath(p->dev->path());
+    return QDBusObjectPath(d->m_dev->path());
 }
+
+#include "wifi-link-impl.moc"

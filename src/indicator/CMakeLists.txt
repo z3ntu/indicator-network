@@ -47,6 +47,7 @@ set(NETWORK_SERVICE_SOURCES
     nmofono/wifi/wifi-link-impl.cpp
 
     factory.cpp
+    indicator-menu.cpp
     menu-builder.cpp
     modem.cpp
     modem-manager.cpp
@@ -58,9 +59,10 @@ set(NETWORK_SERVICE_SOURCES
 
     connectivity-service/connectivity-service.cpp
 
+    menuitems/access-point-item.cpp
+    menuitems/switch-item.cpp
     menuitems/wifi-link-item.cpp
     menuitems/wwan-link-item.cpp
-    menuitems/access-point-item.cpp
     menuitems/modem-info-item.cpp
 )
 

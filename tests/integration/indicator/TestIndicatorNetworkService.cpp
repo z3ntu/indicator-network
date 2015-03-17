@@ -2233,7 +2233,7 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM_MenuContents)
     // check that the "Notify" method was called twice
     // check method arguments are correct
     std::string busName;
-    if (notificationsSpy.empty())
+    while (notificationsSpy.size() < 3)
     {
         ASSERT_TRUE(notificationsSpy.wait());
     }
@@ -2366,7 +2366,7 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM_Cancel)
     // check that the "Notify" method was called twice
     // check method arguments are correct
     std::string busName;
-    if (notificationsSpy.empty())
+    while (notificationsSpy.size() < 3)
     {
         ASSERT_TRUE(notificationsSpy.wait());
     }
@@ -2453,7 +2453,7 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM_Cancel)
 
     // check that the "Notify" method was called twice
     // check method arguments are correct (new notification index should be 2)
-    if (notificationsSpy.empty())
+    while (notificationsSpy.size() < 2)
     {
         ASSERT_TRUE(notificationsSpy.wait());
     }
@@ -2546,7 +2546,7 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM_CorrectPin)
     // check that the "Notify" method was called twice
     // check method arguments are correct
     std::string busName;
-    if (notificationsSpy.empty())
+    while (notificationsSpy.size() < 3)
     {
         ASSERT_TRUE(notificationsSpy.wait());
     }
@@ -2673,7 +2673,7 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM_IncorrectPin)
     // check that the "Notify" method was called twice
     // check method arguments are correct
     std::string busName;
-    if (notificationsSpy.empty())
+    while (notificationsSpy.size() < 3)
     {
         ASSERT_TRUE(notificationsSpy.wait());
     }
@@ -2815,6 +2815,107 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM_IncorrectPin)
     EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
         .item(mh::MenuItemMatcher()
             .actionState("notifications.popup", shared_ptr<GVariant>(g_variant_new_string(""), &mh::gvariant_deleter))
+        ).match());
+
+    // enter incorrect pin again
+    // check that the notification is displaying the appropriate error message
+    EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
+        .item(mh::MenuItemMatcher()
+            .action("notifications.simunlock")
+            .string_attribute("x-canonical-type", "com.canonical.snapdecision.pinlock")
+            .string_attribute("x-canonical-pin-min-max", "notifications.pinMinMax")
+            .string_attribute("x-canonical-pin-popup", "notifications.popup")
+            .string_attribute("x-canonical-pin-error", "notifications.error")
+            .actionState("notifications.error", shared_ptr<GVariant>(g_variant_new_string("Sorry, incorrect PIN"), &mh::gvariant_deleter))
+            .setActionState(shared_ptr<GVariant>(g_variant_new_string("4321"), &mh::gvariant_deleter))
+        ).match());
+
+    // check that the "EnterPin" method was called
+    if (modemSpy.empty())
+    {
+        ASSERT_TRUE(modemSpy.wait());
+    }
+    ASSERT_EQ(1, modemSpy.size());
+    modemSpy.clear();
+
+    // check that the "Notify" method was called twice, then twice again when retries changes
+    // check method arguments are correct (notification index should still be 1)
+    while (notificationsSpy.size() < 4)
+    {
+        ASSERT_TRUE(notificationsSpy.wait());
+    }
+    ASSERT_EQ(4, notificationsSpy.size());
+    {
+        QVariantList const& call(notificationsSpy.at(1));
+        EXPECT_EQ("Notify", call.at(0));
+        QVariantList const& args(call.at(1).toList());
+        ASSERT_EQ(8, args.size());
+        EXPECT_EQ(1, args.at(1));
+        EXPECT_EQ("1 attempt remaining", args.at(4));
+    }
+    {
+        QVariantList const& call(notificationsSpy.at(3));
+        EXPECT_EQ("Notify", call.at(0));
+        QVariantList const& args(call.at(1).toList());
+        ASSERT_EQ(8, args.size());
+        EXPECT_EQ(1, args.at(1));
+        std::cout << args.at(4).toString().toStdString();
+        EXPECT_EQ("0 attempts remaining", args.at(4));
+    }
+    notificationsSpy.clear();
+
+    // set sim blocked
+    setSimManagerProperty(firstModem(), "PinRequired", "puk");
+
+    // check that the "Notify" method was called twice again
+    // check method arguments are correct (notification index should still be 1)
+    while (notificationsSpy.size() < 2)
+    {
+        ASSERT_TRUE(notificationsSpy.wait());
+    }
+    ASSERT_EQ(2, notificationsSpy.size());
+    {
+        QVariantList const& call(notificationsSpy.at(1));
+        EXPECT_EQ("Notify", call.at(0));
+        QVariantList const& args(call.at(1).toList());
+        ASSERT_EQ(8, args.size());
+        EXPECT_EQ(1, args.at(1));
+        EXPECT_EQ("Enter PUK code", args.at(3));
+        EXPECT_EQ("10 attempts remaining", args.at(4));
+    }
+    notificationsSpy.clear();
+
+    // check that the SIM blocked popup is displayed
+    EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
+        .item(mh::MenuItemMatcher()
+            .actionState("notifications.popup", shared_ptr<GVariant>(g_variant_new_string(
+                "Sorry, your SIM is now blocked. Please enter your PUK code to unblock SIM card. "
+                "You may need to contact your network provider for PUK code."), &mh::gvariant_deleter))
+        ).match());
+
+    // close the popup
+    EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
+        .item(mh::MenuItemMatcher()
+            .activate("notifications.popup")
+        ).match());
+
+    // check that the SIM blocked popup is no longer displayed
+    EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
+        .item(mh::MenuItemMatcher()
+            .actionState("notifications.popup", shared_ptr<GVariant>(g_variant_new_string(""), &mh::gvariant_deleter))
+        ).match());
+
+    // enter incorrect puk
+    // check that the notification is displaying the appropriate error message
+    EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
+        .item(mh::MenuItemMatcher()
+            .action("notifications.simunlock")
+            .string_attribute("x-canonical-type", "com.canonical.snapdecision.pinlock")
+            .string_attribute("x-canonical-pin-min-max", "notifications.pinMinMax")
+            .string_attribute("x-canonical-pin-popup", "notifications.popup")
+            .string_attribute("x-canonical-pin-error", "notifications.error")
+            .actionState("notifications.error", shared_ptr<GVariant>(g_variant_new_string("Sorry, incorrect PIN"), &mh::gvariant_deleter))
+            .setActionState(shared_ptr<GVariant>(g_variant_new_string("87654321"), &mh::gvariant_deleter))
         ).match());
 }
 

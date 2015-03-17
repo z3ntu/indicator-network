@@ -2253,7 +2253,7 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM_MenuContents)
         EXPECT_EQ(0, args.at(1));
         EXPECT_EQ("", args.at(2));
         EXPECT_EQ("Enter SIM PIN", args.at(3));
-        EXPECT_EQ("", args.at(4));
+        EXPECT_EQ("3 attempts remaining", args.at(4));
         EXPECT_EQ(QStringList(), args.at(5));
         EXPECT_EQ(-1, args.at(7));
 
@@ -2290,7 +2290,7 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM_MenuContents)
         EXPECT_EQ(1, args.at(1));
         EXPECT_EQ("", args.at(2));
         EXPECT_EQ("Enter SIM PIN", args.at(3));
-        EXPECT_EQ("", args.at(4));
+        EXPECT_EQ("3 attempts remaining", args.at(4));
         EXPECT_EQ(QStringList(), args.at(5));
         EXPECT_EQ(-1, args.at(7));
 

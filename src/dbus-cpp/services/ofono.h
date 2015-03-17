@@ -616,17 +616,18 @@ struct Interface
         bool
         enterPin(PinType type, std::string pin)
         {
+            core::dbus::Result<void> result;
             try {
                 auto future =
                         object->invoke_method_asynchronously<
                         SimManager::Method::EnterPin, SimManager::Method::EnterPin::ResultType>
                         (pin2str(type), pin);
-                auto result = future.get();
+                result = future.get();
             } catch(std::runtime_error &e) {
                 /// @todo dbus-cpp does not provide proper errors yet :/
                 return false;
             }
-#if 0
+
             if (result.is_error()) {
                 auto &error = result.error();
                 if (error.name() == "org.ofono.Error.NotImplemented") {
@@ -641,24 +642,24 @@ struct Interface
                     return false;
                 }
             }
-#endif
             return true;
         }
 
         bool
         resetPin(PinType type, std::string puk, std::string newPin)
         {
+            core::dbus::Result<void> result;
             try {
                 auto future =
                         object->invoke_method_asynchronously<
                         SimManager::Method::ResetPin, SimManager::Method::ResetPin::ResultType>
                         (pin2str(type), puk, newPin);
-                auto result = future.get();
+                result = future.get();
             } catch(std::runtime_error &e) {
                 /// @todo dbus-cpp does not provide proper errors yet :/
                 return false;
             }
-#if 0
+
             if (result.is_error()) {
                 auto &error = result.error();
                 if (error.name() == "org.ofono.Error.NotImplemented") {
@@ -673,7 +674,6 @@ struct Interface
                     return false;
                 }
             }
-#endif
             return true;
         }
 

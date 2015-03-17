@@ -156,6 +156,10 @@ struct MenuItemMatcher::Priv
 
     shared_ptr<string> m_action;
 
+    shared_ptr<string> m_actionStateAction;
+
+    shared_ptr<GVariant> m_actionState;
+
     vector<std::string> m_state_icons;
 
     vector<pair<string, shared_ptr<GVariant>>> m_attributes;
@@ -219,6 +223,8 @@ MenuItemMatcher& MenuItemMatcher::operator=(const MenuItemMatcher& other)
     p->m_label = other.p->m_label;
     p->m_icon = other.p->m_icon;
     p->m_action = other.p->m_action;
+    p->m_actionStateAction = other.p->m_actionStateAction;
+    p->m_actionState = other.p->m_actionState;
     p->m_state_icons = other.p->m_state_icons;
     p->m_attributes = other.p->m_attributes;
     p->m_pass_through_attributes = other.p->m_pass_through_attributes;
@@ -254,6 +260,19 @@ MenuItemMatcher& MenuItemMatcher::label(const string& label)
 MenuItemMatcher& MenuItemMatcher::action(const string& action)
 {
     p->m_action = make_shared<string>(action);
+    return *this;
+}
+
+MenuItemMatcher& MenuItemMatcher::actionState(const std::string& action, const std::shared_ptr<GVariant>& state)
+{
+    p->m_actionStateAction = action.empty() ? nullptr : make_shared<string>(action);
+    p->m_actionState = state;
+    return *this;
+}
+
+MenuItemMatcher& MenuItemMatcher::actionState(const std::shared_ptr<GVariant>& state)
+{
+    p->m_actionState = state;
     return *this;
 }
 
@@ -746,6 +765,59 @@ void MenuItemMatcher::match(
                     }
                     menuWaitForItems(link);
                 }
+            }
+        }
+    }
+
+    if (p->m_actionState)
+    {
+        auto stateAction = action;
+        auto stateIdPair = idPair;
+        auto stateActionGroup = actionGroup;
+        if (p->m_actionStateAction)
+        {
+            stateAction = *p->m_actionStateAction;
+            stateIdPair = split_action(stateAction);
+            stateActionGroup = actions[stateIdPair.first];
+        }
+
+        if (stateAction.empty())
+        {
+            matchResult.failure(
+                    location,
+                    "Tried to get action state, but no action was found");
+        }
+        else if(!stateActionGroup)
+        {
+            matchResult.failure(
+                    location,
+                    "Tried to get action state for action group '" + stateIdPair.first
+                            + "', but action group wasn't found");
+        }
+        else if (!g_action_group_has_action(stateActionGroup.get(), stateIdPair.second.c_str()))
+        {
+            matchResult.failure(
+                    location,
+                    "Tried to get action state for action '" + stateAction
+                            + "', but action was not found");
+        }
+        else
+        {
+            auto state = shared_ptr<GVariant>(g_action_group_get_action_state(stateActionGroup.get(),
+                                              stateIdPair.second.c_str()),
+                                              &gvariant_deleter);
+
+            if (!g_variant_equal(p->m_actionState.get(), state.get()))
+            {
+                gchar* expectedString = g_variant_print(p->m_actionState.get(), true);
+                gchar* actualString = g_variant_print(state.get(), true);
+                matchResult.failure(
+                        location,
+                        "Expected action state for action '" + stateAction
+                                + "' == " + expectedString + " but found "
+                                + actualString);
+                g_free(expectedString);
+                g_free(actualString);
             }
         }
     }

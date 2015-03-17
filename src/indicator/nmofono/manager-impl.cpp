@@ -251,7 +251,9 @@ Manager::enableFlightMode()
     std::cout << __PRETTY_FUNCTION__ << std::endl;
 #endif
     if (!d->m_wifiKillSwitch->flightMode(true))
-        throw std::runtime_error("Failed to enable flightmode.");
+    {
+        qWarning() << "Failed to enable flightmode.";
+    }
 }
 
 void
@@ -260,8 +262,10 @@ Manager::disableFlightMode()
 #ifdef INDICATOR_NETWORK_TRACE_MESSAGES
     std::cout << __PRETTY_FUNCTION__ << std::endl;
 #endif
-    if (!d->m_wifiKillSwitch->flightMode(false))
-        throw std::runtime_error("Failed to disable flightmode");
+    if (d->m_wifiKillSwitch->flightMode(false))
+    {
+        qWarning() << "Failed to disable flightmode";
+    }
 }
 
 networking::Manager::FlightModeStatus

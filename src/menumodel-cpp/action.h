@@ -38,7 +38,7 @@ class Action: public QObject
 
     GActionPtr m_gaction;
     std::string m_name;
-    Variant m_state;
+//    Variant m_state;
     gulong m_activateHandlerId;
     gulong m_changeStateHandlerId;
 

@@ -24,6 +24,8 @@
 #include "menumodel-cpp/action-group-merger.h"
 #include "menumodel-cpp/menu-merger.h"
 
+#include <QDebug>
+
 namespace networking = connectivity::networking;
 
 class QuickAccessSection::Private : public QObject
@@ -54,9 +56,9 @@ public Q_SLOTS:
         }
     }
 
-    void flightModeSwitchActivated()
+    void flightModeSwitchActivated(bool state)
     {
-        bool state = m_flightModeSwitch->state();
+        qDebug() << "Setting flight mode " << state;
         if (state) {
             try {
                 m_manager->enableFlightMode();
@@ -80,16 +82,10 @@ QuickAccessSection::Private::Private(std::shared_ptr<networking::Manager> manage
     m_menu = std::make_shared<Menu>();
 
     m_flightModeSwitch = std::make_shared<SwitchItem>(_("Flight Mode"), "airplane", "enabled");
-    switch (m_manager->flightMode()) {
-    case networking::Manager::FlightModeStatus::off:
-        m_flightModeSwitch->setState(false);
-        break;
-    case networking::Manager::FlightModeStatus::on:
-        m_flightModeSwitch->setState(true);
-        break;
-    }
+    qDebug() << "initial flight mode status" << (int) m_manager->flightMode();
+    flightModeUpdated(m_manager->flightMode());
     connect(m_manager.get(), &networking::Manager::flightModeUpdated, this, &Private::flightModeUpdated);
-    connect(m_flightModeSwitch.get(), &SwitchItem::activated, this, &Private::flightModeSwitchActivated);
+    connect(m_flightModeSwitch.get(), &SwitchItem::stateUpdated, this, &Private::flightModeSwitchActivated);
 
     m_actionGroupMerger->add(*m_flightModeSwitch);
     m_menu->append(*m_flightModeSwitch);

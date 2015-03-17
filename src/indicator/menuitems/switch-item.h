@@ -47,15 +47,12 @@ public Q_SLOTS:
 Q_SIGNALS:
     void stateUpdated(bool);
 
-    // triggered when the user activates a state change
-    void activated();
-
 private Q_SLOTS:
+    void actionStateChanged(const Variant&);
+
     void actionActivated(const Variant&);
 
 private:
-    bool m_state;
-
     Action::Ptr m_action;
     MenuItem::Ptr m_item;
 };

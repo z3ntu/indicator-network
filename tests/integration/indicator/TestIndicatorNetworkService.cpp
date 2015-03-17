@@ -2426,7 +2426,7 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM_Cancel)
     if (notificationsSpy.empty())
     {
         ASSERT_TRUE(notificationsSpy.wait());
-    }    
+    }
     ASSERT_EQ(1, notificationsSpy.size());
     {
         QVariantList const& call(notificationsSpy.at(0));
@@ -2636,6 +2636,10 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM_CorrectPin)
         EXPECT_EQ("1", args[0]);
     }
     notificationsSpy.clear();
+}
+
+TEST_F(TestIndicatorNetworkService, UnlockSIM_IncorrectPin)
+{
 }
 
 } // namespace

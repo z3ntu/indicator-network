@@ -21,28 +21,28 @@
 
 SwitchItem::SwitchItem(const std::string &label, const std::string &prefix, const std::string &name)
 {
-    setState(false);
-
     std::string action_name = prefix + "." + name;
-    m_action = std::make_shared<Action>(action_name, nullptr, TypedVariant<bool>(m_state));
+    m_action = std::make_shared<Action>(action_name, nullptr, TypedVariant<bool>(false));
     m_actionGroup->add(m_action);
     connect(m_action.get(), &Action::activated, this, &SwitchItem::actionActivated);
+    connect(m_action.get(), &Action::stateUpdated, this, &SwitchItem::actionStateChanged);
 
     m_item = std::make_shared<MenuItem>(label,
                                         std::string("indicator.") + action_name);
     m_item->setAttribute("x-canonical-type", TypedVariant<std::string>("com.canonical.indicator.switch"));
-
-    /// @todo state changes don't work properly
 }
 
 void
 SwitchItem::actionActivated(const Variant&)
 {
-    bool value = m_action->state().as<bool>();
-    ///@ todo something weird is happening as the indicator side is not changing the state..
-    value = !value;
-    Q_EMIT stateUpdated(m_state);
-    Q_EMIT activated();
+    Variant state = m_action->state();
+    setState(!state.as<bool>());
+}
+
+void
+SwitchItem::actionStateChanged(const Variant& state)
+{
+    Q_EMIT stateUpdated(state.as<bool>());
 }
 
 MenuItem::Ptr
@@ -54,22 +54,14 @@ SwitchItem::menuItem() {
 bool
 SwitchItem::state()
 {
-    return m_state;
+    return m_action->state().as<bool>();
 }
 
 void
 SwitchItem::setState(bool state)
 {
-    if (m_state == state)
-    {
-        return;
-    }
-
-    m_state = state;
-    Q_EMIT stateUpdated(m_state);
-
     if (m_action) {
-        Variant variant = TypedVariant<bool>(m_state);
+        Variant variant = TypedVariant<bool>(state);
         m_action->setState(variant);
     }
 }

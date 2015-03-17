@@ -66,7 +66,7 @@ public:
 
         m_switch->setState(m_manager->wifiEnabled());
         connect(m_manager.get(), &networking::Manager::wifiEnabledUpdated, m_switch.get(), &SwitchItem::setState);
-        connect(m_switch.get(), &SwitchItem::activated, this, &Private::switchActivated);
+        connect(m_switch.get(), &SwitchItem::stateUpdated, this, &Private::switchActivated);
 
         updateLinks();
         connect(m_manager.get(), &networking::Manager::linksUpdated, this, &Private::updateLinks);
@@ -110,9 +110,9 @@ public Q_SLOTS:
         }
     }
 
-    void switchActivated()
+    void switchActivated(bool state)
     {
-        if (m_switch->state()) {
+        if (state) {
             if (!m_manager->enableWifi()) {
                 /// try to work around the switch getting out of state on unity8 side
                 m_switch->setState(false);

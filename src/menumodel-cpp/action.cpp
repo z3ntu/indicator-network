@@ -18,6 +18,7 @@
  */
 
 #include "action.h"
+#include <QDebug>
 
 void
 Action::activate_cb(GSimpleAction *,
@@ -41,16 +42,12 @@ Action::change_state_cb(GSimpleAction *,
 
     Action *that =  static_cast<Action *>(user_data);
     Q_EMIT that->stateUpdated(new_value);
-    /// @todo probably should assert if reached here.
-    ///       this callback should never be set up if no
-    ///       changeStateHandler is provided.
 }
 
 Action::Action(const std::string &name, const
        GVariantType *parameterType,
        const Variant &state)
-    : m_name {name},
-      m_state {state}
+    : m_name {name}
 {
     /// @todo validate that name is valid.
 
@@ -78,8 +75,9 @@ Action::~Action()
 {
     g_signal_handler_disconnect(m_gaction.get(), m_activateHandlerId);
     if (m_changeStateHandlerId)
+    {
         g_signal_handler_disconnect(m_gaction.get(), m_changeStateHandlerId);
-//    GMainLoopSync([]{});
+    }
 }
 
 std::string
@@ -91,17 +89,17 @@ Action::name()
 void
 Action::setState(const Variant &value)
 {
-    m_state = value;
     g_simple_action_set_state(G_SIMPLE_ACTION(m_gaction.get()), value);
-    /// @todo state changes don't work properly. We probably need to make the
-    ///       state a Property to be able to get signals on change.
-    ///       or alternatively call changeStateHandler here
+
+    // FIXME We shouldn't have to emit this, the GAction is not emitting the change-state signal
+    Q_EMIT stateUpdated(state());
 }
 
 Variant
 Action::state()
 {
-    return m_state;
+    return Variant::fromGVariant(
+            g_variant_ref(g_action_get_state(G_ACTION(m_gaction.get()))));
 }
 
 Action::GActionPtr

@@ -88,6 +88,18 @@ public:
         return !(*this == rhs);
     }
 
+    std::string to_string(bool type_annotate = false) const
+    {
+        if (m_variant.get())
+        {
+            gchar *str = g_variant_print(m_variant.get(), (gboolean) type_annotate);
+            std::string result(str);
+            g_free(str);
+            return result;
+        }
+        return "null";
+    }
+
     operator GVariant*() const { return m_variant.get(); }
 
 protected:

@@ -18,9 +18,9 @@
  */
 
 #include "action-group.h"
+#include <QDebug>
 
-ActionGroup::ActionGroup(const std::string &prefix)
-    : m_prefix {prefix}
+ActionGroup::ActionGroup()
 {
 }
 

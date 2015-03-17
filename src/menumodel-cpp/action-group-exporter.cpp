@@ -19,14 +19,18 @@
 
 #include "action-group-exporter.h"
 
+#include <unity/util/ResourcePtr.h>
+
+using namespace std;
+namespace util = unity::util;
+
 ActionGroupExporter::ActionGroupExporter(SessionBus::Ptr sessionBus,
                                          ActionGroup::Ptr actionGroup,
-                                         const std::string &path,
-                                         const std::string &prefix)
-    : m_sessionBus(sessionBus),
+                                         const std::string &path)
+    : m_path(path),
+      m_sessionBus(sessionBus),
       m_exportId {0},
-      m_actionGroup {actionGroup},
-      m_prefix {prefix}
+      m_actionGroup {actionGroup}
 {
     m_gSimpleActionGroup = make_gsimpleactiongroup_ptr();
 
@@ -50,6 +54,8 @@ ActionGroupExporter::ActionGroupExporter(SessionBus::Ptr sessionBus,
     }
     connect(actionGroup.get(), &ActionGroup::actionAdded, this, &ActionGroupExporter::actionAdded);
     connect(actionGroup.get(), &ActionGroup::actionRemoved, this, &ActionGroupExporter::actionRemoved);
+
+    waitForFirstSignalEmission();
 }
 
 ActionGroupExporter::~ActionGroupExporter()
@@ -75,4 +81,48 @@ void ActionGroupExporter::actionRemoved(Action::Ptr action)
 {
     g_action_map_remove_action(G_ACTION_MAP(m_gSimpleActionGroup.get()),
                                        action->name().c_str());
+}
+
+void ActionGroupExporter::waitForFirstSignalEmission()
+{
+    shared_ptr<GMainLoop> loop(g_main_loop_new(nullptr, false), &g_main_loop_unref);
+
+    /* Our two exit criteria */
+    util::ResourcePtr<gulong,
+        function<void(guint)>> signal(
+            g_dbus_connection_signal_subscribe(m_sessionBus->bus().get(),
+                g_dbus_connection_get_unique_name(m_sessionBus->bus().get()),
+                "org.gtk.Actions",
+                "Changed",
+                m_path.c_str(),
+                nullptr,
+                G_DBUS_SIGNAL_FLAGS_NONE,
+                [](GDBusConnection *,
+                        const gchar *,
+                        const gchar *,
+                        const gchar *,
+                        const gchar *,
+                        GVariant *,
+                        gpointer user_data)
+                {
+                    g_main_loop_quit((GMainLoop*) user_data);
+                },
+                loop.get(),
+                nullptr),
+        [this](guint s)
+        {
+            g_dbus_connection_signal_unsubscribe (m_sessionBus->bus().get(), s);
+        });
+
+    util::ResourcePtr<guint, function<void(guint)>> timer(g_timeout_add(200,
+            [](gpointer user_data) -> gboolean
+            {
+                g_main_loop_quit((GMainLoop *)user_data);
+                return G_SOURCE_CONTINUE;
+            },
+            loop.get()),
+            &g_source_remove);
+
+    /* Wait for sync */
+    g_main_loop_run(loop.get());
 }

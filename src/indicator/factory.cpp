@@ -115,10 +115,9 @@ ActionGroupMerger::UPtr Factory::newActionGroupMerger()
 }
 
 ActionGroupExporter::UPtr Factory::newActionGroupExporter(ActionGroup::Ptr actionGroup,
-                                const string &path,
-                                const string &prefix)
+                                const string &path)
 {
-    return make_unique<ActionGroupExporter>(d->singletonSessionBus(), actionGroup, path, prefix);
+    return make_unique<ActionGroupExporter>(d->singletonSessionBus(), actionGroup, path);
 }
 
 BusName::UPtr Factory::newBusName(string name,

@@ -18,8 +18,9 @@
  */
 
 #include <menu-builder.h>
-
 #include <factory.h>
+
+using namespace std;
 
 struct MenuBuilder::Priv
 {
@@ -115,8 +116,7 @@ MenuBuilder::MenuBuilder(Factory& factory) :
     d->m_actionGroupMerger->add(d->m_phoneMenu->actionGroup());
     d->m_actionGroupMerger->add(d->m_phoneGreeterMenu->actionGroup());
     d->m_actionGroupExporter = factory.newActionGroupExporter(d->m_actionGroupMerger->actionGroup(),
-                                                        "/com/canonical/indicator/network",
-                                                        "indicator");
+                                                        "/com/canonical/indicator/network");
 
     d->m_busName = factory.newBusName("com.canonical.indicator.network",
                                 [](std::string) {

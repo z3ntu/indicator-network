@@ -200,7 +200,7 @@ ConnectivityService::Private::ConstructL()
         m_bus->send(reply);
 
         auto that = shared_from_this();
-        GMainLoopDispatch([that](){ that->m_unlockAllModems(); });
+//        GMainLoopDispatch([that](){ that->m_unlockAllModems(); });
     });
 
     m_privateObject->install_method_handler<com::ubuntu::connectivity::Interface::Private::Method::UnlockModem>([this](const core::dbus::Message::Ptr& msg)
@@ -222,7 +222,7 @@ ConnectivityService::Private::ConstructL()
         m_bus->send(reply);
 
         auto that = shared_from_this();
-        GMainLoopDispatch([that, name](){ that->m_unlockModem(name); });
+//        GMainLoopDispatch([that, name](){ that->m_unlockModem(name); });
     });
 }
 

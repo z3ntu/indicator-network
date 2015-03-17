@@ -59,7 +59,7 @@ public:
 
     virtual ActionGroupMerger::UPtr newActionGroupMerger();
 
-    virtual ActionGroupExporter::UPtr newActionGroupExporter(ActionGroup::Ptr actionGroup, const std::string &path, const std::string &prefix = "");
+    virtual ActionGroupExporter::UPtr newActionGroupExporter(ActionGroup::Ptr actionGroup, const std::string &path);
 
     virtual BusName::UPtr newBusName(std::string name,
                                      std::function<void(std::string)> acquired,

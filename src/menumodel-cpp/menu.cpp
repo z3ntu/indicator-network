@@ -27,7 +27,7 @@ Menu::Menu()
 Menu::~Menu()
 {
     clear();
-    GMainLoopSync([]{});
+//    GMainLoopSync([]{});
 }
 
 void Menu::append(MenuItem::Ptr item)

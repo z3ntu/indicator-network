@@ -33,20 +33,23 @@ class ActionGroupExporter: public QObject
     typedef std::shared_ptr<GSimpleActionGroup> GSimpleActionGroupPtr;
     GSimpleActionGroupPtr make_gsimpleactiongroup_ptr();
 
+    std::string m_path;
     std::shared_ptr<SessionBus> m_sessionBus;
     GSimpleActionGroupPtr m_gSimpleActionGroup;
     gint m_exportId;
     ActionGroup::Ptr m_actionGroup;
-    std::string m_prefix;
 
 public:
     typedef std::shared_ptr<ActionGroupExporter> Ptr;
     typedef std::unique_ptr<ActionGroupExporter> UPtr;
 
     ActionGroupExporter() = delete;
-    ActionGroupExporter(SessionBus::Ptr sessionBus, ActionGroup::Ptr actionGroup, const std::string &path, const std::string &prefix = "");
+    ActionGroupExporter(SessionBus::Ptr sessionBus, ActionGroup::Ptr actionGroup, const std::string &path);
 
     ~ActionGroupExporter();
+
+private:
+    void waitForFirstSignalEmission();
 
 private Q_SLOTS:
     void actionAdded(Action::Ptr);

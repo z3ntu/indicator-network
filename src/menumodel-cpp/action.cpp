@@ -79,7 +79,7 @@ Action::~Action()
     g_signal_handler_disconnect(m_gaction.get(), m_activateHandlerId);
     if (m_changeStateHandlerId)
         g_signal_handler_disconnect(m_gaction.get(), m_changeStateHandlerId);
-    GMainLoopSync([]{});
+//    GMainLoopSync([]{});
 }
 
 std::string

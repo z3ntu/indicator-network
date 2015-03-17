@@ -20,26 +20,23 @@
 #ifndef ACTION_GROUP_H
 #define ACTION_GROUP_H
 
-#include <memory>
-#include <gio/gio.h>
-#include <set>
-
 #include "action.h"
 #include "gio-helpers/util.h"
 
+#include <memory>
+#include <set>
 #include <QObject>
 
 class ActionGroup: public QObject
 {
     Q_OBJECT
 
-    std::string m_prefix;
     std::set<Action::Ptr> m_actions;
 
 public:
     typedef std::shared_ptr<ActionGroup> Ptr;
 
-    ActionGroup(const std::string &prefix = "");
+    ActionGroup();
 
     std::set<Action::Ptr> actions();
 

@@ -92,7 +92,7 @@ public:
     ~MenuMerger()
     {
         clear();
-        GMainLoopSync([]{});
+//        GMainLoopSync([]{});
     }
 
     void append(MenuModel::Ptr menu)

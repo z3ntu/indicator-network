@@ -64,7 +64,7 @@ void ActionGroupMerger::removeAction(Action::Ptr action)
 ActionGroupMerger::ActionGroupMerger(const std::string &prefix)
     : m_prefix {prefix}
 {
-    m_actionGroup = std::make_shared<ActionGroup>(m_prefix);
+    m_actionGroup = std::make_shared<ActionGroup>();
 }
 
 void ActionGroupMerger::add(ActionGroup::Ptr group)

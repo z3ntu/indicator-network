@@ -81,7 +81,7 @@ TEST_F(TestMenuExporter, ExportBasicActionsAndMenu)
     actionGroup->add(make_shared< ::Action>("banana"));
     actionGroup->add(make_shared< ::Action>("coconut"));
     actionGroupExporter.reset(
-            new ActionGroupExporter(sessionBus, actionGroup, "/actions/path", "prefix"));
+            new ActionGroupExporter(sessionBus, actionGroup, "/actions/path"));
 
     menu->append(make_shared<MenuItem>("Apple", "prefix.apple"));
     menu->append(make_shared<MenuItem>("Banana", "prefix.banana"));
@@ -109,7 +109,7 @@ TEST_F(TestMenuExporter, ActionActivation)
     std::shared_ptr< ::Action> apple = make_shared< ::Action>("apple");
     actionGroup->add(apple);
     actionGroupExporter.reset(
-            new ActionGroupExporter(sessionBus, actionGroup, "/actions/path", "app"));
+            new ActionGroupExporter(sessionBus, actionGroup, "/actions/path"));
 
     menu->append(make_shared<MenuItem>("Apple", "app.apple"));
     menuExporter.reset(new MenuExporter(sessionBus, "/menus/path", menu));
@@ -144,7 +144,7 @@ TEST_F(TestMenuExporter, ParameterizedActionActivation)
     std::shared_ptr< ::Action> parameterized = make_shared< ::Action>("param", G_VARIANT_TYPE_STRING);
     actionGroup->add(parameterized);
     actionGroupExporter.reset(
-            new ActionGroupExporter(sessionBus, actionGroup, "/actions/path", "app"));
+            new ActionGroupExporter(sessionBus, actionGroup, "/actions/path"));
 
     menu->append(make_shared<MenuItem>("Param", "app.param"));
     menuExporter.reset(new MenuExporter(sessionBus, "/menus/path", menu));

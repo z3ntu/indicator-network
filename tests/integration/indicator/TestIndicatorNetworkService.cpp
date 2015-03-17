@@ -2694,6 +2694,7 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM_IncorrectPin)
     notificationsSpy.clear();
 
     // enter incorrect pin
+    // check that the notification is displaying no error message
     QSignalSpy modemSpy(modemMockInterface(firstModem()),
                         SIGNAL(MethodCalled(const QString &, const QVariantList &)));
 
@@ -2725,22 +2726,32 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM_IncorrectPin)
     }
     modemSpy.clear();
 
-    // check that the "Notify" method was called twice again
+    // check that the "Notify" method was called twice, then twice again when retries changes
     // check method arguments are correct (notification index should still be 1)
     if (notificationsSpy.size() < 4)
     {
         ASSERT_TRUE(notificationsSpy.wait());
     }
-    ASSERT_EQ(4, notificationsSpy.size());///!
+    ASSERT_EQ(4, notificationsSpy.size());
     {
         QVariantList const& call(notificationsSpy.at(1));
         EXPECT_EQ("Notify", call.at(0));
         QVariantList const& args(call.at(1).toList());
         ASSERT_EQ(8, args.size());
         EXPECT_EQ(1, args.at(1));
+        EXPECT_EQ("3 attempts remaining", args.at(4));
+    }
+    {
+        QVariantList const& call(notificationsSpy.at(3));
+        EXPECT_EQ("Notify", call.at(0));
+        QVariantList const& args(call.at(1).toList());
+        ASSERT_EQ(8, args.size());
+        EXPECT_EQ(1, args.at(1));
+        EXPECT_EQ("2 attempts remaining", args.at(4));
     }
     notificationsSpy.clear();
 
+    // enter incorrect pin again
     // check that the notification is displaying the appropriate error message
     EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
         .item(mh::MenuItemMatcher()
@@ -2753,11 +2764,57 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM_IncorrectPin)
             .setActionState(shared_ptr<GVariant>(g_variant_new_string("4321"), &mh::gvariant_deleter))
         ).match());
 
+    // check that the "EnterPin" method was called
+    if (modemSpy.empty())
+    {
+        ASSERT_TRUE(modemSpy.wait());
+    }
+    ASSERT_EQ(1, modemSpy.size());
+    modemSpy.clear();
+
+    // check that the "Notify" method was called twice, then twice again when retries changes
+    // check method arguments are correct (notification index should still be 1)
+    if (notificationsSpy.size() < 4)
+    {
+        ASSERT_TRUE(notificationsSpy.wait());
+    }
+    ASSERT_EQ(4, notificationsSpy.size());
+    {
+        QVariantList const& call(notificationsSpy.at(1));
+        EXPECT_EQ("Notify", call.at(0));
+        QVariantList const& args(call.at(1).toList());
+        ASSERT_EQ(8, args.size());
+        EXPECT_EQ(1, args.at(1));
+        EXPECT_EQ("2 attempts remaining", args.at(4));
+    }
+    {
+        QVariantList const& call(notificationsSpy.at(3));
+        EXPECT_EQ("Notify", call.at(0));
+        QVariantList const& args(call.at(1).toList());
+        ASSERT_EQ(8, args.size());
+        EXPECT_EQ(1, args.at(1));
+        EXPECT_EQ("1 attempt remaining", args.at(4));
+    }
+    notificationsSpy.clear();
+
+    // check that the last attempt popup is displayed
     EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
         .item(mh::MenuItemMatcher()
             .actionState("notifications.popup", shared_ptr<GVariant>(g_variant_new_string(
                 "Sorry, incorrect SIM PIN. This will be your last attempt. "
                 "If SIM PIN is entered incorrectly you will require your PUK code to unlock."), &mh::gvariant_deleter))
+        ).match());
+
+    // close the popup
+    EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
+        .item(mh::MenuItemMatcher()
+            .activate("notifications.popup")
+        ).match());
+
+    // check that the last attempt popup is no longer displayed
+    EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
+        .item(mh::MenuItemMatcher()
+            .actionState("notifications.popup", shared_ptr<GVariant>(g_variant_new_string(""), &mh::gvariant_deleter))
         ).match());
 }
 

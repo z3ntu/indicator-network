@@ -2703,14 +2703,10 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM_IncorrectPin)
         ).match());
 
     // close the error message
-    EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
-        .item(mh::MenuItemMatcher()
-            .activate("notifications.error")
-        ).match());
-
     // check that the error message is no longer displayed
     EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
         .item(mh::MenuItemMatcher()
+            .activate("notifications.error")
             .actionState("notifications.error", shared_ptr<GVariant>(g_variant_new_string(""), &mh::gvariant_deleter))
         ).match());
 
@@ -2755,15 +2751,11 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM_IncorrectPin)
         ).match());
 
     // close the error and popup
+    // check that the error and popup are no longer displayed
     EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
         .item(mh::MenuItemMatcher()
             .activate("notifications.error")
             .activate("notifications.popup")
-        ).match());
-
-    // check that the error and popup are no longer displayed
-    EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
-        .item(mh::MenuItemMatcher()
             .actionState("notifications.error", shared_ptr<GVariant>(g_variant_new_string(""), &mh::gvariant_deleter))
             .actionState("notifications.popup", shared_ptr<GVariant>(g_variant_new_string(""), &mh::gvariant_deleter))
         ).match());
@@ -2830,15 +2822,11 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM_IncorrectPin)
         ).match());
 
     // close the error and popup
+    // check that the error and popup are no longer displayed
     EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
         .item(mh::MenuItemMatcher()
             .activate("notifications.error")
             .activate("notifications.popup")
-        ).match());
-
-    // check that the error and popup are no longer displayed
-    EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
-        .item(mh::MenuItemMatcher()
             .actionState("notifications.error", shared_ptr<GVariant>(g_variant_new_string(""), &mh::gvariant_deleter))
             .actionState("notifications.popup", shared_ptr<GVariant>(g_variant_new_string(""), &mh::gvariant_deleter))
         ).match());
@@ -2849,7 +2837,7 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM_IncorrectPin)
             .setActionState(shared_ptr<GVariant>(g_variant_new_string("87654321"), &mh::gvariant_deleter))
         ).match());
 
-    // check that the "Notify" method was called twice again
+    // check that the "Notify" method was called twice
     // check method arguments are correct (notification index should still be 1)
     waitForSignals(notificationsSpy, 2);
     {
@@ -2869,7 +2857,7 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM_IncorrectPin)
             .setActionState(shared_ptr<GVariant>(g_variant_new_string("4321"), &mh::gvariant_deleter))
         ).match());
 
-    // check that the "Notify" method was called twice again
+    // check that the "Notify" method was called twice
     // check method arguments are correct (notification index should still be 1)
     waitForSignals(notificationsSpy, 2);
     {
@@ -2933,14 +2921,10 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM_IncorrectPin)
         ).match());
 
     // close the error message
-    EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
-        .item(mh::MenuItemMatcher()
-            .activate("notifications.error")
-        ).match());
-
     // check that the error message is no longer displayed
     EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
         .item(mh::MenuItemMatcher()
+            .activate("notifications.error")
             .actionState("notifications.error", shared_ptr<GVariant>(g_variant_new_string(""), &mh::gvariant_deleter))
         ).match());
 

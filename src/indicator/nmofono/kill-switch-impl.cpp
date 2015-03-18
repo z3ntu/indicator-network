@@ -93,7 +93,7 @@ void
 KillSwitch::unblock()
 {
     try {
-        if (utils::getOrThrow(d->urfkill->Block(static_cast<uint>(Private::DeviceType::wlan), false)))
+        if (!utils::getOrThrow(d->urfkill->Block(static_cast<uint>(Private::DeviceType::wlan), false)))
             throw KillSwitch::exception::Failed("Failed to unblock killswitch");
     } catch (std::exception &e) {
         throw KillSwitch::exception::Failed(e.what());

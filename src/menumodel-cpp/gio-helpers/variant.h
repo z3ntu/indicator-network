@@ -81,8 +81,15 @@ public:
 
     bool operator==(const Variant &rhs) const
     {
-        return m_variant == rhs.m_variant;
+        if (g_variant_is_container(m_variant.get()) || g_variant_is_container(rhs.m_variant.get()))
+        {
+            // Fall back to pointer comparison
+            return m_variant == rhs.m_variant;
+        }
+
+        return g_variant_compare(m_variant.get(), rhs.m_variant.get()) == 0;
     }
+
     bool operator!=(const Variant &rhs) const
     {
         return !(*this == rhs);

@@ -656,6 +656,11 @@ void MenuItemMatcher::match(
                         + ", but found " + bool_to_string(isToggled));
     }
 
+    if (!matchResult.success())
+    {
+        return;
+    }
+
     if (!p->m_items.empty() || p->m_expectedSize)
     {
         shared_ptr<GMenuModel> link;

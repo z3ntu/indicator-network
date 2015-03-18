@@ -347,7 +347,7 @@ public Q_SLOTS:
 Modem::Private::Private(Modem& parent, shared_ptr<QOfonoModem> ofonoModem)
     : p(parent), m_ofonoModem{ofonoModem}
 {
-    connect(m_ofonoModem.get(), &QOfonoModem::onlineChanged, this, &Private::setOnline);
+    connect(m_ofonoModem.get(), &QOfonoModem::onlineChanged, this, &Private::update);
     setOnline(m_ofonoModem->online());
 
     connect(m_ofonoModem.get(), &QOfonoModem::interfacesChanged, this, &Private::interfacesChanged);
@@ -371,6 +371,8 @@ Modem::Private::Private(Modem& parent, shared_ptr<QOfonoModem> ofonoModem)
 void
 Modem::Private::update()
 {
+    setOnline(m_ofonoModem->online());
+
     if (m_simManager) {
         // update requiredPin
         switch(m_simManager->pinRequired())
@@ -447,7 +449,6 @@ Modem::Private::update()
     }
     else
     {
-        qWarning() << "No network registration available for" << m_ofonoModem->modemPath();
         setOperatorName("");
         setStatus(Modem::Status::unknown);
         setStrength(-1);

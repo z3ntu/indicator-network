@@ -18,7 +18,6 @@
  */
 
 #include "action.h"
-#include <QDebug>
 
 void
 Action::activate_cb(GSimpleAction *,
@@ -89,9 +88,13 @@ Action::name()
 void
 Action::setState(const Variant &value)
 {
+    if (value == state())
+    {
+        return;
+    }
+
     g_simple_action_set_state(G_SIMPLE_ACTION(m_gaction.get()), value);
 
-    // FIXME We shouldn't have to emit this, the GAction is not emitting the change-state signal
     Q_EMIT stateUpdated(state());
 }
 

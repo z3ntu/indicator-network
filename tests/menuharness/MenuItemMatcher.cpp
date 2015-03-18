@@ -156,9 +156,7 @@ struct MenuItemMatcher::Priv
 
     shared_ptr<string> m_action;
 
-    shared_ptr<string> m_actionStateAction;
-
-    shared_ptr<GVariant> m_actionState;
+    vector<pair<string, shared_ptr<GVariant>>> m_actionStates;
 
     vector<std::string> m_state_icons;
 
@@ -170,15 +168,9 @@ struct MenuItemMatcher::Priv
 
     vector<MenuItemMatcher> m_items;
 
-    bool m_activate = false;
+    vector<pair<string, shared_ptr<GVariant>>> m_activations;
 
-    shared_ptr<string> m_activateAction;
-
-    shared_ptr<GVariant> m_activateParameter;
-
-    shared_ptr<string> m_setActionStateAction;
-
-    shared_ptr<GVariant> m_setActionState;
+    vector<pair<string, shared_ptr<GVariant>>> m_setActionStates;
 };
 
 MenuItemMatcher MenuItemMatcher::checkbox()
@@ -223,19 +215,15 @@ MenuItemMatcher& MenuItemMatcher::operator=(const MenuItemMatcher& other)
     p->m_label = other.p->m_label;
     p->m_icon = other.p->m_icon;
     p->m_action = other.p->m_action;
-    p->m_actionStateAction = other.p->m_actionStateAction;
-    p->m_actionState = other.p->m_actionState;
+    p->m_actionStates = other.p->m_actionStates;
     p->m_state_icons = other.p->m_state_icons;
     p->m_attributes = other.p->m_attributes;
     p->m_pass_through_attributes = other.p->m_pass_through_attributes;
     p->m_isToggled = other.p->m_isToggled;
     p->m_linkType = other.p->m_linkType;
     p->m_items = other.p->m_items;
-    p->m_activate = other.p->m_activate;
-    p->m_activateAction = other.p->m_activateAction;
-    p->m_activateParameter = other.p->m_activateParameter;
-    p->m_setActionStateAction = other.p->m_setActionStateAction;
-    p->m_setActionState = other.p->m_setActionState;
+    p->m_activations = other.p->m_activations;
+    p->m_setActionStates = other.p->m_setActionStates;
     return *this;
 }
 
@@ -265,14 +253,13 @@ MenuItemMatcher& MenuItemMatcher::action(const string& action)
 
 MenuItemMatcher& MenuItemMatcher::actionState(const std::string& action, const std::shared_ptr<GVariant>& state)
 {
-    p->m_actionStateAction = action.empty() ? nullptr : make_shared<string>(action);
-    p->m_actionState = state;
+    p->m_actionStates.emplace_back(action, state);
     return *this;
 }
 
 MenuItemMatcher& MenuItemMatcher::actionState(const std::shared_ptr<GVariant>& state)
 {
-    p->m_actionState = state;
+    p->m_actionStates.emplace_back("", state);
     return *this;
 }
 
@@ -386,29 +373,25 @@ MenuItemMatcher& MenuItemMatcher::item(MenuItemMatcher&& item)
 
 MenuItemMatcher& MenuItemMatcher::activate(std::string const& action, const shared_ptr<GVariant>& parameter)
 {
-    p->m_activate = true;
-    p->m_activateAction = action.empty() ? nullptr : make_shared<string>(action);
-    p->m_activateParameter = parameter;
+    p->m_activations.emplace_back(action, parameter);
     return *this;
 }
 
 MenuItemMatcher& MenuItemMatcher::activate(const shared_ptr<GVariant>& parameter)
 {
-    p->m_activate = true;
-    p->m_activateParameter = parameter;
+    p->m_activations.emplace_back("", parameter);
     return *this;
 }
 
 MenuItemMatcher& MenuItemMatcher::setActionState(const std::string& action, const std::shared_ptr<GVariant>& state)
 {
-    p->m_setActionStateAction = action.empty() ? nullptr : make_shared<string>(action);
-    p->m_setActionState = state;
+    p->m_setActionStates.emplace_back(action, state);
     return *this;
 }
 
 MenuItemMatcher& MenuItemMatcher::setActionState(const std::shared_ptr<GVariant>& state)
 {
-    p->m_setActionState = state;
+    p->m_setActionStates.emplace_back("", state);
     return *this;
 }
 
@@ -769,14 +752,14 @@ void MenuItemMatcher::match(
         }
     }
 
-    if (p->m_actionState)
+    for (const auto& a: p->m_actionStates)
     {
         auto stateAction = action;
         auto stateIdPair = idPair;
         auto stateActionGroup = actionGroup;
-        if (p->m_actionStateAction)
+        if (!a.first.empty())
         {
-            stateAction = *p->m_actionStateAction;
+            stateAction = a.first;
             stateIdPair = split_action(stateAction);
             stateActionGroup = actions[stateIdPair.first];
         }
@@ -807,9 +790,9 @@ void MenuItemMatcher::match(
                                               stateIdPair.second.c_str()),
                                               &gvariant_deleter);
 
-            if (!g_variant_equal(p->m_actionState.get(), state.get()))
+            if (!g_variant_equal(a.second.get(), state.get()))
             {
-                gchar* expectedString = g_variant_print(p->m_actionState.get(), true);
+                gchar* expectedString = g_variant_print(a.second.get(), true);
                 gchar* actualString = g_variant_print(state.get(), true);
                 matchResult.failure(
                         location,
@@ -822,14 +805,14 @@ void MenuItemMatcher::match(
         }
     }
 
-    if (p->m_setActionState)
+    for (const auto& a: p->m_setActionStates)
     {
         auto stateAction = action;
         auto stateIdPair = idPair;
         auto stateActionGroup = actionGroup;
-        if (p->m_setActionStateAction)
+        if (!a.first.empty())
         {
-            stateAction = *p->m_setActionStateAction;
+            stateAction = a.first;
             stateIdPair = split_action(stateAction);
             stateActionGroup = actions[stateIdPair.first];
         }
@@ -857,51 +840,54 @@ void MenuItemMatcher::match(
         else
         {
             g_action_group_change_action_state(stateActionGroup.get(), stateIdPair.second.c_str(),
-                                               g_variant_ref(p->m_setActionState.get()));
+                                               g_variant_ref(a.second.get()));
         }
 
         // FIXME this is a dodgy way to ensure the action state change gets dispatched
         menuWaitForItems(menu, 100);
     }
 
-    if (p->m_activate)
+    for (const auto& a: p->m_activations)
     {
-        if (p->m_activateAction)
+        auto tmpAction = action;
+        auto tmpIdPair = idPair;
+        auto tmpActionGroup = actionGroup;
+        if (!a.first.empty())
         {
-            action = *p->m_activateAction;
-            idPair = split_action(action);
-            actionGroup = actions[idPair.first];
+            tmpAction = a.first;
+            tmpIdPair = split_action(tmpAction);
+            tmpActionGroup = actions[tmpIdPair.first];
         }
 
-        if (action.empty())
+        if (tmpAction.empty())
         {
             matchResult.failure(
                     location,
                     "Tried to activate action, but no action was found");
         }
-        else if(!actionGroup)
+        else if(!tmpActionGroup)
         {
             matchResult.failure(
                     location,
-                    "Tried to activate action group '" + idPair.first
+                    "Tried to activate action group '" + tmpIdPair.first
                             + "', but action group wasn't found");
         }
-        else if (!g_action_group_has_action(actionGroup.get(), idPair.second.c_str()))
+        else if (!g_action_group_has_action(tmpActionGroup.get(), tmpIdPair.second.c_str()))
         {
             matchResult.failure(
                     location,
-                    "Tried to activate action '" + action + "', but action was not found");
+                    "Tried to activate action '" + tmpAction + "', but action was not found");
         }
         else
         {
-            if (p->m_activateParameter)
+            if (a.second)
             {
-                g_action_group_activate_action(actionGroup.get(), idPair.second.c_str(),
-                                               g_variant_ref(p->m_activateParameter.get()));
+                g_action_group_activate_action(tmpActionGroup.get(), tmpIdPair.second.c_str(),
+                                               g_variant_ref(a.second.get()));
             }
             else
             {
-                g_action_group_activate_action(actionGroup.get(), idPair.second.c_str(), nullptr);
+                g_action_group_activate_action(tmpActionGroup.get(), tmpIdPair.second.c_str(), nullptr);
             }
 
             // FIXME this is a dodgy way to ensure the activation gets dispatched

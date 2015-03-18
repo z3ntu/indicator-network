@@ -66,6 +66,10 @@ public:
 
     MenuItemMatcher& action(const std::string& action);
 
+    MenuItemMatcher& actionState(const std::string& action, const std::shared_ptr<GVariant>& state);
+
+    MenuItemMatcher& actionState(const std::shared_ptr<GVariant>& state);
+
     MenuItemMatcher& state_icons(const std::vector<std::string>& state);
 
     MenuItemMatcher& icon(const std::string& icon);

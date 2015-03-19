@@ -66,10 +66,6 @@ public:
 
     MenuItemMatcher& action(const std::string& action);
 
-    MenuItemMatcher& actionState(const std::string& action, const std::shared_ptr<GVariant>& state);
-
-    MenuItemMatcher& actionState(const std::shared_ptr<GVariant>& state);
-
     MenuItemMatcher& state_icons(const std::vector<std::string>& state);
 
     MenuItemMatcher& icon(const std::string& icon);
@@ -104,13 +100,13 @@ public:
 
     MenuItemMatcher& item(MenuItemMatcher&& item);
 
-    MenuItemMatcher& activate(const std::string& action, const std::shared_ptr<GVariant>& parameter = nullptr);
+    MenuItemMatcher& pass_through_activate(const std::string& action, const std::shared_ptr<GVariant>& parameter = nullptr);
 
     MenuItemMatcher& activate(const std::shared_ptr<GVariant>& parameter = nullptr);
 
-    MenuItemMatcher& setActionState(const std::string& action, const std::shared_ptr<GVariant>& state);
+    MenuItemMatcher& set_pass_through_action_state(const std::string& action, const std::shared_ptr<GVariant>& state);
 
-    MenuItemMatcher& setActionState(const std::shared_ptr<GVariant>& state);
+    MenuItemMatcher& set_action_state(const std::shared_ptr<GVariant>& state);
 
     void match(MatchResult& matchResult, const std::vector<unsigned int>& location,
           const std::shared_ptr<GMenuModel>& menu,

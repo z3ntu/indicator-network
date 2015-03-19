@@ -156,8 +156,6 @@ struct MenuItemMatcher::Priv
 
     shared_ptr<string> m_action;
 
-    vector<pair<string, shared_ptr<GVariant>>> m_actionStates;
-
     vector<std::string> m_state_icons;
 
     vector<pair<string, shared_ptr<GVariant>>> m_attributes;
@@ -215,7 +213,6 @@ MenuItemMatcher& MenuItemMatcher::operator=(const MenuItemMatcher& other)
     p->m_label = other.p->m_label;
     p->m_icon = other.p->m_icon;
     p->m_action = other.p->m_action;
-    p->m_actionStates = other.p->m_actionStates;
     p->m_state_icons = other.p->m_state_icons;
     p->m_attributes = other.p->m_attributes;
     p->m_pass_through_attributes = other.p->m_pass_through_attributes;
@@ -248,18 +245,6 @@ MenuItemMatcher& MenuItemMatcher::label(const string& label)
 MenuItemMatcher& MenuItemMatcher::action(const string& action)
 {
     p->m_action = make_shared<string>(action);
-    return *this;
-}
-
-MenuItemMatcher& MenuItemMatcher::actionState(const std::string& action, const std::shared_ptr<GVariant>& state)
-{
-    p->m_actionStates.emplace_back(action, state);
-    return *this;
-}
-
-MenuItemMatcher& MenuItemMatcher::actionState(const std::shared_ptr<GVariant>& state)
-{
-    p->m_actionStates.emplace_back("", state);
     return *this;
 }
 
@@ -371,7 +356,7 @@ MenuItemMatcher& MenuItemMatcher::item(MenuItemMatcher&& item)
     return *this;
 }
 
-MenuItemMatcher& MenuItemMatcher::activate(std::string const& action, const shared_ptr<GVariant>& parameter)
+MenuItemMatcher& MenuItemMatcher::pass_through_activate(std::string const& action, const shared_ptr<GVariant>& parameter)
 {
     p->m_activations.emplace_back(action, parameter);
     return *this;
@@ -379,17 +364,17 @@ MenuItemMatcher& MenuItemMatcher::activate(std::string const& action, const shar
 
 MenuItemMatcher& MenuItemMatcher::activate(const shared_ptr<GVariant>& parameter)
 {
-    p->m_activations.emplace_back("", parameter);
+    p->m_activations.emplace_back(string(), parameter);
     return *this;
 }
 
-MenuItemMatcher& MenuItemMatcher::setActionState(const std::string& action, const std::shared_ptr<GVariant>& state)
+MenuItemMatcher& MenuItemMatcher::set_pass_through_action_state(const std::string& action, const std::shared_ptr<GVariant>& state)
 {
     p->m_setActionStates.emplace_back(action, state);
     return *this;
 }
 
-MenuItemMatcher& MenuItemMatcher::setActionState(const std::shared_ptr<GVariant>& state)
+MenuItemMatcher& MenuItemMatcher::set_action_state(const std::shared_ptr<GVariant>& state)
 {
     p->m_setActionStates.emplace_back("", state);
     return *this;
@@ -570,7 +555,7 @@ void MenuItemMatcher::match(
         {
             matchResult.failure(
                     location,
-                    "Could not find action name '" + actionName + "'");
+                    "Could not find action name '" + e.first + "'");
         }
         else
         {
@@ -654,6 +639,11 @@ void MenuItemMatcher::match(
                 location,
                 "Expected toggled = " + bool_to_string(*p->m_isToggled)
                         + ", but found " + bool_to_string(isToggled));
+    }
+
+    if (!matchResult.success())
+    {
+        return;
     }
 
     if (!p->m_items.empty() || p->m_expectedSize)
@@ -752,58 +742,6 @@ void MenuItemMatcher::match(
         }
     }
 
-    for (const auto& a: p->m_actionStates)
-    {
-        auto stateAction = action;
-        auto stateIdPair = idPair;
-        auto stateActionGroup = actionGroup;
-        if (!a.first.empty())
-        {
-            stateAction = a.first;
-            stateIdPair = split_action(stateAction);
-            stateActionGroup = actions[stateIdPair.first];
-        }
-
-        if (stateAction.empty())
-        {
-            matchResult.failure(
-                    location,
-                    "Tried to get action state, but no action was found");
-        }
-        else if(!stateActionGroup)
-        {
-            matchResult.failure(
-                    location,
-                    "Tried to get action state for action group '" + stateIdPair.first
-                            + "', but action group wasn't found");
-        }
-        else if (!g_action_group_has_action(stateActionGroup.get(), stateIdPair.second.c_str()))
-        {
-            matchResult.failure(
-                    location,
-                    "Tried to get action state for action '" + stateAction
-                            + "', but action was not found");
-        }
-        else
-        {
-            auto state = shared_ptr<GVariant>(g_action_group_get_action_state(stateActionGroup.get(),
-                                              stateIdPair.second.c_str()),
-                                              &gvariant_deleter);
-
-            if (!g_variant_equal(a.second.get(), state.get()))
-            {
-                gchar* expectedString = g_variant_print(a.second.get(), true);
-                gchar* actualString = g_variant_print(state.get(), true);
-                matchResult.failure(
-                        location,
-                        "Expected action state for action '" + stateAction
-                                + "' == " + expectedString + " but found "
-                                + actualString);
-                g_free(expectedString);
-                g_free(actualString);
-            }
-        }
-    }
 
     for (const auto& a: p->m_setActionStates)
     {
@@ -812,7 +750,7 @@ void MenuItemMatcher::match(
         auto stateActionGroup = actionGroup;
         if (!a.first.empty())
         {
-            stateAction = a.first;
+            stateAction = get_string_attribute(menuItem, a.first.c_str());;
             stateIdPair = split_action(stateAction);
             stateActionGroup = actions[stateIdPair.first];
         }
@@ -849,12 +787,12 @@ void MenuItemMatcher::match(
 
     for (const auto& a: p->m_activations)
     {
-        auto tmpAction = action;
+        string tmpAction = action;
         auto tmpIdPair = idPair;
         auto tmpActionGroup = actionGroup;
         if (!a.first.empty())
         {
-            tmpAction = a.first;
+            tmpAction = get_string_attribute(menuItem, a.first.c_str());
             tmpIdPair = split_action(tmpAction);
             tmpActionGroup = actions[tmpIdPair.first];
         }

@@ -2623,16 +2623,16 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM_IncorrectPin)
     notificationsSpy.clear();
 
     // check that the notification is displaying the appropriate error message
+    // close the error message
     EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
         .item(mh::MenuItemMatcher()
             .pass_through_string_attribute("x-canonical-pin-error", "Sorry, incorrect PIN")
+            .pass_through_activate("x-canonical-pin-error")
         ).match());
 
-    // close the error message
     // check that the error message is no longer displayed
     EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
         .item(mh::MenuItemMatcher()
-            .pass_through_activate("x-canonical-pin-error")
             .pass_through_string_attribute("x-canonical-pin-error", "")
         ).match());
 
@@ -2657,20 +2657,20 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM_IncorrectPin)
     notificationsSpy.clear();
 
     // check that the error message and last attempt popup are displayed
+    // close the error and popup
     EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
         .item(mh::MenuItemMatcher()
             .pass_through_string_attribute("x-canonical-pin-error", "Sorry, incorrect PIN")
             .pass_through_string_attribute("x-canonical-pin-popup",
                 "Sorry, incorrect SIM PIN. This will be your last attempt. "
                 "If SIM PIN is entered incorrectly you will require your PUK code to unlock.")
+            .pass_through_activate("x-canonical-pin-error")
+            .pass_through_activate("x-canonical-pin-popup")
         ).match());
 
-    // close the error and popup
     // check that the error and popup are no longer displayed
     EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
         .item(mh::MenuItemMatcher()
-            .pass_through_activate("x-canonical-pin-error")
-            .pass_through_activate("x-canonical-pin-popup")
             .pass_through_string_attribute("x-canonical-pin-error", "")
             .pass_through_string_attribute("x-canonical-pin-popup", "")
         ).match());
@@ -2710,20 +2710,20 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM_IncorrectPin)
     notificationsSpy.clear();
 
     // check that the error message and last attempt popup are displayed
+    // close the error and popup
     EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
         .item(mh::MenuItemMatcher()
             .pass_through_string_attribute("x-canonical-pin-error", "Sorry, incorrect PIN")
             .pass_through_string_attribute("x-canonical-pin-popup",
                 "Sorry, your SIM is now blocked. Please enter your PUK code to unblock SIM card. "
                 "You may need to contact your network provider for PUK code.")
+            .pass_through_activate("x-canonical-pin-error")
+            .pass_through_activate("x-canonical-pin-popup")
         ).match());
 
-    // close the error and popup
     // check that the error and popup are no longer displayed
     EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
         .item(mh::MenuItemMatcher()
-            .pass_through_activate("x-canonical-pin-error")
-            .pass_through_activate("x-canonical-pin-popup")
             .pass_through_string_attribute("x-canonical-pin-error", "")
             .pass_through_string_attribute("x-canonical-pin-popup", "")
         ).match());
@@ -2776,16 +2776,16 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM_IncorrectPin)
     notificationsSpy.clear();
 
     // check that the notification is displaying the appropriate error message
+    // close the error message
     EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
         .item(mh::MenuItemMatcher()
             .pass_through_string_attribute("x-canonical-pin-error", "Sorry, incorrect PUK")
+            .pass_through_activate("x-canonical-pin-error")
         ).match());
 
-    // close the error message
     // check that the error message is no longer displayed
     EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
         .item(mh::MenuItemMatcher()
-            .pass_through_activate("x-canonical-pin-error")
             .pass_through_string_attribute("x-canonical-pin-error", "")
         ).match());
 
@@ -2918,16 +2918,16 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM2_IncorrectPin)
     notificationsSpy.clear();
 
     // check that the notification is displaying the appropriate error message
+    // close the error message
     EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
         .item(mh::MenuItemMatcher()
             .pass_through_string_attribute("x-canonical-pin-error", "Sorry, incorrect PIN")
+            .pass_through_activate("x-canonical-pin-error")
         ).match());
 
-    // close the error message
     // check that the error message is no longer displayed
     EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
         .item(mh::MenuItemMatcher()
-            .pass_through_activate("x-canonical-pin-error")
             .pass_through_string_attribute("x-canonical-pin-error", "")
         ).match());
 
@@ -2952,20 +2952,20 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM2_IncorrectPin)
     notificationsSpy.clear();
 
     // check that the error message and last attempt popup are displayed
+    // close the error and popup
     EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
         .item(mh::MenuItemMatcher()
             .pass_through_string_attribute("x-canonical-pin-error", "Sorry, incorrect PIN")
             .pass_through_string_attribute("x-canonical-pin-popup",
                 "Sorry, incorrect SIM 2 PIN. This will be your last attempt. "
                 "If SIM 2 PIN is entered incorrectly you will require your PUK code to unlock.")
+            .pass_through_activate("x-canonical-pin-error")
+            .pass_through_activate("x-canonical-pin-popup")
         ).match());
 
-    // close the error and popup
     // check that the error and popup are no longer displayed
     EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
         .item(mh::MenuItemMatcher()
-            .pass_through_activate("x-canonical-pin-error")
-            .pass_through_activate("x-canonical-pin-popup")
             .pass_through_string_attribute("x-canonical-pin-error", "")
             .pass_through_string_attribute("x-canonical-pin-popup", "")
         ).match());
@@ -3005,20 +3005,20 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM2_IncorrectPin)
     notificationsSpy.clear();
 
     // check that the error message and last attempt popup are displayed
+    // close the error and popup
     EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
         .item(mh::MenuItemMatcher()
             .pass_through_string_attribute("x-canonical-pin-error", "Sorry, incorrect PIN")
             .pass_through_string_attribute("x-canonical-pin-popup",
                 "Sorry, your SIM 2 is now blocked. Please enter your PUK code to unblock SIM card. "
                 "You may need to contact your network provider for PUK code.")
+            .pass_through_activate("x-canonical-pin-error")
+            .pass_through_activate("x-canonical-pin-popup")
         ).match());
 
-    // close the error and popup
     // check that the error and popup are no longer displayed
     EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
         .item(mh::MenuItemMatcher()
-            .pass_through_activate("x-canonical-pin-error")
-            .pass_through_activate("x-canonical-pin-popup")
             .pass_through_string_attribute("x-canonical-pin-error", "")
             .pass_through_string_attribute("x-canonical-pin-popup", "")
         ).match());
@@ -3071,16 +3071,16 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM2_IncorrectPin)
     notificationsSpy.clear();
 
     // check that the notification is displaying the appropriate error message
+    // close the error message
     EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
         .item(mh::MenuItemMatcher()
             .pass_through_string_attribute("x-canonical-pin-error", "Sorry, incorrect PUK")
+            .pass_through_activate("x-canonical-pin-error")
         ).match());
 
-    // close the error message
     // check that the error message is no longer displayed
     EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
         .item(mh::MenuItemMatcher()
-            .pass_through_activate("x-canonical-pin-error")
             .pass_through_string_attribute("x-canonical-pin-error", "")
         ).match());
 

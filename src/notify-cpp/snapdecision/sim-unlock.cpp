@@ -28,6 +28,7 @@
 #include "menumodel-cpp/action-group-exporter.h"
 
 #include <string>
+#include <QDebug>
 
 using namespace notify::snapdecision;
 
@@ -108,7 +109,7 @@ public Q_SLOTS:
         }
     }
 
-    void popupActivated(const Variant& parameter)
+    void popupActivated(const Variant&)
     {
         m_popupAction->setState(TypedVariant<std::string>(""));
         if (m_pendingPopupClosed)
@@ -118,7 +119,7 @@ public Q_SLOTS:
         m_pendingPopupClosed = std::function<void()>();
     }
 
-    void errorActivated(const Variant& parameter)
+    void errorActivated(const Variant&)
     {
         m_errorAction->setState(TypedVariant<std::string>(""));
         if (m_pendingErrorClosed)

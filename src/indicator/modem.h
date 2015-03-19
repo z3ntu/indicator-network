@@ -100,18 +100,12 @@ public:
 
     virtual ~Modem();
 
-//    org::ofono::Interface::Modem::Ptr ofonoModem() const;
-
     void enterPin(PinType type,
                   const QString &pin);
 
     void resetPin(PinType type,
                   const QString &puk,
                   const QString &pin);
-
-    void changePin(PinType type,
-                   const QString &oldPin,
-                   const QString &newPin);
 
     Q_PROPERTY(bool online READ online NOTIFY onlineUpdated)
     bool online() const;
@@ -122,8 +116,10 @@ public:
     Q_PROPERTY(Modem::PinType requiredPin READ requiredPin NOTIFY requiredPinUpdated)
     PinType requiredPin() const;
 
-//    Q_PROPERTY(bool retries READ retries NOTIFY retriesUpdated)
-    const std::map<PinType, std::uint8_t> &retries() const;
+
+    typedef std::map<Modem::PinType, int> RetriesType;
+    Q_PROPERTY(RetriesType retries READ retries NOTIFY retriesUpdated)
+    const RetriesType &retries() const;
 
     Q_PROPERTY(QString operatorName READ operatorName NOTIFY operatorNameUpdated)
     const QString &operatorName() const;
@@ -173,6 +169,14 @@ Q_SIGNALS:
     void simIdentifierUpdated(const QString &);
 
     void updated(Modem::Ptr);
+
+    void enterPinSuceeded();
+
+    void enterPinFailed(const QString& error);
+
+    void resetPinSuceeded();
+
+    void resetPinFailed(const QString& error);
 };
 
 #endif

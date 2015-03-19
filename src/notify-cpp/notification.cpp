@@ -20,6 +20,7 @@
 #include "notification.h"
 
 #include <libnotify/notify.h>
+#include <QDebug>
 
 using namespace notify;
 
@@ -60,16 +61,6 @@ Notification::Notification(const QString &summary,
 
     d->m_notification.reset(notify_notification_new(summary.toUtf8().constData(), body.toUtf8().constData(), icon.toUtf8().constData()));
     d->disconnectId = g_signal_connect(d->m_notification.get(), "closed", G_CALLBACK(Private::closed_cb), d.get());
-
-//    d->m_summary.changed().connect([this](const std::string &value){
-//        g_object_set(d->notification.get(), "summary", value.c_str(), nullptr);
-//    });
-//    d->body.changed().connect([this](const std::string &value){
-//        g_object_set(d->notification.get(), "body", value.c_str(), nullptr);
-//    });
-//    d->icon.changed().connect([this](const std::string &value){
-//        g_object_set(d->notification.get(), "icon", value.c_str(), nullptr);
-//    });
 }
 
 Notification::~Notification()
@@ -116,6 +107,7 @@ Notification::setSummary(const QString& summary)
     }
 
     d->m_summary = summary;
+    g_object_set(d->m_notification.get(), "summary", d->m_summary.toUtf8().constData(), nullptr);
     Q_EMIT summaryUpdated(d->m_summary);
 }
 
@@ -128,6 +120,7 @@ Notification::setBody(const QString& body)
     }
 
     d->m_body = body;
+    g_object_set(d->m_notification.get(), "body", d->m_body.toUtf8().constData(), nullptr);
     Q_EMIT bodyUpdated(d->m_body);
 }
 
@@ -140,6 +133,7 @@ Notification::setIcon(const QString& icon)
     }
 
     d->m_icon = icon;
+    g_object_set(d->m_notification.get(), "icon", d->m_icon.toUtf8().constData(), nullptr);
     Q_EMIT iconUpdated(d->m_icon);
 }
 

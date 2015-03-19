@@ -32,6 +32,11 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+void PrintTo(const QVariant& variant, std::ostream* os) {
+        *os << "QVariant(" << variant.toString().toStdString() << ")";
+}
+
+
 #define WAIT_FOR_SIGNALS(signalSpy, signalsExpected)\
 {\
     while (signalSpy.size() < signalsExpected)\

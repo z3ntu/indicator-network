@@ -262,7 +262,7 @@ Manager::disableFlightMode()
 #ifdef INDICATOR_NETWORK_TRACE_MESSAGES
     std::cout << __PRETTY_FUNCTION__ << std::endl;
 #endif
-    if (d->m_wifiKillSwitch->flightMode(false))
+    if (!d->m_wifiKillSwitch->flightMode(false))
     {
         qWarning() << "Failed to disable flightmode";
     }

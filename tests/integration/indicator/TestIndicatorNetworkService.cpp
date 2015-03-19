@@ -2636,11 +2636,11 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM_IncorrectPin)
     CHECK_METHOD_CALL(modemSpy, 0, "EnterPin", {0, "pin"}, {1, "4321"});
     modemSpy.clear();
 
-    // check that the "Notify" method was called twice, then twice again when retries changes
+    // check that the "Notify" method was called twice when retries changes, then twice again for incorrect pin
     // check method arguments are correct (notification index should still be 1)
     WAIT_FOR_SIGNALS(notificationsSpy, 4);
-    CHECK_METHOD_CALL(notificationsSpy, 0, "Notify", {1, 1}, {3, "Enter SIM PIN"}, {4, "3 attempts remaining"});
-    CHECK_METHOD_CALL(notificationsSpy, 1, "Notify", {1, 1}, {3, "Enter SIM PIN"}, {4, "3 attempts remaining"});
+    CHECK_METHOD_CALL(notificationsSpy, 0, "Notify", {1, 1}, {3, "Enter SIM PIN"}, {4, "2 attempts remaining"});
+    CHECK_METHOD_CALL(notificationsSpy, 1, "Notify", {1, 1}, {3, "Enter SIM PIN"}, {4, "2 attempts remaining"});
     CHECK_METHOD_CALL(notificationsSpy, 2, "Notify", {1, 1}, {3, "Enter SIM PIN"}, {4, "2 attempts remaining"});
     CHECK_METHOD_CALL(notificationsSpy, 3, "Notify", {1, 1}, {3, "Enter SIM PIN"}, {4, "2 attempts remaining"});
     notificationsSpy.clear();
@@ -2670,11 +2670,11 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM_IncorrectPin)
     CHECK_METHOD_CALL(modemSpy, 0, "EnterPin", {0, "pin"}, {1, "4321"});
     modemSpy.clear();
 
-    // check that the "Notify" method was called twice, then twice again when retries changes
+    // check that the "Notify" method was called twice when retries changes, then twice again for incorrect pin
     // check method arguments are correct (notification index should still be 1)
     WAIT_FOR_SIGNALS(notificationsSpy, 4);
-    CHECK_METHOD_CALL(notificationsSpy, 0, "Notify", {1, 1}, {3, "Enter SIM PIN"}, {4, "2 attempts remaining"});
-    CHECK_METHOD_CALL(notificationsSpy, 1, "Notify", {1, 1}, {3, "Enter SIM PIN"}, {4, "2 attempts remaining"});
+    CHECK_METHOD_CALL(notificationsSpy, 0, "Notify", {1, 1}, {3, "Enter SIM PIN"}, {4, "1 attempt remaining"});
+    CHECK_METHOD_CALL(notificationsSpy, 1, "Notify", {1, 1}, {3, "Enter SIM PIN"}, {4, "1 attempt remaining"});
     CHECK_METHOD_CALL(notificationsSpy, 2, "Notify", {1, 1}, {3, "Enter SIM PIN"}, {4, "1 attempt remaining"});
     CHECK_METHOD_CALL(notificationsSpy, 3, "Notify", {1, 1}, {3, "Enter SIM PIN"}, {4, "1 attempt remaining"});
     notificationsSpy.clear();
@@ -2709,11 +2709,11 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM_IncorrectPin)
     CHECK_METHOD_CALL(modemSpy, 0, "EnterPin", {0, "pin"}, {1, "4321"});
     modemSpy.clear();
 
-    // check that the "Notify" method was called twice, then twice again when retries changes
+    // check that the "Notify" method was called twice when retries changes, then twice again for incorrect pin
     // check method arguments are correct (notification index should still be 1)
     WAIT_FOR_SIGNALS(notificationsSpy, 4);
-    CHECK_METHOD_CALL(notificationsSpy, 0, "Notify", {1, 1}, {3, "Enter SIM PIN"}, {4, "1 attempt remaining"});
-    CHECK_METHOD_CALL(notificationsSpy, 1, "Notify", {1, 1}, {3, "Enter SIM PIN"}, {4, "1 attempt remaining"});
+    CHECK_METHOD_CALL(notificationsSpy, 0, "Notify", {1, 1}, {3, "Enter SIM PIN"}, {4, "0 attempts remaining"});
+    CHECK_METHOD_CALL(notificationsSpy, 1, "Notify", {1, 1}, {3, "Enter SIM PIN"}, {4, "0 attempts remaining"});
     CHECK_METHOD_CALL(notificationsSpy, 2, "Notify", {1, 1}, {3, "Enter SIM PIN"}, {4, "0 attempts remaining"});
     CHECK_METHOD_CALL(notificationsSpy, 3, "Notify", {1, 1}, {3, "Enter SIM PIN"}, {4, "0 attempts remaining"});
     notificationsSpy.clear();
@@ -2789,11 +2789,11 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM_IncorrectPin)
     CHECK_METHOD_CALL(modemSpy, 0, "ResetPin", {0, "puk"}, {1, "87654321"}, {2, "4321"});
     modemSpy.clear();
 
-    // check that the "Notify" method was called twice, then twice again when retries changes
+    // check that the "Notify" method was called twice when retries changes, then twice again for incorrect pin
     // check method arguments are correct (notification index should still be 1)
     WAIT_FOR_SIGNALS(notificationsSpy, 4);
-    CHECK_METHOD_CALL(notificationsSpy, 0, "Notify", {1, 1}, {3, "Enter PUK code"}, {4, "10 attempts remaining"});
-    CHECK_METHOD_CALL(notificationsSpy, 1, "Notify", {1, 1}, {3, "Enter PUK code"}, {4, "10 attempts remaining"});
+    CHECK_METHOD_CALL(notificationsSpy, 0, "Notify", {1, 1}, {3, "Confirm new SIM PIN"}, {4, "Create new PIN"});
+    CHECK_METHOD_CALL(notificationsSpy, 1, "Notify", {1, 1}, {3, "Confirm new SIM PIN"}, {4, "Create new PIN"});
     CHECK_METHOD_CALL(notificationsSpy, 2, "Notify", {1, 1}, {3, "Enter PUK code"}, {4, "9 attempts remaining"});
     CHECK_METHOD_CALL(notificationsSpy, 3, "Notify", {1, 1}, {3, "Enter PUK code"}, {4, "9 attempts remaining"});
     notificationsSpy.clear();
@@ -2856,10 +2856,13 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM_IncorrectPin)
     EXPECT_EQ(notificationClosedSpy.first(), QVariantList() << QVariant(1) << QVariant(1));
     notificationClosedSpy.clear();
 
+    // check that the "Notify" method was called twice when retries changes
     // check that the "CloseNotification" method was called
     // check method arguments are correct
-    WAIT_FOR_SIGNALS(notificationsSpy, 1);
-    CHECK_METHOD_CALL(notificationsSpy, 0, "CloseNotification", {0, "1"});
+    WAIT_FOR_SIGNALS(notificationsSpy, 3);
+    CHECK_METHOD_CALL(notificationsSpy, 0, "Notify", {1, 1}, {3, "Confirm new SIM PIN"}, {4, "Create new PIN"});
+    CHECK_METHOD_CALL(notificationsSpy, 1, "Notify", {1, 1}, {3, "Confirm new SIM PIN"}, {4, "Create new PIN"});
+    CHECK_METHOD_CALL(notificationsSpy, 2, "CloseNotification", {0, "1"});
     notificationsSpy.clear();
 }
 
@@ -2934,11 +2937,11 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM2_IncorrectPin)
     CHECK_METHOD_CALL(modemSpy, 0, "EnterPin", {0, "pin"}, {1, "4321"});
     modemSpy.clear();
 
-    // check that the "Notify" method was called twice, then twice again when retries changes
+    // check that the "Notify" method was called twice when retries changes, then twice again for incorrect pin
     // check method arguments are correct (notification index should still be 1)
     WAIT_FOR_SIGNALS(notificationsSpy, 4);
-    CHECK_METHOD_CALL(notificationsSpy, 0, "Notify", {1, 1}, {3, "Enter SIM 2 PIN"}, {4, "3 attempts remaining"});
-    CHECK_METHOD_CALL(notificationsSpy, 1, "Notify", {1, 1}, {3, "Enter SIM 2 PIN"}, {4, "3 attempts remaining"});
+    CHECK_METHOD_CALL(notificationsSpy, 0, "Notify", {1, 1}, {3, "Enter SIM 2 PIN"}, {4, "2 attempts remaining"});
+    CHECK_METHOD_CALL(notificationsSpy, 1, "Notify", {1, 1}, {3, "Enter SIM 2 PIN"}, {4, "2 attempts remaining"});
     CHECK_METHOD_CALL(notificationsSpy, 2, "Notify", {1, 1}, {3, "Enter SIM 2 PIN"}, {4, "2 attempts remaining"});
     CHECK_METHOD_CALL(notificationsSpy, 3, "Notify", {1, 1}, {3, "Enter SIM 2 PIN"}, {4, "2 attempts remaining"});
     notificationsSpy.clear();
@@ -2968,11 +2971,11 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM2_IncorrectPin)
     CHECK_METHOD_CALL(modemSpy, 0, "EnterPin", {0, "pin"}, {1, "4321"});
     modemSpy.clear();
 
-    // check that the "Notify" method was called twice, then twice again when retries changes
+    // check that the "Notify" method was called twice when retries changes, then twice again for incorrect pin
     // check method arguments are correct (notification index should still be 1)
     WAIT_FOR_SIGNALS(notificationsSpy, 4);
-    CHECK_METHOD_CALL(notificationsSpy, 0, "Notify", {1, 1}, {3, "Enter SIM 2 PIN"}, {4, "2 attempts remaining"});
-    CHECK_METHOD_CALL(notificationsSpy, 1, "Notify", {1, 1}, {3, "Enter SIM 2 PIN"}, {4, "2 attempts remaining"});
+    CHECK_METHOD_CALL(notificationsSpy, 0, "Notify", {1, 1}, {3, "Enter SIM 2 PIN"}, {4, "1 attempt remaining"});
+    CHECK_METHOD_CALL(notificationsSpy, 1, "Notify", {1, 1}, {3, "Enter SIM 2 PIN"}, {4, "1 attempt remaining"});
     CHECK_METHOD_CALL(notificationsSpy, 2, "Notify", {1, 1}, {3, "Enter SIM 2 PIN"}, {4, "1 attempt remaining"});
     CHECK_METHOD_CALL(notificationsSpy, 3, "Notify", {1, 1}, {3, "Enter SIM 2 PIN"}, {4, "1 attempt remaining"});
     notificationsSpy.clear();
@@ -3007,11 +3010,11 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM2_IncorrectPin)
     CHECK_METHOD_CALL(modemSpy, 0, "EnterPin", {0, "pin"}, {1, "4321"});
     modemSpy.clear();
 
-    // check that the "Notify" method was called twice, then twice again when retries changes
+    // check that the "Notify" method was called twice when retries changes, then twice again for incorrect pin
     // check method arguments are correct (notification index should still be 1)
     WAIT_FOR_SIGNALS(notificationsSpy, 4);
-    CHECK_METHOD_CALL(notificationsSpy, 0, "Notify", {1, 1}, {3, "Enter SIM 2 PIN"}, {4, "1 attempt remaining"});
-    CHECK_METHOD_CALL(notificationsSpy, 1, "Notify", {1, 1}, {3, "Enter SIM 2 PIN"}, {4, "1 attempt remaining"});
+    CHECK_METHOD_CALL(notificationsSpy, 0, "Notify", {1, 1}, {3, "Enter SIM 2 PIN"}, {4, "0 attempts remaining"});
+    CHECK_METHOD_CALL(notificationsSpy, 1, "Notify", {1, 1}, {3, "Enter SIM 2 PIN"}, {4, "0 attempts remaining"});
     CHECK_METHOD_CALL(notificationsSpy, 2, "Notify", {1, 1}, {3, "Enter SIM 2 PIN"}, {4, "0 attempts remaining"});
     CHECK_METHOD_CALL(notificationsSpy, 3, "Notify", {1, 1}, {3, "Enter SIM 2 PIN"}, {4, "0 attempts remaining"});
     notificationsSpy.clear();
@@ -3087,11 +3090,11 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM2_IncorrectPin)
     CHECK_METHOD_CALL(modemSpy, 0, "ResetPin", {0, "puk"}, {1, "87654321"}, {2, "4321"});
     modemSpy.clear();
 
-    // check that the "Notify" method was called twice, then twice again when retries changes
+    // check that the "Notify" method was called twice when retries changes, then twice again for incorrect pin
     // check method arguments are correct (notification index should still be 1)
     WAIT_FOR_SIGNALS(notificationsSpy, 4);
-    CHECK_METHOD_CALL(notificationsSpy, 0, "Notify", {1, 1}, {3, "Enter PUK code for SIM 2"}, {4, "10 attempts remaining"});
-    CHECK_METHOD_CALL(notificationsSpy, 1, "Notify", {1, 1}, {3, "Enter PUK code for SIM 2"}, {4, "10 attempts remaining"});
+    CHECK_METHOD_CALL(notificationsSpy, 0, "Notify", {1, 1}, {3, "Enter PUK code for SIM 2"}, {4, "9 attempts remaining"});
+    CHECK_METHOD_CALL(notificationsSpy, 1, "Notify", {1, 1}, {3, "Enter PUK code for SIM 2"}, {4, "9 attempts remaining"});
     CHECK_METHOD_CALL(notificationsSpy, 2, "Notify", {1, 1}, {3, "Enter PUK code for SIM 2"}, {4, "9 attempts remaining"});
     CHECK_METHOD_CALL(notificationsSpy, 3, "Notify", {1, 1}, {3, "Enter PUK code for SIM 2"}, {4, "9 attempts remaining"});
     notificationsSpy.clear();
@@ -3154,10 +3157,13 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM2_IncorrectPin)
     EXPECT_EQ(notificationClosedSpy.first(), QVariantList() << QVariant(1) << QVariant(1));
     notificationClosedSpy.clear();
 
+    // check that the "Notify" method was called twice when retries changes
     // check that the "CloseNotification" method was called
     // check method arguments are correct
-    WAIT_FOR_SIGNALS(notificationsSpy, 1);
-    CHECK_METHOD_CALL(notificationsSpy, 0, "CloseNotification", {0, "1"});
+    WAIT_FOR_SIGNALS(notificationsSpy, 3);
+    CHECK_METHOD_CALL(notificationsSpy, 0, "Notify", {1, 1}, {3, "Confirm new SIM 2 PIN"}, {4, "Create new PIN"});
+    CHECK_METHOD_CALL(notificationsSpy, 1, "Notify", {1, 1}, {3, "Confirm new SIM 2 PIN"}, {4, "Create new PIN"});
+    CHECK_METHOD_CALL(notificationsSpy, 2, "CloseNotification", {0, "1"});
     notificationsSpy.clear();
 }
 

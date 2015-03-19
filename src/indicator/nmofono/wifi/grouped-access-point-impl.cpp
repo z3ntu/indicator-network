@@ -23,7 +23,6 @@
 #include <stdexcept>
 #include <algorithm>
 #include <cassert>
-#include <mutex>
 
 namespace platform {
 namespace nmofono {

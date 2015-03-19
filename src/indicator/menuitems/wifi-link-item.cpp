@@ -65,8 +65,6 @@ public:
 
     TextItem::Ptr m_otherNetwork;
 
-    std::mutex m_updateActiveAccessPointMutex;
-
 public:
 
 
@@ -184,7 +182,6 @@ public Q_SLOTS:
 
     void updateActiveAccessPoint(networking::wifi::AccessPoint::Ptr ap)
     {
-        std::lock_guard<std::mutex> lock(m_updateActiveAccessPointMutex);
         m_activeAccessPoint = ap;
 
         auto current = m_connectedBeforeApsMenu->begin();

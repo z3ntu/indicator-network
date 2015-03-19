@@ -2260,8 +2260,7 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM_MenuContents)
             .item(flightModeSwitch())
             .item(mh::MenuItemMatcher()
                 .item(modemInfo("", "SIM Locked", "simcard-locked", true)
-                      .string_attribute("x-canonical-modem-locked-action", "indicator.modem.1::locked")
-                      .activate("indicator.modem.1::locked")
+                      .pass_through_activate("x-canonical-modem-locked-action")
                 )
                 .item(cellularSettings())
             )
@@ -2389,8 +2388,7 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM_Cancel)
             .item(flightModeSwitch())
             .item(mh::MenuItemMatcher()
                 .item(modemInfo("", "SIM Locked", "simcard-locked", true)
-                      .string_attribute("x-canonical-modem-locked-action", "indicator.modem.1::locked")
-                      .activate("indicator.modem.1::locked")
+                      .pass_through_activate("x-canonical-modem-locked-action")
                 )
                 .item(cellularSettings())
             )
@@ -2447,8 +2445,7 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM_Cancel)
             .item(flightModeSwitch())
             .item(mh::MenuItemMatcher()
                 .item(modemInfo("", "SIM Locked", "simcard-locked", true)
-                      .string_attribute("x-canonical-modem-locked-action", "indicator.modem.1::locked")
-                      .activate("indicator.modem.1::locked")
+                      .pass_through_activate("x-canonical-modem-locked-action")
                 )
                 .item(cellularSettings())
             )
@@ -2508,8 +2505,7 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM_CorrectPin)
             .item(flightModeSwitch())
             .item(mh::MenuItemMatcher()
                 .item(modemInfo("", "SIM Locked", "simcard-locked", true)
-                      .string_attribute("x-canonical-modem-locked-action", "indicator.modem.1::locked")
-                      .activate("indicator.modem.1::locked")
+                      .pass_through_activate("x-canonical-modem-locked-action")
                 )
                 .item(cellularSettings())
             )
@@ -2548,7 +2544,7 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM_CorrectPin)
             .string_attribute("x-canonical-pin-min-max", "notifications.pinMinMax")
             .string_attribute("x-canonical-pin-popup", "notifications.popup")
             .string_attribute("x-canonical-pin-error", "notifications.error")
-            .setActionState(shared_ptr<GVariant>(g_variant_new_string("1234"), &mh::gvariant_deleter))
+            .set_action_state(shared_ptr<GVariant>(g_variant_new_string("1234"), &mh::gvariant_deleter))
         ).match());
 
     // check that the "EnterPin" method was called
@@ -2593,8 +2589,7 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM_IncorrectPin)
             .item(flightModeSwitch())
             .item(mh::MenuItemMatcher()
                 .item(modemInfo("", "SIM Locked", "simcard-locked", true)
-                      .string_attribute("x-canonical-modem-locked-action", "indicator.modem.1::locked")
-                      .activate("indicator.modem.1::locked")
+                      .pass_through_activate("x-canonical-modem-locked-action")
                 )
                 .item(cellularSettings())
             )
@@ -2626,8 +2621,8 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM_IncorrectPin)
 
     EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
         .item(mh::MenuItemMatcher()
-            .actionState("notifications.error", shared_ptr<GVariant>(g_variant_new_string(""), &mh::gvariant_deleter))
-            .setActionState(shared_ptr<GVariant>(g_variant_new_string("4321"), &mh::gvariant_deleter))
+            .pass_through_string_attribute("x-canonical-pin-error", "")
+            .set_action_state(shared_ptr<GVariant>(g_variant_new_string("4321"), &mh::gvariant_deleter))
         ).match());
 
     // check that the "EnterPin" method was called
@@ -2646,23 +2641,23 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM_IncorrectPin)
     notificationsSpy.clear();
 
     // check that the notification is displaying the appropriate error message
+    // close the error message
     EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
         .item(mh::MenuItemMatcher()
-            .actionState("notifications.error", shared_ptr<GVariant>(g_variant_new_string("Sorry, incorrect PIN"), &mh::gvariant_deleter))
+            .pass_through_string_attribute("x-canonical-pin-error", "Sorry, incorrect PIN")
+            .pass_through_activate("x-canonical-pin-error")
         ).match());
 
-    // close the error message
     // check that the error message is no longer displayed
     EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
         .item(mh::MenuItemMatcher()
-            .activate("notifications.error")
-            .actionState("notifications.error", shared_ptr<GVariant>(g_variant_new_string(""), &mh::gvariant_deleter))
+            .pass_through_string_attribute("x-canonical-pin-error", "")
         ).match());
 
     // enter incorrect pin again
     EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
         .item(mh::MenuItemMatcher()
-            .setActionState(shared_ptr<GVariant>(g_variant_new_string("4321"), &mh::gvariant_deleter))
+            .set_action_state(shared_ptr<GVariant>(g_variant_new_string("4321"), &mh::gvariant_deleter))
         ).match());
 
     // check that the "EnterPin" method was called
@@ -2680,28 +2675,28 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM_IncorrectPin)
     notificationsSpy.clear();
 
     // check that the error message and last attempt popup are displayed
+    // close the error and popup
     EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
         .item(mh::MenuItemMatcher()
-            .actionState("notifications.error", shared_ptr<GVariant>(g_variant_new_string("Sorry, incorrect PIN"), &mh::gvariant_deleter))
-            .actionState("notifications.popup", shared_ptr<GVariant>(g_variant_new_string(
+            .pass_through_string_attribute("x-canonical-pin-error", "Sorry, incorrect PIN")
+            .pass_through_string_attribute("x-canonical-pin-popup",
                 "Sorry, incorrect SIM PIN. This will be your last attempt. "
-                "If SIM PIN is entered incorrectly you will require your PUK code to unlock."), &mh::gvariant_deleter))
+                "If SIM PIN is entered incorrectly you will require your PUK code to unlock.")
+            .pass_through_activate("x-canonical-pin-error")
+            .pass_through_activate("x-canonical-pin-popup")
         ).match());
 
-    // close the error and popup
     // check that the error and popup are no longer displayed
     EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
         .item(mh::MenuItemMatcher()
-            .activate("notifications.error")
-            .activate("notifications.popup")
-            .actionState("notifications.error", shared_ptr<GVariant>(g_variant_new_string(""), &mh::gvariant_deleter))
-            .actionState("notifications.popup", shared_ptr<GVariant>(g_variant_new_string(""), &mh::gvariant_deleter))
+            .pass_through_string_attribute("x-canonical-pin-error", "")
+            .pass_through_string_attribute("x-canonical-pin-popup", "")
         ).match());
 
     // enter incorrect pin again
     EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
         .item(mh::MenuItemMatcher()
-            .setActionState(shared_ptr<GVariant>(g_variant_new_string("4321"), &mh::gvariant_deleter))
+            .set_action_state(shared_ptr<GVariant>(g_variant_new_string("4321"), &mh::gvariant_deleter))
         ).match());
 
     // check that the "EnterPin" method was called
@@ -2733,28 +2728,28 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM_IncorrectPin)
     notificationsSpy.clear();
 
     // check that the error message and last attempt popup are displayed
+    // close the error and popup
     EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
         .item(mh::MenuItemMatcher()
-            .actionState("notifications.error", shared_ptr<GVariant>(g_variant_new_string("Sorry, incorrect PIN"), &mh::gvariant_deleter))
-            .actionState("notifications.popup", shared_ptr<GVariant>(g_variant_new_string(
+            .pass_through_string_attribute("x-canonical-pin-error", "Sorry, incorrect PIN")
+            .pass_through_string_attribute("x-canonical-pin-popup",
                 "Sorry, your SIM is now blocked. Please enter your PUK code to unblock SIM card. "
-                "You may need to contact your network provider for PUK code."), &mh::gvariant_deleter))
+                "You may need to contact your network provider for PUK code.")
+            .pass_through_activate("x-canonical-pin-error")
+            .pass_through_activate("x-canonical-pin-popup")
         ).match());
 
-    // close the error and popup
     // check that the error and popup are no longer displayed
     EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
         .item(mh::MenuItemMatcher()
-            .activate("notifications.error")
-            .activate("notifications.popup")
-            .actionState("notifications.error", shared_ptr<GVariant>(g_variant_new_string(""), &mh::gvariant_deleter))
-            .actionState("notifications.popup", shared_ptr<GVariant>(g_variant_new_string(""), &mh::gvariant_deleter))
+            .pass_through_string_attribute("x-canonical-pin-error", "")
+            .pass_through_string_attribute("x-canonical-pin-popup", "")
         ).match());
 
     // enter incorrect puk
     EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
         .item(mh::MenuItemMatcher()
-            .setActionState(shared_ptr<GVariant>(g_variant_new_string("87654321"), &mh::gvariant_deleter))
+            .set_action_state(shared_ptr<GVariant>(g_variant_new_string("87654321"), &mh::gvariant_deleter))
         ).match());
 
     // check that the "Notify" method was called twice
@@ -2767,7 +2762,7 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM_IncorrectPin)
     // enter new pin
     EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
         .item(mh::MenuItemMatcher()
-            .setActionState(shared_ptr<GVariant>(g_variant_new_string("4321"), &mh::gvariant_deleter))
+            .set_action_state(shared_ptr<GVariant>(g_variant_new_string("4321"), &mh::gvariant_deleter))
         ).match());
 
     // check that the "Notify" method was called twice
@@ -2780,7 +2775,7 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM_IncorrectPin)
     // enter new pin again
     EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
         .item(mh::MenuItemMatcher()
-            .setActionState(shared_ptr<GVariant>(g_variant_new_string("4321"), &mh::gvariant_deleter))
+            .set_action_state(shared_ptr<GVariant>(g_variant_new_string("4321"), &mh::gvariant_deleter))
         ).match());
 
     // check that the "ResetPin" method was called
@@ -2799,17 +2794,17 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM_IncorrectPin)
     notificationsSpy.clear();
 
     // check that the notification is displaying the appropriate error message
+    // close the error message
     EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
         .item(mh::MenuItemMatcher()
-            .actionState("notifications.error", shared_ptr<GVariant>(g_variant_new_string("Sorry, incorrect PUK"), &mh::gvariant_deleter))
+            .pass_through_string_attribute("x-canonical-pin-error", "Sorry, incorrect PUK")
+            .pass_through_activate("x-canonical-pin-error")
         ).match());
 
-    // close the error message
     // check that the error message is no longer displayed
     EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
         .item(mh::MenuItemMatcher()
-            .activate("notifications.error")
-            .actionState("notifications.error", shared_ptr<GVariant>(g_variant_new_string(""), &mh::gvariant_deleter))
+            .pass_through_string_attribute("x-canonical-pin-error", "")
         ).match());
 
     // enter correct puk
@@ -2818,7 +2813,7 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM_IncorrectPin)
 
     EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
         .item(mh::MenuItemMatcher()
-            .setActionState(shared_ptr<GVariant>(g_variant_new_string("12345678"), &mh::gvariant_deleter))
+            .set_action_state(shared_ptr<GVariant>(g_variant_new_string("12345678"), &mh::gvariant_deleter))
         ).match());
 
     // check that the "Notify" method was called twice
@@ -2830,7 +2825,7 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM_IncorrectPin)
     // enter new pin
     EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
         .item(mh::MenuItemMatcher()
-            .setActionState(shared_ptr<GVariant>(g_variant_new_string("4321"), &mh::gvariant_deleter))
+            .set_action_state(shared_ptr<GVariant>(g_variant_new_string("4321"), &mh::gvariant_deleter))
         ).match());
 
     // check that the "Notify" method was called twice
@@ -2842,7 +2837,7 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM_IncorrectPin)
     // enter new pin again
     EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
         .item(mh::MenuItemMatcher()
-            .setActionState(shared_ptr<GVariant>(g_variant_new_string("4321"), &mh::gvariant_deleter))
+            .set_action_state(shared_ptr<GVariant>(g_variant_new_string("4321"), &mh::gvariant_deleter))
         ).match());
 
     // check that the "ResetPin" method was called
@@ -2890,12 +2885,9 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM2_IncorrectPin)
             .mode(mh::MenuItemMatcher::Mode::starts_with)
             .item(flightModeSwitch())
             .item(mh::MenuItemMatcher()
-                .item(modemInfo("SIM 1", "fake.tel", "gsm-3g-full")
-                      .string_attribute("x-canonical-modem-locked-action", "indicator.modem.1::locked")
-                )
+                .item(modemInfo("SIM 1", "fake.tel", "gsm-3g-full"))
                 .item(modemInfo("SIM 2", "SIM Locked", "simcard-locked", true)
-                      .string_attribute("x-canonical-modem-locked-action", "indicator.modem.2::locked")
-                      .activate("indicator.modem.2::locked")
+                      .pass_through_activate("x-canonical-modem-locked-action")
                 )
                 .item(cellularSettings())
             )
@@ -2927,8 +2919,8 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM2_IncorrectPin)
 
     EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
         .item(mh::MenuItemMatcher()
-            .actionState("notifications.error", shared_ptr<GVariant>(g_variant_new_string(""), &mh::gvariant_deleter))
-            .setActionState(shared_ptr<GVariant>(g_variant_new_string("4321"), &mh::gvariant_deleter))
+            .pass_through_string_attribute("x-canonical-pin-error", "")
+            .set_action_state(shared_ptr<GVariant>(g_variant_new_string("4321"), &mh::gvariant_deleter))
         ).match());
 
     // check that the "EnterPin" method was called
@@ -2947,23 +2939,23 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM2_IncorrectPin)
     notificationsSpy.clear();
 
     // check that the notification is displaying the appropriate error message
+    // close the error message
     EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
         .item(mh::MenuItemMatcher()
-            .actionState("notifications.error", shared_ptr<GVariant>(g_variant_new_string("Sorry, incorrect PIN"), &mh::gvariant_deleter))
+            .pass_through_string_attribute("x-canonical-pin-error", "Sorry, incorrect PIN")
+            .pass_through_activate("x-canonical-pin-error")
         ).match());
 
-    // close the error message
     // check that the error message is no longer displayed
     EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
         .item(mh::MenuItemMatcher()
-            .activate("notifications.error")
-            .actionState("notifications.error", shared_ptr<GVariant>(g_variant_new_string(""), &mh::gvariant_deleter))
+            .pass_through_string_attribute("x-canonical-pin-error", "")
         ).match());
 
     // enter incorrect pin again
     EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
         .item(mh::MenuItemMatcher()
-            .setActionState(shared_ptr<GVariant>(g_variant_new_string("4321"), &mh::gvariant_deleter))
+            .set_action_state(shared_ptr<GVariant>(g_variant_new_string("4321"), &mh::gvariant_deleter))
         ).match());
 
     // check that the "EnterPin" method was called
@@ -2981,28 +2973,28 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM2_IncorrectPin)
     notificationsSpy.clear();
 
     // check that the error message and last attempt popup are displayed
+    // close the error and popup
     EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
         .item(mh::MenuItemMatcher()
-            .actionState("notifications.error", shared_ptr<GVariant>(g_variant_new_string("Sorry, incorrect PIN"), &mh::gvariant_deleter))
-            .actionState("notifications.popup", shared_ptr<GVariant>(g_variant_new_string(
+            .pass_through_string_attribute("x-canonical-pin-error", "Sorry, incorrect PIN")
+            .pass_through_string_attribute("x-canonical-pin-popup",
                 "Sorry, incorrect SIM 2 PIN. This will be your last attempt. "
-                "If SIM 2 PIN is entered incorrectly you will require your PUK code to unlock."), &mh::gvariant_deleter))
+                "If SIM 2 PIN is entered incorrectly you will require your PUK code to unlock.")
+            .pass_through_activate("x-canonical-pin-error")
+            .pass_through_activate("x-canonical-pin-popup")
         ).match());
 
-    // close the error and popup
     // check that the error and popup are no longer displayed
     EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
         .item(mh::MenuItemMatcher()
-            .activate("notifications.error")
-            .activate("notifications.popup")
-            .actionState("notifications.error", shared_ptr<GVariant>(g_variant_new_string(""), &mh::gvariant_deleter))
-            .actionState("notifications.popup", shared_ptr<GVariant>(g_variant_new_string(""), &mh::gvariant_deleter))
+            .pass_through_string_attribute("x-canonical-pin-error", "")
+            .pass_through_string_attribute("x-canonical-pin-popup", "")
         ).match());
 
     // enter incorrect pin again
     EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
         .item(mh::MenuItemMatcher()
-            .setActionState(shared_ptr<GVariant>(g_variant_new_string("4321"), &mh::gvariant_deleter))
+            .set_action_state(shared_ptr<GVariant>(g_variant_new_string("4321"), &mh::gvariant_deleter))
         ).match());
 
     // check that the "EnterPin" method was called
@@ -3034,28 +3026,28 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM2_IncorrectPin)
     notificationsSpy.clear();
 
     // check that the error message and last attempt popup are displayed
+    // close the error and popup
     EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
         .item(mh::MenuItemMatcher()
-            .actionState("notifications.error", shared_ptr<GVariant>(g_variant_new_string("Sorry, incorrect PIN"), &mh::gvariant_deleter))
-            .actionState("notifications.popup", shared_ptr<GVariant>(g_variant_new_string(
+            .pass_through_string_attribute("x-canonical-pin-error", "Sorry, incorrect PIN")
+            .pass_through_string_attribute("x-canonical-pin-popup",
                 "Sorry, your SIM 2 is now blocked. Please enter your PUK code to unblock SIM card. "
-                "You may need to contact your network provider for PUK code."), &mh::gvariant_deleter))
+                "You may need to contact your network provider for PUK code.")
+            .pass_through_activate("x-canonical-pin-error")
+            .pass_through_activate("x-canonical-pin-popup")
         ).match());
 
-    // close the error and popup
     // check that the error and popup are no longer displayed
     EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
         .item(mh::MenuItemMatcher()
-            .activate("notifications.error")
-            .activate("notifications.popup")
-            .actionState("notifications.error", shared_ptr<GVariant>(g_variant_new_string(""), &mh::gvariant_deleter))
-            .actionState("notifications.popup", shared_ptr<GVariant>(g_variant_new_string(""), &mh::gvariant_deleter))
+            .pass_through_string_attribute("x-canonical-pin-error", "")
+            .pass_through_string_attribute("x-canonical-pin-popup", "")
         ).match());
 
     // enter incorrect puk
     EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
         .item(mh::MenuItemMatcher()
-            .setActionState(shared_ptr<GVariant>(g_variant_new_string("87654321"), &mh::gvariant_deleter))
+            .set_action_state(shared_ptr<GVariant>(g_variant_new_string("87654321"), &mh::gvariant_deleter))
         ).match());
 
     // check that the "Notify" method was called twice
@@ -3068,7 +3060,7 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM2_IncorrectPin)
     // enter new pin
     EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
         .item(mh::MenuItemMatcher()
-            .setActionState(shared_ptr<GVariant>(g_variant_new_string("4321"), &mh::gvariant_deleter))
+            .set_action_state(shared_ptr<GVariant>(g_variant_new_string("4321"), &mh::gvariant_deleter))
         ).match());
 
     // check that the "Notify" method was called twice
@@ -3081,7 +3073,7 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM2_IncorrectPin)
     // enter new pin again
     EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
         .item(mh::MenuItemMatcher()
-            .setActionState(shared_ptr<GVariant>(g_variant_new_string("4321"), &mh::gvariant_deleter))
+            .set_action_state(shared_ptr<GVariant>(g_variant_new_string("4321"), &mh::gvariant_deleter))
         ).match());
 
     // check that the "ResetPin" method was called
@@ -3100,17 +3092,17 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM2_IncorrectPin)
     notificationsSpy.clear();
 
     // check that the notification is displaying the appropriate error message
+    // close the error message
     EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
         .item(mh::MenuItemMatcher()
-            .actionState("notifications.error", shared_ptr<GVariant>(g_variant_new_string("Sorry, incorrect PUK"), &mh::gvariant_deleter))
+            .pass_through_string_attribute("x-canonical-pin-error", "Sorry, incorrect PUK")
+            .pass_through_activate("x-canonical-pin-error")
         ).match());
 
-    // close the error message
     // check that the error message is no longer displayed
     EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
         .item(mh::MenuItemMatcher()
-            .activate("notifications.error")
-            .actionState("notifications.error", shared_ptr<GVariant>(g_variant_new_string(""), &mh::gvariant_deleter))
+            .pass_through_string_attribute("x-canonical-pin-error", "")
         ).match());
 
     // enter correct puk
@@ -3119,7 +3111,7 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM2_IncorrectPin)
 
     EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
         .item(mh::MenuItemMatcher()
-            .setActionState(shared_ptr<GVariant>(g_variant_new_string("12345678"), &mh::gvariant_deleter))
+            .set_action_state(shared_ptr<GVariant>(g_variant_new_string("12345678"), &mh::gvariant_deleter))
         ).match());
 
     // check that the "Notify" method was called twice
@@ -3131,7 +3123,7 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM2_IncorrectPin)
     // enter new pin
     EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
         .item(mh::MenuItemMatcher()
-            .setActionState(shared_ptr<GVariant>(g_variant_new_string("4321"), &mh::gvariant_deleter))
+            .set_action_state(shared_ptr<GVariant>(g_variant_new_string("4321"), &mh::gvariant_deleter))
         ).match());
 
     // check that the "Notify" method was called twice
@@ -3143,7 +3135,7 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM2_IncorrectPin)
     // enter new pin again
     EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
         .item(mh::MenuItemMatcher()
-            .setActionState(shared_ptr<GVariant>(g_variant_new_string("4321"), &mh::gvariant_deleter))
+            .set_action_state(shared_ptr<GVariant>(g_variant_new_string("4321"), &mh::gvariant_deleter))
         ).match());
 
     // check that the "ResetPin" method was called

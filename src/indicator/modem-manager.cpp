@@ -49,14 +49,7 @@ public:
         p(parent)
     {
         m_unlockDialog = make_shared<SimUnlockDialog>();
-//        m_unlockDialog->ready().connect([this](){
-//            if (!m_pendingUnlocks.empty()) {
-//                auto modem = m_pendingUnlocks.front();
-//                m_pendingUnlocks.pop_front();
-//                if (modem->requiredPin().get() != Modem::PinType::none)
-//                    m_unlockDialog->unlock(modem);
-//            }
-//        });
+        connect(m_unlockDialog.get(), &SimUnlockDialog::ready, this, &Private::sim_unlock_ready);
 
         m_ofono = make_shared<QOfonoManager>();
         connect(m_ofono.get(), &QOfonoManager::modemsChanged, this, &Private::modems_changed);
@@ -68,6 +61,19 @@ public:
     }
 
 public Q_SLOTS:
+    void sim_unlock_ready()
+    {
+        if (!m_pendingUnlocks.empty())
+        {
+            auto modem = m_pendingUnlocks.front();
+            m_pendingUnlocks.pop_front();
+            if (modem->requiredPin() != Modem::PinType::none)
+            {
+                m_unlockDialog->unlock(modem);
+            }
+        }
+    }
+
     void modems_changed(const QStringList& value)
     {
         QSet<QString> modemPaths(value.toSet());

@@ -102,8 +102,6 @@ public:
     QString m_oldPin;
     QString m_pukCode;
 
-    std::recursive_mutex m_updateMutex;
-
     std::vector<QMetaObject::Connection> m_connections;
 
     bool m_showSimIdentifiers = false;
@@ -111,53 +109,28 @@ public:
     /// @todo see comment in reset()
     bool m_doCleanUp;
 
-    bool sendEnterPin(const QString& pin)
+    int m_retries = -1;
+
+    void readRetries(Modem::PinType pinType)
     {
-        int retries = -1;
-        map<Modem::PinType, uint8_t> retriesMap = m_modem->retries();
-        if (retriesMap.find(Modem::PinType::pin) != retriesMap.end())
+        m_retries = -1;
+        auto retriesMap = m_modem->retries();
+        if (retriesMap.find(pinType) != retriesMap.end())
         {
-            retries = retriesMap[Modem::PinType::pin];
+            m_retries = retriesMap[pinType];
         }
-
-        // FIXME: API is async now
-//        if (m_modem->enterPin(Modem::PinType::pin, pin))
-//        {
-//            return true;
-//        }
-
-        m_sd->showError(_("Sorry, incorrect PIN"));
-        --retries;
-        if (retries == 1) {
-            showLastPinAttemptPopup();
-        } else if (retries == 0) {
-            showPinBlockedPopup();
-        }
-
-        return false;
     }
 
-    bool sendResetPin(const QString& puk, const QString& newPin)
+    void sendEnterPin(const QString& pin)
     {
-        int retries = -1;
-        map<Modem::PinType, uint8_t> retriesMap = m_modem->retries();
-        if (retriesMap.find(Modem::PinType::puk) != retriesMap.end())
-        {
-            retries = retriesMap[Modem::PinType::puk];
-        }
+        readRetries(Modem::PinType::pin);
+        m_modem->enterPin(Modem::PinType::pin, pin);
+    }
 
-        // FIXME: This has changed to an async API
-//        if (!m_modem->resetPin(Modem::PinType::puk, puk, newPin)) {
-//            m_sd->showError(_("Sorry, incorrect PUK"));
-//            --retries;
-//            if (retries == 1) {
-//                showLastPukAttemptPopup();
-//            } else if (retries == 0) {
-//                showSimPermanentlyBlockedPopup([this](){ m_sd->close(); });
-//            }
-//            return false;
-//        }
-        return true;
+    void sendResetPin(const QString& puk, const QString& newPin)
+    {
+        readRetries(Modem::PinType::puk);
+        m_modem->resetPin(Modem::PinType::puk, puk, newPin);
     }
 
     void showLastPinAttemptPopup(std::function<void()> closed = std::function<void()>())
@@ -224,10 +197,45 @@ public Q_SLOTS:
     void update();
 
     void cancelled();
+
     void pinEntered(const QString& pin);
+
     void closed();
 
     void reset();
+
+    void pinSuccess()
+    {
+        m_sd->close();
+        reset();
+    }
+
+    void enterPinFailed(const QString&)
+    {
+        m_sd->showError(_("Sorry, incorrect PIN"));
+        --m_retries;
+        if (m_retries == 1) {
+            showLastPinAttemptPopup();
+        } else if (m_retries == 0) {
+            showPinBlockedPopup();
+        }
+    }
+
+    void resetPinFailed(const QString&)
+    {
+        m_sd->showError(_("Sorry, incorrect PUK"));
+        --m_retries;
+        if (m_retries == 1) {
+            showLastPukAttemptPopup();
+        } else if (m_retries == 0) {
+            showSimPermanentlyBlockedPopup([this](){ m_sd->close(); });
+        }
+
+        m_enterPinState = EnterPinStates::enterPuk;
+        m_pukCode.clear();
+        m_newPin.clear();
+        update();
+    }
 };
 
 SimUnlockDialog::Private::Private(SimUnlockDialog& parent)
@@ -235,8 +243,7 @@ SimUnlockDialog::Private::Private(SimUnlockDialog& parent)
 {
     m_sd = std::make_shared<notify::snapdecision::SimUnlock>();
     connect(m_sd.get(), &notify::snapdecision::SimUnlock::cancelled, this, &Private::cancelled);
-    // FIXME Connect to signal
-//    m_sd->pinEntered().connect(std::bind(&Private::pinEntered, this, std::placeholders::_1));
+    connect(m_sd.get(), &notify::snapdecision::SimUnlock::pinEntered, this, &Private::pinEntered);
     connect(m_sd.get(), &notify::snapdecision::SimUnlock::closed, this, &Private::closed);
 
     reset();
@@ -245,8 +252,6 @@ SimUnlockDialog::Private::Private(SimUnlockDialog& parent)
 void
 SimUnlockDialog::Private::update()
 {
-    std::lock_guard<std::recursive_mutex> lock(m_updateMutex);
-
     if (!m_modem || !m_sd)
         return;
 
@@ -262,7 +267,7 @@ SimUnlockDialog::Private::update()
                   {Modem::PinType::puk, 10}};
 
     auto type = m_modem->requiredPin();
-    map<Modem::PinType, uint8_t> retries = m_modem->retries();
+    auto retries = m_modem->retries();
 
     if (m_enterPinState == EnterPinStates::enterPin &&
         type == Modem::PinType::puk) {
@@ -331,48 +336,40 @@ SimUnlockDialog::Private::update()
     m_sd->show();
 }
 
+
+
 void
 SimUnlockDialog::Private::pinEntered(const QString& pin)
 {
-    std::lock_guard<std::recursive_mutex> lock(m_updateMutex);
     switch (m_enterPinState) {
     case EnterPinStates::initial:
         // should never happen
         assert(0);
         return;
     case EnterPinStates::enterPin:
-        if (sendEnterPin(pin)) {
-            m_sd->close();
-            reset();
-            return;
-        }
+        sendEnterPin(pin);
         break;
     case EnterPinStates::enterPuk:
         m_pukCode = pin;
         m_enterPinState = EnterPinStates::enterNewPin;
+        update();
         break;
     case EnterPinStates::enterNewPin:
         m_newPin = pin;
         m_enterPinState = EnterPinStates::confirmNewPin;
+        update();
         break;
     case EnterPinStates::confirmNewPin:
         if (m_newPin != pin) {
             m_sd->showError(_("PIN codes did not match."));
             m_enterPinState = EnterPinStates::enterNewPin;
             m_newPin.clear();
+            update();
         } else {
-            if (sendResetPin(m_pukCode, pin)) {
-                m_sd->close();
-                reset();
-                return;
-            }
-            m_enterPinState = EnterPinStates::enterPuk;
-            m_pukCode.clear();
-            m_newPin.clear();
+            sendResetPin(m_pukCode, pin);
         }
         break;
     }
-    update();
 }
 
 void
@@ -390,15 +387,15 @@ SimUnlockDialog::Private::closed()
 void
 SimUnlockDialog::Private::reset()
 {
-    /** @bug in properties-cpp :/
-     * can't disconnect here as the reset() is called from pinEnterer() and
-     * we can't disconnect a signal inside one of it's handlers right now.
-     * uncomment this code once dbus-cpp is fixed.
-     * for (auto &c : m_connections)
-     *   c.disconnect();
-     * m_connections.clear();
-     * m_sd.reset();
-     */
+    if (m_doCleanUp)
+    {
+        for (auto &c : m_connections)
+        {
+            disconnect(c);
+        }
+        m_connections.clear();
+    }
+
     m_modem.reset();
 
     m_newPin.clear();
@@ -431,17 +428,7 @@ SimUnlockDialog::unlock(Modem::Ptr modem)
     d->m_modem = modem;
     d->m_state = State::unlocking;
 
-    /// @todo delayed disconnections, see comment in reset()
-    if (d->m_doCleanUp)
-    {
-        for (auto &c : d->m_connections)
-        {
-            disconnect(c);
-        }
-        d->m_connections.clear();
-    }
-
-    map<Modem::PinType, uint8_t> retries = modem->retries();
+    auto retries = modem->retries();
     auto type = modem->requiredPin();
     switch(type){
     case Modem::PinType::none:
@@ -457,6 +444,10 @@ SimUnlockDialog::unlock(Modem::Ptr modem)
 
     d->m_connections.emplace_back(connect(modem.get(), &Modem::requiredPinUpdated, d.get(), &Private::update));
     d->m_connections.emplace_back(connect(modem.get(), &Modem::retriesUpdated, d.get(), &Private::update));
+    d->m_connections.emplace_back(connect(modem.get(), &Modem::enterPinSuceeded, d.get(), &Private::pinSuccess));
+    d->m_connections.emplace_back(connect(modem.get(), &Modem::resetPinSuceeded, d.get(), &Private::pinSuccess));
+    d->m_connections.emplace_back(connect(modem.get(), &Modem::enterPinFailed, d.get(), &Private::enterPinFailed));
+    d->m_connections.emplace_back(connect(modem.get(), &Modem::resetPinFailed, d.get(), &Private::resetPinFailed));
 
     int pinRetries = -1;
     int pukRetries = -1;

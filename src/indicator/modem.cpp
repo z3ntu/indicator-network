@@ -82,7 +82,7 @@ public:
     shared_ptr<QOfonoModem> m_ofonoModem;
     Modem::SimStatus m_simStatus;
     Modem::PinType m_requiredPin;
-    map<Modem::PinType, uint8_t> m_retries;
+    RetriesType m_retries;
 
     QString m_operatorName;
     Modem::Status m_status;
@@ -99,6 +99,10 @@ public:
     shared_ptr<QOfonoConnectionManager> m_connectionManager;
     shared_ptr<QOfonoNetworkRegistration> m_networkRegistration;
     shared_ptr<QOfonoSimManager> m_simManager;
+
+    Private(Modem& parent, shared_ptr<QOfonoModem> ofonoModem);
+
+public Q_SLOTS:
 
     void connectionManagerChanged(shared_ptr<QOfonoConnectionManager> conmgr)
     {
@@ -166,10 +170,17 @@ public:
                     &QOfonoSimManager::pinRequiredChanged, this,
                     &Private::update);
 
-            // FIXME Bind this signal
-//            connect(m_simManager.get(),
-//                    &QOfonoSimManager::retriesChanged, this,
-//                    &Private::update);
+            connect(m_simManager.get(),
+                    &QOfonoSimManager::pinRetriesChanged, this,
+                    &Private::update);
+
+            connect(m_simManager.get(),
+                    &QOfonoSimManager::enterPinComplete, this,
+                    &Private::enterPinComplete);
+
+            connect(m_simManager.get(),
+                    &QOfonoSimManager::resetPinComplete, this,
+                    &Private::resetPinComplete);
         }
 
         update();
@@ -177,9 +188,30 @@ public:
 
     void update();
 
-    Private(Modem& parent, shared_ptr<QOfonoModem> ofonoModem);
+    void enterPinComplete(QOfonoSimManager::Error error, const QString &errorString)
+    {
+        if (error == QOfonoSimManager::Error::NoError)
+        {
+            Q_EMIT p.enterPinSuceeded();
+        }
+        else
+        {
+            Q_EMIT p.enterPinFailed(errorString);
+        }
+    }
 
-public Q_SLOTS:
+    void resetPinComplete(QOfonoSimManager::Error error, const QString &errorString)
+    {
+        if (error == QOfonoSimManager::Error::NoError)
+        {
+            Q_EMIT p.resetPinSuceeded();
+        }
+        else
+        {
+            Q_EMIT p.resetPinFailed(errorString);
+        }
+    }
+
     void setOnline(bool online)
     {
         if (m_online == online)
@@ -213,7 +245,7 @@ public Q_SLOTS:
         Q_EMIT p.requiredPinUpdated(m_requiredPin);
     }
 
-    void setRetries(const map<Modem::PinType, uint8_t>& retries)
+    void setRetries(const RetriesType& retries)
     {
         if (m_retries == retries)
         {
@@ -393,22 +425,25 @@ Modem::Private::update()
         }
 
         // update retries
-        std::map<Modem::PinType, std::uint8_t> tmp;
-        // FIXME Figure out what goes here
-//        QVariantMap retries = m_simManager->retries();
-//        for (auto element : retries) {
-//            switch(element.first) {
-//            case OfonoPinType::pin:
-//                tmp[Modem::PinType::pin] = element.second;
-//                break;
-//            case OfonoPinType::puk:
-//                tmp[Modem::PinType::puk] = element.second;
-//                break;
-//            default:
-//                // don't care
-//                break;
-//            }
-//        }
+        RetriesType tmp;
+        QVariantMap retries = m_simManager->pinRetries();
+        QMapIterator<QString, QVariant> i(retries);
+        while (i.hasNext()) {
+            i.next();
+            QOfonoSimManager::PinType type = (QOfonoSimManager::PinType) i.key().toInt();
+            int count = i.value().toInt();
+            switch(type)
+            {
+                case QOfonoSimManager::PinType::SimPin:
+                    tmp[Modem::PinType::pin] = count;
+                    break;
+                case QOfonoSimManager::PinType::SimPuk:
+                    tmp[Modem::PinType::puk] = count;
+                    break;
+                default:
+                    break;
+            }
+        }
         setRetries(tmp);
 
         // update simStatus
@@ -512,12 +547,6 @@ Modem::Modem(shared_ptr<QOfonoModem> ofonoModem)
 Modem::~Modem()
 {}
 
-//org::ofono::Interface::Modem::Ptr
-//Modem::ofonoModem() const
-//{
-//    return d->m_ofonoModem;
-//}
-
 void
 Modem::enterPin(PinType type, const QString &pin)
 {
@@ -538,8 +567,6 @@ Modem::enterPin(PinType type, const QString &pin)
                                 pin);
         break;
     }
-
-    throw std::logic_error("code should not be reached.");
 }
 
 
@@ -563,31 +590,6 @@ Modem::resetPin(PinType type, const QString &puk, const QString &pin)
     }
 }
 
-void
-Modem::changePin(PinType type, const QString &oldPin, const QString &newPin)
-{
-    if (!d->m_simManager) {
-        throw std::runtime_error(std::string(__PRETTY_FUNCTION__) + ": no simManager.");
-    }
-
-    switch(type) {
-    case PinType::none:
-        break;
-    case PinType::pin:
-        d->m_simManager->changePin(QOfonoSimManager::PinType::SimPin,
-                                 oldPin,
-                                 newPin);
-        break;
-    case PinType::puk:
-        d->m_simManager->changePin(QOfonoSimManager::PinType::SimPuk,
-                                 oldPin,
-                                 newPin);
-        break;
-    }
-
-    throw std::logic_error("code should not be reached.");
-}
-
 bool
 Modem::online() const
 {
@@ -606,7 +608,7 @@ Modem::requiredPin() const
     return d->m_requiredPin;
 }
 
-const std::map<Modem::PinType, std::uint8_t>&
+const Modem::RetriesType&
 Modem::retries() const
 {
     return d->m_retries;

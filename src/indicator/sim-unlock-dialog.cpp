@@ -24,6 +24,7 @@
 
 #include <functional>
 #include <sstream>
+#include <QDebug>
 
 using namespace std;
 
@@ -109,27 +110,29 @@ public:
     /// @todo see comment in reset()
     bool m_doCleanUp;
 
-    int m_retries = -1;
+    int m_pinRetries = -1;
 
-    void readRetries(Modem::PinType pinType)
-    {
-        m_retries = -1;
-        auto retriesMap = m_modem->retries();
-        if (retriesMap.find(pinType) != retriesMap.end())
-        {
-            m_retries = retriesMap[pinType];
-        }
-    }
+    int m_pukRetries = -1;
 
     void sendEnterPin(const QString& pin)
     {
-        readRetries(Modem::PinType::pin);
+        m_pinRetries = -1;
+        auto retriesMap = m_modem->retries();
+        if (retriesMap.find(Modem::PinType::pin) != retriesMap.end())
+        {
+            m_pinRetries = retriesMap[Modem::PinType::pin];
+        }
         m_modem->enterPin(Modem::PinType::pin, pin);
     }
 
     void sendResetPin(const QString& puk, const QString& newPin)
     {
-        readRetries(Modem::PinType::puk);
+        m_pukRetries = -1;
+        auto retriesMap = m_modem->retries();
+        if (retriesMap.find(Modem::PinType::puk) != retriesMap.end())
+        {
+            m_pukRetries = retriesMap[Modem::PinType::puk];
+        }
         m_modem->resetPin(Modem::PinType::puk, puk, newPin);
     }
 
@@ -210,24 +213,25 @@ public Q_SLOTS:
         reset();
     }
 
-    void enterPinFailed(const QString&)
+    void enterPinFailed(const QString& errorString)
     {
         m_sd->showError(_("Sorry, incorrect PIN"));
-        --m_retries;
-        if (m_retries == 1) {
+        --m_pinRetries;
+        if (m_pinRetries == 1) {
             showLastPinAttemptPopup();
-        } else if (m_retries == 0) {
+        } else if (m_pinRetries == 0) {
             showPinBlockedPopup();
         }
+        update();
     }
 
     void resetPinFailed(const QString&)
     {
         m_sd->showError(_("Sorry, incorrect PUK"));
-        --m_retries;
-        if (m_retries == 1) {
+        --m_pukRetries;
+        if (m_pukRetries == 1) {
             showLastPukAttemptPopup();
-        } else if (m_retries == 0) {
+        } else if (m_pukRetries == 0) {
             showSimPermanentlyBlockedPopup([this](){ m_sd->close(); });
         }
 

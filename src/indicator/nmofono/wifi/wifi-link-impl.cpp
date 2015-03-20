@@ -27,6 +27,7 @@
 #include <NetworkManagerSettingsConnectionInterface.h>
 
 #include <NetworkManager.h>
+#include <iostream>
 
 using namespace platform::nmofono::wifi;
 namespace networking = connectivity::networking;

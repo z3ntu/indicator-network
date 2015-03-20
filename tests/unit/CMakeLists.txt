@@ -1,4 +1,4 @@
-#///! The following should be removed once all dependancy on qmenumodel is removed
+#///! TODO: The following should be removed once all dependancy on qmenumodel is removed
 pkg_check_modules(QMENUMODEL REQUIRED qmenumodel REQUIRED)
 include_directories(${QMENUMODEL_INCLUDE_DIRS})
 

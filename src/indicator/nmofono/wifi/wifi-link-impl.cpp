@@ -445,7 +445,7 @@ Link::connect_to(std::shared_ptr<networking::wifi::AccessPoint> accessPoint)
             auto con = std::make_shared<OrgFreedesktopNetworkManagerSettingsConnectionInterface>(
                     NM_DBUS_SERVICE, path.path(), d->m_dev->connection());
             QVariantDictMap settings = con->GetSettings();
-            auto wirelessIt = settings.find("802-11-m_wireless");
+            auto wirelessIt = settings.find("802-11-wireless");
             if (wirelessIt != settings.cend())
             {
                 auto ssidIt = wirelessIt->find("ssid");
@@ -477,7 +477,7 @@ Link::connect_to(std::shared_ptr<networking::wifi::AccessPoint> accessPoint)
             QVariantMap wireless_conf;
             wireless_conf["ssid"] = ap->raw_ssid();
 
-            conf["802-11-m_wireless"] = wireless_conf;
+            conf["802-11-wireless"] = wireless_conf;
             auto ret = d->m_nm->AddAndActivateConnection(
                     conf, QDBusObjectPath(d->m_dev->path()), ap->object_path());
             ret.waitForFinished();

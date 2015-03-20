@@ -140,5 +140,5 @@ ADD_CUSTOM_TARGET(
         ${CMAKE_CTEST_COMMAND} --force-new-ctest-process --output-on-failure
 )
 
-enable_coverage_report(TARGETS menumodel_cpp connectivity-cpp indicator-secret-agent
+enable_coverage_report(TARGETS menumodel_cpp indicator-secret-agent
                        FILTER ${CMAKE_SOURCE_DIR}/tests/* ${CMAKE_BINARY_DIR}/*)

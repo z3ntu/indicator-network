@@ -89,9 +89,6 @@ include_directories(${QTDBUSTEST_INCLUDE_DIRS})
 pkg_check_modules(QTDBUSMOCK REQUIRED libqtdbusmock-1 REQUIRED)
 include_directories(${QTDBUSMOCK_INCLUDE_DIRS})
 
-pkg_check_modules(QMENUMODEL REQUIRED qmenumodel REQUIRED)
-include_directories(${QMENUMODEL_INCLUDE_DIRS})
-
 pkg_check_modules(GIO REQUIRED gio-2.0>=${GLIB_REQUIRED_VERSION})
 include_directories(${GIO_INCLUDE_DIRS})
 

@@ -65,6 +65,8 @@ set(NETWORK_SERVICE_SOURCES
     menuitems/wifi-link-item.cpp
     menuitems/wwan-link-item.cpp
     menuitems/modem-info-item.cpp
+    
+    util/unix-signal-handler.cpp
 )
 
 add_library(
@@ -86,6 +88,12 @@ target_link_libraries(
     ${QOFONO_LIBRARIES}
 )
 
+qt5_use_modules(
+    indicator-network-service-static
+    Core
+    DBus
+)
+
 ###########################
 # Executable
 ###########################
@@ -100,6 +108,11 @@ target_link_libraries(
     indicator-network-service-static
 )
 
+qt5_use_modules(
+    indicator-network-service
+    Core
+    DBus
+)
 
 ###########################
 # Installation

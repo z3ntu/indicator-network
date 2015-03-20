@@ -18,14 +18,11 @@
  */
 
 #include <factory.h>
+#include <util/unix-signal-handler.h>
 #include <DBusTypes.h>
-
-#include <iostream>
-#include <memory>
 
 #include <QCoreApplication>
 
-#include <string.h>
 #include <libintl.h>
 
 #include <glib.h>
@@ -35,36 +32,17 @@
 
 using namespace std;
 
-struct sigaction act;
-static void
-signal_handler(int signo) {
-    // FIXME You can't just call normal methods in a signal handler
-    std::cerr << "*** Received " << strsignal(signo) << ". ***"<< std::endl;
-
-    switch(signo) {
-    case SIGHUP:
-    case SIGINT:
-    case SIGQUIT:
-    case SIGTERM:
-
-        QCoreApplication::exit();
-        notify_uninit();
-        break;
-    }
-}
-
 int
 main(int argc, char **argv)
 {
     QCoreApplication app(argc, argv);
     DBusTypes::registerMetaTypes();
 
-    act.sa_handler = signal_handler;
-    sigaction(SIGHUP, &act, 0);
-    sigaction(SIGINT, &act, 0);
-    sigaction(SIGQUIT, &act, 0);
-    sigaction(SIGTERM, &act, 0);
-    sigaction(SIGCONT, &act, 0);
+    util::UnixSignalHandler handler([]{
+        notify_uninit();
+        QCoreApplication::exit(0);
+    });
+    handler.setupUnixSignalHandlers();
 
     bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");
     setlocale(LC_ALL, "");

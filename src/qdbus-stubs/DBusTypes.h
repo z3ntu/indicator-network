@@ -34,6 +34,12 @@ public:
 
 		qDBusRegisterMetaType<QVariantDictMap>();
 	}
+
+	static constexpr char const* DBUS_NAME = "com.ubuntu.connectivity1";
+
+	static constexpr char const* SERVICE_PATH = "/com/ubuntu/connectivity1/NetworkingStatus";
+
+	static constexpr char const* PRIVATE_PATH = "/com/ubuntu/connectivity1/NetworkingStatus/Private";
 };
 
 #endif /* DBUSTYPES_H_ */

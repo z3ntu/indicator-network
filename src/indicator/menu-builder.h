@@ -19,23 +19,24 @@
 
 #pragma once
 
-#include <functional>
-#include <iostream>
 #include <memory>
-#include <string>
-#include <cassert>
+#include <QObject>
+#include <QString>
 
 class Factory;
 
-class MenuBuilder
+class MenuBuilder: public QObject
 {
+    Q_OBJECT
+
     struct Priv;
     std::shared_ptr<Priv> d;
 
 public:
     MenuBuilder(Factory& factory);
 
+public Q_SLOTS:
     void unlockAllModems();
 
-    void unlockModem(const std::string &name);
+    void unlockModem(const QString &name);
 };

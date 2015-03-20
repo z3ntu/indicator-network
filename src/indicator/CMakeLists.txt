@@ -69,6 +69,22 @@ set(NETWORK_SERVICE_SOURCES
     util/unix-signal-handler.cpp
 )
 
+qt5_add_dbus_adaptor(
+    NETWORK_SERVICE_SOURCES
+    "${DATA_DIR}/com.ubuntu.connectivity1.NetworkingStatus.xml"
+    connectivity-service/connectivity-service.h
+    connectivity_service::ConnectivityService
+    NetworkingStatusAdaptor
+)
+
+qt5_add_dbus_adaptor(
+    NETWORK_SERVICE_SOURCES
+    "${DATA_DIR}/com.ubuntu.connectivity1.NetworkingStatus.Private.xml"
+    connectivity-service/connectivity-service.h
+    connectivity_service::PrivateService
+    NetworkingStatusPrivateAdaptor
+)
+
 add_library(
   indicator-network-service-static
   STATIC

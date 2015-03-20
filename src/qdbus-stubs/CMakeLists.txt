@@ -20,6 +20,8 @@ set_source_files_properties(
     "${DATA_DIR}/nm-device-wifi.xml"
     "${DATA_DIR}/nm-access-point.xml"
     "${DATA_DIR}/nm-active-connection.xml"
+    "${DATA_DIR}/com.ubuntu.connectivity1.NetworkingStatus.xml"
+    "${DATA_DIR}/com.ubuntu.connectivity1.NetworkingStatus.Private.xml"
     "/usr/share/dbus-1/interfaces/org.freedesktop.URfkill.xml"
     "/usr/share/dbus-1/interfaces/org.freedesktop.URfkill.Device.xml"
     "/usr/share/dbus-1/interfaces/org.freedesktop.URfkill.Killswitch.xml"
@@ -87,6 +89,18 @@ qt5_add_dbus_interface(
     CONNECTIVITY_BACKEND_SRC
     "${DATA_DIR}/nm-settings-connection.xml"
     NetworkManagerSettingsConnectionInterface
+)
+
+qt5_add_dbus_interface(
+    CONNECTIVITY_BACKEND_SRC
+    "${DATA_DIR}/com.ubuntu.connectivity1.NetworkingStatus.xml"
+    NetworkingStatusInterface
+)
+
+qt5_add_dbus_interface(
+    CONNECTIVITY_BACKEND_SRC
+    "${DATA_DIR}/com.ubuntu.connectivity1.NetworkingStatus.Private.xml"
+    NetworkingStatusPrivateInterface
 )
 
 add_library(

@@ -38,7 +38,7 @@ public:
     virtual MenuModel::Ptr menuModel();
 
     void unlockAllModems();
-    void unlockModem(const std::string &name);
+    void unlockModem(const QString &name);
 };
 
 #endif

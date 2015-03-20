@@ -22,9 +22,9 @@ set_source_files_properties(
     "${DATA_DIR}/nm-active-connection.xml"
     "${DATA_DIR}/com.ubuntu.connectivity1.NetworkingStatus.xml"
     "${DATA_DIR}/com.ubuntu.connectivity1.NetworkingStatus.Private.xml"
-    "/usr/share/dbus-1/interfaces/org.freedesktop.URfkill.xml"
-    "/usr/share/dbus-1/interfaces/org.freedesktop.URfkill.Device.xml"
-    "/usr/share/dbus-1/interfaces/org.freedesktop.URfkill.Killswitch.xml"
+    "${DATA_DIR}/org.freedesktop.URfkill.xml"
+    "${DATA_DIR}/org.freedesktop.URfkill.Device.xml"
+    "${DATA_DIR}/org.freedesktop.URfkill.Killswitch.xml"
     PROPERTIES
     NO_NAMESPACE YES
 )
@@ -39,19 +39,19 @@ set_source_files_properties(
 
 qt5_add_dbus_interface(
     CONNECTIVITY_BACKEND_SRC
-    "/usr/share/dbus-1/interfaces/org.freedesktop.URfkill.xml"
+    "${DATA_DIR}/org.freedesktop.URfkill.xml"
     URfkillInterface
 )
 
 qt5_add_dbus_interface(
     CONNECTIVITY_BACKEND_SRC
-    "/usr/share/dbus-1/interfaces/org.freedesktop.URfkill.Device.xml"
+    "${DATA_DIR}/org.freedesktop.URfkill.Device.xml"
     URfkillDeviceInterface
 )
 
 qt5_add_dbus_interface(
     CONNECTIVITY_BACKEND_SRC
-    "/usr/share/dbus-1/interfaces/org.freedesktop.URfkill.Killswitch.xml"
+    "${DATA_DIR}/org.freedesktop.URfkill.Killswitch.xml"
     URfkillKillswitchInterface
 )
 

@@ -40,6 +40,7 @@ main(int argc, char **argv)
     DBusTypes::registerMetaTypes();
 
     util::UnixSignalHandler handler([]{
+        qWarning() << "Signal disconnection error below caused by notify_uninit()";
         notify_uninit();
         QCoreApplication::exit(0);
     });

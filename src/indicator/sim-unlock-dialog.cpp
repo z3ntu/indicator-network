@@ -213,7 +213,7 @@ public Q_SLOTS:
         reset();
     }
 
-    void enterPinFailed(const QString& errorString)
+    void enterPinFailed(const QString&)
     {
         m_sd->showError(_("Sorry, incorrect PIN"));
         --m_pinRetries;

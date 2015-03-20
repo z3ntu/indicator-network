@@ -20,8 +20,7 @@
 #ifndef CONNECTIVITY_NETWORKING_LINK
 #define CONNECTIVITY_NETWORKING_LINK
 
-#include <core/property.h>
-
+#include <memory>
 #include <QObject>
 
 namespace connectivity {

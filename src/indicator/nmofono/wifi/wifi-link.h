@@ -23,8 +23,6 @@
 #include <nmofono/link.h>
 #include <nmofono/wifi/access-point.h>
 
-#include <core/property.h>
-
 #include <set>
 
 namespace connectivity {

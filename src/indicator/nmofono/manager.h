@@ -22,10 +22,8 @@
 
 #include <nmofono/link.h>
 
-#include <core/property.h>
-#include <core/signal.h>
-
 #include <memory>
+#include <set>
 
 #include <QObject>
 

@@ -24,9 +24,8 @@
 #include <NetworkManagerDeviceInterface.h>
 
 #include <NetworkManager.h>
-#include <core/dbus/asio/executor.h>
-#include <thread>
 #include <QDebug>
+#include <iostream>
 
 using namespace platform::nmofono;
 namespace networking = connectivity::networking;

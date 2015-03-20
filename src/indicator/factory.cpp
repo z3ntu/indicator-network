@@ -74,9 +74,9 @@ unique_ptr<MenuBuilder> Factory::newMenuBuilder()
     return make_unique<MenuBuilder>(*this);
 }
 
-unique_ptr<ConnectivityService> Factory::newConnectivityService()
+unique_ptr<connectivity_service::ConnectivityService> Factory::newConnectivityService()
 {
-    return make_unique<ConnectivityService>(d->singletonNmofono());
+    return make_unique<connectivity_service::ConnectivityService>(d->singletonNmofono(), QDBusConnection::sessionBus());
 }
 
 unique_ptr<RootState> Factory::newRootState()

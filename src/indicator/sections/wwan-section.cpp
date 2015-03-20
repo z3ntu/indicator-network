@@ -183,9 +183,9 @@ WwanSection::unlockAllModems()
 }
 
 void
-WwanSection::unlockModem(const std::string &name)
+WwanSection::unlockModem(const QString &name)
 {
-    d->m_modemManager->unlockModemByName(QString::fromStdString(name));
+    d->m_modemManager->unlockModemByName(name);
 }
 
 #include "wwan-section.moc"

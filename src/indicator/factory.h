@@ -43,7 +43,7 @@ public:
 
     virtual std::unique_ptr<MenuBuilder> newMenuBuilder();
 
-    virtual std::unique_ptr<ConnectivityService> newConnectivityService();
+    virtual std::unique_ptr<connectivity_service::ConnectivityService> newConnectivityService();
 
     virtual std::unique_ptr<RootState> newRootState();
 

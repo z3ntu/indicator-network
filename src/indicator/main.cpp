@@ -31,6 +31,7 @@
 #include <config.h>
 
 using namespace std;
+using namespace connectivity_service;
 
 int
 main(int argc, char **argv)
@@ -55,11 +56,8 @@ main(int argc, char **argv)
     shared_ptr<MenuBuilder> menu = factory.newMenuBuilder();
     unique_ptr<ConnectivityService> connectivityService = factory.newConnectivityService();
 
-    // unlockAllModems is dispatched from GMainLoop
-    connectivityService->unlockAllModems().connect([menu](){ menu->unlockAllModems(); });
-
-    // unlockModem is dispatched from GMainLoop
-    connectivityService->unlockModem().connect([menu](const std::string &name){ menu->unlockModem(name); });
+    QObject::connect(connectivityService.get(), &ConnectivityService::unlockAllModems, menu.get(), &MenuBuilder::unlockAllModems);
+    QObject::connect(connectivityService.get(), &ConnectivityService::unlockModem, menu.get(), &MenuBuilder::unlockModem);
 
     return app.exec();
 }

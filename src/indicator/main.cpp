@@ -40,8 +40,6 @@ main(int argc, char **argv)
     DBusTypes::registerMetaTypes();
 
     util::UnixSignalHandler handler([]{
-        qWarning() << "Signal disconnection error below caused by notify_uninit()";
-        notify_uninit();
         QCoreApplication::exit(0);
     });
     handler.setupUnixSignalHandlers();
@@ -53,12 +51,17 @@ main(int argc, char **argv)
 
     notify_init(GETTEXT_PACKAGE);
 
-    Factory factory;
-    shared_ptr<MenuBuilder> menu = factory.newMenuBuilder();
-    unique_ptr<ConnectivityService> connectivityService = factory.newConnectivityService();
+    int result = 0;
+    {
+        Factory factory;
+        shared_ptr<MenuBuilder> menu = factory.newMenuBuilder();
+        unique_ptr<ConnectivityService> connectivityService = factory.newConnectivityService();
 
-    QObject::connect(connectivityService.get(), &ConnectivityService::unlockAllModems, menu.get(), &MenuBuilder::unlockAllModems);
-    QObject::connect(connectivityService.get(), &ConnectivityService::unlockModem, menu.get(), &MenuBuilder::unlockModem);
+        QObject::connect(connectivityService.get(), &ConnectivityService::unlockAllModems, menu.get(), &MenuBuilder::unlockAllModems);
+        QObject::connect(connectivityService.get(), &ConnectivityService::unlockModem, menu.get(), &MenuBuilder::unlockModem);
+        result = app.exec();
+    }
+    notify_uninit();
 
-    return app.exec();
+    return result;
 }

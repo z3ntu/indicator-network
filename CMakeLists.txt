@@ -48,14 +48,6 @@ pkg_check_modules(
 )
 include_directories(${GLIB_INCLUDE_DIRS})
 
-set(NM_REQUIRED_VERSION 0.9)
-pkg_check_modules(
-  NM REQUIRED
-  libnm-glib>=${NM_REQUIRED_VERSION}
-  libnm-util>=${NM_REQUIRED_VERSION}
-)
-include_directories(${NM_INCLUDE_DIRS})
-
 set(OFONO_REQUIRED_VERSION 1.12)
 pkg_check_modules(
   OFONO REQUIRED

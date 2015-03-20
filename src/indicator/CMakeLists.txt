@@ -1,17 +1,5 @@
 
 pkg_check_modules(
-    PROPERTIESCPP REQUIRED
-    properties-cpp
-)
-include_directories(${PROPERTIESCPP_INCLUDE_DIRS})
-
-pkg_check_modules(
-    DBUSCPP REQUIRED
-    dbus-cpp
-)
-include_directories(${DBUSCPP_INCLUDE_DIRS})
-
-pkg_check_modules(
     NETWORKMANAGER REQUIRED
     NetworkManager
 )

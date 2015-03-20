@@ -89,7 +89,7 @@ public Q_SLOTS:
         }
         if (old_status != m_status)
         {
-            changed << "status";
+            changed << "Status";
         }
 
         QStringList limitations;
@@ -102,7 +102,7 @@ public Q_SLOTS:
         m_limitations = limitations;
         if (old_limitations != m_limitations)
         {
-            changed << "limitations";
+            changed << "Limitations";
         }
 
         if (!changed.empty())

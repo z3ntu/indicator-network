@@ -29,17 +29,23 @@ Q_DECLARE_METATYPE(QVariantDictMap)
 
 class DBusTypes {
 public:
-	static void registerMetaTypes() {
-		qRegisterMetaType<QVariantDictMap>("QVariantDictMap");
+    static void
+    registerMetaTypes()
+    {
+        qRegisterMetaType<QVariantDictMap>("QVariantDictMap");
 
-		qDBusRegisterMetaType<QVariantDictMap>();
-	}
+        qDBusRegisterMetaType<QVariantDictMap>();
+    }
 
-	static constexpr char const* DBUS_NAME = "com.ubuntu.connectivity1";
+    static constexpr char const* DBUS_NAME = "com.ubuntu.connectivity1";
 
-	static constexpr char const* SERVICE_PATH = "/com/ubuntu/connectivity1/NetworkingStatus";
+    static constexpr char const* SERVICE_INTERFACE = "com.ubuntu.connectivity1.NetworkingStatus";
 
-	static constexpr char const* PRIVATE_PATH = "/com/ubuntu/connectivity1/NetworkingStatus/Private";
+    static constexpr char const* PRIVATE_INTERFACE = "com.ubuntu.connectivity1.Private";
+
+    static constexpr char const* SERVICE_PATH = "/com/ubuntu/connectivity1/NetworkingStatus";
+
+    static constexpr char const* PRIVATE_PATH = "/com/ubuntu/connectivity1/Private";
 };
 
 #endif /* DBUSTYPES_H_ */

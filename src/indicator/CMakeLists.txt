@@ -67,7 +67,7 @@ qt5_add_dbus_adaptor(
 
 qt5_add_dbus_adaptor(
     NETWORK_SERVICE_SOURCES
-    "${DATA_DIR}/com.ubuntu.connectivity1.NetworkingStatus.Private.xml"
+    "${DATA_DIR}/com.ubuntu.connectivity1.Private.xml"
     connectivity-service/connectivity-service.h
     connectivity_service::PrivateService
     NetworkingStatusPrivateAdaptor

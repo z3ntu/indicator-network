@@ -108,7 +108,7 @@ public Q_SLOTS:
         if (!changed.empty())
         {
             notifyPropertyChanged(DBusTypes::SERVICE_PATH,
-                                  "com.ubuntu.connectivity1.NetworkingStatus",
+                                  DBusTypes::SERVICE_INTERFACE,
                                   changed);
         }
     }

@@ -46,7 +46,6 @@ public:
          m_wireless(NM_DBUS_SERVICE, dev->path(), dev->connection()),
          m_nm(nm),
          m_killSwitch(killSwitch),
-         m_disabled(true),
          m_lastState(NM_STATE_UNKNOWN),
          m_connecting(false)
     {
@@ -67,7 +66,6 @@ public:
     KillSwitch::Ptr m_killSwitch;
 
     std::map<AccessPoint::Key, std::shared_ptr<GroupedAccessPoint>> m_grouper;
-    bool m_disabled = false;
     std::uint32_t m_lastState = 0;
     QString m_name;
     std::shared_ptr<OrgFreedesktopNetworkManagerConnectionActiveInterface> m_activeConnection;

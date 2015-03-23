@@ -21,7 +21,7 @@ set_source_files_properties(
     "${DATA_DIR}/nm-access-point.xml"
     "${DATA_DIR}/nm-active-connection.xml"
     "${DATA_DIR}/com.ubuntu.connectivity1.NetworkingStatus.xml"
-    "${DATA_DIR}/com.ubuntu.connectivity1.NetworkingStatus.Private.xml"
+    "${DATA_DIR}/com.ubuntu.connectivity1.Private.xml"
     "${DATA_DIR}/org.freedesktop.URfkill.xml"
     "${DATA_DIR}/org.freedesktop.URfkill.Device.xml"
     "${DATA_DIR}/org.freedesktop.URfkill.Killswitch.xml"
@@ -99,7 +99,7 @@ qt5_add_dbus_interface(
 
 qt5_add_dbus_interface(
     CONNECTIVITY_BACKEND_SRC
-    "${DATA_DIR}/com.ubuntu.connectivity1.NetworkingStatus.Private.xml"
+    "${DATA_DIR}/com.ubuntu.connectivity1.Private.xml"
     NetworkingStatusPrivateInterface
 )
 

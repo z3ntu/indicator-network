@@ -49,6 +49,8 @@ public:
     std::shared_ptr<OrgFreedesktopURfkillInterface> urfkill;
     std::shared_ptr<OrgFreedesktopURfkillKillswitchInterface> killSwitch;
 
+    bool m_flightMode = false;
+
     Private(std::shared_ptr<OrgFreedesktopURfkillInterface> urfkill,
             std::shared_ptr<OrgFreedesktopURfkillKillswitchInterface> killSwitch)
         : urfkill(urfkill),
@@ -66,14 +68,22 @@ KillSwitch::KillSwitch(const QDBusConnection& systemBus)
                                                                                  cURfkillKillswitchPath,
                                                                                  systemBus);
 
-    connect(urfkill.get(), SIGNAL(FlightModeChanged(bool)), this, SIGNAL(flightModeChanged(bool)));
+    connect(urfkill.get(), SIGNAL(FlightModeChanged(bool)), this, SLOT(flightModeUpdated(bool)));
     connect(killSwitch.get(), SIGNAL(StateChanged()), this, SIGNAL(stateChanged()));
 
     d.reset(new Private(urfkill, killSwitch));
+
+    d->m_flightMode = urfkill->IsFlightMode();
 }
 
 KillSwitch::~KillSwitch()
 {}
+
+void KillSwitch::flightModeUpdated(bool flightMode)
+{
+    d->m_flightMode = flightMode;
+    Q_EMIT flightModeChanged(flightMode);
+}
 
 void
 KillSwitch::block()
@@ -113,10 +123,15 @@ KillSwitch::State KillSwitch::state() const
 
 bool KillSwitch::flightMode(bool enable)
 {
+    if (enable == d->m_flightMode)
+    {
+        return true;
+    }
+
     return utils::getOrThrow(d->urfkill->FlightMode(enable));
 }
 
 bool KillSwitch::isFlightMode()
 {
-    return utils::getOrThrow(d->urfkill->IsFlightMode());
+    return d->m_flightMode;
 }

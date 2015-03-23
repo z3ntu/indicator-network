@@ -87,6 +87,9 @@ public:
 Q_SIGNALS:
     void stateChanged();
     void flightModeChanged(bool);
+
+private Q_SLOTS:
+    void flightModeUpdated(bool);
 };
 
 #endif

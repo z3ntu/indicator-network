@@ -315,12 +315,17 @@ Manager::enableWifi()
         return false;
     }
 
+    if (d->m_wifiEnabled)
+    {
+        return false;
+    }
+
     try {
         if (d->m_wifiKillSwitch->state() == KillSwitch::State::soft_blocked) {
             // try to unblock. throws if fails.
             d->m_wifiKillSwitch->unblock();
         }
-        d->nm->setWimaxEnabled(true);
+        d->nm->setWirelessEnabled(true);
     } catch(std::runtime_error &e) {
         std::cerr << __PRETTY_FUNCTION__ << ": " << e.what() << std::endl;
         return false;
@@ -332,6 +337,11 @@ bool
 Manager::disableWifi()
 {
     if (!d->m_hasWifi)
+    {
+        return false;
+    }
+
+    if (!d->m_wifiEnabled)
     {
         return false;
     }

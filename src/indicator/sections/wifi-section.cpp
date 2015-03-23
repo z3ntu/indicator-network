@@ -113,15 +113,9 @@ public Q_SLOTS:
     void switchActivated(bool state)
     {
         if (state) {
-            if (!m_manager->enableWifi()) {
-                /// try to work around the switch getting out of state on unity8 side
-                m_switch->setState(false);
-            }
+            m_manager->enableWifi();
         } else {
-            if (!m_manager->disableWifi())
-            {
-                m_switch->setState(true);
-            }
+            m_manager->disableWifi();
         }
     }
 };

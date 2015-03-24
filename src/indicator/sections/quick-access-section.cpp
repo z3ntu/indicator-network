@@ -62,6 +62,8 @@ public Q_SLOTS:
 
     void flightModeSwitchActivated(bool state)
     {
+        m_flightModeSwitch->setEnabled(false);
+
         // Give the GActionGroup a change to emit its Changed signal
         shared_ptr<GMainLoop> loop(g_main_loop_new(nullptr, false), &g_main_loop_unref);
         util::ResourcePtr<guint, function<void(guint)>> timer(g_timeout_add(30,
@@ -87,6 +89,8 @@ public Q_SLOTS:
                 std::cerr << e.what() << std::endl;
             }
         }
+
+        m_flightModeSwitch->setEnabled(true);
     }
 };
 

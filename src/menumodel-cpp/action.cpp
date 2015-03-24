@@ -86,6 +86,17 @@ Action::name()
 }
 
 void
+Action::setEnabled(bool enabled)
+{
+    if (g_action_get_enabled(m_gaction.get()) == enabled)
+    {
+        return;
+    }
+
+    g_simple_action_set_enabled(G_SIMPLE_ACTION(m_gaction.get()), enabled);
+}
+
+void
 Action::setState(const Variant &value)
 {
     if (value == state())

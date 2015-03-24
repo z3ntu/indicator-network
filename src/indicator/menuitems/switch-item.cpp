@@ -65,3 +65,11 @@ SwitchItem::setState(bool state)
         m_action->setState(variant);
     }
 }
+
+void
+SwitchItem::setEnabled(bool enabled)
+{
+    if (m_action) {
+        m_action->setEnabled(enabled);
+    }
+}

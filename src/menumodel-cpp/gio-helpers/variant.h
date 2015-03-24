@@ -83,8 +83,8 @@ public:
     {
         if (g_variant_is_container(m_variant.get()) || g_variant_is_container(rhs.m_variant.get()))
         {
-            // Fall back to pointer comparison
-            return m_variant == rhs.m_variant;
+            // Compare by string
+            return to_string(true) == rhs.to_string(true);
         }
 
         return g_variant_compare(m_variant.get(), rhs.m_variant.get()) == 0;

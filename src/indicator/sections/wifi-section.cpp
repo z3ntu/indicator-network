@@ -112,11 +112,13 @@ public Q_SLOTS:
 
     void switchActivated(bool state)
     {
+        m_switch->setEnabled(false);
         if (state) {
             m_manager->enableWifi();
         } else {
             m_manager->disableWifi();
         }
+        m_switch->setEnabled(true);
     }
 };
 

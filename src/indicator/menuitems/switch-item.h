@@ -44,6 +44,8 @@ public:
 public Q_SLOTS:
     void setState(bool state);
 
+    void setEnabled(bool enabled);
+
 Q_SIGNALS:
     void stateUpdated(bool);
 

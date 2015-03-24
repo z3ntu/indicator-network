@@ -67,6 +67,8 @@ public:
 public Q_SLOTS:
     void setState(const Variant &value);
 
+    void setEnabled(bool enabled);
+
 Q_SIGNALS:
     void activated(const Variant&);
 

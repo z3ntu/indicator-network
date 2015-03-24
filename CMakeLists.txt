@@ -87,8 +87,6 @@ include_directories(${GIO_INCLUDE_DIRS})
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-find_package(GObjectIntrospection 0.9.12)
-
 include_directories(${CMAKE_BINARY_DIR})
 
 set(COMMON_FLAGS "-Wall -Wextra -Wpedantic -fno-permissive -fPIC -fvisibility=hidden -pthread")

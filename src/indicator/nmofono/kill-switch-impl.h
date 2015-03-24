@@ -89,7 +89,7 @@ Q_SIGNALS:
     void flightModeChanged(bool);
 
 private Q_SLOTS:
-    void flightModeUpdated(bool);
+    void setFlightMode(bool);
 };
 
 #endif

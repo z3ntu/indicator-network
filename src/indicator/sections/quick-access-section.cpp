@@ -24,9 +24,13 @@
 #include "menumodel-cpp/action-group-merger.h"
 #include "menumodel-cpp/menu-merger.h"
 
+#include <unity/util/ResourcePtr.h>
+#include <glib.h>
 #include <QDebug>
 
+using namespace std;
 namespace networking = connectivity::networking;
+namespace util = unity::util;
 
 class QuickAccessSection::Private : public QObject
 {
@@ -58,7 +62,18 @@ public Q_SLOTS:
 
     void flightModeSwitchActivated(bool state)
     {
-        qDebug() << "Setting flight mode " << state;
+        // Give the GActionGroup a change to emit its Changed signal
+        shared_ptr<GMainLoop> loop(g_main_loop_new(nullptr, false), &g_main_loop_unref);
+        util::ResourcePtr<guint, function<void(guint)>> timer(g_timeout_add(30,
+                [](gpointer user_data) -> gboolean
+                {
+                    g_main_loop_quit((GMainLoop *)user_data);
+                    return G_SOURCE_CONTINUE;
+                },
+                loop.get()),
+                &g_source_remove);
+        g_main_loop_run(loop.get());
+
         if (state) {
             try {
                 m_manager->enableFlightMode();

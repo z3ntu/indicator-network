@@ -102,7 +102,7 @@ Variant
 Action::state()
 {
     return Variant::fromGVariant(
-            g_variant_ref(g_action_get_state(G_ACTION(m_gaction.get()))));
+            g_action_get_state(G_ACTION(m_gaction.get())));
 }
 
 Action::GActionPtr

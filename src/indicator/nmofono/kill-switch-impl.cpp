@@ -68,19 +68,24 @@ KillSwitch::KillSwitch(const QDBusConnection& systemBus)
                                                                                  cURfkillKillswitchPath,
                                                                                  systemBus);
 
-    connect(urfkill.get(), SIGNAL(FlightModeChanged(bool)), this, SLOT(flightModeUpdated(bool)));
+    connect(urfkill.get(), SIGNAL(FlightModeChanged(bool)), this, SLOT(setFlightMode(bool)));
     connect(killSwitch.get(), SIGNAL(StateChanged()), this, SIGNAL(stateChanged()));
 
     d.reset(new Private(urfkill, killSwitch));
 
-    d->m_flightMode = urfkill->IsFlightMode();
+    setFlightMode(urfkill->IsFlightMode());
 }
 
 KillSwitch::~KillSwitch()
 {}
 
-void KillSwitch::flightModeUpdated(bool flightMode)
+void KillSwitch::setFlightMode(bool flightMode)
 {
+    if (flightMode == d->m_flightMode)
+    {
+        return;
+    }
+
     d->m_flightMode = flightMode;
     Q_EMIT flightModeChanged(flightMode);
 }

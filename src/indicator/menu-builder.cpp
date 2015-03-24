@@ -77,19 +77,20 @@ MenuBuilder::MenuBuilder(Factory& factory) :
 
     d->m_ubiquityMenu = factory.newIndicatorMenu(d->m_rootState, "ubiquity");
 
-    d->m_quickAccessSection = factory.newQuickAccessSection();
+    d->m_wifiSection = factory.newWiFiSection();
+    d->m_quickAccessSection = factory.newQuickAccessSection(d->m_wifiSection->wifiSwitch());
+    d->m_wwanSection = factory.newWwanSection();
+
     d->m_desktopMenu->addSection(d->m_quickAccessSection);
     d->m_desktopGreeterMenu->addSection(d->m_quickAccessSection);
     d->m_phoneMenu->addSection(d->m_quickAccessSection);
     d->m_phoneGreeterMenu->addSection(d->m_quickAccessSection);
 
-    d->m_wwanSection = factory.newWwanSection();
     d->m_desktopMenu->addSection(d->m_wwanSection);
     d->m_desktopGreeterMenu->addSection(d->m_wwanSection);
     d->m_phoneMenu->addSection(d->m_wwanSection);
     d->m_phoneGreeterMenu->addSection(d->m_wwanSection);
 
-    d->m_wifiSection = factory.newWiFiSection();
     d->m_desktopMenu->addSection(d->m_wifiSection);
     d->m_desktopGreeterMenu->addSection(d->m_wifiSection);
     d->m_phoneMenu->addSection(d->m_wifiSection);

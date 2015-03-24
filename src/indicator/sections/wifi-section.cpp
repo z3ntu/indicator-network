@@ -113,6 +113,7 @@ public Q_SLOTS:
     void switchActivated(bool state)
     {
         m_switch->setEnabled(false);
+        runGMainloop();
         if (state) {
             m_manager->enableWifi();
         } else {
@@ -146,6 +147,12 @@ MenuModel::Ptr
 WifiSection::settingsModel()
 {
     return d->m_settingsMenu;
+}
+
+SwitchItem::Ptr
+WifiSection::wifiSwitch()
+{
+    return d->m_switch;
 }
 
 #include "wifi-section.moc"

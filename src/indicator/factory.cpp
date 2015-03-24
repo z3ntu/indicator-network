@@ -94,9 +94,9 @@ unique_ptr<MenuExporter> Factory::newMenuExporter(const string &path, MenuModel:
     return make_unique<MenuExporter>(d->singletonSessionBus(), path, menuModel);
 }
 
-unique_ptr<QuickAccessSection> Factory::newQuickAccessSection()
+unique_ptr<QuickAccessSection> Factory::newQuickAccessSection(SwitchItem::Ptr wifiSwitch)
 {
-    return make_unique<QuickAccessSection>(d->singletonNmofono());
+    return make_unique<QuickAccessSection>(d->singletonNmofono(), wifiSwitch);
 }
 
 unique_ptr<WwanSection> Factory::newWwanSection()

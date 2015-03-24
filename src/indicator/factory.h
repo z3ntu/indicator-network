@@ -51,7 +51,7 @@ public:
 
     virtual std::unique_ptr<MenuExporter> newMenuExporter(const std::string &path, MenuModel::Ptr menuModel);
 
-    virtual std::unique_ptr<QuickAccessSection> newQuickAccessSection();
+    virtual std::unique_ptr<QuickAccessSection> newQuickAccessSection(SwitchItem::Ptr wifiSwitch);
 
     virtual std::unique_ptr<WwanSection> newWwanSection();
 

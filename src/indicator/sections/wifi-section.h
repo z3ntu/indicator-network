@@ -22,7 +22,8 @@
 
 #include <nmofono/manager.h>
 
-#include "menuitems/section.h"
+#include <menuitems/section.h>
+#include <menuitems/switch-item.h>
 
 class WifiSection : public Section
 {
@@ -40,6 +41,7 @@ public:
     virtual MenuModel::Ptr menuModel();
 
     MenuModel::Ptr settingsModel();
+    SwitchItem::Ptr wifiSwitch();
 };
 
 #endif

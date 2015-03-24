@@ -90,7 +90,7 @@ public Q_SLOTS:
         Q_EMIT p.wifiEnabledUpdated(m_wifiEnabled);
     }
 
-    void flightModeChanged(bool flightMode)
+    void setFlightMode(bool flightMode)
     {
         if (flightMode)
         {
@@ -146,7 +146,7 @@ Manager::Manager(const QDBusConnection& systemConnection) : d(new Manager::Priva
     /// @todo those Id() thingies
 
     d->m_wifiKillSwitch = std::make_shared<KillSwitch>(systemConnection);
-    connect(d->m_wifiKillSwitch.get(), SIGNAL(stateChanged()), d.get(), SLOT(updateHasWifi()));
+    connect(d->m_wifiKillSwitch.get(), &KillSwitch::stateChanged, d.get(), &Private::updateHasWifi);
 
     connect(d->nm.get(), &OrgFreedesktopNetworkManagerInterface::DeviceAdded, this, &Manager::device_added);
     QList<QDBusObjectPath> devices(d->nm->GetDevices());
@@ -158,16 +158,16 @@ Manager::Manager(const QDBusConnection& systemConnection) : d(new Manager::Priva
     updateNetworkingStatus(d->nm->state());
     connect(d->nm.get(), &OrgFreedesktopNetworkManagerInterface::PropertiesChanged, this, &Manager::nm_properties_changed);
 
-    connect(d->m_wifiKillSwitch.get(), SIGNAL(flightModeChanged(bool)), d.get(), SLOT(flightModeChanged(bool)));
+    connect(d->m_wifiKillSwitch.get(), &KillSwitch::flightModeChanged, d.get(), &Private::setFlightMode);
     try
     {
-        d->flightModeChanged(d->m_wifiKillSwitch->isFlightMode());
+        d->setFlightMode(d->m_wifiKillSwitch->isFlightMode());
     }
     catch (std::exception const& e)
     {
         std::cerr << __PRETTY_FUNCTION__ << ": " << e.what() << std::endl;
         std::cerr << "Failed to retrieve initial flight mode state, assuming state is false." << std::endl;
-        d->flightModeChanged(false);
+        d->setFlightMode(false);
     }
 
     /// @todo set by the default connections.

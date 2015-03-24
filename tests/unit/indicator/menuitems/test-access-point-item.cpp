@@ -81,6 +81,7 @@ TEST_F(TestAccessPointItem, ExportBasicActionsAndMenu)
     EXPECT_EQ(70, strengthAction->state().as<uint8_t>());
 
     ON_CALL(*accessPoint, strength()).WillByDefault(Return(20.0));
+    Q_EMIT accessPoint->strengthUpdated(20.0);
     EXPECT_EQ(20, strengthAction->state().as<uint8_t>());
 }
 

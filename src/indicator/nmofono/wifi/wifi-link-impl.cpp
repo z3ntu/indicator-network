@@ -438,6 +438,7 @@ Link::connect_to(std::shared_ptr<networking::wifi::AccessPoint> accessPoint)
             assert(bap);
             ssid = bap->raw_ssid();
         }
+
         std::shared_ptr<OrgFreedesktopNetworkManagerSettingsConnectionInterface> found;
         QList<QDBusObjectPath> connections = d->m_dev->availableConnections();
         for (auto &path : connections) {
@@ -451,14 +452,14 @@ Link::connect_to(std::shared_ptr<networking::wifi::AccessPoint> accessPoint)
                 if (ssidIt != wirelessIt->cend())
                 {
                     QByteArray value = ssidIt->toByteArray();
-                    if (value != ap->raw_ssid())
+                    if (value == ap->raw_ssid())
                     {
                         found = con;
-                                break;
-                            }
-                        }
+                        break;
                     }
                 }
+            }
+        }
 
         /// @todo check the timestamps as there might be multiple ones that are suitable.
         /// @todo oh, and check more parameters than just the ssid

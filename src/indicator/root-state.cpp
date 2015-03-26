@@ -26,6 +26,7 @@
 
 #include <menumodel-cpp/gio-helpers/util.h>
 
+using namespace std;
 namespace networking = connectivity::networking;
 
 class RootState::Private : public QObject
@@ -54,7 +55,7 @@ public:
     Private() = delete;
     Private(RootState& parent, std::shared_ptr<networking::Manager> manager, ModemManager::Ptr modemManager);
 
-    Variant createIcon(const std::string name);
+    Variant createIcon(const std::string& name);
 
 public Q_SLOTS:
     void updateModem(Modem::Ptr modem);
@@ -273,18 +274,17 @@ RootState::Private::updateNetworkingIcon()
 }
 
 Variant
-RootState::Private::createIcon(const std::string name)
+RootState::Private::createIcon(const std::string& name)
 {
     GError *error = nullptr;
-    auto gicon = g_icon_new_for_string(name.c_str(), &error);
+    auto gicon = shared_ptr<GIcon>(g_icon_new_for_string(name.c_str(), &error), GObjectDeleter());
     if (error) {
+        string message(error->message);
         g_error_free(error);
-        throw std::runtime_error("Could not create GIcon: " + std::string(error->message));
+        throw std::runtime_error("Could not create GIcon: " + message);
     }
 
-    Variant ret = Variant::fromGVariant(g_icon_serialize(gicon));
-    /// @todo not sure about this one:
-    g_object_unref(gicon);
+    Variant ret = Variant::fromGVariant(g_icon_serialize(gicon.get()));
     return ret;
 }
 

@@ -2216,14 +2216,14 @@ TEST_F(TestIndicatorNetworkService, CellDataEnabled)
 
     // sim in with carrier and 4-bar signal and HSPA
     setNetworkRegistrationProperty(firstModem(), "Strength", QVariant::fromValue(uchar(26)));
-    setNetworkRegistrationProperty(firstModem(), "Technology", "hspa");
+    setConnectionManagerProperty(firstModem(), "Bearer", "hspa");
     setModemProperty(firstModem(), "Online", true);
     setConnectionManagerProperty(firstModem(), "Powered", true);
 
     // second sim with umts (3G)
     auto secondModem = createModem("ril_1");
     setNetworkRegistrationProperty(secondModem, "Strength", QVariant::fromValue(uchar(6)));
-    setNetworkRegistrationProperty(secondModem, "Technology", "umts");
+    setConnectionManagerProperty(secondModem, "Bearer", "umts");
     setModemProperty(secondModem, "Online", true);
     setConnectionManagerProperty(secondModem, "Powered", false);
 
@@ -2244,7 +2244,7 @@ TEST_F(TestIndicatorNetworkService, CellDataEnabled)
         ).match());
 
     // First SIM card now only has EDGE
-    setNetworkRegistrationProperty(firstModem(), "Technology", "edge");
+    setConnectionManagerProperty(firstModem(), "Bearer", "edge");
 
     // Now we should have an EDGE icon
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
@@ -2290,14 +2290,14 @@ TEST_F(TestIndicatorNetworkService, CellDataDisabled)
 
     // sim in with carrier and 1-bar signal and HSPA, data disabled
     setNetworkRegistrationProperty(firstModem(), "Strength", QVariant::fromValue(uchar(6)));
-    setNetworkRegistrationProperty(firstModem(), "Technology", "hspa");
+    setConnectionManagerProperty(firstModem(), "Bearer", "hspa");
     setModemProperty(firstModem(), "Online", true);
     setConnectionManagerProperty(firstModem(), "Powered", false);
 
     // second sim with 4-bar signal umts (3G), data disabled
     auto secondModem = createModem("ril_1");
     setNetworkRegistrationProperty(secondModem, "Strength", QVariant::fromValue(uchar(26)));
-    setNetworkRegistrationProperty(secondModem, "Technology", "umts");
+    setConnectionManagerProperty(secondModem, "Bearer", "umts");
     setModemProperty(secondModem, "Online", true);
     setConnectionManagerProperty(secondModem, "Powered", false);
 

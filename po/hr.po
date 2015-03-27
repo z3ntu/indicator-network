@@ -1,0 +1,215 @@
+# Croatian translation for indicator-network
+# Copyright (c) 2015 Rosetta Contributors and Canonical Ltd 2015
+# This file is distributed under the same license as the indicator-network package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2015.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: indicator-network\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2014-10-07 20:43+0300\n"
+"PO-Revision-Date: 2015-03-26 12:36+0000\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Croatian <hr@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Launchpad-Export-Date: 2015-03-27 05:38+0000\n"
+"X-Generator: Launchpad (build 17413)\n"
+
+#: src/indicator/quick-access-section.cpp:48
+msgid "Flight Mode"
+msgstr "Način rada u zrakoplovu"
+
+#. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
+#: src/indicator/root-state.cpp:296
+msgid "Network"
+msgstr "Mreža"
+
+#: src/indicator/sim-unlock-dialog.cpp:115
+msgid "Sorry, incorrect PIN"
+msgstr "Isprika, neispravan PIN"
+
+#: src/indicator/sim-unlock-dialog.cpp:136
+msgid "Sorry, incorrect PUK"
+msgstr "Isprika, neispravan PUK"
+
+#: src/indicator/sim-unlock-dialog.cpp:151
+msgid "Sorry, incorrect %{1} PIN."
+msgstr "Isprika, neispravan %{1} PIN."
+
+#: src/indicator/sim-unlock-dialog.cpp:156
+#: src/indicator/sim-unlock-dialog.cpp:185
+msgid "This will be your last attempt."
+msgstr "Ovo je vaš posljednji pokušaj."
+
+#: src/indicator/sim-unlock-dialog.cpp:158
+msgid ""
+"If %{1} PIN is entered incorrectly you will require your PUK code to unlock."
+msgstr ""
+"Ako je %{1} PIN upisan neispravno, trebati će vam PUK kôd za otključavanje."
+
+#: src/indicator/sim-unlock-dialog.cpp:168
+msgid "Sorry, your %{1} is now blocked."
+msgstr "Isprika, vaš %{1} je sada blokiran."
+
+#: src/indicator/sim-unlock-dialog.cpp:173
+msgid "Please enter your PUK code to unblock SIM card."
+msgstr "Upišite vaš PUK kôd kako bi odblokirali SIM karticu."
+
+#: src/indicator/sim-unlock-dialog.cpp:175
+msgid "You may need to contact your network provider for PUK code."
+msgstr ""
+"Možda ćete trebati kontaktirati vašeg pružatelja mrežne usluge za PUK kôd."
+
+#: src/indicator/sim-unlock-dialog.cpp:183
+#: src/indicator/sim-unlock-dialog.cpp:197
+msgid "Sorry, incorrect PUK."
+msgstr "Isprika, neispravan PUK."
+
+#: src/indicator/sim-unlock-dialog.cpp:187
+msgid ""
+"If PUK code is entered incorrectly, your SIM card will be blocked and needs "
+"replacement."
+msgstr ""
+"Ako je PUK kôd upisan neispravno, vaša SIM kartica će biti blokirana i "
+"potrebna će biti njena zamjena."
+
+#: src/indicator/sim-unlock-dialog.cpp:189
+msgid "Please contact your network provider."
+msgstr "Kontaktirajte vašeg pružatelja mrežne usluge."
+
+#: src/indicator/sim-unlock-dialog.cpp:199
+msgid "Your SIM card is now permanently blocked and needs replacement."
+msgstr ""
+"Vaša SIM kartica je sada trajno blokirana i potrebna je njena zamjena."
+
+#: src/indicator/sim-unlock-dialog.cpp:201
+msgid "Please contact your service provider."
+msgstr "Kontaktirajte vašeg pružatelja usluge."
+
+#: src/indicator/sim-unlock-dialog.cpp:265
+msgid "Enter %{1} PIN"
+msgstr "Upišite %{1} PIN"
+
+#: src/indicator/sim-unlock-dialog.cpp:272
+msgid "Enter PUK code"
+msgstr "Upišite PUK kôd"
+
+#: src/indicator/sim-unlock-dialog.cpp:274
+msgid "Enter PUK code for %{1}"
+msgstr "Upišite PUK kôd za %{1}"
+
+#: src/indicator/sim-unlock-dialog.cpp:282
+#, c-format
+msgid "1 attempt remaining"
+msgid_plural "%d attempts remaining"
+msgstr[0] "1 pokušaj preostao"
+msgstr[1] "%d pokušaja preostala"
+msgstr[2] "%d pokušaja preostalo"
+
+#: src/indicator/sim-unlock-dialog.cpp:293
+msgid "Enter new %{1} PIN"
+msgstr "Upišite novi %{1} PIN"
+
+#: src/indicator/sim-unlock-dialog.cpp:301
+msgid "Confirm new %{1} PIN"
+msgstr "Potvrdite novi %{1} PIN"
+
+#: src/indicator/sim-unlock-dialog.cpp:340
+#: src/indicator/sim-unlock-dialog.cpp:515
+msgid "PIN codes did not match."
+msgstr "PIN kôdovi se ne podudaraju."
+
+#: src/indicator/sim-unlock-dialog.cpp:495
+#: src/indicator/sim-unlock-dialog.cpp:523
+msgid "Enter SIM PIN"
+msgstr "Upišite SIM PIN"
+
+#: src/indicator/sim-unlock-dialog.cpp:506
+#: src/indicator/sim-unlock-dialog.cpp:516
+msgid "Enter new PIN code"
+msgstr "Upišite novi PIN kôd"
+
+#: src/indicator/sim-unlock-dialog.cpp:510
+msgid "Confirm new PIN code"
+msgstr "Potvrdite novi PIN kôd"
+
+#: src/indicator/sim-unlock-dialog.cpp:522
+msgid "Failed to change PIN."
+msgstr "Neuspjela promjena PIN-a."
+
+#: src/indicator/wifi-link-item.h:88
+msgid "Wi-Fi"
+msgstr "Bežična mreža"
+
+#: src/indicator/wifi-link-item.h:152
+msgid "Other network…"
+msgstr "Ostale mreže..."
+
+#: src/indicator/wifi-section.cpp:60
+msgid "Wi-Fi settings…"
+msgstr "Postavke bežične mreže…"
+
+#: src/indicator/wwan-link-item.cpp:87
+msgid "No SIM"
+msgstr "Nema SIM-a"
+
+#: src/indicator/wwan-link-item.cpp:93
+msgid "SIM Error"
+msgstr "SIM greška"
+
+#: src/indicator/wwan-link-item.cpp:100
+msgid "SIM Locked"
+msgstr "SIM zaključan"
+
+#: src/indicator/wwan-link-item.cpp:112
+msgid "Unregistered"
+msgstr "Neregistrirana"
+
+#: src/indicator/wwan-link-item.cpp:116
+msgid "Unknown"
+msgstr "Nepoznata"
+
+#: src/indicator/wwan-link-item.cpp:120
+msgid "Denied"
+msgstr "Odbijena"
+
+#: src/indicator/wwan-link-item.cpp:124
+msgid "Searching"
+msgstr "Pretraživanje"
+
+#: src/indicator/wwan-link-item.cpp:135
+msgid "No Signal"
+msgstr "Nema signala"
+
+#: src/indicator/wwan-link-item.cpp:141
+msgid "Offline"
+msgstr "Odspojena"
+
+#: src/indicator/wwan-section.cpp:79
+msgid "Cellular settings…"
+msgstr "Postavke mobitela…"
+
+#: src/secret-agent/SecretRequest.cpp:62
+#, qt-format
+msgid "Connect to “%1”"
+msgstr "Poveži se na “%1”"
+
+#: src/secret-agent/SecretRequest.cpp:67
+msgid "WPA"
+msgstr "WPA"
+
+#: src/secret-agent/SecretRequest.cpp:69
+msgid "WEP"
+msgstr "WEP"
+
+#: src/secret-agent/SecretRequest.cpp:75
+msgid "Connect"
+msgstr "Poveži se"
+
+#: src/secret-agent/SecretRequest.cpp:76
+msgid "Cancel"
+msgstr "Odustani"

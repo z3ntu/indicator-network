@@ -48,25 +48,29 @@ static Modem::Status str2status(const QString& str)
     if (str == "roaming")
         return Modem::Status::roaming;
 
-    throw std::runtime_error(std::string(__PRETTY_FUNCTION__) + ": Unknown status '" + str.toStdString() + "'");
+    qWarning() << __PRETTY_FUNCTION__ << ": Unknown status" << str;
+    return Modem::Status::unknown;
 }
 
-static Modem::Technology str2technology(const QString& str)
+static Modem::Bearer str2technology(const QString& str)
 {
-    if (str == "")
-        return Modem::Technology::notAvailable;
-    if (str == "gsm")
-        return Modem::Technology::gsm;
+    if (str.isEmpty() || str == "none")
+        return Modem::Bearer::notAvailable;
+    if (str == "gprs")
+        return Modem::Bearer::gprs;
     if (str == "edge")
-        return Modem::Technology::edge;
+        return Modem::Bearer::edge;
     if (str == "umts")
-        return Modem::Technology::umts;
-    if (str == "hspa")
-        return Modem::Technology::hspa;
+        return Modem::Bearer::umts;
+    if (str == "hspa" || str == "hsupa" || str == "hsdpa")
+        return Modem::Bearer::hspa;
+    if (str == "hspap")
+        return Modem::Bearer::hspa_plus;
     if (str == "lte")
-        return Modem::Technology::lte;
+        return Modem::Bearer::lte;
 
-    throw std::runtime_error(std::string(__PRETTY_FUNCTION__) + ": Unknown techonology '" + str.toStdString() + "'");
+    qWarning() << __PRETTY_FUNCTION__  << ": Unknown techonology" << str;
+    return Modem::Bearer::notAvailable;
 }
 }
 
@@ -87,7 +91,7 @@ public:
     QString m_operatorName;
     Modem::Status m_status;
     int8_t m_strength;
-    Modem::Technology m_technology;
+    Modem::Bearer m_bearer;
 
     bool m_dataEnabled;
 
@@ -117,6 +121,10 @@ public Q_SLOTS:
             connect(m_connectionManager.get(),
                     &QOfonoConnectionManager::poweredChanged, this,
                     &Private::update);
+
+            connect(m_connectionManager.get(),
+                    &QOfonoConnectionManager::bearerChanged, this,
+                    &Private::update);
         }
 
         update();
@@ -142,10 +150,6 @@ public Q_SLOTS:
 
             connect(m_networkRegistration.get(),
                     &QOfonoNetworkRegistration::strengthChanged, this,
-                    &Private::update);
-
-            connect(m_networkRegistration.get(),
-                    &QOfonoNetworkRegistration::technologyChanged, this,
                     &Private::update);
         }
 
@@ -300,15 +304,15 @@ public Q_SLOTS:
         Q_EMIT p.strengthUpdated(m_strength);
     }
 
-    void setTechnology(Modem::Technology technology)
+    void setBearer(Modem::Bearer bearer)
     {
-        if (m_technology == technology)
+        if (m_bearer == bearer)
         {
             return;
         }
 
-        m_technology = technology;
-        Q_EMIT p.technologyUpdated(m_technology);
+        m_bearer = bearer;
+        Q_EMIT p.bearerUpdated(m_bearer);
     }
 
     void setDataEnabled(bool dataEnabled)
@@ -480,23 +484,23 @@ Modem::Private::update()
         setOperatorName(m_networkRegistration->name());
         setStatus(str2status(m_networkRegistration->status()));
         setStrength(m_networkRegistration->strength());
-        setTechnology(str2technology(m_networkRegistration->technology()));
     }
     else
     {
         setOperatorName("");
         setStatus(Modem::Status::unknown);
         setStrength(-1);
-        setTechnology(Modem::Technology::notAvailable);
     }
 
     if (m_connectionManager)
     {
         setDataEnabled(m_connectionManager->powered());
+        setBearer(str2technology(m_connectionManager->bearer()));
     }
     else
     {
         setDataEnabled(false);
+        setBearer(Modem::Bearer::notAvailable);
     }
 
     Q_EMIT p.updated(p.shared_from_this());
@@ -517,22 +521,22 @@ QString Modem::strengthIcon(int8_t strength)
         return "gsm-3g-none";
 }
 
-QString Modem::technologyIcon(Modem::Technology tech)
+QString Modem::technologyIcon(Modem::Bearer tech)
 {
-    switch (tech){
-    case Modem::Technology::notAvailable:
-    case Modem::Technology::gsm:
+    switch (tech)
+    {
+    case Modem::Bearer::notAvailable:
+    case Modem::Bearer::gprs:
         return "network-cellular-pre-edge";
-    case Modem::Technology::edge:
+    case Modem::Bearer::edge:
         return "network-cellular-edge";
-    case Modem::Technology::umts:
+    case Modem::Bearer::umts:
         return "network-cellular-3g";
-    case Modem::Technology::hspa:
+    case Modem::Bearer::hspa:
         return "network-cellular-hspa";
-    /// @todo oFono can't tell us about hspa+ yet
-    //case Modem::Technology::hspaplus:
-    //    break;
-    case Modem::Technology::lte:
+    case Modem::Bearer::hspa_plus:
+        return "network-cellular-hspa-plus";
+    case Modem::Bearer::lte:
         return "network-cellular-lte";
     }
     // shouldn't be reached
@@ -632,10 +636,10 @@ Modem::strength() const
     return d->m_strength;
 }
 
-Modem::Technology
-Modem::technology() const
+Modem::Bearer
+Modem::bearer() const
 {
-    return d->m_technology;
+    return d->m_bearer;
 }
 
 const QString&

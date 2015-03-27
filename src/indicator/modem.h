@@ -67,13 +67,14 @@ public:
         roaming
     };
 
-    enum class Technology
+    enum class Bearer
     {
         notAvailable,
-        gsm,
+        gprs,
         edge,
         umts,
         hspa,
+        hspa_plus,
         lte
     };
 
@@ -116,7 +117,6 @@ public:
     Q_PROPERTY(Modem::PinType requiredPin READ requiredPin NOTIFY requiredPinUpdated)
     PinType requiredPin() const;
 
-
     typedef std::map<Modem::PinType, int> RetriesType;
     Q_PROPERTY(RetriesType retries READ retries NOTIFY retriesUpdated)
     const RetriesType &retries() const;
@@ -130,8 +130,8 @@ public:
     Q_PROPERTY(std::int8_t strength READ strength NOTIFY strengthUpdated)
     std::int8_t strength() const;
 
-    Q_PROPERTY(Modem::Technology technology READ technology NOTIFY technologyUpdated)
-    Technology technology() const;
+    Q_PROPERTY(Modem::Bearer bearer READ bearer NOTIFY bearerUpdated)
+    Bearer bearer() const;
 
     Q_PROPERTY(bool dataEnabled READ dataEnabled NOTIFY dataEnabledUpdated)
     bool dataEnabled() const;
@@ -145,7 +145,7 @@ public:
 
     static QString strengthIcon(int8_t strength);
 
-    static QString technologyIcon(Technology tech);
+    static QString technologyIcon(Bearer tech);
 
 Q_SIGNALS:
     void onlineUpdated(bool);
@@ -162,7 +162,7 @@ Q_SIGNALS:
 
     void strengthUpdated(std::int8_t);
 
-    void technologyUpdated(Technology);
+    void bearerUpdated(Bearer);
 
     void dataEnabledUpdated(bool);
 

@@ -1,2 +1,2 @@
 #add_subdirectory(connectivity-cpp)
-#///!add_subdirectory(indicator)
+add_subdirectory(indicator)

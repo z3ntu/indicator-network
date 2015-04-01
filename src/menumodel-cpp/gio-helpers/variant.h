@@ -72,7 +72,7 @@ public:
     operator bool() const { return m_variant.get() != nullptr; }
 
     template<typename T>
-    T as()
+    T as() const
     {
         T value;
         Codec<T>::decode_argument(*this, value);
@@ -81,11 +81,30 @@ public:
 
     bool operator==(const Variant &rhs) const
     {
-        return m_variant == rhs.m_variant;
+        if (g_variant_is_container(m_variant.get()) || g_variant_is_container(rhs.m_variant.get()))
+        {
+            // Compare by string
+            return to_string(true) == rhs.to_string(true);
+        }
+
+        return g_variant_compare(m_variant.get(), rhs.m_variant.get()) == 0;
     }
+
     bool operator!=(const Variant &rhs) const
     {
         return !(*this == rhs);
+    }
+
+    std::string to_string(bool type_annotate = false) const
+    {
+        if (m_variant.get())
+        {
+            gchar *str = g_variant_print(m_variant.get(), (gboolean) type_annotate);
+            std::string result(str);
+            g_free(str);
+            return result;
+        }
+        return "null";
     }
 
     operator GVariant*() const { return m_variant.get(); }
@@ -119,13 +138,13 @@ struct Codec<bool>
 {
     inline static GVariant *encode_argument(bool value)
     {
-        return g_variant_new_boolean(value);
+        return g_variant_new_boolean(value ? TRUE : FALSE);
     }
     inline static void decode_argument(const Variant &variant, bool &value)
     {
         assert(variant);
         assert(g_variant_is_of_type(variant, G_VARIANT_TYPE_BOOLEAN));
-        value = g_variant_get_boolean(variant);
+        value = (g_variant_get_boolean(variant) == TRUE);
     }
 };
 

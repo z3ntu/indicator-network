@@ -19,8 +19,8 @@
 
 #pragma once
 
-#include<QObject>
-#include<QDBusVariant>
+#include <QObject>
+#include <QDBusVariant>
 
 class UrfkillRoot;
 class UrfkillSwitch;

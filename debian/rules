@@ -15,13 +15,6 @@ export CXX=$(DEB_HOST_GNU_TYPE)-g++-4.9
 %:
 	dh $@ --parallel --fail-missing --with python3
 
-# tests are flaky on these platforms which
-# we don't really care about anyway
-ifneq (,filter(arm64 powerpc ppc64el ,$(DEB_HOST_ARCH)))
-override_dh_auto_test:
-	dh_auto_test || true
-endif
-
 override_dh_install:
 	cd tests/autopilot; \
 	set -ex; for python in $(shell py3versions -r); do \

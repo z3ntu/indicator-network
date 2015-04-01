@@ -18,7 +18,7 @@
  */
 
 
-#include<QCoreApplication>
+#include <QCoreApplication>
 
 #include "dbusdata.h"
 #include "eventprinter.h"

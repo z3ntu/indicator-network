@@ -138,13 +138,13 @@ struct Codec<bool>
 {
     inline static GVariant *encode_argument(bool value)
     {
-        return g_variant_new_boolean(value);
+        return g_variant_new_boolean(value ? TRUE : FALSE);
     }
     inline static void decode_argument(const Variant &variant, bool &value)
     {
         assert(variant);
         assert(g_variant_is_of_type(variant, G_VARIANT_TYPE_BOOLEAN));
-        value = g_variant_get_boolean(variant);
+        value = (g_variant_get_boolean(variant) == TRUE);
     }
 };
 

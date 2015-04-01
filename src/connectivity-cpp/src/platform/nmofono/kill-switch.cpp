@@ -73,7 +73,7 @@ KillSwitch::block()
 
     try {
         if (!d->urfkill->block(d->killSwitch->type, true))
-            throw KillSwitch::exception::Failed("");
+            throw KillSwitch::exception::Failed("Failed to block killswitch");
     } catch (std::exception &e) {
         throw KillSwitch::exception::Failed(e.what());
     }
@@ -84,7 +84,7 @@ KillSwitch::unblock()
 {
     try {
         if (!d->urfkill->block(d->killSwitch->type, false))
-            throw KillSwitch::exception::Failed("");
+            throw KillSwitch::exception::Failed("Failed to unblock killswitch");
     } catch (std::exception &e) {
         throw KillSwitch::exception::Failed(e.what());
     }

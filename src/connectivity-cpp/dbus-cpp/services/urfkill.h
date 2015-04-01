@@ -263,10 +263,11 @@ struct Interface
             }
             // we can't handle "all" (0) with this, but that's deprecated by FlightMode anyway
 
-            auto result =
-                    object->invoke_method_synchronously<
+            auto future =
+                    object->invoke_method_asynchronously<
                        Method::Block, Method::Block::ResultType>
                     (utype, block);
+            auto result = future.get();
 
             if (result.is_error())
                 throw std::runtime_error(result.error().print());
@@ -276,10 +277,11 @@ struct Interface
 
         bool flightMode(bool block)
         {
-            auto result =
-                    object->invoke_method_synchronously<
+            auto future =
+                    object->invoke_method_asynchronously<
                        Method::FlightMode, Method::FlightMode::ResultType>
                     (block);
+            auto result = future.get();
 
             if (result.is_error())
                 throw std::runtime_error(result.error().print());
@@ -289,10 +291,11 @@ struct Interface
 
         bool isFlightMode()
         {
-            auto result =
-                    object->invoke_method_synchronously<
+            auto future =
+                    object->invoke_method_asynchronously<
                        Method::IsFlightMode, Method::IsFlightMode::ResultType>
                     ();
+            auto result = future.get();
 
             if (result.is_error())
                 throw std::runtime_error(result.error().print());

@@ -209,7 +209,8 @@ struct Interface
             propertyChanged->connect([this](Signal::PropertyChanged::ArgumentType args){
                 _updateProperty(std::get<0>(args), std::get<1>(args));
             });
-            auto result = object->invoke_method_synchronously<Method::GetProperties, Method::GetProperties::ValueType>();
+            auto future = object->invoke_method_asynchronously<Method::GetProperties, Method::GetProperties::ValueType>();
+            auto result = future.get();
             if (result.is_error())
                 throw std::runtime_error(result.error().print());
             for (auto element : result.value())
@@ -575,9 +576,10 @@ struct Interface
         std::map<std::string, core::dbus::types::Variant>
         getProperties()
         {
-            auto result =
-                    object->invoke_method_synchronously<
+            auto future =
+                    object->invoke_method_asynchronously<
                         SimManager::Method::GetProperties, SimManager::Method::GetProperties::ResultType>();
+            auto result = future.get();
 
             if (result.is_error())
                 throw std::runtime_error(result.error().print());
@@ -588,10 +590,11 @@ struct Interface
         bool
         changePin(PinType type, std::string oldPin, std::string newPin)
         {
-            auto result =
-                    object->invoke_method_synchronously<
+            auto future =
+                    object->invoke_method_asynchronously<
                         SimManager::Method::ChangePin, SimManager::Method::ChangePin::ResultType>
                     (pin2str(type), oldPin, newPin);
+            auto result = future.get();
 
             if (result.is_error()) {
                 auto &error = result.error();
@@ -613,16 +616,18 @@ struct Interface
         bool
         enterPin(PinType type, std::string pin)
         {
+            core::dbus::Result<void> result;
             try {
-                auto result =
-                        object->invoke_method_synchronously<
+                auto future =
+                        object->invoke_method_asynchronously<
                         SimManager::Method::EnterPin, SimManager::Method::EnterPin::ResultType>
                         (pin2str(type), pin);
+                result = future.get();
             } catch(std::runtime_error &e) {
                 /// @todo dbus-cpp does not provide proper errors yet :/
                 return false;
             }
-#if 0
+
             if (result.is_error()) {
                 auto &error = result.error();
                 if (error.name() == "org.ofono.Error.NotImplemented") {
@@ -637,23 +642,24 @@ struct Interface
                     return false;
                 }
             }
-#endif
             return true;
         }
 
         bool
         resetPin(PinType type, std::string puk, std::string newPin)
         {
+            core::dbus::Result<void> result;
             try {
-                auto result =
-                        object->invoke_method_synchronously<
+                auto future =
+                        object->invoke_method_asynchronously<
                         SimManager::Method::ResetPin, SimManager::Method::ResetPin::ResultType>
                         (pin2str(type), puk, newPin);
+                result = future.get();
             } catch(std::runtime_error &e) {
                 /// @todo dbus-cpp does not provide proper errors yet :/
                 return false;
             }
-#if 0
+
             if (result.is_error()) {
                 auto &error = result.error();
                 if (error.name() == "org.ofono.Error.NotImplemented") {
@@ -668,17 +674,17 @@ struct Interface
                     return false;
                 }
             }
-#endif
             return true;
         }
 
         bool
         lockPin(PinType type, std::string pin)
         {
-            auto result =
-                    object->invoke_method_synchronously<
+            auto future =
+                    object->invoke_method_asynchronously<
                     SimManager::Method::LockPin, SimManager::Method::LockPin::ResultType>
                     (pin2str(type), pin);
+            auto result = future.get();
 
             if (result.is_error()) {
                 auto &error = result.error();
@@ -700,10 +706,11 @@ struct Interface
         bool
         unlockPin(PinType type, std::string pin)
         {
-            auto result =
-                    object->invoke_method_synchronously<
+            auto future =
+                    object->invoke_method_asynchronously<
                     SimManager::Method::UnlockPin, SimManager::Method::UnlockPin::ResultType>
                     (pin2str(type), pin);
+            auto result = future.get();
 
             if (result.is_error()) {
                 auto &error = result.error();
@@ -742,9 +749,10 @@ struct Interface
             propertyChanged->connect([this](Signal::PropertyChanged::ArgumentType args){
                 _updateProperty(std::get<0>(args), std::get<1>(args));
             });
-            auto result =
-                    object->invoke_method_synchronously<
+            auto future =
+                    object->invoke_method_asynchronously<
                         SimManager::Method::GetProperties, SimManager::Method::GetProperties::ResultType>();
+            auto result = future.get();
             if (result.is_error())
                 throw std::runtime_error(result.error().print());
             for (auto element : result.value())
@@ -968,9 +976,10 @@ struct Interface
         std::map<std::string, core::dbus::types::Variant>
         getProperties()
         {
-            auto result =
-                    object->invoke_method_synchronously<
+            auto future =
+                    object->invoke_method_asynchronously<
                     ConnectionManager::Method::GetProperties, ConnectionManager::Method::GetProperties::ResultType>();
+            auto result = future.get();
 
             if (result.is_error()) {
                 throw std::runtime_error(result.error().print());
@@ -1358,9 +1367,10 @@ struct Interface
         std::map<std::string, core::dbus::types::Variant>
         getProperties()
         {
-            auto result =
-                    object->invoke_method_synchronously<
+            auto future =
+                    object->invoke_method_asynchronously<
                         Modem::Method::GetProperties, Modem::Method::GetProperties::ResultType>();
+            auto result = future.get();
 
             if (result.is_error())
                 throw std::runtime_error(result.error().print());
@@ -1376,9 +1386,10 @@ struct Interface
 //                              [service].Error.NotAvailable
 //                              [service].Error.AccessDenied
 //                              [service].Error.Failed
-            auto result =
-                    object->invoke_method_synchronously<
+            auto future =
+                    object->invoke_method_asynchronously<
                         Modem::Method::SetProperty, Modem::Method::SetProperty::ResultType>(property, value);
+            auto result = future.get();
 
             if (result.is_error())
                 throw std::runtime_error(result.error().print());
@@ -1487,7 +1498,8 @@ struct Interface
               modem_added  (object->get_signal<Signal::ModemAdded>()),
               modem_removed(object->get_signal<Signal::ModemRemoved>())
         {
-            auto result = object->invoke_method_synchronously<Method::GetModems, Method::GetModems::ResultType>();
+            auto future = object->invoke_method_asynchronously<Method::GetModems, Method::GetModems::ResultType>();
+            auto result = future.get();
 
             if (result.is_error())
                 throw std::runtime_error(result.error().print());

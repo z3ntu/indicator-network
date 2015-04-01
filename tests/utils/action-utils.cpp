@@ -38,13 +38,13 @@ testutils::string_value (MenuItem::Ptr menuItem, const string &name)
 bool
 testutils::bool_value (MenuItem::Ptr menuItem, const string &name)
 {
-    bool result;
+    gboolean result;
     if (!g_menu_item_get_attribute(menuItem->gmenuitem(), name.c_str(), "b",
                                    &result))
     {
         throw std::logic_error("could not get boolean attribute");
     }
-    return result;
+    return (result == TRUE);
 }
 
 Action::Ptr

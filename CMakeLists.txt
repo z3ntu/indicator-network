@@ -123,8 +123,6 @@ add_subdirectory(po)
 enable_testing()
 add_subdirectory(tests)
 
-add_subdirectory(sniffer)
-
 ADD_CUSTOM_TARGET(
         check
         ${CMAKE_CTEST_COMMAND} --force-new-ctest-process --output-on-failure

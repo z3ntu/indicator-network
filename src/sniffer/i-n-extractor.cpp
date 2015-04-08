@@ -22,17 +22,21 @@
 
 #include "dbusdata.h"
 #include "eventprinter.h"
-#include "nmaccesspoint.h"
-#include "nmactiveconnection.h"
-#include "nmconnsettings.h"
-#include "nmroot.h"
-#include "nmsettings.h"
-#include "nmwirelessdevice.h"
-#include "ofonomodemnetworkregistration.h"
-#include "ofonomodemsimmanager.h"
-#include "ofonoroot.h"
-#include "urfkillroot.h"
-#include "urfkillswitch.h"
+#include <NetworkManager.h>
+#include <NetworkManagerAccessPointInterface.h>
+#include <NetworkManagerActiveConnectionInterface.h>
+#include <NetworkManagerSettingsConnectionInterface.h>
+#include <NetworkManagerInterface.h>
+#include <NetworkManagerDeviceWirelessInterface.h>
+#include <URfkillInterface.h>
+#include <URfkillKillswitchInterface.h>
+
+#define slots
+#include <qofono-qt5/qofonomanager.h>
+#include <qofono-qt5/qofonomodem.h>
+#include <qofono-qt5/qofonosimmanager.h>
+#include <qofono-qt5/qofononetworkregistration.h>
+#undef slots
 
 static std::map<const int, const char*> nm_active_connection_strings = {{0, "Unknown"}, {1, "Activating"},
         {2, "Activated"}, {3, "Deactivating"}, {4, "Deactivated"}};
@@ -42,19 +46,30 @@ static std::map<const int, const char*> nm_state_strings = {{0, "Unknown"}, {10,
     {30, "Disconnecting"}, {40, "Connecting"}, {50, "Connected local"}, {60, "Connected site"}, {70, "Connected global"}};
 static std::map<const int, const char*> nm_ap_mode_strings = {{0, "Unknown"}, {1, "Adhoc"}, {2, "Infra"}, {3, "Access point"}};
 
-void print_nm_wlans(NetworkManagerRoot *nmroot) {
+// Lo-fi way of waiting for properties to populate
+static void wait_for_a_bit()
+{
+    QEventLoop q;
+    QTimer tT;
+    tT.setSingleShot(true);
+    QObject::connect(&tT, &QTimer::timeout, &q, &QEventLoop::quit);
+    tT.start(50);
+    q.exec();
+}
+
+static void print_nm_wlans(OrgFreedesktopNetworkManagerInterface *nmroot) {
     auto paths = nmroot->activeConnections();
     for(const auto &path : paths) {
-        NetworkManagerActiveConnection ac(NM_SERVICE, path.path(), QDBusConnection::systemBus(), nullptr);
+        OrgFreedesktopNetworkManagerConnectionActiveInterface ac(NM_DBUS_SERVICE, path.path(), QDBusConnection::systemBus(), nullptr);
         auto devices = ac.devices();
         // FIXME, should check all but most connections only have one.
-        NetworkManagerWirelessDevice dev(NM_SERVICE, devices[0].path(), QDBusConnection::systemBus(), nullptr);
+        OrgFreedesktopNetworkManagerDeviceWirelessInterface dev(NM_DBUS_SERVICE, devices[0].path(), QDBusConnection::systemBus(), nullptr);
         auto reply = dev.GetAccessPoints();
         reply.waitForFinished();
         if(reply.isValid()) {
             // FIXME and the same here.
             // FIXME also that active access point might not exist
-            NetworkManagerAccessPoint ap(NM_SERVICE, dev.activeAccessPoint().path(), QDBusConnection::systemBus(), nullptr);
+            OrgFreedesktopNetworkManagerAccessPointInterface ap(NM_DBUS_SERVICE, dev.activeAccessPoint().path(), QDBusConnection::systemBus(), nullptr);
             printf("Connection %s:\n", path.path().toUtf8().data());
             auto raw_ssid = ap.ssid();
             std::string ssid(raw_ssid.cbegin(), raw_ssid.cend());
@@ -62,7 +77,7 @@ void print_nm_wlans(NetworkManagerRoot *nmroot) {
             printf("  mode: %d (%s)\n", ap.mode(), nm_ap_mode_strings[ap.mode()]);
             printf("  visible networks:\n");
             for(const auto &c : reply.value()) {
-                NetworkManagerAccessPoint i(NM_SERVICE, c.path(), QDBusConnection::systemBus(), nullptr);
+                OrgFreedesktopNetworkManagerAccessPointInterface i(NM_DBUS_SERVICE, c.path(), QDBusConnection::systemBus(), nullptr);
                 auto i_raw_ssid = i.ssid();
                 std::string i_ssid(i_raw_ssid.cbegin(), i_raw_ssid.cend());
                 printf("    %s %d\n", i_ssid.c_str(), (int)i.strength());
@@ -73,19 +88,19 @@ void print_nm_wlans(NetworkManagerRoot *nmroot) {
     }
 }
 
-void print_info(QCoreApplication &app) {
-    UrfkillRoot *urfkill = new UrfkillRoot(URFKILL_SERVICE, URFKILL_OBJECT,
+static void print_info(QCoreApplication &app) {
+    OrgFreedesktopURfkillInterface *urfkill = new OrgFreedesktopURfkillInterface(URFKILL_SERVICE, URFKILL_OBJECT,
             QDBusConnection::systemBus(), &app);
-    UrfkillSwitch *urfkillwlan = new UrfkillSwitch(URFKILL_SERVICE, URFKILL_WLAN_OBJECT,
+    OrgFreedesktopURfkillKillswitchInterface *urfkillwlan = new OrgFreedesktopURfkillKillswitchInterface(URFKILL_SERVICE, URFKILL_WLAN_OBJECT,
             QDBusConnection::systemBus(), &app);
-    UrfkillSwitch *urfkillbt = new UrfkillSwitch(URFKILL_SERVICE, URFKILL_BLUETOOTH_OBJECT,
+    OrgFreedesktopURfkillKillswitchInterface *urfkillbt = new OrgFreedesktopURfkillKillswitchInterface(URFKILL_SERVICE, URFKILL_BLUETOOTH_OBJECT,
             QDBusConnection::systemBus(), &app);
-    UrfkillSwitch *urfkillgps = new UrfkillSwitch(URFKILL_SERVICE, URFKILL_GPS_OBJECT,
+    OrgFreedesktopURfkillKillswitchInterface *urfkillgps = new OrgFreedesktopURfkillKillswitchInterface(URFKILL_SERVICE, URFKILL_GPS_OBJECT,
             QDBusConnection::systemBus(), &app);
-    NetworkManagerRoot *nmroot = new NetworkManagerRoot(NM_SERVICE, NM_OBJECT,
+    OrgFreedesktopNetworkManagerInterface *nmroot = new OrgFreedesktopNetworkManagerInterface(NM_DBUS_SERVICE, NM_DBUS_PATH,
             QDBusConnection::systemBus(), &app);
-    OfonoRoot *ofonoroot = new OfonoRoot(OFONO_SERVICE, OFONO_OBJECT,
-            QDBusConnection::systemBus(), &app);
+    QOfonoManager *ofonoroot = new QOfonoManager(&app);
+    wait_for_a_bit();
 
     printf("Urfkill flightmode: %d\n", urfkill->IsFlightMode().value());
     printf("Urfkill WLAN killswitch: %d\n", urfkillwlan->state());
@@ -101,40 +116,41 @@ void print_info(QCoreApplication &app) {
     printf("NetworkManager wireless hardware enabled: %d\n", nmroot->wirelessHardwareEnabled());
     print_nm_wlans(nmroot);
     printf("\n");
-    auto modems = ofonoroot->GetModems().value();
+    auto modems = ofonoroot->modems();
     printf("Ofono modem count: %d\n", modems.size());
     for(const auto &m : modems) {
-        OfonoModemSimManager man(OFONO_SERVICE, m.first.path(), QDBusConnection::systemBus(), nullptr);
-        OfonoModemNetworkRegistration netreg(OFONO_SERVICE, m.first.path(), QDBusConnection::systemBus(), nullptr);
-        auto mprops = man.GetProperties().value();
-        auto regprops = netreg.GetProperties().value();
+        QOfonoModem modem;
+        modem.setModemPath(m);
 
-        const auto &props = m.second;
-        printf("Modem %s:\n", m.first.path().toUtf8().data());
+        QOfonoSimManager man;
+        man.setModemPath(m);
+
+        QOfonoNetworkRegistration netreg;
+        netreg.setModemPath(m);
+
+        wait_for_a_bit();
+
+        printf("Modem %s:\n", m.toUtf8().constData());
         // For proper usage should check for existance before indexing.
-        printf(" Powered: %d\n", props["Powered"].toBool());
-        printf(" Online: %d\n", props["Online"].toBool());
-        printf(" Model: %s\n", props["Model"].toString().toUtf8().data());
-        printf(" Manufacturer: %s\n", props["Manufacturer"].toString().toUtf8().data());
-        printf(" Pin required: %s\n", mprops["PinRequired"].toString().toUtf8().data());
-        printf(" Status: %s\n", regprops["Status"].toString().toUtf8().data());
-        printf(" Strength: %d\n", regprops["Strength"].toInt());
-        printf(" Operator: %s\n", regprops["Name"].toString().toUtf8().data());
+        printf(" Powered: %d\n", modem.powered());
+        printf(" Online: %d\n", modem.online());
+        printf(" Model: %s\n", modem.model().toUtf8().constData());
+        printf(" Manufacturer: %s\n", modem.manufacturer().toUtf8().constData());
+        printf(" Pin required: %d\n", man.pinRequired());
+        printf(" Status: %s\n", netreg.status().toUtf8().constData());
+        printf(" Strength: %d\n", netreg.strength());
+        printf(" Operator: %s\n", netreg.name().toUtf8().constData());
     }
 }
 
-int run_daemon(QCoreApplication &app) {
+static int run_daemon(QCoreApplication &app) {
     new EventPrinter(&app);
     return app.exec();
 }
 
 int main(int argc, char **argv) {
     QCoreApplication app(argc, argv);
-    qRegisterMetaType<QVariantDictMap>("QVariantDictMap");
-    qDBusRegisterMetaType<QVariantDictMap>();
-    qRegisterMetaType<ModemPropertyList>("ModemPropertyList");
-    qDBusRegisterMetaType<ModemPropertyList>();
-    qDBusRegisterMetaType<QPair<QDBusObjectPath, QVariantMap>>();
+    DBusTypes::registerMetaTypes();
 
     if(argc == 1) {
         print_info(app);

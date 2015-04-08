@@ -1,34 +1,20 @@
+
+include_directories("${CMAKE_BINARY_DIR}/src/qdbus-stubs")
+include_directories("${CMAKE_SOURCE_DIR}/src/qdbus-stubs")
+
 add_executable(i-n-sniffer
 eventprinter.cpp
 eventprinter.h
 i-n-extractor.cpp
-nmaccesspoint.cpp
-nmaccesspoint.h
-nmactiveconnection.cpp
-nmactiveconnection.h
-nmconnsettings.cpp
-nmconnsettings.h
-nmroot.cpp
-nmroot.h
-nmsettings.cpp
-nmsettings.h
-nmwirelessdevice.cpp
-nmwirelessdevice.h
-ofonomodemmodem.cpp
-ofonomodemmodem.h
-ofonomodemnetworkregistration.cpp
-ofonomodemnetworkregistration.h
-ofonomodemsimmanager.cpp
-ofonomodemsimmanager.h
-ofonoroot.cpp
-ofonoroot.h
-urfkillroot.cpp
-urfkillroot.h
-urfkillswitch.cpp
-urfkillswitch.h
 )
 
 qt5_use_modules(i-n-sniffer Core DBus)
+
+target_link_libraries(
+  i-n-sniffer
+  qdbus-stubs
+  ${QOFONO_LIBRARIES}
+)
 
 install(
   TARGETS i-n-sniffer

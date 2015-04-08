@@ -20,19 +20,34 @@
 #include "eventprinter.h"
 
 #include "dbusdata.h"
-#include "nmroot.h"
-#include "ofonomodemmodem.h"
-#include "ofonomodemnetworkregistration.h"
-#include "ofonomodemsimmanager.h"
-#include "ofonoroot.h"
-#include "urfkillroot.h"
-#include "urfkillswitch.h"
+#include <NetworkManager.h>
+#include <NetworkManagerInterface.h>
+#include <URfkillInterface.h>
+#include <URfkillKillswitchInterface.h>
+
+#define slots
+#include <qofono-qt5/qofonomanager.h>
+#include <qofono-qt5/qofonomodem.h>
+#include <qofono-qt5/qofononetworkregistration.h>
+#include <qofono-qt5/qofonosimmanager.h>
+#undef slots
+
+// Lo-fi way of waiting for properties to populate
+static void wait_for_a_bit()
+{
+    QEventLoop q;
+    QTimer tT;
+    tT.setSingleShot(true);
+    QObject::connect(&tT, &QTimer::timeout, &q, &QEventLoop::quit);
+    tT.start(50);
+    q.exec();
+}
 
 EventPrinter::EventPrinter(QObject *parent) : QObject(parent) {
-    urfkill = new UrfkillRoot(URFKILL_SERVICE, URFKILL_OBJECT, QDBusConnection::systemBus(), this);
-    btkill = new UrfkillSwitch(URFKILL_SERVICE, URFKILL_BLUETOOTH_OBJECT, QDBusConnection::systemBus(), this);
-    wlankill = new UrfkillSwitch(URFKILL_SERVICE, URFKILL_WLAN_OBJECT, QDBusConnection::systemBus(), this);
-    nmroot = new NetworkManagerRoot(NM_SERVICE, NM_OBJECT, QDBusConnection::systemBus(), this);
+    urfkill = new OrgFreedesktopURfkillInterface(URFKILL_SERVICE, URFKILL_OBJECT, QDBusConnection::systemBus(), this);
+    btkill = new OrgFreedesktopURfkillKillswitchInterface(URFKILL_SERVICE, URFKILL_BLUETOOTH_OBJECT, QDBusConnection::systemBus(), this);
+    wlankill = new OrgFreedesktopURfkillKillswitchInterface(URFKILL_SERVICE, URFKILL_WLAN_OBJECT, QDBusConnection::systemBus(), this);
+    nmroot = new OrgFreedesktopNetworkManagerInterface(NM_DBUS_SERVICE, NM_DBUS_PATH, QDBusConnection::systemBus(), this);
 
     connect(urfkill, SIGNAL(FlightModeChanged(bool)), this, SLOT(flightModeChanged(bool)));
     connect(btkill, SIGNAL(StateChanged()), this, SLOT(btKillswitchChanged()));
@@ -40,33 +55,40 @@ EventPrinter::EventPrinter(QObject *parent) : QObject(parent) {
     connect(nmroot, SIGNAL(StateChanged(uint)), this, SLOT(nmStateChanged(uint)));
     connect(nmroot, SIGNAL(PropertiesChanged(const QVariantMap&)), this, SLOT(nmPropertiesChanged(const QVariantMap&)));
 
-    OfonoRoot ofono(OFONO_SERVICE, OFONO_OBJECT, QDBusConnection::systemBus(), nullptr);
-    auto modems = ofono.GetModems().value();
+    QOfonoManager ofono;
+    wait_for_a_bit();
+    auto modems = ofono.modems();
     if(modems.length() > 0) {
-        modem1 = new OfonoModemModem(OFONO_SERVICE, modems[0].first.path(), QDBusConnection::systemBus(), this);
-        connect(modem1, SIGNAL(PropertyChanged(const QString, const QDBusVariant)), this,
-                SLOT(modem1PropertyChanged(const QString, const QDBusVariant)));
-        simman1 = new OfonoModemSimManager(OFONO_SERVICE, modems[0].first.path(), QDBusConnection::systemBus(), this);
-        connect(simman1, SIGNAL(PropertyChanged(const QString, const QDBusVariant)), this,
-                SLOT(simman1PropertyChanged(const QString, const QDBusVariant)));
-        netreg1 = new OfonoModemNetworkRegistration(OFONO_SERVICE, modems[0].first.path(), QDBusConnection::systemBus(), this);
-        connect(netreg1, SIGNAL(PropertyChanged(const QString, const QDBusVariant)), this,
-                SLOT(netreg1PropertyChanged(const QString, const QDBusVariant)));
+        modem1 = new QOfonoModem(this);
+        modem1->setModemPath(modems[0]);
+        connect(modem1, SIGNAL(propertyChanged(const QString&, const QVariant&)), this,
+                SLOT(modem1PropertyChanged(const QString&, const QVariant&)));
+        simman1 = new QOfonoSimManager(this);
+        simman1->setModemPath(modems[0]);
+        connect(simman1, SIGNAL(propertyChanged(const QString&, const QVariant&)), this,
+                SLOT(simman1PropertyChanged(const QString&, const QVariant&)));
+        netreg1 = new QOfonoNetworkRegistration(this);
+        netreg1->setModemPath(modems[0]);
+        connect(netreg1, SIGNAL(propertyChanged(const QString&, const QVariant&)), this,
+                SLOT(netreg1PropertyChanged(const QString&, const QVariant&)));
     } else {
         modem1 = nullptr;
         simman1 = nullptr;
         netreg1 = nullptr;
     }
     if(modems.length() > 1) {
-        modem2 = new OfonoModemModem(OFONO_SERVICE, modems[1].first.path(), QDBusConnection::systemBus(), this);
-        connect(modem2, SIGNAL(PropertyChanged(const QString, const QDBusVariant)), this,
-                SLOT(modem2PropertyChanged(const QString, const QDBusVariant)));
-        simman2 = new OfonoModemSimManager(OFONO_SERVICE, modems[1].first.path(), QDBusConnection::systemBus(), this);
-        connect(simman2, SIGNAL(PropertyChanged(const QString, const QDBusVariant)), this,
-                SLOT(simman2PropertyChanged(const QString, const QDBusVariant)));
-        netreg2 = new OfonoModemNetworkRegistration(OFONO_SERVICE, modems[1].first.path(), QDBusConnection::systemBus(), this);
-        connect(netreg2, SIGNAL(PropertyChanged(const QString, const QDBusVariant)), this,
-                SLOT(netreg2PropertyChanged(const QString, const QDBusVariant)));
+        modem2 = new QOfonoModem(this);
+        modem2->setModemPath(modems[1]);
+        connect(modem2, SIGNAL(propertyChanged(const QString&, const QVariant&)), this,
+                SLOT(modem2PropertyChanged(const QString&, const QVariant&)));
+        simman2 = new QOfonoSimManager(this);
+        simman2->setModemPath(modems[1]);
+        connect(simman2, SIGNAL(propertyChanged(const QString&, const QVariant&)), this,
+                SLOT(simman2PropertyChanged(const QString&, const QVariant&)));
+        netreg2 = new QOfonoNetworkRegistration(this);
+        netreg2->setModemPath(modems[1]);
+        connect(netreg2, SIGNAL(propertyChanged(const QString&, const QVariant&)), this,
+                SLOT(netreg2PropertyChanged(const QString&, const QVariant&)));
     } else {
         modem2 = nullptr;
         simman2 = nullptr;
@@ -122,50 +144,50 @@ void EventPrinter::activeConnectionsChanged(const QVariant &/*list*/) {
     printf("  ActiveConnections (now have %d)\n", nmroot->activeConnections().size());
 }
 
-void EventPrinter::modem1PropertyChanged(const QString name, const QDBusVariant value) {
+void EventPrinter::modem1PropertyChanged(const QString &name, const QVariant &value) {
     modemPropertyChanged(1, name, value);
 }
 
-void EventPrinter::modem2PropertyChanged(const QString name, const QDBusVariant value) {
+void EventPrinter::modem2PropertyChanged(const QString &name, const QVariant &value) {
     modemPropertyChanged(2, name, value);
 }
 
-void EventPrinter::modemPropertyChanged(const int modem, const QString &name, const QDBusVariant &value) {
-    auto str = value.variant().toString();
+void EventPrinter::modemPropertyChanged(const int modem, const QString &name, const QVariant &value) {
+    auto str = value.toString();
     if(str.length() > 0) {
         str = " to " + str;
     }
     printf("Ofono modem %d property %s changed%s.\n", modem, name.toUtf8().data(), str.toUtf8().data());
 }
 
-void EventPrinter::simman1PropertyChanged(const QString name, const QDBusVariant value) {
+void EventPrinter::simman1PropertyChanged(const QString &name, const QVariant &value) {
     simmanPropertyChanged(1, name, value);
 }
 
-void EventPrinter::simman2PropertyChanged(const QString name, const QDBusVariant value) {
+void EventPrinter::simman2PropertyChanged(const QString &name, const QVariant &value) {
     simmanPropertyChanged(2, name, value);
 }
 
-void EventPrinter::simmanPropertyChanged(const int simman, const QString &name, const QDBusVariant &value) {
+void EventPrinter::simmanPropertyChanged(const int simman, const QString &name, const QVariant &value) {
     if(name == "PinRequired") {
-        printf("Ofono modem %d pin required changed to %s.\n", simman, value.variant().toString().toUtf8().data());
+        printf("Ofono modem %d pin required changed to %s.\n", simman, value.toString().toUtf8().data());
     }
 }
 
-void EventPrinter::netreg1PropertyChanged(const QString name, const QDBusVariant value) {
+void EventPrinter::netreg1PropertyChanged(const QString &name, const QVariant &value) {
     netregPropertyChanged(1, name, value);
 }
 
-void EventPrinter::netreg2PropertyChanged(const QString name, const QDBusVariant value) {
+void EventPrinter::netreg2PropertyChanged(const QString &name, const QVariant &value) {
     netregPropertyChanged(2, name, value);
 }
 
-void EventPrinter::netregPropertyChanged(const int netreg, const QString &name, const QDBusVariant &value) {
+void EventPrinter::netregPropertyChanged(const int netreg, const QString &name, const QVariant &value) {
     QString valuetext;
     if(name == "Strength") {
-        valuetext = QString::number(value.variant().toInt());
+        valuetext = QString::number(value.toInt());
     } else {
-        valuetext = value.variant().toString();
+        valuetext = value.toString();
     }
 
     printf("Ofono network registration %d property %s changed to %s.\n", netreg, name.toUtf8().data(), valuetext.toUtf8().data());

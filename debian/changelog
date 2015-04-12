@@ -1,3 +1,10 @@
+indicator-network (0.5.1+15.04.20150412-0ubuntu1) vivid; urgency=medium
+
+  [ Pete Woods ]
+  * Handle exceptions from flight mode toggle
+
+ -- CI Train Bot <ci-train-bot@canonical.com>  Sun, 12 Apr 2015 19:32:49 +0000
+
 indicator-network (0.5.1+15.04.20150401.2-0ubuntu1) vivid; urgency=medium
 
   [ Marcus Tomlinson ]

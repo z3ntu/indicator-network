@@ -19,6 +19,7 @@
 
 #include <menuitems/wwan-link-item.h>
 #include <menuitems/modem-info-item.h>
+#include <icons.h>
 
 #include <menumodel-cpp/menu.h>
 
@@ -131,7 +132,7 @@ WwanLinkItem::Private::update()
                 /* fallthrough */
             case wwan::Modem::ModemStatus::registered:
                 if (m_modem->strength() != 0) {
-                    m_infoItem->setStatusIcon(wwan::Modem::strengthIcon(m_modem->strength()));
+                    m_infoItem->setStatusIcon(Icons::strengthIcon(m_modem->strength()));
                     m_infoItem->setStatusText(m_modem->operatorName());
                 } else {
                     m_infoItem->setStatusIcon("gsm-3g-no-service");

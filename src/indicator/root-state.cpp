@@ -24,6 +24,7 @@
 #include <nmofono/wifi/wifi-link.h>
 #include <nmofono/wifi/access-point.h>
 
+#include <icons.h>
 #include <menumodel-cpp/gio-helpers/util.h>
 
 #include <QDebug>
@@ -153,8 +154,8 @@ RootState::Private::updateModem(const wwan::Modem& modem)
             case wwan::Modem::ModemStatus::registered:
             case wwan::Modem::ModemStatus::roaming:
                 if (modem.strength() != 0) {
-                    newCellularIcon = wwan::Modem::strengthIcon(modem.strength());
-                    newModemTechIcon = wwan::Modem::technologyIcon(modem.bearer());
+                    newCellularIcon = Icons::strengthIcon(modem.strength());
+                    newModemTechIcon = Icons::bearerIcon(modem.bearer());
                 } else {
                     newCellularIcon = "gsm-3g-no-service";
                 }

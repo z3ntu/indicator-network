@@ -515,43 +515,6 @@ public Q_SLOTS:
     }
 };
 
-QString Modem::strengthIcon(int8_t strength)
-{
-    /* Using same values as used by Android, not linear (LP: #1329945)*/
-    if (strength >= 39)
-        return "gsm-3g-full";
-    else if (strength >= 26)
-        return "gsm-3g-high";
-    else if (strength >= 16)
-        return "gsm-3g-medium";
-    else if (strength >= 6)
-        return "gsm-3g-low";
-    else
-        return "gsm-3g-none";
-}
-
-QString Modem::technologyIcon(Modem::Bearer tech)
-{
-    switch (tech)
-    {
-    case Modem::Bearer::notAvailable:
-    case Modem::Bearer::gprs:
-        return "network-cellular-pre-edge";
-    case Modem::Bearer::edge:
-        return "network-cellular-edge";
-    case Modem::Bearer::umts:
-        return "network-cellular-3g";
-    case Modem::Bearer::hspa:
-        return "network-cellular-hspa";
-    case Modem::Bearer::hspa_plus:
-        return "network-cellular-hspa-plus";
-    case Modem::Bearer::lte:
-        return "network-cellular-lte";
-    }
-    // shouldn't be reached
-    return "";
-}
-
 Modem::Modem(shared_ptr<QOfonoModem> ofonoModem)
     : d{new Private(*this, ofonoModem)}
 {

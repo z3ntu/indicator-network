@@ -37,6 +37,7 @@ set(NETWORK_SERVICE_SOURCES
 
     factory.cpp
     indicator-menu.cpp
+    icons.cpp
     menu-builder.cpp
     sim-unlock-dialog.cpp
     root-state.cpp

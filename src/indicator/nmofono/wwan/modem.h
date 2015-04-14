@@ -144,10 +144,6 @@ public:
 
     Id id() const override;
 
-    static QString strengthIcon(int8_t strength);
-
-    static QString technologyIcon(Bearer tech);
-
 Q_SIGNALS:
     void onlineUpdated(bool);
 

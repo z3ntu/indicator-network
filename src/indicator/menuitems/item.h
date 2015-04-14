@@ -47,9 +47,6 @@ public:
 
     virtual MenuItem::Ptr menuItem() = 0;
 
-    operator ActionGroup::Ptr() { return actionGroup(); }
-    operator MenuItem::Ptr()    { return menuItem();    }
-
 protected:
 
     ActionGroup::Ptr m_actionGroup;

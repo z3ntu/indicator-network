@@ -32,8 +32,7 @@ class WifiSection : public Section
 
 public:
     typedef std::shared_ptr<WifiSection> Ptr;
-    WifiSection() = delete;
-    explicit WifiSection(std::shared_ptr<connectivity::networking::Manager> manager);
+    explicit WifiSection(nmofono::Manager::Ptr manager);
     virtual ~WifiSection();
 
     // from Section

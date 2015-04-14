@@ -17,22 +17,23 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#ifndef MODEM_H
-#define MODEM_H
+#pragma once
+
+#include <nmofono/wwan/wwan-link.h>
 
 #include <map>
 #include <memory>
-#include <string>
 
 #include <QString>
-#include <QObject>
 
 class QOfonoModem;
 
-/**
- * all signals and property changes emitted from GMainLoop
- */
-class Modem: public QObject, public std::enable_shared_from_this<Modem>
+namespace nmofono
+{
+namespace wwan
+{
+
+class Modem: public WwanLink
 {
     Q_OBJECT
 
@@ -57,7 +58,7 @@ public:
         not_available
     };
 
-    enum class Status
+    enum class ModemStatus
     {
         unregistered,
         registered,
@@ -80,20 +81,6 @@ public:
 
     typedef std::shared_ptr<Modem> Ptr;
     typedef std::weak_ptr<Modem> WeakPtr;
-
-    struct Compare
-    {
-        bool operator()(int lhs, int rhs)
-        {
-            if (lhs == -1 && rhs == -1)
-                return false;
-            if (lhs == -1)
-                return false;
-            if (rhs == -1)
-                return true;
-            return lhs < rhs;
-        }
-    };
 
     Modem() = delete;
 
@@ -124,8 +111,8 @@ public:
     Q_PROPERTY(QString operatorName READ operatorName NOTIFY operatorNameUpdated)
     const QString &operatorName() const;
 
-    Q_PROPERTY(Modem::Status status READ status NOTIFY statusUpdated)
-    Status status() const;
+    Q_PROPERTY(Modem::ModemStatus modemStatus READ modemStatus NOTIFY modemStatusUpdated)
+    ModemStatus modemStatus() const;
 
     Q_PROPERTY(std::int8_t strength READ strength NOTIFY strengthUpdated)
     std::int8_t strength() const;
@@ -143,6 +130,20 @@ public:
 
     QString name() const;
 
+    WwanType wwanType() const override;
+
+    void enable() override;
+
+    void disable() override;
+
+    Type type() const override;
+
+    std::uint32_t characteristics() const override;
+
+    Status status() const override;
+
+    Id id() const override;
+
     static QString strengthIcon(int8_t strength);
 
     static QString technologyIcon(Bearer tech);
@@ -158,7 +159,7 @@ Q_SIGNALS:
 
     void operatorNameUpdated(const QString &);
 
-    void statusUpdated(Status);
+    void modemStatusUpdated(ModemStatus);
 
     void strengthUpdated(std::int8_t);
 
@@ -168,7 +169,7 @@ Q_SIGNALS:
 
     void simIdentifierUpdated(const QString &);
 
-    void updated(Modem::Ptr);
+    void updated(const Modem& modem);
 
     void enterPinSuceeded();
 
@@ -179,4 +180,6 @@ Q_SIGNALS:
     void resetPinFailed(const QString& error);
 };
 
-#endif
+}
+}
+

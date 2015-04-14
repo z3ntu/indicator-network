@@ -40,7 +40,7 @@ class ConnectivityService: public QObject, protected QDBusContext
     friend PrivateService;
 
 public:
-    ConnectivityService(std::shared_ptr<connectivity::networking::Manager> manager, const QDBusConnection& connection);
+    ConnectivityService(nmofono::Manager::Ptr manager, const QDBusConnection& connection);
     virtual ~ConnectivityService();
 
 public:

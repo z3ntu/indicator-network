@@ -16,8 +16,7 @@
  * Authors:
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
-#ifndef PLATFORM_NMOFONO_MANAGER
-#define PLATFORM_NMOFONO_MANAGER
+#pragma once
 
 #include <nmofono/manager.h>
 
@@ -25,14 +24,10 @@
 #include <QDBusObjectPath>
 #include <QVariantMap>
 
-namespace platform {
 namespace nmofono {
     class Manager;
-    class Network;
-}
-}
 
-class platform::nmofono::Manager : public connectivity::networking::Manager
+class ManagerImpl : public Manager
 {
 Q_OBJECT
     class Private;
@@ -42,13 +37,14 @@ Q_OBJECT
     void updateNetworkingStatus(uint state);
 
 public:
+    typedef std::shared_ptr<ManagerImpl> Ptr;
 
-    Manager(const QDBusConnection& systemBus);
+    ManagerImpl(const QDBusConnection& systemBus);
 
     // Public API
     void enableFlightMode() override;
     void disableFlightMode() override;
-    connectivity::networking::Manager::FlightModeStatus flightMode() const override;
+    Manager::FlightModeStatus flightMode() const override;
 
     bool hasWifi() const override;
     bool wifiEnabled() const override;
@@ -56,9 +52,18 @@ public:
     bool enableWifi() override;
     bool disableWifi() override;
 
-    const std::set<std::shared_ptr<connectivity::networking::Link>>& links() const;
-    connectivity::networking::Manager::NetworkingStatus status() const override;
+    bool roaming() const override;
+
+    QSet<Link::Ptr> links() const override;
+    QSet<wifi::WifiLink::Ptr> wifiLinks() const override;
+    QSet<wwan::Modem::Ptr> modemLinks() const override;
+
+    Manager::NetworkingStatus status() const override;
     std::uint32_t characteristics() const override;
+
+    void unlockModem(wwan::Modem::Ptr modem) override;
+    void unlockAllModems() override;
+    void unlockModemByName(const QString &name) override;
 
 private Q_SLOTS:
     void device_added(const QDBusObjectPath &path);
@@ -66,4 +71,4 @@ private Q_SLOTS:
     void nm_properties_changed(const QVariantMap &properties);
 };
 
-#endif
+}

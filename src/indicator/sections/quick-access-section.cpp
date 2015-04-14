@@ -27,7 +27,7 @@
 #include <QDebug>
 
 using namespace std;
-namespace networking = connectivity::networking;
+using namespace nmofono;
 
 class QuickAccessSection::Private : public QObject
 {
@@ -37,22 +37,22 @@ public:
     ActionGroupMerger::Ptr m_actionGroupMerger;
     Menu::Ptr m_menu;
 
-    std::shared_ptr<networking::Manager> m_manager;
+    Manager::Ptr m_manager;
 
     SwitchItem::Ptr m_flightModeSwitch;
     SwitchItem::Ptr m_wifiSwitch;
 
     Private() = delete;
-    Private(std::shared_ptr<networking::Manager> manager, SwitchItem::Ptr wifiSwitch);
+    Private(Manager::Ptr manager, SwitchItem::Ptr wifiSwitch);
 
 public Q_SLOTS:
-    void flightModeUpdated(networking::Manager::FlightModeStatus value)
+    void flightModeUpdated(Manager::FlightModeStatus value)
     {
         switch (value) {
-        case networking::Manager::FlightModeStatus::off:
+        case Manager::FlightModeStatus::off:
             m_flightModeSwitch->setState(false);
             break;
-        case networking::Manager::FlightModeStatus::on:
+        case Manager::FlightModeStatus::on:
             m_flightModeSwitch->setState(true);
             break;
         }
@@ -85,7 +85,7 @@ public Q_SLOTS:
     }
 };
 
-QuickAccessSection::Private::Private(std::shared_ptr<networking::Manager> manager,
+QuickAccessSection::Private::Private(Manager::Ptr manager,
                                      SwitchItem::Ptr wifiSwitch)
     : m_manager{manager}, m_wifiSwitch(wifiSwitch)
 {
@@ -93,16 +93,15 @@ QuickAccessSection::Private::Private(std::shared_ptr<networking::Manager> manage
     m_menu = std::make_shared<Menu>();
 
     m_flightModeSwitch = std::make_shared<SwitchItem>(_("Flight Mode"), "airplane", "enabled");
-    qDebug() << "initial flight mode status" << (int) m_manager->flightMode();
     flightModeUpdated(m_manager->flightMode());
-    connect(m_manager.get(), &networking::Manager::flightModeUpdated, this, &Private::flightModeUpdated);
+    connect(m_manager.get(), &Manager::flightModeUpdated, this, &Private::flightModeUpdated);
     connect(m_flightModeSwitch.get(), &SwitchItem::stateUpdated, this, &Private::flightModeSwitchActivated);
 
-    m_actionGroupMerger->add(*m_flightModeSwitch);
-    m_menu->append(*m_flightModeSwitch);
+    m_actionGroupMerger->add(m_flightModeSwitch->actionGroup());
+    m_menu->append(m_flightModeSwitch->menuItem());
 }
 
-QuickAccessSection::QuickAccessSection(std::shared_ptr<networking::Manager> manager, SwitchItem::Ptr wifiSwitch)
+QuickAccessSection::QuickAccessSection(Manager::Ptr manager, SwitchItem::Ptr wifiSwitch)
     : d{new Private(manager, wifiSwitch)}
 {
 }
@@ -114,7 +113,7 @@ QuickAccessSection::~QuickAccessSection()
 ActionGroup::Ptr
 QuickAccessSection::actionGroup()
 {
-    return *d->m_actionGroupMerger;
+    return d->m_actionGroupMerger->actionGroup();
 }
 
 MenuModel::Ptr

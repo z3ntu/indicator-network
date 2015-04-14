@@ -17,7 +17,7 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#include <modem.h>
+#include <nmofono/wwan/modem.h>
 
 #include <ofono/dbus.h>
 
@@ -30,26 +30,30 @@
 
 using namespace std;
 
+namespace nmofono
+{
+namespace wwan
+{
 namespace
 {
 
-static Modem::Status str2status(const QString& str)
+static Modem::ModemStatus str2status(const QString& str)
 {
     if (str == "unregistered")
-        return Modem::Status::unregistered;
+        return Modem::ModemStatus::unregistered;
     if (str == "registered")
-        return Modem::Status::registered;
+        return Modem::ModemStatus::registered;
     if (str == "searching")
-        return Modem::Status::searching;
+        return Modem::ModemStatus::searching;
     if (str == "denied")
-        return Modem::Status::denied;
+        return Modem::ModemStatus::denied;
     if (str == "unknown" || str.isEmpty())
-        return Modem::Status::unknown;
+        return Modem::ModemStatus::unknown;
     if (str == "roaming")
-        return Modem::Status::roaming;
+        return Modem::ModemStatus::roaming;
 
     qWarning() << __PRETTY_FUNCTION__ << ": Unknown status" << str;
-    return Modem::Status::unknown;
+    return Modem::ModemStatus::unknown;
 }
 
 static Modem::Bearer str2technology(const QString& str)
@@ -89,7 +93,7 @@ public:
     RetriesType m_retries;
 
     QString m_operatorName;
-    Modem::Status m_status;
+    Modem::ModemStatus m_status;
     int8_t m_strength;
     Modem::Bearer m_bearer;
 
@@ -104,9 +108,41 @@ public:
     shared_ptr<QOfonoNetworkRegistration> m_networkRegistration;
     shared_ptr<QOfonoSimManager> m_simManager;
 
-    Private(Modem& parent, shared_ptr<QOfonoModem> ofonoModem);
+    QTimer m_updatedTimer;
+
+    Private(Modem& parent, shared_ptr<QOfonoModem> ofonoModem)
+        : p(parent), m_ofonoModem{ofonoModem}
+    {
+        connect(m_ofonoModem.get(), &QOfonoModem::onlineChanged, this, &Private::update);
+        setOnline(m_ofonoModem->online());
+
+        connect(m_ofonoModem.get(), &QOfonoModem::interfacesChanged, this, &Private::interfacesChanged);
+        interfacesChanged(m_ofonoModem->interfaces());
+
+        /// @todo hook up with system-settings to allow changing the identifier.
+        ///       for now just provide the defaults
+        auto path = m_ofonoModem->modemPath();
+        if (path == "/ril_0") {
+            setSimIdentifier("SIM 1");
+            m_index = 1;
+        } else if (path == "/ril_1") {
+            setSimIdentifier("SIM 2");
+            m_index = 2;
+        } else {
+            setSimIdentifier(path);
+        }
+
+        // Throttle the updates using a timer
+        m_updatedTimer.setInterval(0);
+        m_updatedTimer.setSingleShot(true);
+        connect(&m_updatedTimer, &QTimer::timeout, this, &Private::fireUpdate);
+    }
 
 public Q_SLOTS:
+    void fireUpdate()
+    {
+        Q_EMIT p.updated(p);
+    }
 
     void connectionManagerChanged(shared_ptr<QOfonoConnectionManager> conmgr)
     {
@@ -190,7 +226,106 @@ public Q_SLOTS:
         update();
     }
 
-    void update();
+    void update()
+    {
+        setOnline(m_ofonoModem->online());
+
+        if (m_simManager) {
+            // update requiredPin
+            switch(m_simManager->pinRequired())
+            {
+            case QOfonoSimManager::PinType::NoPin:
+                setRequiredPin(PinType::none);
+                break;
+            case QOfonoSimManager::PinType::SimPin:
+                setRequiredPin(PinType::pin);
+                break;
+            case QOfonoSimManager::PinType::SimPuk:
+                setRequiredPin(PinType::puk);
+                break;
+            default:
+                throw std::runtime_error("Ofono requires a PIN we have not been prepared to handle (" +
+                                         to_string(m_simManager->pinRequired()) +
+                                         "). Bailing out.");
+            }
+
+            // update retries
+            RetriesType tmp;
+            QVariantMap retries = m_simManager->pinRetries();
+            QMapIterator<QString, QVariant> i(retries);
+            while (i.hasNext()) {
+                i.next();
+                QOfonoSimManager::PinType type = (QOfonoSimManager::PinType) i.key().toInt();
+                int count = i.value().toInt();
+                switch(type)
+                {
+                    case QOfonoSimManager::PinType::SimPin:
+                        tmp[Modem::PinType::pin] = count;
+                        break;
+                    case QOfonoSimManager::PinType::SimPuk:
+                        tmp[Modem::PinType::puk] = count;
+                        break;
+                    default:
+                        break;
+                }
+            }
+            setRetries(tmp);
+
+            // update simStatus
+            bool present = m_simManager->present();
+            if (!present)
+            {
+                setSimStatus(SimStatus::missing);
+            }
+            else if (m_requiredPin == PinType::none)
+            {
+                setSimStatus(SimStatus::ready);
+            }
+            else
+            {
+                if (m_retries.count(PinType::puk) != 0
+                        && m_retries.at(PinType::puk) == 0)
+                {
+                    setSimStatus(SimStatus::permanentlyLocked);
+                }
+                else
+                {
+                    setSimStatus(SimStatus::locked);
+                }
+            }
+
+        } else {
+            setRequiredPin(PinType::none);
+            setRetries({});
+            setSimStatus(SimStatus::not_available);
+        }
+
+        if (m_networkRegistration)
+        {
+            setOperatorName(m_networkRegistration->name());
+            setStatus(str2status(m_networkRegistration->status()));
+            setStrength(m_networkRegistration->strength());
+        }
+        else
+        {
+            setOperatorName("");
+            setStatus(Modem::ModemStatus::unknown);
+            setStrength(-1);
+        }
+
+        if (m_connectionManager)
+        {
+            setDataEnabled(m_connectionManager->powered());
+            setBearer(str2technology(m_connectionManager->bearer()));
+        }
+        else
+        {
+            setDataEnabled(false);
+            setBearer(Modem::Bearer::notAvailable);
+        }
+
+        m_updatedTimer.start();
+    }
 
     void enterPinComplete(QOfonoSimManager::Error error, const QString &errorString)
     {
@@ -282,7 +417,7 @@ public Q_SLOTS:
         Q_EMIT p.operatorNameUpdated(m_operatorName);
     }
 
-    void setStatus(Modem::Status status)
+    void setStatus(Modem::ModemStatus status)
     {
         if (m_status == status)
         {
@@ -290,7 +425,7 @@ public Q_SLOTS:
         }
 
         m_status = status;
-        Q_EMIT p.statusUpdated(m_status);
+        Q_EMIT p.modemStatusUpdated(m_status);
     }
 
     void setStrength(int8_t strength)
@@ -379,132 +514,6 @@ public Q_SLOTS:
         }
     }
 };
-
-Modem::Private::Private(Modem& parent, shared_ptr<QOfonoModem> ofonoModem)
-    : p(parent), m_ofonoModem{ofonoModem}
-{
-    connect(m_ofonoModem.get(), &QOfonoModem::onlineChanged, this, &Private::update);
-    setOnline(m_ofonoModem->online());
-
-    connect(m_ofonoModem.get(), &QOfonoModem::interfacesChanged, this, &Private::interfacesChanged);
-    interfacesChanged(m_ofonoModem->interfaces());
-
-    /// @todo hook up with system-settings to allow changing the identifier.
-    ///       for now just provide the defaults
-    auto path = m_ofonoModem->modemPath();
-    if (path == "/ril_0") {
-        setSimIdentifier("SIM 1");
-        m_index = 1;
-    } else if (path == "/ril_1") {
-        setSimIdentifier("SIM 2");
-        m_index = 2;
-    } else {
-        setSimIdentifier(path);
-    }
-}
-
-
-void
-Modem::Private::update()
-{
-    setOnline(m_ofonoModem->online());
-
-    if (m_simManager) {
-        // update requiredPin
-        switch(m_simManager->pinRequired())
-        {
-        case QOfonoSimManager::PinType::NoPin:
-            setRequiredPin(PinType::none);
-            break;
-        case QOfonoSimManager::PinType::SimPin:
-            setRequiredPin(PinType::pin);
-            break;
-        case QOfonoSimManager::PinType::SimPuk:
-            setRequiredPin(PinType::puk);
-            break;
-        default:
-            throw std::runtime_error("Ofono requires a PIN we have not been prepared to handle (" +
-                                     to_string(m_simManager->pinRequired()) +
-                                     "). Bailing out.");
-        }
-
-        // update retries
-        RetriesType tmp;
-        QVariantMap retries = m_simManager->pinRetries();
-        QMapIterator<QString, QVariant> i(retries);
-        while (i.hasNext()) {
-            i.next();
-            QOfonoSimManager::PinType type = (QOfonoSimManager::PinType) i.key().toInt();
-            int count = i.value().toInt();
-            switch(type)
-            {
-                case QOfonoSimManager::PinType::SimPin:
-                    tmp[Modem::PinType::pin] = count;
-                    break;
-                case QOfonoSimManager::PinType::SimPuk:
-                    tmp[Modem::PinType::puk] = count;
-                    break;
-                default:
-                    break;
-            }
-        }
-        setRetries(tmp);
-
-        // update simStatus
-        bool present = m_simManager->present();
-        if (!present)
-        {
-            setSimStatus(SimStatus::missing);
-        }
-        else if (m_requiredPin == PinType::none)
-        {
-            setSimStatus(SimStatus::ready);
-        }
-        else
-        {
-            if (m_retries.count(PinType::puk) != 0
-                    && m_retries.at(PinType::puk) == 0)
-            {
-                setSimStatus(SimStatus::permanentlyLocked);
-            }
-            else
-            {
-                setSimStatus(SimStatus::locked);
-            }
-        }
-
-    } else {
-        setRequiredPin(PinType::none);
-        setRetries({});
-        setSimStatus(SimStatus::not_available);
-    }
-
-    if (m_networkRegistration)
-    {
-        setOperatorName(m_networkRegistration->name());
-        setStatus(str2status(m_networkRegistration->status()));
-        setStrength(m_networkRegistration->strength());
-    }
-    else
-    {
-        setOperatorName("");
-        setStatus(Modem::Status::unknown);
-        setStrength(-1);
-    }
-
-    if (m_connectionManager)
-    {
-        setDataEnabled(m_connectionManager->powered());
-        setBearer(str2technology(m_connectionManager->bearer()));
-    }
-    else
-    {
-        setDataEnabled(false);
-        setBearer(Modem::Bearer::notAvailable);
-    }
-
-    Q_EMIT p.updated(p.shared_from_this());
-}
 
 QString Modem::strengthIcon(int8_t strength)
 {
@@ -624,8 +633,8 @@ Modem::operatorName()  const
     return d->m_operatorName;
 }
 
-Modem::Status
-Modem::status() const
+Modem::ModemStatus
+Modem::modemStatus() const
 {
     return d->m_status;
 }
@@ -664,6 +673,67 @@ QString
 Modem::name() const
 {
     return d->m_ofonoModem->modemPath();
+}
+
+WwanLink::WwanType
+Modem::wwanType() const
+{
+    return WwanType::GSM;
+}
+
+void
+Modem::enable()
+{
+}
+
+void
+Modem::disable()
+{
+}
+
+Link::Type
+Modem::type() const
+{
+    return Type::wwan;
+}
+
+std::uint32_t
+Modem::characteristics() const
+{
+    return 0;
+}
+
+Link::Status
+Modem::status() const
+{
+    Status status = Status::offline;
+
+    switch (d->m_status)
+    {
+        case ModemStatus::denied:
+        case ModemStatus::unregistered:
+        case ModemStatus::unknown:
+            status = Status::offline;
+            break;
+        case ModemStatus::registered:
+        case ModemStatus::roaming:
+            status = Status::connected;
+            break;
+        case ModemStatus::searching:
+            status = Status::connecting;
+            break;
+    }
+
+    return status;
+}
+
+Link::Id
+Modem::id() const
+{
+    return 0;
+}
+}
+
 }
 
 #include "modem.moc"

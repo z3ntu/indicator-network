@@ -26,19 +26,18 @@ add_custom_target(QtCreatorHeaderHack SOURCES ${NETWORK_SERVICE_HEADERS})
 set(NETWORK_SERVICE_SOURCES
     ${NETWORK_SERVICE_HEADERS}
 
-    nmofono/kill-switch-impl.cpp
+    nmofono/kill-switch.cpp
     nmofono/manager.cpp
     nmofono/manager-impl.cpp
     nmofono/wifi/access-point.cpp
     nmofono/wifi/access-point-impl.cpp
-    nmofono/wifi/grouped-access-point-impl.cpp
+    nmofono/wifi/grouped-access-point.cpp
     nmofono/wifi/wifi-link-impl.cpp
+    nmofono/wwan/modem.cpp
 
     factory.cpp
     indicator-menu.cpp
     menu-builder.cpp
-    modem.cpp
-    modem-manager.cpp
     sim-unlock-dialog.cpp
     root-state.cpp
     sections/quick-access-section.cpp

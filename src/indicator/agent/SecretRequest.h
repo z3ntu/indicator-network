@@ -16,14 +16,16 @@
  * Author: Pete Woods <pete.woods@canonical.com>
  */
 
-#ifndef SECRETREQUEST_H_
-#define SECRETREQUEST_H_
+#pragma once
 
 #include <DBusTypes.h>
-#include <PasswordMenu.h>
+#include <agent/PasswordMenu.h>
 
 #include <QDBusMessage>
 #include <QDBusObjectPath>
+
+namespace agent
+{
 
 class SecretRequest;
 class SecretAgent;
@@ -68,4 +70,4 @@ protected:
 	PasswordMenu m_menu;
 };
 
-#endif /* SECRETREQUEST_H_ */
+}

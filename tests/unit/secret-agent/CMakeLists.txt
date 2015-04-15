@@ -1,8 +1,29 @@
 
-include_directories("${CMAKE_SOURCE_DIR}/src/secret-agent")
-include_directories("${CMAKE_BINARY_DIR}/src/secret-agent")
+include_directories("${CMAKE_SOURCE_DIR}/src/")
+include_directories("${CMAKE_BINARY_DIR}/src/")
+include_directories("${CMAKE_SOURCE_DIR}/src/indicator")
+include_directories("${CMAKE_BINARY_DIR}/src/indicator")
+include_directories("${CMAKE_BINARY_DIR}/src/qdbus-stubs")
+include_directories("${CMAKE_SOURCE_DIR}/src/qdbus-stubs")
 
-add_definitions(-DSECRET_AGENT_BIN="${CMAKE_BINARY_DIR}/src/secret-agent/indicator-secret-agent")
+add_definitions(
+    -DSECRET_AGENT_BIN="${CMAKE_CURRENT_BINARY_DIR}/secret-agent-test-bin"
+)
+
+add_executable(
+    secret-agent-test-bin
+    secret-agent-main.cpp
+)
+
+qt5_use_modules(
+    secret-agent-test-bin
+    Core
+)
+
+target_link_libraries(
+    secret-agent-test-bin
+    indicator-network-service-static
+)
 
 set(
     SECRET_AGENT_UNIT_TESTS_SRC
@@ -35,7 +56,7 @@ qt5_use_modules(
 
 target_link_libraries(
     secret-agent-unit-tests
-    indicator-secret-agent
+    indicator-network-service-static
     test-utils
     ${QTDBUSMOCK_LIBRARIES}
     ${QTDBUSTEST_LIBRARIES}

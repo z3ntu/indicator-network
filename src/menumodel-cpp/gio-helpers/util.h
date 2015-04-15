@@ -21,7 +21,11 @@
 #define GIO_HELPERS_UTIL_H
 
 #include <libintl.h>
-#define _(String) gettext (String)
+#include <config.h>
+
+inline char* _(const char *__msgid) {
+    return dgettext(GETTEXT_PACKAGE, __msgid);
+}
 
 #include <gio/gio.h>
 #include <memory>

@@ -16,21 +16,8 @@
  * Author: Pete Woods <pete.woods@canonical.com>
  */
 
-#ifndef DBUSTYPES_H_
-#define DBUSTYPES_H_
+#pragma once
 
-#include <QDBusMetaType>
-#include <QMap>
+#include <DBusTypes.h>
+#include <agent/SecretAgent.h>
 
-typedef QMap<QString, QVariantMap> QVariantDictMap;
-Q_DECLARE_METATYPE(QVariantDictMap)
-
-class DBusTypes {
-public:
-	static void registerMetaTypes() {
-		qRegisterMetaType<QVariantDictMap>("QVariantDictMap");
-		qDBusRegisterMetaType<QVariantDictMap>();
-	}
-};
-
-#endif /* DBUSTYPES_H_ */

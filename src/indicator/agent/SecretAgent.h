@@ -16,8 +16,7 @@
  * Author: Pete Woods <pete.woods@canonical.com>
  */
 
-#ifndef SECRETAGENT_H_
-#define SECRETAGENT_H_
+#pragma once
 
 #include <memory>
 
@@ -27,16 +26,22 @@
 #include <QMap>
 
 #include <DBusTypes.h>
-#include <SecretRequest.h>
+#include <agent/SecretRequest.h>
 #include <AgentManagerInterface.h>
 #include <NotificationsInterface.h>
 
 class SecretAgentAdaptor;
 
+namespace agent
+{
+
 class SecretAgent: public QObject, protected QDBusContext {
 Q_OBJECT
 
 public:
+    typedef std::shared_ptr<SecretAgent> Ptr;
+    typedef std::unique_ptr<SecretAgent> UPtr;
+
 	static const QString CONNECTION_SETTING_NAME;
 	static const QString WIRELESS_SECURITY_SETTING_NAME;
 
@@ -72,7 +77,7 @@ public Q_SLOTS:
 	void SaveSecrets(const QVariantDictMap &connection,
 			const QDBusObjectPath &connectionPath);
 
-	org::freedesktop::Notifications & notifications();
+	OrgFreedesktopNotificationsInterface & notifications();
 
 protected Q_SLOTS:
     void serviceOwnerChanged(const QString &name, const QString &oldOwner,
@@ -87,11 +92,11 @@ protected:
 
 	QDBusServiceWatcher m_managerWatcher;
 
-	org::freedesktop::NetworkManager::AgentManager m_agentManager;
+	OrgFreedesktopNetworkManagerAgentManagerInterface m_agentManager;
 
-	org::freedesktop::Notifications m_notifications;
+	OrgFreedesktopNotificationsInterface m_notifications;
 
 	std::shared_ptr<SecretRequest> m_request;
 };
 
-#endif /* SECRETAGENT_H_ */
+}

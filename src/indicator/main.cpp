@@ -51,11 +51,17 @@ main(int argc, char **argv)
 
     notify_init(GETTEXT_PACKAGE);
 
+    if (argc == 2 && QString("--print-address") == argv[1])
+    {
+        qDebug() << QDBusConnection::systemBus().baseService();
+    }
+
     int result = 0;
     {
         Factory factory;
-        shared_ptr<MenuBuilder> menu = factory.newMenuBuilder();
-        unique_ptr<ConnectivityService> connectivityService = factory.newConnectivityService();
+        auto menu = factory.newMenuBuilder();
+        auto connectivityService = factory.newConnectivityService();
+        auto secretAgent = factory.newSecretAgent();
 
         QObject::connect(connectivityService.get(), &ConnectivityService::unlockAllModems, menu.get(), &MenuBuilder::unlockAllModems);
         QObject::connect(connectivityService.get(), &ConnectivityService::unlockModem, menu.get(), &MenuBuilder::unlockModem);

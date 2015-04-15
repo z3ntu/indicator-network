@@ -23,6 +23,10 @@ file(
 )
 add_custom_target(QtCreatorHeaderHack SOURCES ${NETWORK_SERVICE_HEADERS})
 
+set(
+    INDICATOR_SECRET_AGENT_SOURCES
+)
+
 set(NETWORK_SERVICE_SOURCES
     ${NETWORK_SERVICE_HEADERS}
 
@@ -34,6 +38,10 @@ set(NETWORK_SERVICE_SOURCES
     nmofono/wifi/grouped-access-point.cpp
     nmofono/wifi/wifi-link-impl.cpp
     nmofono/wwan/modem.cpp
+    
+    agent/SecretAgent.cpp
+    agent/SecretRequest.cpp
+    agent/PasswordMenu.cpp
 
     factory.cpp
     indicator-menu.cpp
@@ -71,6 +79,14 @@ qt5_add_dbus_adaptor(
     connectivity-service/connectivity-service.h
     connectivity_service::PrivateService
     NetworkingStatusPrivateAdaptor
+)
+
+qt5_add_dbus_adaptor(
+    NETWORK_SERVICE_SOURCES
+    "${DATA_DIR}/nm-secret-agent.xml"
+    "agent/SecretAgentInclude.h"
+    "agent::SecretAgent"
+    SecretAgentAdaptor
 )
 
 add_library(

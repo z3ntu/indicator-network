@@ -16,30 +16,8 @@
  * Author: Pete Woods <pete.woods@canonical.com>
  */
 
-#ifndef PASSWORDMENU_H_
-#define PASSWORDMENU_H_
+#pragma once
 
-#include <QString>
-#include <QScopedPointer>
+#include <DBusTypes.h>
+#include <agent/SecretAgent.h>
 
-class PasswordMenuPriv;
-
-class PasswordMenu {
-public:
-	PasswordMenu();
-
-	virtual ~PasswordMenu();
-
-	const QString & busName() const;
-
-	const QString & password() const;
-
-	const QString & actionPath() const;
-
-	const QString & menuPath() const;
-
-protected:
-	QScopedPointer<PasswordMenuPriv> p;
-};
-
-#endif /* PASSWORDMENU_H_ */

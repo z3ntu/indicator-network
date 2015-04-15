@@ -16,9 +16,12 @@
  * Author: Pete Woods <pete.woods@canonical.com>
  */
 
-#include <SecretRequest.h>
-#include <SecretAgent.h>
-#include <Localisation.h>
+#include <agent/SecretRequest.h>
+#include <agent/SecretAgent.h>
+#include <menumodel-cpp/gio-helpers/util.h>
+
+namespace agent
+{
 
 SecretRequest::SecretRequest(SecretAgent &secretAgent,
 		const QVariantDictMap &connection,
@@ -135,4 +138,6 @@ const QVariantDictMap & SecretRequest::connection() const {
 
 const QDBusMessage & SecretRequest::message() const {
 	return m_message;
+}
+
 }

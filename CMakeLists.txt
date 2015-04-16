@@ -128,6 +128,5 @@ ADD_CUSTOM_TARGET(
         ${CMAKE_CTEST_COMMAND} --force-new-ctest-process --output-on-failure
 )
 
-#///! TODO: The following needs to be updated once this project takes form again and new unit tests are written
-enable_coverage_report(TARGETS menumodel_cpp indicator-secret-agent
+enable_coverage_report(TARGETS menumodel_cpp indicator-network-service qtdbus-stubs
                        FILTER ${CMAKE_SOURCE_DIR}/tests/* ${CMAKE_BINARY_DIR}/*)

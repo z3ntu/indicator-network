@@ -128,5 +128,14 @@ ADD_CUSTOM_TARGET(
         ${CMAKE_CTEST_COMMAND} --force-new-ctest-process --output-on-failure
 )
 
-enable_coverage_report(TARGETS menumodel_cpp indicator-network-service qtdbus-stubs
-                       FILTER ${CMAKE_SOURCE_DIR}/tests/* ${CMAKE_BINARY_DIR}/*)
+enable_coverage_report(
+  TARGETS
+    indicator-network-service
+    menumodel_cpp
+    notify_cpp
+    qdbus-stubs
+    url_dispatcher_cpp
+  FILTER
+    ${CMAKE_SOURCE_DIR}/tests/*
+    ${CMAKE_BINARY_DIR}/*
+)

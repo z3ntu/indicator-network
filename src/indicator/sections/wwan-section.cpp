@@ -27,6 +27,8 @@
 #include "url-dispatcher-cpp/url-dispatcher.h"
 
 #include <util/qhash-sharedptr.h>
+#include <util/localisation.h>
+
 #include <QDebug>
 
 using namespace std;

@@ -20,13 +20,6 @@
 #ifndef GIO_HELPERS_UTIL_H
 #define GIO_HELPERS_UTIL_H
 
-#include <libintl.h>
-#include <config.h>
-
-inline char* _(const char *__msgid) {
-    return dgettext(GETTEXT_PACKAGE, __msgid);
-}
-
 #include <gio/gio.h>
 #include <memory>
 #include <iostream>

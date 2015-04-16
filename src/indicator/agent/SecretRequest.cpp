@@ -18,7 +18,7 @@
 
 #include <agent/SecretRequest.h>
 #include <agent/SecretAgent.h>
-#include <menumodel-cpp/gio-helpers/util.h>
+#include <util/localisation.h>
 
 namespace agent
 {

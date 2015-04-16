@@ -29,6 +29,8 @@
 #include "menumodel-cpp/menu.h"
 #include "menumodel-cpp/menu-merger.h"
 
+#include <util/localisation.h>
+
 using namespace nmofono;
 
 class WifiSection::Private : public QObject

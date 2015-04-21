@@ -16,12 +16,13 @@
  * Author: Pete Woods <pete.woods@canonical.com>
  */
 
-#include <menumodel-cpp/gio-helpers/util.h>
 #include <agent/SecretAgent.h>
+#include <agent/SecretRequest.h>
+#include <AgentManagerInterface.h>
+#include <NotificationsInterface.h>
 #include <SecretAgentAdaptor.h>
 
 #include <NetworkManager.h>
-
 #include <stdexcept>
 
 using namespace std;
@@ -29,53 +30,67 @@ using namespace std;
 namespace agent
 {
 
-const QString SecretAgent::CONNECTION_SETTING_NAME("connection");
-const QString SecretAgent::WIRELESS_SECURITY_SETTING_NAME(
-        "802-11-wireless-security");
+class SecretAgent::Priv : public QObject {
+	Q_OBJECT
 
-const QString SecretAgent::CONNECTION_ID("id");
+public:
+	Priv(const QDBusConnection &systemConnection,
+			const QDBusConnection &sessionConnection) :
+			m_systemConnection(systemConnection),
+			m_sessionConnection(sessionConnection),
+			m_managerWatcher(NM_DBUS_SERVICE, m_systemConnection),
+			m_agentManager(NM_DBUS_SERVICE, NM_DBUS_PATH_AGENT_MANAGER, m_systemConnection),
+			m_notifications("org.freedesktop.Notifications", "/org/freedesktop/Notifications", m_sessionConnection),
+			m_request(nullptr) {
+	}
 
-const QString SecretAgent::WIRELESS_SECURITY_PSK("psk");
-const QString SecretAgent::WIRELESS_SECURITY_WEP_KEY0("wep-key0");
+public Q_SLOTS:
+	void serviceOwnerChanged(const QString &name, const QString &oldOwner,
+			const QString &newOwner)
+	{
+		Q_UNUSED(name)
+		Q_UNUSED(oldOwner)
+		if (!newOwner.isEmpty()) {
+			m_agentManager.Register("com.canonical.indicator.SecretAgent").waitForFinished();
+		}
+	}
 
-const QString SecretAgent::WIRELESS_SECURITY_KEY_MGMT("key-mgmt");
+public:
+	QDBusConnection m_systemConnection;
 
-const QString SecretAgent::KEY_MGMT_WPA_NONE("wpa-none");
-const QString SecretAgent::KEY_MGMT_WPA_PSK("wpa-psk");
-const QString SecretAgent::KEY_MGMT_NONE("none");
+	QDBusConnection m_sessionConnection;
+
+	QDBusServiceWatcher m_managerWatcher;
+
+	OrgFreedesktopNetworkManagerAgentManagerInterface m_agentManager;
+
+	OrgFreedesktopNotificationsInterface m_notifications;
+
+	std::shared_ptr<SecretRequest> m_request;
+};
 
 SecretAgent::SecretAgent(const QDBusConnection &systemConnection,
 		const QDBusConnection &sessionConnection, QObject *parent) :
-		QObject(parent), m_adaptor(new SecretAgentAdaptor(this)), m_systemConnection(
-				systemConnection), m_sessionConnection(sessionConnection), m_managerWatcher(
-				NM_DBUS_SERVICE, m_systemConnection), m_agentManager(NM_DBUS_SERVICE,
-				NM_DBUS_PATH_AGENT_MANAGER, m_systemConnection), m_notifications(
-				"org.freedesktop.Notifications", "/org/freedesktop/Notifications",
-				m_sessionConnection), m_request(nullptr) {
-	if (!m_systemConnection.registerObject(NM_DBUS_PATH_SECRET_AGENT, this)) {
+		QObject(parent), d(new Priv(systemConnection, sessionConnection))
+	{
+	// Memory managed by Qt
+	new SecretAgentAdaptor(this);
+
+	if (!d->m_systemConnection.registerObject(NM_DBUS_PATH_SECRET_AGENT, this)) {
 		throw logic_error(
-                "Unable to register user secret agent object on DBus");
+				"Unable to register user secret agent object on DBus");
 	}
 
 	// Watch for NM restarting (or starting after we do)
-	connect(&m_managerWatcher, SIGNAL(serviceOwnerChanged(QString, QString, QString)),
-	        this, SLOT(serviceOwnerChanged(QString, QString, QString)));
+	connect(&d->m_managerWatcher, &QDBusServiceWatcher::serviceOwnerChanged,
+			d.get(), &Priv::serviceOwnerChanged);
 
-	m_agentManager.Register("com.canonical.indicator.SecretAgent").waitForFinished();
+	d->m_agentManager.Register("com.canonical.indicator.SecretAgent").waitForFinished();
 }
 
 SecretAgent::~SecretAgent() {
-	m_agentManager.Unregister().waitForFinished();
-	m_systemConnection.unregisterObject(NM_DBUS_PATH_SECRET_AGENT);
-}
-
-void SecretAgent::serviceOwnerChanged(const QString &name,
-		const QString &oldOwner, const QString &newOwner) {
-	Q_UNUSED(name)
-	Q_UNUSED(oldOwner)
-	if (!newOwner.isEmpty()) {
-		m_agentManager.Register("com.canonical.indicator.SecretAgent").waitForFinished();
-	}
+	d->m_agentManager.Unregister().waitForFinished();
+	d->m_systemConnection.unregisterObject(NM_DBUS_PATH_SECRET_AGENT);
 }
 
 /**
@@ -123,11 +138,11 @@ QVariantDictMap SecretAgent::GetSecrets(const QVariantDictMap &connection,
 	setDelayedReply(true);
 
 	if (flags == 0) {
-		m_systemConnection.send(
+		d->m_systemConnection.send(
 				message().createErrorReply(QDBusError::InternalError,
 						"No password found for this connection."));
 	} else {
-		m_request.reset(new SecretRequest(*this, connection,
+		d->m_request.reset(new SecretRequest(*this, connection,
 						connectionPath, settingName, hints, flags, message()));
 	}
 
@@ -136,23 +151,23 @@ QVariantDictMap SecretAgent::GetSecrets(const QVariantDictMap &connection,
 
 void SecretAgent::FinishGetSecrets(SecretRequest &request, bool error) {
 	if (error) {
-		m_systemConnection.send(
+		d->m_systemConnection.send(
 				request.message().createErrorReply(QDBusError::InternalError,
 						"No password found for this connection."));
 	} else {
-		m_systemConnection.send(
+		d->m_systemConnection.send(
 				request.message().createReply(
 						QVariant::fromValue(request.connection())));
 	}
 
-	m_request.reset();
+	d->m_request.reset();
 }
 
 void SecretAgent::CancelGetSecrets(const QDBusObjectPath &connectionPath,
 		const QString &settingName) {
 	Q_UNUSED(connectionPath);
 	Q_UNUSED(settingName);
-	m_request.reset();
+	d->m_request.reset();
 }
 
 void SecretAgent::DeleteSecrets(const QVariantDictMap &connection,
@@ -168,7 +183,10 @@ void SecretAgent::SaveSecrets(const QVariantDictMap &connection,
 }
 
 OrgFreedesktopNotificationsInterface & SecretAgent::notifications() {
-	return m_notifications;
+	return d->m_notifications;
 }
 
 }
+
+#include "SecretAgent.moc"
+

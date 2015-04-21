@@ -16,8 +16,7 @@
  * Author: Pete Woods <pete.woods@canonical.com>
  */
 
-#ifndef DBUSTYPES_H_
-#define DBUSTYPES_H_
+#pragma once
 
 #include <QDBusMetaType>
 #include <QtCore>
@@ -27,10 +26,9 @@
 typedef QMap<QString, QVariantMap> QVariantDictMap;
 Q_DECLARE_METATYPE(QVariantDictMap)
 
-class DBusTypes {
-public:
-    static void
-    registerMetaTypes()
+namespace DBusTypes
+{
+    inline void registerMetaTypes()
     {
         qRegisterMetaType<QVariantDictMap>("QVariantDictMap");
 
@@ -46,6 +44,4 @@ public:
     static constexpr char const* SERVICE_PATH = "/com/ubuntu/connectivity1/NetworkingStatus";
 
     static constexpr char const* PRIVATE_PATH = "/com/ubuntu/connectivity1/Private";
-};
-
-#endif /* DBUSTYPES_H_ */
+}

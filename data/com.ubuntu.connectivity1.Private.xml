@@ -9,6 +9,12 @@
         <method name="UnlockModem">
             <arg type="s" direction="in" name="modem"/>
         </method>
+        
+        <method name="ToggleFlightMode">
+        </method>
+
+        <method name="ToggleWifiEnabled">
+        </method>
 
     </interface>
 </node>

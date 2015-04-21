@@ -20,7 +20,7 @@
 #include <connectivity-service/connectivity-service.h>
 #include <NetworkingStatusAdaptor.h>
 #include <NetworkingStatusPrivateAdaptor.h>
-#include <DBusTypes.h>
+#include <dbus-types.h>
 
 using namespace nmofono;
 using namespace std;
@@ -69,6 +69,13 @@ public:
     }
 
 public Q_SLOTS:
+    void flightModeUpdated()
+    {
+        notifyPropertyChanged(DBusTypes::SERVICE_PATH,
+                              DBusTypes::SERVICE_INTERFACE,
+                              { "FlightMode" });
+    }
+
     void updateNetworkingStatus()
     {
         QStringList changed;
@@ -125,6 +132,7 @@ ConnectivityService::ConnectivityService(nmofono::Manager::Ptr manager, const QD
 
     connect(d->m_manager.get(), &Manager::characteristicsUpdated, d.get(), &Private::updateNetworkingStatus);
     connect(d->m_manager.get(), &Manager::statusUpdated, d.get(), &Private::updateNetworkingStatus);
+    connect(d->m_manager.get(), &Manager::flightModeUpdated, d.get(), &Private::flightModeUpdated);
 
     d->updateNetworkingStatus();
 
@@ -160,6 +168,26 @@ QString ConnectivityService::status() const
     return d->m_status;
 }
 
+bool ConnectivityService::wifiEnabled() const
+{
+    return d->m_manager->wifiEnabled();
+}
+
+bool ConnectivityService::wifiEnabledIsChanging() const
+{
+    return false;
+}
+
+bool ConnectivityService::flightMode() const
+{
+    return (d->m_manager->flightMode() == Manager::FlightModeStatus::on);
+}
+
+bool ConnectivityService::flightModeIsChanging() const
+{
+    return false;
+}
+
 PrivateService::PrivateService(ConnectivityService& parent) :
         p(parent)
 {
@@ -175,6 +203,14 @@ void PrivateService::UnlockAllModems()
 void PrivateService::UnlockModem(const QString &modem)
 {
     Q_EMIT p.unlockModem(modem);
+}
+
+void PrivateService::ToggleFlightMode()
+{
+}
+
+void PrivateService::ToggleWifiEnabled()
+{
 }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Canonical, Ltd.
+ * Copyright (C) 2015 Canonical, Ltd.
  *
  * This program is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 3, as published
@@ -16,8 +16,32 @@
  * Author: Pete Woods <pete.woods@canonical.com>
  */
 
-#pragma once
+#include <indicator-network-test-base.h>
+#include <connectivityqt/connectivity.h>
 
-#include <dbus-types.h>
-#include <agent/SecretAgent.h>
+#include <QDebug>
+#include <QTestEventLoop>
+#include <QSignalSpy>
 
+using namespace std;
+using namespace testing;
+using namespace connectivityqt;
+
+namespace
+{
+
+class TestConnectivityApi: public IndicatorNetworkTestBase
+{
+};
+
+TEST_F(TestConnectivityApi, ItDoesntCrash)
+{
+    setGlobalConnectedState(NM_STATE_DISCONNECTED);
+    ASSERT_NO_THROW(startIndicator());
+
+    Connectivity connectivity(dbusTestRunner.sessionConnection());
+
+    EXPECT_FALSE(connectivity.flightMode());
+}
+
+}

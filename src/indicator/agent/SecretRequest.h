@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include <DBusTypes.h>
+#include <dbus-types.h>
 #include <agent/PasswordMenu.h>
 
 #include <QDBusMessage>

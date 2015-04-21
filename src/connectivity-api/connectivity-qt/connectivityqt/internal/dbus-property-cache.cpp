@@ -76,6 +76,12 @@ public Q_SLOTS:
                 &Priv::propertiesChanged);
 
         m_propertyCache = m_propertiesInterface->GetAll(m_interface);
+        QMapIterator<QString, QVariant> it(m_propertyCache);
+        while (it.hasNext())
+        {
+            it.next();
+            Q_EMIT p.propertyChanged(it.key(), it.value());
+        }
     }
 
     void serviceUnregistered()

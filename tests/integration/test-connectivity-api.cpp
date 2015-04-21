@@ -34,14 +34,19 @@ class TestConnectivityApi: public IndicatorNetworkTestBase
 {
 };
 
-TEST_F(TestConnectivityApi, ItDoesntCrash)
+TEST_F(TestConnectivityApi, FlightModeEnabled)
 {
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
+    ASSERT_TRUE(dbusMock.urfkillInterface().FlightMode(true));
+
     ASSERT_NO_THROW(startIndicator());
 
     Connectivity connectivity(dbusTestRunner.sessionConnection());
 
-    EXPECT_FALSE(connectivity.flightMode());
+    QSignalSpy spy(&connectivity, SIGNAL(flightModeUpdated(bool)));
+    ASSERT_TRUE(spy.wait());
+
+    EXPECT_TRUE(connectivity.flightMode());
 }
 
 }

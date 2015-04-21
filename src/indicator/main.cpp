@@ -19,7 +19,7 @@
 
 #include <factory.h>
 #include <util/unix-signal-handler.h>
-#include <DBusTypes.h>
+#include <dbus-types.h>
 
 #include <QCoreApplication>
 

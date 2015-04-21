@@ -18,6 +18,7 @@
 
 #include <agent/SecretAgent.h>
 #include <SecretAgentInterface.h>
+#include <NotificationsInterface.h>
 #include <NetworkManager.h>
 
 #include <libqtdbustest/DBusTestRunner.h>
@@ -206,7 +207,7 @@ TEST_P(TestSecretAgentGetSecrets, ProvidesPasswordForWpaPsk) {
 
 		menuSpy.wait();
 
-		menuModel.changeState(0, "hard-coded-password");
+		menuModel.changeState(0, GetParam().password);
 
 		// It seems like UnityMenuModel or the GLib
 		// DBus connection needs some grace time to
@@ -229,6 +230,10 @@ TEST_P(TestSecretAgentGetSecrets, ProvidesPasswordForWpaPsk) {
 INSTANTIATE_TEST_CASE_P(WpaPsk, TestSecretAgentGetSecrets,
 		Values(TestSecretAgentParams( { SecretAgent::KEY_MGMT_WPA_PSK,
 				SecretAgent::WIRELESS_SECURITY_PSK, "hard-coded-password" })));
+
+INSTANTIATE_TEST_CASE_P(WpaPskLongPassword, TestSecretAgentGetSecrets,
+		Values(TestSecretAgentParams( { SecretAgent::KEY_MGMT_WPA_PSK,
+				SecretAgent::WIRELESS_SECURITY_PSK, "123456789012345678901234567890123456789012345678901234" })));
 
 INSTANTIATE_TEST_CASE_P(WpaNone, TestSecretAgentGetSecrets,
 		Values(TestSecretAgentParams( { SecretAgent::KEY_MGMT_WPA_NONE,

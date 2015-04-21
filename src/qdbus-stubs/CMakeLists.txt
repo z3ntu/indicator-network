@@ -21,8 +21,6 @@ set_source_files_properties(
     "${DATA_DIR}/nm-access-point.xml"
     "${DATA_DIR}/nm-active-connection.xml"
     "${DATA_DIR}/nm-agent-manager.xml"
-    "${DATA_DIR}/com.ubuntu.connectivity1.NetworkingStatus.xml"
-    "${DATA_DIR}/com.ubuntu.connectivity1.Private.xml"
     "${DATA_DIR}/org.freedesktop.URfkill.xml"
     "${DATA_DIR}/org.freedesktop.URfkill.Device.xml"
     "${DATA_DIR}/org.freedesktop.URfkill.Killswitch.xml"
@@ -36,7 +34,7 @@ set_source_files_properties(
     "${DATA_DIR}/org.freedesktop.Notifications.xml"
     PROPERTIES
     NO_NAMESPACE YES
-    INCLUDE "DBusTypes.h"
+    INCLUDE "dbus-types.h"
 )
 
 qt5_add_dbus_interface(
@@ -103,18 +101,6 @@ qt5_add_dbus_interface(
     CONNECTIVITY_BACKEND_SRC
     "${DATA_DIR}/org.freedesktop.Notifications.xml"
     NotificationsInterface
-)
-
-qt5_add_dbus_interface(
-    CONNECTIVITY_BACKEND_SRC
-    "${DATA_DIR}/com.ubuntu.connectivity1.NetworkingStatus.xml"
-    NetworkingStatusInterface
-)
-
-qt5_add_dbus_interface(
-    CONNECTIVITY_BACKEND_SRC
-    "${DATA_DIR}/com.ubuntu.connectivity1.Private.xml"
-    NetworkingStatusPrivateInterface
 )
 
 add_library(

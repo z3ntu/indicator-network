@@ -20,7 +20,7 @@
 #include <libintl.h>
 #include <config.h>
 #include <factory.h>
-#include <DBusTypes.h>
+#include <dbus-types.h>
 #include <util/unix-signal-handler.h>
 
 #include <QCoreApplication>

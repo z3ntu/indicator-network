@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Canonical, Ltd.
+ * Copyright (C) 2015 Canonical, Ltd.
  *
  * This program is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 3, as published
@@ -16,397 +16,24 @@
  * Author: Pete Woods <pete.woods@canonical.com>
  */
 
-#include <libqtdbustest/DBusTestRunner.h>
-#include <libqtdbustest/QProcessDBusService.h>
-#include <libqtdbusmock/DBusMock.h>
-
-#include <menuharness/MatchUtils.h>
-#include <menuharness/MenuMatcher.h>
-
-#include <NetworkManager.h>
+#include <indicator-network-test-base.h>
 
 #include <QDebug>
 #include <QTestEventLoop>
 #include <QSignalSpy>
 
-#include <gmock/gmock.h>
-#include <gtest/gtest.h>
-
-void PrintTo(const QVariant& variant, std::ostream* os) {
-        *os << "QVariant(" << variant.toString().toStdString() << ")";
-}
-
-
-#define WAIT_FOR_SIGNALS(signalSpy, signalsExpected)\
-{\
-    while (signalSpy.size() < signalsExpected)\
-    {\
-        ASSERT_TRUE(signalSpy.wait());\
-    }\
-    ASSERT_EQ(signalsExpected, signalSpy.size());\
-}
-
-#define CHECK_METHOD_CALL(signalSpy, signalIndex, methodName, ...)\
-{\
-    QVariantList const& call(signalSpy.at(signalIndex));\
-    EXPECT_EQ(methodName, call.at(0));\
-    auto arguments = vector<pair<int, QVariant>>{__VA_ARGS__};\
-    if (!arguments.empty())\
-    {\
-        QVariantList const& args(call.at(1).toList());\
-        ASSERT_LE(arguments.back().first + 1, args.size());\
-        for (auto const& argument : arguments)\
-        {\
-            EXPECT_EQ(argument.second, args.at(argument.first));\
-        }\
-    }\
-}
-
 using namespace std;
 using namespace testing;
-using namespace QtDBusTest;
-using namespace QtDBusMock;
-
 namespace mh = menuharness;
 
 namespace
 {
-enum class Secure
+
+class TestIndicator: public IndicatorNetworkTestBase
 {
-    secure,
-    insecure
 };
 
-enum class ApMode
-{
-    infra,
-    adhoc
-};
-
-enum class ConnectionStatus
-{
-    connected,
-    disconnected
-};
-
-class TestIndicatorNetworkService : public Test
-{
-protected:
-    TestIndicatorNetworkService() :
-            dbusMock(dbusTestRunner)
-    {
-    }
-
-    void SetUp() override
-    {
-        if (qEnvironmentVariableIsSet("TEST_WITH_BUSTLE"))
-        {
-            const TestInfo* const test_info =
-                    UnitTest::GetInstance()->current_test_info();
-
-            QDir::temp().mkpath("indicator-network-tests");
-            QDir testDir(QDir::temp().filePath("indicator-network-tests"));
-
-            dbusTestRunner.registerService(
-                    DBusServicePtr(
-                            new QProcessDBusService(
-                                    "", QDBusConnection::SessionBus,
-                                    "/usr/bin/bustle-pcap",
-                                    QStringList{"-e", testDir.filePath(QString("%1-%2").arg(test_info->name(), "session.log"))})));
-            dbusTestRunner.registerService(
-                    DBusServicePtr(
-                            new QProcessDBusService(
-                                    "", QDBusConnection::SystemBus,
-                                    "/usr/bin/bustle-pcap",
-                                    QStringList{"-y", testDir.filePath(QString("%1-%2").arg(test_info->name(), "system.log"))})));
-        }
-
-        dbusMock.registerNetworkManager();
-        dbusMock.registerNotificationDaemon();
-        // By default the ofono mock starts with one modem
-        dbusMock.registerOfono();
-        dbusMock.registerURfkill();
-
-        dbusTestRunner.startServices();
-
-        // Identify the test when looking at Bustle logs
-        QDBusConnection systemConnection = dbusTestRunner.systemConnection();
-        systemConnection.registerService("org.TestIndicatorNetworkService");
-        QDBusConnection sessionConnection = dbusTestRunner.sessionConnection();
-        sessionConnection.registerService("org.TestIndicatorNetworkService");
-    }
-
-    static mh::MenuMatcher::Parameters phoneParameters()
-    {
-        return mh::MenuMatcher::Parameters(
-                "com.canonical.indicator.network",
-                { { "indicator", "/com/canonical/indicator/network" } },
-                "/com/canonical/indicator/network/phone");
-    }
-
-    mh::MenuMatcher::Parameters unlockSimParameters(std::string const& busName, int exportId)
-    {
-        return mh::MenuMatcher::Parameters(
-                busName,
-                { { "notifications", "/com/canonical/indicator/network/unlocksim" + to_string(exportId) } },
-                "/com/canonical/indicator/network/unlocksim" + to_string(exportId));
-    }
-
-    void startIndicator()
-    {
-        try
-        {
-            indicator.reset(
-                    new QProcessDBusService("com.canonical.indicator.network",
-                                            QDBusConnection::SessionBus,
-                                            NETWORK_SERVICE_BIN,
-                                            QStringList()));
-            indicator->start(dbusTestRunner.sessionConnection());
-        }
-        catch (exception const& e)
-        {
-            cout << "startIndicator(): " << e.what() << endl;
-            throw;
-        }
-    }
-
-    QString createWiFiDevice(int state, const QString& id = "0")
-    {
-        auto& networkManager(dbusMock.networkManagerInterface());
-        auto reply = networkManager.AddWiFiDevice(id, "eth1", state);
-        reply.waitForFinished();
-        return reply;
-    }
-
-    static QString randomMac()
-    {
-        int high = 254;
-        int low = 1;
-        QString hardwareAddress;
-        bool first = true;
-
-        for (unsigned int i = 0; i < 6; ++i)
-        {
-            if (!first)
-            {
-                hardwareAddress.append(":");
-            }
-            int r = qrand() % ((high + 1) - low) + low;
-            hardwareAddress.append(QString("%1").arg(r, 2, 16, QChar('0')));
-            first = false;
-        }
-
-        return hardwareAddress;
-    }
-
-    void enableWiFi()
-    {
-        auto& urfkillInterface = dbusMock.urfkillInterface();
-        urfkillInterface.Block(1, false).waitForFinished();
-    }
-
-    void disableWiFi()
-    {
-        auto& urfkillInterface = dbusMock.urfkillInterface();
-        urfkillInterface.Block(1, true).waitForFinished();
-    }
-
-    QString createAccessPoint(const QString& id, const QString& ssid, const QString& device, int strength = 100,
-                              Secure secure = Secure::secure, ApMode apMode = ApMode::infra)
-    {
-
-        auto& networkManager(dbusMock.networkManagerInterface());
-        auto reply = networkManager.AddAccessPoint(
-                            device, id, ssid,
-                            randomMac(),
-                            apMode == ApMode::adhoc ? NM_802_11_MODE_ADHOC : NM_802_11_MODE_INFRA,
-                            0, 0, strength,
-                            secure == Secure::secure ? NM_802_11_AP_SEC_KEY_MGMT_PSK : NM_802_11_AP_SEC_NONE);
-        reply.waitForFinished();
-        return reply;
-    }
-
-    void removeAccessPoint(const QString& device, const QString& ap)
-    {
-        auto& nm = dbusMock.networkManagerInterface();
-        nm.RemoveAccessPoint(device, ap).waitForFinished();
-    }
-
-    QString createAccessPointConnection(const QString& id, const QString& ssid, const QString& device)
-    {
-        auto& networkManager(dbusMock.networkManagerInterface());
-        auto reply = networkManager.AddWiFiConnection(device, id, ssid,
-                                                      "");
-        reply.waitForFinished();
-        return reply;
-    }
-
-    void removeWifiConnection(const QString& device, const QString& connection)
-    {
-        auto& nm = dbusMock.networkManagerInterface();
-        nm.RemoveWifiConnection(device, connection).waitForFinished();
-    }
-
-    QString createActiveConnection(const QString& id, const QString& device, const QString& connection, const QString& ap)
-    {
-        auto& nm = dbusMock.networkManagerInterface();
-        auto reply = nm.AddActiveConnection(QStringList() << device,
-                               connection,
-                               ap,
-                               id,
-                               NM_ACTIVE_CONNECTION_STATE_ACTIVATED);
-        reply.waitForFinished();
-        return reply;
-    }
-
-    void removeActiveConnection(const QString& device, const QString& active_connection)
-    {
-        auto& nm = dbusMock.networkManagerInterface();
-        nm.RemoveActiveConnection(device, active_connection).waitForFinished();
-    }
-
-    void setGlobalConnectedState(int state)
-    {
-        auto& nm = dbusMock.networkManagerInterface();
-        nm.SetGlobalConnectionState(state).waitForFinished();
-    }
-
-    void setNmProperty(const QString& path, const QString& iface, const QString& name, const QVariant& value)
-    {
-        auto& nm = dbusMock.networkManagerInterface();
-        nm.SetProperty(path, iface, name, QDBusVariant(value)).waitForFinished();
-    }
-
-    QString createModem(const QString& id)
-    {
-        auto& ofono(dbusMock.ofonoInterface());
-        QVariantMap modemProperties {{ "Powered", false } };
-        return ofono.AddModem(id, modemProperties);
-    }
-
-    void setModemProperty(const QString& path, const QString& propertyName, const QVariant& value)
-    {
-        auto& ofono(dbusMock.ofonoModemInterface(path));
-        ofono.SetProperty(propertyName, QDBusVariant(value)).waitForFinished();
-    }
-
-    void setSimManagerProperty(const QString& path, const QString& propertyName, const QVariant& value)
-    {
-        auto& ofono(dbusMock.ofonoSimManagerInterface(path));
-        ofono.SetProperty(propertyName, QDBusVariant(value)).waitForFinished();
-    }
-
-    void setConnectionManagerProperty(const QString& path, const QString& propertyName, const QVariant& value)
-    {
-        auto& ofono(dbusMock.ofonoConnectionManagerInterface(path));
-        ofono.SetProperty(propertyName, QDBusVariant(value)).waitForFinished();
-    }
-
-    void setNetworkRegistrationProperty(const QString& path, const QString& propertyName, const QVariant& value)
-    {
-        auto& ofono(dbusMock.ofonoNetworkRegistrationInterface(path));
-        ofono.SetProperty(propertyName, QDBusVariant(value)).waitForFinished();
-    }
-
-    OrgFreedesktopDBusMockInterface* notificationsMockInterface()
-    {
-        return &dbusMock.mockInterface("org.freedesktop.Notifications",
-                                       "/org/freedesktop/Notifications",
-                                       "org.freedesktop.Notifications",
-                                       QDBusConnection::SessionBus);
-    }
-
-    OrgFreedesktopDBusMockInterface* modemMockInterface(const QString& path)
-    {
-        return &dbusMock.mockInterface("org.ofono",
-                                       path,
-                                       "",
-                                       QDBusConnection::SystemBus);
-    }
-
-    bool qDBusArgumentToMap(QVariant const& variant, QVariantMap& map)
-    {
-        if (variant.canConvert<QDBusArgument>())
-        {
-            QDBusArgument value(variant.value<QDBusArgument>());
-            if (value.currentType() == QDBusArgument::MapType)
-            {
-                value >> map;
-                return true;
-            }
-        }
-        return false;
-    }
-
-    QString firstModem()
-    {
-        return "/ril_0";
-    }
-
-    static mh::MenuItemMatcher flightModeSwitch(bool toggled = false)
-    {
-        return mh::MenuItemMatcher::checkbox()
-            .label("Flight Mode")
-            .action("indicator.airplane.enabled")
-            .toggled(toggled);
-    }
-
-    static mh::MenuItemMatcher accessPoint(const string& ssid, Secure secure,
-                ApMode apMode, ConnectionStatus connectionStatus, int strength = 100)
-    {
-        return mh::MenuItemMatcher::checkbox()
-            .label(ssid)
-            .widget("unity.widgets.systemsettings.tablet.accesspoint")
-            .toggled(connectionStatus == ConnectionStatus::connected)
-            .pass_through_attribute(
-                "x-canonical-wifi-ap-strength-action",
-                shared_ptr<GVariant>(g_variant_new_byte(strength), &mh::gvariant_deleter))
-            .boolean_attribute("x-canonical-wifi-ap-is-secure", secure == Secure::secure)
-            .boolean_attribute("x-canonical-wifi-ap-is-adhoc", apMode == ApMode::adhoc);
-    }
-
-    static mh::MenuItemMatcher wifiEnableSwitch(bool toggled = true)
-    {
-        return mh::MenuItemMatcher::checkbox()
-            .label("Wi-Fi")
-            .action("indicator.wifi.enable") // This action is accessed by system-settings-ui, do not change it
-            .toggled(toggled);
-    }
-
-    static mh::MenuItemMatcher wifiSettings()
-    {
-        return mh::MenuItemMatcher()
-            .label("Wi-Fi settings…")
-            .action("indicator.wifi.settings");
-    }
-
-    static mh::MenuItemMatcher modemInfo(const string& simIdentifier, const string& label, const string& statusIcon, bool locked = false)
-    {
-        return mh::MenuItemMatcher()
-            .widget("com.canonical.indicator.network.modeminfoitem")
-            .pass_through_string_attribute("x-canonical-modem-sim-identifier-label-action", simIdentifier)
-            .pass_through_string_attribute("x-canonical-modem-connectivity-icon-action", "")
-            .pass_through_string_attribute("x-canonical-modem-status-label-action", label)
-            .pass_through_string_attribute("x-canonical-modem-status-icon-action", statusIcon)
-            .pass_through_boolean_attribute("x-canonical-modem-roaming-action", false)
-            .pass_through_boolean_attribute("x-canonical-modem-locked-action", locked);
-    }
-
-    static mh::MenuItemMatcher cellularSettings()
-    {
-        return mh::MenuItemMatcher()
-            .label("Cellular settings…")
-            .action("indicator.cellular.settings");
-    }
-
-    DBusTestRunner dbusTestRunner;
-
-    DBusMock dbusMock;
-
-    DBusServicePtr indicator;
-};
-
-TEST_F(TestIndicatorNetworkService, BasicMenuContents)
+TEST_F(TestIndicator, BasicMenuContents)
 {
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
     ASSERT_NO_THROW(startIndicator());
@@ -428,7 +55,7 @@ TEST_F(TestIndicatorNetworkService, BasicMenuContents)
         ).match());
 }
 
-TEST_F(TestIndicatorNetworkService, OneDisconnectedAccessPointAtStartup)
+TEST_F(TestIndicator, OneDisconnectedAccessPointAtStartup)
 {
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
     auto device = createWiFiDevice(NM_DEVICE_STATE_DISCONNECTED);
@@ -456,7 +83,7 @@ TEST_F(TestIndicatorNetworkService, OneDisconnectedAccessPointAtStartup)
         ).match());
 }
 
-TEST_F(TestIndicatorNetworkService, OneConnectedAccessPointAtStartup)
+TEST_F(TestIndicator, OneConnectedAccessPointAtStartup)
 {
     setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
     auto device = createWiFiDevice(NM_DEVICE_STATE_ACTIVATED);
@@ -485,7 +112,7 @@ TEST_F(TestIndicatorNetworkService, OneConnectedAccessPointAtStartup)
         ).match());
 }
 
-TEST_F(TestIndicatorNetworkService, AddOneDisconnectedAccessPointAfterStartup)
+TEST_F(TestIndicator, AddOneDisconnectedAccessPointAfterStartup)
 {
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
     auto device = createWiFiDevice(NM_DEVICE_STATE_DISCONNECTED);
@@ -512,7 +139,7 @@ TEST_F(TestIndicatorNetworkService, AddOneDisconnectedAccessPointAfterStartup)
         ).match());
 }
 
-TEST_F(TestIndicatorNetworkService, AddOneConnectedAccessPointAfterStartup)
+TEST_F(TestIndicator, AddOneConnectedAccessPointAfterStartup)
 {
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
     auto device = createWiFiDevice(NM_DEVICE_STATE_DISCONNECTED);
@@ -542,7 +169,7 @@ TEST_F(TestIndicatorNetworkService, AddOneConnectedAccessPointAfterStartup)
         ).match());
 }
 
-TEST_F(TestIndicatorNetworkService, SecondModem)
+TEST_F(TestIndicator, SecondModem)
 {
     createModem("ril_1"); // ril_0 already exists
     ASSERT_NO_THROW(startIndicator());
@@ -562,7 +189,7 @@ TEST_F(TestIndicatorNetworkService, SecondModem)
         ).match());
 }
 
-TEST_F(TestIndicatorNetworkService, FlightModeTalksToURfkill)
+TEST_F(TestIndicator, FlightModeTalksToURfkill)
 {
     ASSERT_NO_THROW(startIndicator());
 
@@ -583,7 +210,7 @@ TEST_F(TestIndicatorNetworkService, FlightModeTalksToURfkill)
     EXPECT_EQ(urfkillSpy.first(), QVariantList() << QVariant(true));
 }
 
-TEST_F(TestIndicatorNetworkService, IndicatorListensToURfkill)
+TEST_F(TestIndicator, IndicatorListensToURfkill)
 {
     setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
     auto device = createWiFiDevice(NM_DEVICE_STATE_ACTIVATED);
@@ -621,7 +248,7 @@ TEST_F(TestIndicatorNetworkService, IndicatorListensToURfkill)
         ).match());
 }
 
-TEST_F(TestIndicatorNetworkService, SimStates_NoSIM)
+TEST_F(TestIndicator, SimStates_NoSIM)
 {
     // set flight mode off, wifi off, and cell data off
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
@@ -646,7 +273,7 @@ TEST_F(TestIndicatorNetworkService, SimStates_NoSIM)
         ).match());
 }
 
-TEST_F(TestIndicatorNetworkService, SimStates_NoSIM2)
+TEST_F(TestIndicator, SimStates_NoSIM2)
 {
     // set flight mode off, wifi off, and cell data off
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
@@ -673,7 +300,7 @@ TEST_F(TestIndicatorNetworkService, SimStates_NoSIM2)
         ).match());
 }
 
-TEST_F(TestIndicatorNetworkService, SimStates_LockedSIM)
+TEST_F(TestIndicator, SimStates_LockedSIM)
 {
     // set flight mode off, wifi off, and cell data off, and sim in
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
@@ -717,7 +344,7 @@ TEST_F(TestIndicatorNetworkService, SimStates_LockedSIM)
         ).match());
 }
 
-TEST_F(TestIndicatorNetworkService, SimStates_LockedSIM2)
+TEST_F(TestIndicator, SimStates_LockedSIM2)
 {
     // set flight mode off, wifi off, and cell data off, and sim in
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
@@ -762,7 +389,7 @@ TEST_F(TestIndicatorNetworkService, SimStates_LockedSIM2)
         ).match());
 }
 
-TEST_F(TestIndicatorNetworkService, SimStates_UnlockedSIM)
+TEST_F(TestIndicator, SimStates_UnlockedSIM)
 {
     // set flight mode off, wifi off, cell data off, sim in, and sim unlocked
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
@@ -886,7 +513,7 @@ TEST_F(TestIndicatorNetworkService, SimStates_UnlockedSIM)
         ).match());
 }
 
-TEST_F(TestIndicatorNetworkService, SimStates_UnlockedSIM2)
+TEST_F(TestIndicator, SimStates_UnlockedSIM2)
 {
     // set flight mode off, wifi off, cell data off, sim in, and sim unlocked
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
@@ -1018,7 +645,7 @@ TEST_F(TestIndicatorNetworkService, SimStates_UnlockedSIM2)
         ).match());
 }
 
-TEST_F(TestIndicatorNetworkService, FlightMode_NoSIM)
+TEST_F(TestIndicator, FlightMode_NoSIM)
 {
     // set wifi on, flight mode off
     setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
@@ -1116,7 +743,7 @@ TEST_F(TestIndicatorNetworkService, FlightMode_NoSIM)
         ).match());
 }
 
-TEST_F(TestIndicatorNetworkService, FlightMode_LockedSIM)
+TEST_F(TestIndicator, FlightMode_LockedSIM)
 {
     // set wifi on, flight mode off
     setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
@@ -1214,7 +841,7 @@ TEST_F(TestIndicatorNetworkService, FlightMode_LockedSIM)
         ).match());
 }
 
-TEST_F(TestIndicatorNetworkService, FlightMode_WifiOff)
+TEST_F(TestIndicator, FlightMode_WifiOff)
 {
     // set wifi on, flight mode off
     setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
@@ -1371,7 +998,7 @@ TEST_F(TestIndicatorNetworkService, FlightMode_WifiOff)
         ).match());
 }
 
-TEST_F(TestIndicatorNetworkService, FlightMode_WifiOn)
+TEST_F(TestIndicator, FlightMode_WifiOn)
 {
     // set wifi on, flight mode off
     setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
@@ -1555,7 +1182,7 @@ TEST_F(TestIndicatorNetworkService, FlightMode_WifiOn)
         ).match());
 }
 
-TEST_F(TestIndicatorNetworkService, GroupedWiFiAccessPoints)
+TEST_F(TestIndicator, GroupedWiFiAccessPoints)
 {
     // set wifi on, flight mode off
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
@@ -1648,7 +1275,7 @@ TEST_F(TestIndicatorNetworkService, GroupedWiFiAccessPoints)
         ).match());
 }
 
-TEST_F(TestIndicatorNetworkService, WifiStates_SSIDs)
+TEST_F(TestIndicator, WifiStates_SSIDs)
 {
     // set wifi on, flight mode off
     setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
@@ -1699,7 +1326,7 @@ TEST_F(TestIndicatorNetworkService, WifiStates_SSIDs)
         ).match());
 }
 
-TEST_F(TestIndicatorNetworkService, WifiStates_Connect1AP)
+TEST_F(TestIndicator, WifiStates_Connect1AP)
 {
     // create a wifi device
     auto device = createWiFiDevice(NM_DEVICE_STATE_ACTIVATED);
@@ -1912,7 +1539,7 @@ TEST_F(TestIndicatorNetworkService, WifiStates_Connect1AP)
         ).match());
 }
 
-TEST_F(TestIndicatorNetworkService, WifiStates_Connect2APs)
+TEST_F(TestIndicator, WifiStates_Connect2APs)
 {
     // set wifi on, flight mode off
     setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
@@ -2072,7 +1699,7 @@ TEST_F(TestIndicatorNetworkService, WifiStates_Connect2APs)
         ).match());
 }
 
-TEST_F(TestIndicatorNetworkService, WifiStates_AddAndActivate)
+TEST_F(TestIndicator, WifiStates_AddAndActivate)
 {
     // set wifi on, flight mode off
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
@@ -2205,7 +1832,7 @@ TEST_F(TestIndicatorNetworkService, WifiStates_AddAndActivate)
         ).match());
 }
 
-TEST_F(TestIndicatorNetworkService, CellDataEnabled)
+TEST_F(TestIndicator, CellDataEnabled)
 {
     // We are connected
     setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
@@ -2279,7 +1906,7 @@ TEST_F(TestIndicatorNetworkService, CellDataEnabled)
             ).match());
 }
 
-TEST_F(TestIndicatorNetworkService, CellDataDisabled)
+TEST_F(TestIndicator, CellDataDisabled)
 {
     // We are connected
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
@@ -2369,7 +1996,7 @@ TEST_F(TestIndicatorNetworkService, CellDataDisabled)
         ).match());
 }
 
-TEST_F(TestIndicatorNetworkService, UnlockSIM_MenuContents)
+TEST_F(TestIndicator, UnlockSIM_MenuContents)
 {
     // set flight mode off, wifi off, and cell data off, and sim in
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
@@ -2380,7 +2007,7 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM_MenuContents)
     // start the indicator
     ASSERT_NO_THROW(startIndicator());
 
-    QSignalSpy notificationsSpy(notificationsMockInterface(),
+    QSignalSpy notificationsSpy(&notificationsMockInterface(),
                                SIGNAL(MethodCalled(const QString &, const QVariantList &)));
 
     // check indicator is a locked sim card and a 0-bar wifi icon.
@@ -2497,7 +2124,7 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM_MenuContents)
         ).match());
 }
 
-TEST_F(TestIndicatorNetworkService, UnlockSIM_Cancel)
+TEST_F(TestIndicator, UnlockSIM_Cancel)
 {
     // set flight mode off, wifi off, and cell data off, and sim in
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
@@ -2508,7 +2135,7 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM_Cancel)
     // start the indicator
     ASSERT_NO_THROW(startIndicator());
 
-    QSignalSpy notificationsSpy(notificationsMockInterface(),
+    QSignalSpy notificationsSpy(&notificationsMockInterface(),
                                SIGNAL(MethodCalled(const QString &, const QVariantList &)));
 
     // check indicator is a locked sim card and a 0-bar wifi icon.
@@ -2614,7 +2241,7 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM_Cancel)
     notificationsSpy.clear();
 }
 
-TEST_F(TestIndicatorNetworkService, UnlockSIM_CorrectPin)
+TEST_F(TestIndicator, UnlockSIM_CorrectPin)
 {
     // set flight mode off, wifi off, and cell data off, and sim in
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
@@ -2625,7 +2252,7 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM_CorrectPin)
     // start the indicator
     ASSERT_NO_THROW(startIndicator());
 
-    QSignalSpy notificationsSpy(notificationsMockInterface(),
+    QSignalSpy notificationsSpy(&notificationsMockInterface(),
                                SIGNAL(MethodCalled(const QString &, const QVariantList &)));
 
     // check indicator is a locked sim card and a 0-bar wifi icon.
@@ -2667,7 +2294,7 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM_CorrectPin)
     QSignalSpy notificationClosedSpy(&dbusMock.notificationDaemonInterface(),
                                      SIGNAL(NotificationClosed(uint, uint)));
 
-    QSignalSpy modemSpy(modemMockInterface(firstModem()),
+    QSignalSpy modemSpy(&modemMockInterface(firstModem()),
                         SIGNAL(MethodCalled(const QString &, const QVariantList &)));
 
     EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
@@ -2698,7 +2325,7 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM_CorrectPin)
     notificationsSpy.clear();
 }
 
-TEST_F(TestIndicatorNetworkService, UnlockSIM_IncorrectPin)
+TEST_F(TestIndicator, UnlockSIM_IncorrectPin)
 {
     // set flight mode off, wifi off, and cell data off, and sim in
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
@@ -2709,7 +2336,7 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM_IncorrectPin)
     // start the indicator
     ASSERT_NO_THROW(startIndicator());
 
-    QSignalSpy notificationsSpy(notificationsMockInterface(),
+    QSignalSpy notificationsSpy(&notificationsMockInterface(),
                                 SIGNAL(MethodCalled(const QString &, const QVariantList &)));
 
     // check indicator is a locked sim card and a 0-bar wifi icon.
@@ -2749,7 +2376,7 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM_IncorrectPin)
 
     // enter incorrect pin
     // check that the notification is displaying no error message
-    QSignalSpy modemSpy(modemMockInterface(firstModem()),
+    QSignalSpy modemSpy(&modemMockInterface(firstModem()),
                         SIGNAL(MethodCalled(const QString &, const QVariantList &)));
 
     EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
@@ -2994,7 +2621,7 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM_IncorrectPin)
     notificationsSpy.clear();
 }
 
-TEST_F(TestIndicatorNetworkService, UnlockSIM2_IncorrectPin)
+TEST_F(TestIndicator, UnlockSIM2_IncorrectPin)
 {
     // set flight mode off, wifi off, and cell data off, and sim in
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
@@ -3006,7 +2633,7 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM2_IncorrectPin)
     // start the indicator
     ASSERT_NO_THROW(startIndicator());
 
-    QSignalSpy notificationsSpy(notificationsMockInterface(),
+    QSignalSpy notificationsSpy(&notificationsMockInterface(),
                                 SIGNAL(MethodCalled(const QString &, const QVariantList &)));
 
     // check indicator is a locked sim card and a 0-bar wifi icon.
@@ -3047,7 +2674,7 @@ TEST_F(TestIndicatorNetworkService, UnlockSIM2_IncorrectPin)
 
     // enter incorrect pin
     // check that the notification is displaying no error message
-    QSignalSpy modemSpy(modemMockInterface(secondModem),
+    QSignalSpy modemSpy(&modemMockInterface(secondModem),
                         SIGNAL(MethodCalled(const QString &, const QVariantList &)));
 
     EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))

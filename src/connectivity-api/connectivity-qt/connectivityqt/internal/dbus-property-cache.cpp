@@ -65,8 +65,17 @@ public:
     }
 
 public Q_SLOTS:
-    void serviceRegistered()
+    void serviceOwnerChanged(const QString &, const QString &,
+                        const QString & newOwner)
     {
+        m_propertiesInterface.reset();
+        m_propertyCache.clear();
+
+        if (newOwner.isEmpty())
+        {
+            return;
+        }
+
         m_propertiesInterface = make_shared<
                 OrgFreedesktopDBusPropertiesInterface>(m_service, m_path,
                                                        m_connection);
@@ -82,11 +91,6 @@ public Q_SLOTS:
             it.next();
             Q_EMIT p.propertyChanged(it.key(), it.value());
         }
-    }
-
-    void serviceUnregistered()
-    {
-        m_propertiesInterface.reset();
     }
 
     void propertiesChanged(const QString &,
@@ -118,11 +122,15 @@ DBusPropertyCache::DBusPropertyCache(const QString &service,
     d->m_serviceWatcher = make_shared<QDBusServiceWatcher>(service,
                                                            connection);
 
-    connect(d->m_serviceWatcher.get(), &QDBusServiceWatcher::serviceRegistered,
-            d.get(), &Priv::serviceRegistered);
-    connect(d->m_serviceWatcher.get(),
-            &QDBusServiceWatcher::serviceUnregistered, d.get(),
-            &Priv::serviceUnregistered);
+    connect(d->m_serviceWatcher.get(), &QDBusServiceWatcher::serviceOwnerChanged,
+            d.get(), &Priv::serviceOwnerChanged);
+
+    // If the service is already registered
+    QString serviceOwner = connection.interface()->serviceOwner(service);
+    if (!serviceOwner.isEmpty())
+    {
+        d->serviceOwnerChanged(service, "", serviceOwner);
+    }
 }
 
 DBusPropertyCache::~DBusPropertyCache()

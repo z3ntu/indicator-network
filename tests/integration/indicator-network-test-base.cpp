@@ -17,6 +17,7 @@
  */
 
 #include <indicator-network-test-base.h>
+#include <dbus-types.h>
 
 using namespace QtDBusTest;
 using namespace QtDBusMock;
@@ -93,7 +94,7 @@ void IndicatorNetworkTestBase::startIndicator()
     try
     {
         indicator.reset(
-                new QProcessDBusService("com.canonical.indicator.network",
+                new QProcessDBusService(DBusTypes::DBUS_NAME,
                                         QDBusConnection::SessionBus,
                                         NETWORK_SERVICE_BIN,
                                         QStringList()));

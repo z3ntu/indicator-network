@@ -10,10 +10,12 @@
             <arg type="s" direction="in" name="modem"/>
         </method>
         
-        <method name="ToggleFlightMode">
+        <method name="SetFlightMode">
+            <arg type="b" direction="in" name="enabled"/>
         </method>
 
-        <method name="ToggleWifiEnabled">
+        <method name="SetWifiEnabled">
+            <arg type="b" direction="in" name="enabled"/>
         </method>
 
     </interface>

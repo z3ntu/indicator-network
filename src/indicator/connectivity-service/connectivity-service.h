@@ -88,9 +88,9 @@ protected Q_SLOTS:
 
     void UnlockModem(const QString &modem);
 
-    void ToggleFlightMode();
+    void SetFlightMode(bool enabled);
 
-    void ToggleWifiEnabled();
+    void SetWifiEnabled(bool enabled);
 
 protected:
     ConnectivityService& p;

@@ -43,8 +43,6 @@ public:
 
     QDBusConnection m_sessionConnection;
 
-    shared_ptr<QDBusServiceWatcher> m_serviceWatcher;
-
     shared_ptr<internal::DBusPropertyCache> m_propertyCache;
 
     shared_ptr<ComUbuntuConnectivity1NetworkingStatusInterface> m_readInterface;
@@ -52,23 +50,6 @@ public:
     shared_ptr<ComUbuntuConnectivity1PrivateInterface> m_writeInterface;
 
 public Q_SLOTS:
-    void serviceRegistered()
-    {
-        m_readInterface = make_shared<
-                ComUbuntuConnectivity1NetworkingStatusInterface>(
-                DBusTypes::DBUS_NAME, DBusTypes::SERVICE_PATH,
-                m_sessionConnection);
-
-        m_writeInterface = make_shared<ComUbuntuConnectivity1PrivateInterface>(
-                DBusTypes::DBUS_NAME, DBusTypes::PRIVATE_PATH,
-                m_sessionConnection);
-    }
-
-    void serviceUnregistered()
-    {
-        m_readInterface.reset();
-        m_writeInterface.reset();
-    }
 
     void propertyChanged(const QString& name, const QVariant& value)
     {
@@ -94,13 +75,14 @@ public Q_SLOTS:
 Connectivity::Connectivity(const QDBusConnection& sessionConnection) :
         d(new Priv(*this, sessionConnection))
 {
-    d->m_serviceWatcher = make_shared<QDBusServiceWatcher>(DBusTypes::DBUS_NAME,
-                                                           sessionConnection);
-    connect(d->m_serviceWatcher.get(), &QDBusServiceWatcher::serviceRegistered,
-            d.get(), &Priv::serviceRegistered);
-    connect(d->m_serviceWatcher.get(),
-            &QDBusServiceWatcher::serviceUnregistered, d.get(),
-            &Priv::serviceUnregistered);
+    d->m_readInterface = make_shared<
+            ComUbuntuConnectivity1NetworkingStatusInterface>(
+            DBusTypes::DBUS_NAME, DBusTypes::SERVICE_PATH,
+            d->m_sessionConnection);
+
+    d->m_writeInterface = make_shared<ComUbuntuConnectivity1PrivateInterface>(
+            DBusTypes::DBUS_NAME, DBusTypes::PRIVATE_PATH,
+            d->m_sessionConnection);
 
     d->m_propertyCache = make_shared<internal::DBusPropertyCache>(
             DBusTypes::DBUS_NAME, DBusTypes::SERVICE_INTERFACE,
@@ -132,6 +114,16 @@ bool Connectivity::wifiEnabled() const
 bool Connectivity::wifiEnabledIsChanging() const
 {
     return d->m_propertyCache->get("WifiEnabledIsChanging").toBool();
+}
+
+void Connectivity::setFlightMode(bool enabled)
+{
+    d->m_writeInterface->SetFlightMode(enabled);
+}
+
+void Connectivity::setwifiEnabled(bool enabled)
+{
+    d->m_writeInterface->SetWifiEnabled(enabled);
 }
 
 }

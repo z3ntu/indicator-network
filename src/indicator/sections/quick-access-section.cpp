@@ -68,18 +68,10 @@ public Q_SLOTS:
         // Give the GActionGroup a change to emit its Changed signal
         runGMainloop();
 
-        if (state) {
-            try {
-                m_manager->enableFlightMode();
-            } catch (const std::exception &e) {
-                std::cerr << e.what() << std::endl;
-            }
-        } else {
-            try {
-                m_manager->disableFlightMode();
-            } catch (const std::exception &e) {
-                std::cerr << e.what() << std::endl;
-            }
+        try {
+            m_manager->setFlightMode(state);
+        } catch (const std::exception &e) {
+            std::cerr << e.what() << std::endl;
         }
 
         m_flightModeSwitch->setEnabled(true);

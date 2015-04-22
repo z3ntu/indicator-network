@@ -205,12 +205,14 @@ void PrivateService::UnlockModem(const QString &modem)
     Q_EMIT p.unlockModem(modem);
 }
 
-void PrivateService::ToggleFlightMode()
+void PrivateService::SetFlightMode(bool enabled)
 {
+    p.d->m_manager->setFlightMode(enabled);
 }
 
-void PrivateService::ToggleWifiEnabled()
+void PrivateService::SetWifiEnabled(bool enabled)
 {
+    p.d->m_manager->setWifiEnabled(enabled);
 }
 
 }

@@ -41,7 +41,6 @@ public:
 
     QVariant get(const QString& name);
 
-
 Q_SIGNALS:
     void propertyChanged(const QString& name, const QVariant& value);
 

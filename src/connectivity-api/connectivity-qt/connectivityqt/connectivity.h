@@ -24,6 +24,8 @@
 #include <QStringList>
 #include <memory>
 
+#include <unity/util/DefinesPtrs.h>
+
 namespace connectivityqt
 {
 
@@ -32,11 +34,13 @@ class Q_DECL_EXPORT Connectivity: public QObject
     Q_OBJECT
 
 public:
+    UNITY_DEFINES_PTRS(Connectivity);
+
     Connectivity(const QDBusConnection& sessionConnection = QDBusConnection::sessionBus());
 
     ~Connectivity();
 
-    Q_PROPERTY(bool FlightMode READ flightMode NOTIFY flightModeUpdated)
+    Q_PROPERTY(bool FlightMode READ flightMode WRITE setFlightMode NOTIFY flightModeUpdated)
     bool flightMode() const;
 
     Q_PROPERTY(bool FlightModeIsChanging READ flightModeIsChanging NOTIFY flightModeIsChangingUpdated)
@@ -48,11 +52,16 @@ public:
 //    Q_PROPERTY(QString Status READ status NOTIFY statusUpdated)
 //    QString status() const;
 
-    Q_PROPERTY(bool WifiEnabled READ wifiEnabled NOTIFY wifiEnabledUpdated)
+    Q_PROPERTY(bool WifiEnabled READ wifiEnabled WRITE setwifiEnabled NOTIFY wifiEnabledUpdated)
     bool wifiEnabled() const;
 
     Q_PROPERTY(bool WifiEnabledIsChanging READ wifiEnabledIsChanging NOTIFY wifiEnabledIsChangingUpdated)
     bool wifiEnabledIsChanging() const;
+
+public Q_SLOTS:
+    void setFlightMode(bool enabled);
+
+    void setwifiEnabled(bool enabled);
 
 Q_SIGNALS:
     void flightModeUpdated(bool);

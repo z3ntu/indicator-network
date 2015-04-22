@@ -120,11 +120,7 @@ public Q_SLOTS:
     {
         m_switch->setEnabled(false);
         runGMainloop();
-        if (state) {
-            m_manager->enableWifi();
-        } else {
-            m_manager->disableWifi();
-        }
+        m_manager->setWifiEnabled(state);
         m_switch->setEnabled(true);
     }
 };

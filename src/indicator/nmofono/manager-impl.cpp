@@ -58,7 +58,7 @@ public:
 
     bool m_hasWifi = false;
     bool m_wifiEnabled = false;
-    KillSwitch::Ptr m_wifiKillSwitch;
+    KillSwitch::Ptr m_killSwitch;
 
     QSet<Link::Ptr> m_nmLinks;
     QMap<QString, wwan::Modem::Ptr> m_ofonoLinks;
@@ -74,10 +74,10 @@ public:
 public Q_SLOTS:
     void updateHasWifi()
     {
-        if (m_wifiKillSwitch->state() != KillSwitch::State::not_available)
+        if (m_killSwitch->state() != KillSwitch::State::not_available)
         {
             m_hasWifi = true;
-            if (m_wifiKillSwitch->state() == KillSwitch::State::unblocked)
+            if (m_killSwitch->state() == KillSwitch::State::unblocked)
             {
                 m_wifiEnabled = true;
             }
@@ -107,15 +107,15 @@ public Q_SLOTS:
 
     void setFlightMode(bool flightMode)
     {
-        if (flightMode)
+        FlightModeStatus newStatus =
+                flightMode ? FlightModeStatus::on : FlightModeStatus::off;
+
+        if (m_flightMode == newStatus)
         {
-            m_flightMode = Manager::FlightModeStatus::on;
-        }
-        else
-        {
-            m_flightMode = Manager::FlightModeStatus::off;
+            return;
         }
 
+        m_flightMode = newStatus;
         Q_EMIT p.flightModeUpdated(m_flightMode);
     }
 
@@ -212,8 +212,8 @@ ManagerImpl::ManagerImpl(const QDBusConnection& systemConnection) : d(new Manage
     /// @todo offload the initialization to a thread or something
     /// @todo those Id() thingies
 
-    d->m_wifiKillSwitch = make_shared<KillSwitch>(systemConnection);
-    connect(d->m_wifiKillSwitch.get(), &KillSwitch::stateChanged, d.get(), &Private::updateHasWifi);
+    d->m_killSwitch = make_shared<KillSwitch>(systemConnection);
+    connect(d->m_killSwitch.get(), &KillSwitch::stateChanged, d.get(), &Private::updateHasWifi);
 
     connect(d->nm.get(), &OrgFreedesktopNetworkManagerInterface::DeviceAdded, this, &ManagerImpl::device_added);
     QList<QDBusObjectPath> devices(d->nm->GetDevices());
@@ -225,10 +225,10 @@ ManagerImpl::ManagerImpl(const QDBusConnection& systemConnection) : d(new Manage
     updateNetworkingStatus(d->nm->state());
     connect(d->nm.get(), &OrgFreedesktopNetworkManagerInterface::PropertiesChanged, this, &ManagerImpl::nm_properties_changed);
 
-    connect(d->m_wifiKillSwitch.get(), &KillSwitch::flightModeChanged, d.get(), &Private::setFlightMode);
+    connect(d->m_killSwitch.get(), &KillSwitch::flightModeChanged, d.get(), &Private::setFlightMode);
     try
     {
-        d->setFlightMode(d->m_wifiKillSwitch->isFlightMode());
+        d->setFlightMode(d->m_killSwitch->isFlightMode());
     }
     catch (exception const& e)
     {
@@ -299,7 +299,7 @@ ManagerImpl::device_added(const QDBusObjectPath &path)
         if (dev->deviceType() == NM_DEVICE_TYPE_WIFI) {
             link = make_shared<wifi::WifiLinkImpl>(dev,
                                                 d->nm,
-                                                d->m_wifiKillSwitch);
+                                                d->m_killSwitch);
         }
     } catch (const exception &e) {
         qDebug() << __PRETTY_FUNCTION__ << ": failed to create Device proxy for "<< path.path() << ": ";
@@ -318,26 +318,14 @@ ManagerImpl::device_added(const QDBusObjectPath &path)
 
 
 void
-ManagerImpl::enableFlightMode()
+ManagerImpl::setFlightMode(bool enabled)
 {
 #ifdef INDICATOR_NETWORK_TRACE_MESSAGES
     cout << __PRETTY_FUNCTION__ << endl;
 #endif
-    if (!d->m_wifiKillSwitch->flightMode(true))
+    if (!d->m_killSwitch->flightMode(enabled))
     {
-        qWarning() << "Failed to enable flightmode.";
-    }
-}
-
-void
-ManagerImpl::disableFlightMode()
-{
-#ifdef INDICATOR_NETWORK_TRACE_MESSAGES
-    cout << __PRETTY_FUNCTION__ << endl;
-#endif
-    if (!d->m_wifiKillSwitch->flightMode(false))
-    {
-        qWarning() << "Failed to disable flightmode";
+        qWarning() << "Failed to change flightmode.";
     }
 }
 
@@ -387,54 +375,38 @@ ManagerImpl::wifiEnabled() const
 
 
 bool
-ManagerImpl::enableWifi()
+ManagerImpl::setWifiEnabled(bool enabled)
 {
     if (!d->m_hasWifi)
     {
         return false;
     }
 
-    if (d->m_wifiEnabled)
+    if (d->m_wifiEnabled == enabled)
     {
         return false;
     }
 
     try
     {
-        if (d->m_wifiKillSwitch->state() == KillSwitch::State::soft_blocked)
+        if (enabled)
         {
-            // try to unblock. throws if fails.
-            d->m_wifiKillSwitch->unblock();
+            if (d->m_killSwitch->state() == KillSwitch::State::soft_blocked)
+            {
+                // try to unblock. throws if fails.
+                d->m_killSwitch->unblock();
+            }
         }
-        d->nm->setWirelessEnabled(true);
+        else
+        {
+            if (d->m_killSwitch->state() == KillSwitch::State::unblocked) {
+                // block the device. that will disable it also
+                d->m_killSwitch->block();
+            }
+        }
+        d->nm->setWirelessEnabled(enabled);
     } catch(runtime_error &e) {
         qWarning() << __PRETTY_FUNCTION__ << ": " << e.what();
-        return false;
-    }
-    return true;
-}
-
-bool
-ManagerImpl::disableWifi()
-{
-    if (!d->m_hasWifi)
-    {
-        return false;
-    }
-
-    if (!d->m_wifiEnabled)
-    {
-        return false;
-    }
-
-    try {
-        if (d->m_wifiKillSwitch->state() == KillSwitch::State::unblocked) {
-            // block the device. that will disable it also
-            d->m_wifiKillSwitch->block();
-        }
-        d->nm->setWirelessEnabled(false);
-    } catch(runtime_error &e) {
-        cerr << __PRETTY_FUNCTION__ << ": " << e.what() << endl;
         return false;
     }
     return true;

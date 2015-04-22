@@ -3,6 +3,7 @@ add_definitions(-DNETWORK_SERVICE_BIN="${CMAKE_BINARY_DIR}/src/indicator/indicat
 
 include_directories(
     "${CMAKE_SOURCE_DIR}/src/connectivity-api/connectivity-qt"
+    "${CMAKE_SOURCE_DIR}/src/qdbus-stubs"
 )
 
 set(

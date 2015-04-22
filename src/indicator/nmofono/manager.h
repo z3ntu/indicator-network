@@ -81,10 +81,7 @@ public:
     };
 
     /// @private
-    virtual void enableFlightMode()  = 0;
-
-    /// @private
-    virtual void disableFlightMode() = 0;
+    virtual void setFlightMode(bool)  = 0;
 
     /// @private
     Q_PROPERTY(Manager::FlightModeStatus flightMode READ flightMode NOTIFY flightModeUpdated)
@@ -123,9 +120,7 @@ public:
     Q_PROPERTY(bool wifiEnabled READ wifiEnabled NOTIFY wifiEnabledUpdated)
     virtual bool wifiEnabled() const = 0;
 
-    virtual bool enableWifi() = 0;
-
-    virtual bool disableWifi() = 0;
+    virtual bool setWifiEnabled(bool) = 0;
 
     virtual bool roaming() const = 0;
 

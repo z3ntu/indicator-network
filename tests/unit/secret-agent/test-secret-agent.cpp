@@ -43,11 +43,7 @@ protected:
 
 		DBusTypes::registerMetaTypes();
 
-		dbusMock.registerCustomMock("org.freedesktop.Notifications",
-				"/org/freedesktop/Notifications",
-				OrgFreedesktopNotificationsInterface::staticInterfaceName(),
-				QDBusConnection::SessionBus);
-
+		dbusMock.registerNotificationDaemon();
 		dbusMock.registerNetworkManager();
 		dbusTestRunner.startServices();
 
@@ -63,6 +59,7 @@ protected:
 		agentInterface.reset(
 				new OrgFreedesktopNetworkManagerSecretAgentInterface(agentBus,
 				NM_DBUS_PATH_SECRET_AGENT, dbusTestRunner.systemConnection()));
+
 
 		notificationsInterface.reset(
 				new OrgFreedesktopDBusMockInterface(
@@ -163,10 +160,6 @@ static void transform(QVariantList &list) {
 }
 
 TEST_P(TestSecretAgentGetSecrets, ProvidesPasswordForWpaPsk) {
-	notificationsInterface->AddMethod(
-			OrgFreedesktopNotificationsInterface::staticInterfaceName(),
-			"Notify", "susssasa{sv}i", "u", "ret = 1").waitForFinished();
-
 	QDBusPendingReply<QVariantDictMap> reply(
 			agentInterface->GetSecrets(connection(GetParam().keyManagement),
 					QDBusObjectPath("/connection/foo"),
@@ -267,13 +260,6 @@ TEST_F(TestSecretAgent, GetSecretsWithNone) {
 /* Tests that if we request secrets and then cancel the request
    that we close the notification */
 TEST_F(TestSecretAgent, CancelGetSecrets) {
-	notificationsInterface->AddMethod(
-			OrgFreedesktopNotificationsInterface::staticInterfaceName(),
-			"Notify", "susssasa{sv}i", "u", "ret = 1").waitForFinished();
-	notificationsInterface->AddMethod(
-			OrgFreedesktopNotificationsInterface::staticInterfaceName(),
-			"CloseNotification", "u", "", "").waitForFinished();
-
 	agentInterface->GetSecrets(
 			connection(SecretAgent::KEY_MGMT_WPA_PSK),
 			QDBusObjectPath("/connection/foo"),
@@ -302,13 +288,6 @@ TEST_F(TestSecretAgent, CancelGetSecrets) {
 /* Ensures that if we request secrets twice we close the notification
    for the first request */
 TEST_F(TestSecretAgent, MultiSecrets) {
-	notificationsInterface->AddMethod(
-			OrgFreedesktopNotificationsInterface::staticInterfaceName(),
-			"Notify", "susssasa{sv}i", "u", "ret = 1").waitForFinished();
-	notificationsInterface->AddMethod(
-			OrgFreedesktopNotificationsInterface::staticInterfaceName(),
-			"CloseNotification", "u", "", "").waitForFinished();
-
 	QSignalSpy notificationSpy(notificationsInterface.data(), SIGNAL(MethodCalled(const QString &, const QVariantList &)));
 
 	agentInterface->GetSecrets(

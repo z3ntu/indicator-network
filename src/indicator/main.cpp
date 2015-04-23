@@ -38,6 +38,7 @@ main(int argc, char **argv)
 {
     QCoreApplication app(argc, argv);
     DBusTypes::registerMetaTypes();
+    Variant::registerMetaTypes();
 
     util::UnixSignalHandler handler([]{
         QCoreApplication::exit(0);

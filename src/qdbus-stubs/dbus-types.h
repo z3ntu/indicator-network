@@ -44,4 +44,10 @@ namespace DBusTypes
     static constexpr char const* SERVICE_PATH = "/com/ubuntu/connectivity1/NetworkingStatus";
 
     static constexpr char const* PRIVATE_PATH = "/com/ubuntu/connectivity1/Private";
+
+    static constexpr char const* URFKILL_BUS_NAME = "org.freedesktop.URfkill";
+
+    static constexpr char const* URFKILL_OBJ_PATH = "/org/freedesktop/URfkill";
+
+    static constexpr char const* URFKILL_WIFI_OBJ_PATH = "/org/freedesktop/URfkill/WLAN";
 }

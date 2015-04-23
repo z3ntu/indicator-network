@@ -76,6 +76,20 @@ public Q_SLOTS:
                               { "FlightMode" });
     }
 
+    void wifiEnabledUpdated()
+    {
+        notifyPropertyChanged(DBusTypes::SERVICE_PATH,
+                              DBusTypes::SERVICE_INTERFACE,
+                              { "WifiEnabled" });
+    }
+
+    void unstoppableOperationHappeningUpdated()
+    {
+        notifyPropertyChanged(DBusTypes::SERVICE_PATH,
+                              DBusTypes::SERVICE_INTERFACE,
+                              { "UnstoppableOperationHappening" });
+    }
+
     void updateNetworkingStatus()
     {
         QStringList changed;
@@ -133,6 +147,8 @@ ConnectivityService::ConnectivityService(nmofono::Manager::Ptr manager, const QD
     connect(d->m_manager.get(), &Manager::characteristicsUpdated, d.get(), &Private::updateNetworkingStatus);
     connect(d->m_manager.get(), &Manager::statusUpdated, d.get(), &Private::updateNetworkingStatus);
     connect(d->m_manager.get(), &Manager::flightModeUpdated, d.get(), &Private::flightModeUpdated);
+    connect(d->m_manager.get(), &Manager::wifiEnabledUpdated, d.get(), &Private::wifiEnabledUpdated);
+    connect(d->m_manager.get(), &Manager::unstoppableOperationHappeningUpdated, d.get(), &Private::unstoppableOperationHappeningUpdated);
 
     d->updateNetworkingStatus();
 
@@ -173,19 +189,14 @@ bool ConnectivityService::wifiEnabled() const
     return d->m_manager->wifiEnabled();
 }
 
-bool ConnectivityService::wifiEnabledIsChanging() const
-{
-    return false;
-}
-
 bool ConnectivityService::flightMode() const
 {
     return (d->m_manager->flightMode() == Manager::FlightModeStatus::on);
 }
 
-bool ConnectivityService::flightModeIsChanging() const
+bool ConnectivityService::unstoppableOperationHappening() const
 {
-    return false;
+    return d->m_manager->unstoppableOperationHappening();
 }
 
 PrivateService::PrivateService(ConnectivityService& parent) :

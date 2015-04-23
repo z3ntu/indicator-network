@@ -91,6 +91,8 @@ public Q_SLOTS:
             it.next();
             Q_EMIT p.propertyChanged(it.key(), it.value());
         }
+
+        Q_EMIT p.initialized();
     }
 
     void propertiesChanged(const QString &,
@@ -140,6 +142,11 @@ DBusPropertyCache::~DBusPropertyCache()
 QVariant DBusPropertyCache::get(const QString& name)
 {
     return d->m_propertyCache[name];
+}
+
+bool DBusPropertyCache::isInitialized() const
+{
+    return !d->m_propertyCache.empty();
 }
 
 }

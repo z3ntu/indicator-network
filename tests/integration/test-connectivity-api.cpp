@@ -35,7 +35,15 @@ class TestConnectivityApi: public IndicatorNetworkTestBase
 protected:
     Connectivity::UPtr newConnectivity()
     {
-        return make_unique<Connectivity>(dbusTestRunner.sessionConnection());
+        auto connectivity = make_unique<Connectivity>(dbusTestRunner.sessionConnection());
+
+        if (!connectivity->isInitialized())
+        {
+            QSignalSpy initSpy(connectivity.get(), SIGNAL(initialized()));
+            initSpy.wait();
+        }
+
+        return connectivity;
     }
 };
 
@@ -51,12 +59,6 @@ TEST_F(TestConnectivityApi, FollowsFlightMode)
     // Connect to the service
     auto connectivity(newConnectivity());
 
-    // Check that flight mode gets updated
-    if (!connectivity->flightMode())
-    {
-        QSignalSpy spy(connectivity.get(), SIGNAL(flightModeUpdated(bool)));
-        WAIT_FOR_SIGNALS(spy, 1);
-    }
     // Check flight mode is enabled
     EXPECT_TRUE(connectivity->flightMode());
 
@@ -66,7 +68,8 @@ TEST_F(TestConnectivityApi, FollowsFlightMode)
     // Check that flight mode gets updated
     {
         QSignalSpy spy(connectivity.get(), SIGNAL(flightModeUpdated(bool)));
-        WAIT_FOR_SIGNALS(spy, 1);
+        ASSERT_TRUE(spy.wait());
+        ASSERT_EQ(1, spy.size());
     }
     // Check that flight mode is disabled
     EXPECT_FALSE(connectivity->flightMode());
@@ -84,22 +87,69 @@ TEST_F(TestConnectivityApi, FlightModeTalksToURfkill)
     // Connect the the service
     auto connectivity(newConnectivity());
 
+    // Follow the unstoppableOperationHappening property
+    QSignalSpy operationSpy(connectivity.get(), SIGNAL(unstoppableOperationHappeningUpdated(bool)));
+
+    // Check that nothing is happening yet
+    EXPECT_FALSE(connectivity->unstoppableOperationHappening());
+
     // Enable flight mode
     connectivity->setFlightMode(true);
 
+    // We should first get the unstoppable operation change
+    ASSERT_TRUE(operationSpy.wait());
+    ASSERT_EQ(1, operationSpy.size());
+    EXPECT_EQ(operationSpy.first(), QVariantList() << QVariant(true));
+
     // Wait to be notified that flight mode was enabled
-    WAIT_FOR_SIGNALS(urfkillSpy, 1);
+    if (urfkillSpy.size() != 1)
+    {
+        ASSERT_TRUE(urfkillSpy.wait());
+    }
+    ASSERT_EQ(1, urfkillSpy.size());
     EXPECT_EQ(urfkillSpy.first(), QVariantList() << QVariant(true));
+
+    // The unstoppable operation should complete
+    if (operationSpy.size() != 2)
+    {
+        ASSERT_TRUE(operationSpy.wait());
+    }
+    ASSERT_EQ(2, operationSpy.size());
+    EXPECT_EQ(operationSpy.last(), QVariantList() << QVariant(false));
 
     // Start again
     urfkillSpy.clear();
+    operationSpy.clear();
+
+    // Check that nothing is happening again
+    EXPECT_FALSE(connectivity->unstoppableOperationHappening());
 
     // Disable flight mode
     connectivity->setFlightMode(false);
 
+    // We should first get the unstoppable operation change
+    ASSERT_TRUE(operationSpy.wait());
+    ASSERT_EQ(1, operationSpy.size());
+    EXPECT_EQ(operationSpy.first(), QVariantList() << QVariant(true));
+
     // Wait to be notified that flight mode was disabled
-    WAIT_FOR_SIGNALS(urfkillSpy, 1);
+    if (urfkillSpy.size() != 1)
+    {
+        ASSERT_TRUE(urfkillSpy.wait());
+    }
+    ASSERT_EQ(1, urfkillSpy.size());
     EXPECT_EQ(urfkillSpy.first(), QVariantList() << QVariant(false));
+
+    // The unstoppable operation should complete
+    if (operationSpy.size() != 2)
+    {
+        ASSERT_TRUE(operationSpy.wait());
+    }
+    ASSERT_EQ(2, operationSpy.size());
+    EXPECT_EQ(operationSpy.last(), QVariantList() << QVariant(false));
+
+    // Check that nothing is happening again
+    EXPECT_FALSE(connectivity->unstoppableOperationHappening());
 }
 
 }

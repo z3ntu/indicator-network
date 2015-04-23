@@ -53,14 +53,11 @@ public:
     Q_PROPERTY(bool WifiEnabled READ wifiEnabled)
     bool wifiEnabled() const;
 
-    Q_PROPERTY(bool WifiEnabledIsChanging READ wifiEnabledIsChanging)
-    bool wifiEnabledIsChanging() const;
-
     Q_PROPERTY(bool FlightMode READ flightMode)
     bool flightMode() const;
 
-    Q_PROPERTY(bool FlightModeIsChanging READ flightModeIsChanging)
-    bool flightModeIsChanging() const;
+    Q_PROPERTY(bool UnstoppableOperationHappening READ unstoppableOperationHappening)
+    bool unstoppableOperationHappening() const;
 
 Q_SIGNALS:
     void unlockAllModems();

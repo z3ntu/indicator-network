@@ -41,8 +41,12 @@ public:
 
     QVariant get(const QString& name);
 
+    bool isInitialized() const;
+
 Q_SIGNALS:
     void propertyChanged(const QString& name, const QVariant& value);
+
+    void initialized();
 
 protected:
     class Priv;

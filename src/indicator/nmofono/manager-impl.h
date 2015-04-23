@@ -45,6 +45,8 @@ public:
     void setFlightMode(bool) override;
     Manager::FlightModeStatus flightMode() const override;
 
+    bool unstoppableOperationHappening() const override;
+
     bool hasWifi() const override;
     bool wifiEnabled() const override;
 

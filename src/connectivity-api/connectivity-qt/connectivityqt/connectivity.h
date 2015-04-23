@@ -43,9 +43,6 @@ public:
     Q_PROPERTY(bool FlightMode READ flightMode WRITE setFlightMode NOTIFY flightModeUpdated)
     bool flightMode() const;
 
-    Q_PROPERTY(bool FlightModeIsChanging READ flightModeIsChanging NOTIFY flightModeIsChangingUpdated)
-    bool flightModeIsChanging() const;
-
 //    Q_PROPERTY(QStringList Limitations READ limitations NOTIFY limitationsUpdated)
 //    QStringList limitations() const;
 
@@ -55,8 +52,11 @@ public:
     Q_PROPERTY(bool WifiEnabled READ wifiEnabled WRITE setwifiEnabled NOTIFY wifiEnabledUpdated)
     bool wifiEnabled() const;
 
-    Q_PROPERTY(bool WifiEnabledIsChanging READ wifiEnabledIsChanging NOTIFY wifiEnabledIsChangingUpdated)
-    bool wifiEnabledIsChanging() const;
+    Q_PROPERTY(bool UnstoppableOperationHappening READ unstoppableOperationHappening NOTIFY unstoppableOperationHappeningUpdated)
+    bool unstoppableOperationHappening() const;
+
+    Q_PROPERTY(bool Initialized READ isInitialized NOTIFY initialized)
+    bool isInitialized() const;
 
 public Q_SLOTS:
     void setFlightMode(bool enabled);
@@ -66,15 +66,15 @@ public Q_SLOTS:
 Q_SIGNALS:
     void flightModeUpdated(bool);
 
-    void flightModeIsChangingUpdated(bool);
-
 //    void limitationsUpdated(const QStringList&);
 
 //    void statusUpdated(const QString&);
 
     void wifiEnabledUpdated(bool);
 
-    void wifiEnabledIsChangingUpdated(bool);
+    void unstoppableOperationHappeningUpdated(bool);
+
+    void initialized();
 
 protected:
     class Priv;

@@ -57,17 +57,13 @@ public Q_SLOTS:
         {
             Q_EMIT p.flightModeUpdated(value.toBool());
         }
-        else if (name == "FlightModeIsChanging")
-        {
-            Q_EMIT p.flightModeIsChangingUpdated(value.toBool());
-        }
         else if (name == "WifiEnabled")
         {
             Q_EMIT p.wifiEnabledUpdated(value.toBool());
         }
-        else if (name == "WifiEnabledIsChanging")
+        else if (name == "UnstoppableOperationHappening")
         {
-            Q_EMIT p.wifiEnabledIsChangingUpdated(value.toBool());
+            Q_EMIT p.unstoppableOperationHappeningUpdated(value.toBool());
         }
     }
 };
@@ -90,6 +86,9 @@ Connectivity::Connectivity(const QDBusConnection& sessionConnection) :
     connect(d->m_propertyCache.get(),
             &internal::DBusPropertyCache::propertyChanged, d.get(),
             &Priv::propertyChanged);
+    connect(d->m_propertyCache.get(),
+            &internal::DBusPropertyCache::initialized, this,
+            &Connectivity::initialized);
 }
 
 Connectivity::~Connectivity()
@@ -101,19 +100,14 @@ bool Connectivity::flightMode() const
     return d->m_propertyCache->get("FlightMode").toBool();
 }
 
-bool Connectivity::flightModeIsChanging() const
-{
-    return d->m_propertyCache->get("FlightModeIsChanging").toBool();
-}
-
 bool Connectivity::wifiEnabled() const
 {
     return d->m_propertyCache->get("WifiEnabled").toBool();
 }
 
-bool Connectivity::wifiEnabledIsChanging() const
+bool Connectivity::unstoppableOperationHappening() const
 {
-    return d->m_propertyCache->get("WifiEnabledIsChanging").toBool();
+    return d->m_propertyCache->get("UnstoppableOperationHappening").toBool();
 }
 
 void Connectivity::setFlightMode(bool enabled)
@@ -124,6 +118,11 @@ void Connectivity::setFlightMode(bool enabled)
 void Connectivity::setwifiEnabled(bool enabled)
 {
     d->m_writeInterface->SetWifiEnabled(enabled);
+}
+
+bool Connectivity::isInitialized() const
+{
+    return d->m_propertyCache->isInitialized();
 }
 
 }

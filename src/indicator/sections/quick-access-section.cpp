@@ -48,6 +48,18 @@ public:
     Private(Manager::Ptr manager, SwitchItem::Ptr wifiSwitch);
 
 public Q_SLOTS:
+    void unstoppableOperationHappeningUpdated(bool happening)
+    {
+        m_flightModeSwitch->setEnabled(!happening);
+        m_wifiSwitch->setEnabled(!happening);
+
+        if (happening)
+        {
+            // Give the GActionGroup a chance to emit its Changed signal
+            runGMainloop();
+        }
+    }
+
     void flightModeUpdated(Manager::FlightModeStatus value)
     {
         switch (value) {
@@ -58,24 +70,6 @@ public Q_SLOTS:
             m_flightModeSwitch->setState(true);
             break;
         }
-    }
-
-    void flightModeSwitchActivated(bool state)
-    {
-        m_flightModeSwitch->setEnabled(false);
-        m_wifiSwitch->setEnabled(false);
-
-        // Give the GActionGroup a change to emit its Changed signal
-        runGMainloop();
-
-        try {
-            m_manager->setFlightMode(state);
-        } catch (const std::exception &e) {
-            std::cerr << e.what() << std::endl;
-        }
-
-        m_flightModeSwitch->setEnabled(true);
-        m_wifiSwitch->setEnabled(true);
     }
 };
 
@@ -89,10 +83,15 @@ QuickAccessSection::Private::Private(Manager::Ptr manager,
     m_flightModeSwitch = std::make_shared<SwitchItem>(_("Flight Mode"), "airplane", "enabled");
     flightModeUpdated(m_manager->flightMode());
     connect(m_manager.get(), &Manager::flightModeUpdated, this, &Private::flightModeUpdated);
-    connect(m_flightModeSwitch.get(), &SwitchItem::stateUpdated, this, &Private::flightModeSwitchActivated);
+    connect(m_flightModeSwitch.get(), &SwitchItem::stateUpdated, m_manager.get(), &Manager::setFlightMode);
 
     m_actionGroupMerger->add(m_flightModeSwitch->actionGroup());
     m_menu->append(m_flightModeSwitch->menuItem());
+
+    // Connect the unstoppable operation property to the toggle enabled properties
+    // Make sure we don't also connect this signal in the wifi-section.cpp
+    connect(m_manager.get(), &Manager::unstoppableOperationHappeningUpdated,
+            this, &Private::unstoppableOperationHappeningUpdated);
 }
 
 QuickAccessSection::QuickAccessSection(Manager::Ptr manager, SwitchItem::Ptr wifiSwitch)

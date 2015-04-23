@@ -53,6 +53,7 @@ public:
     shared_ptr<QOfonoManager> m_ofono;
 
     Manager::FlightModeStatus m_flightMode = FlightModeStatus::on;
+    bool m_unstoppableOperationHappening = false;
     Manager::NetworkingStatus m_status = NetworkingStatus::offline;
     uint32_t m_characteristics = 0;
 
@@ -69,6 +70,17 @@ public:
     Private(Manager& parent) :
         p(parent)
     {
+    }
+
+    void setUnstoppableOperationHappening(bool happening)
+    {
+        if (m_unstoppableOperationHappening == happening)
+        {
+            return;
+        }
+
+        m_unstoppableOperationHappening = happening;
+        Q_EMIT p.unstoppableOperationHappeningUpdated(m_unstoppableOperationHappening);
     }
 
 public Q_SLOTS:
@@ -321,12 +333,20 @@ void
 ManagerImpl::setFlightMode(bool enabled)
 {
 #ifdef INDICATOR_NETWORK_TRACE_MESSAGES
-    cout << __PRETTY_FUNCTION__ << endl;
+    qDebug() << __PRETTY_FUNCTION__ << enabled;
 #endif
+    if (enabled == d->m_killSwitch->isFlightMode())
+    {
+        return;
+    }
+
+    d->setUnstoppableOperationHappening(true);
+
     if (!d->m_killSwitch->flightMode(enabled))
     {
         qWarning() << "Failed to change flightmode.";
     }
+    d->setUnstoppableOperationHappening(false);
 }
 
 Manager::FlightModeStatus
@@ -336,6 +356,12 @@ ManagerImpl::flightMode() const
     // - make this property to reflect their combined state
     /// @todo implement flightmode status properly when URfkill gets the flightmode API
     return d->m_flightMode;
+}
+
+bool
+ManagerImpl::unstoppableOperationHappening() const
+{
+    return d->m_unstoppableOperationHappening;
 }
 
 QSet<Link::Ptr>
@@ -387,6 +413,9 @@ ManagerImpl::setWifiEnabled(bool enabled)
         return false;
     }
 
+    bool success = true;
+    d->setUnstoppableOperationHappening(true);
+
     try
     {
         if (enabled)
@@ -405,11 +434,14 @@ ManagerImpl::setWifiEnabled(bool enabled)
             }
         }
         d->nm->setWirelessEnabled(enabled);
-    } catch(runtime_error &e) {
-        qWarning() << __PRETTY_FUNCTION__ << ": " << e.what();
-        return false;
     }
-    return true;
+    catch (runtime_error &e)
+    {
+        qWarning() << __PRETTY_FUNCTION__ << ": " << e.what();
+        success = false;
+    }
+    d->setUnstoppableOperationHappening(false);
+    return success;
 }
 
 bool

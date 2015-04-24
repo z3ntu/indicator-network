@@ -5,7 +5,7 @@ include_directories("${CMAKE_SOURCE_DIR}/src/qdbus-stubs")
 add_executable(i-n-sniffer
 eventprinter.cpp
 eventprinter.h
-i-n-extractor.cpp
+i-n-sniffer.cpp
 )
 
 qt5_use_modules(i-n-sniffer Core DBus)

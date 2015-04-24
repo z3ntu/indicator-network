@@ -17,8 +17,7 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#ifndef CONNECTIVITY_NETWORKING_SERVICE
-#define CONNECTIVITY_NETWORKING_SERVICE
+#pragma once
 
 #include <connectivity/networking/link.h>
 
@@ -79,5 +78,3 @@ public:
 
 }
 }
-
-#endif

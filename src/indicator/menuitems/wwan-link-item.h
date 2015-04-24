@@ -17,8 +17,7 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#ifndef WWAN_LINK_ITEM_H
-#define WWAN_LINK_ITEM_H
+#pragma once
 
 #include "menuitems/section.h"
 #include <nmofono/manager.h>
@@ -39,6 +38,3 @@ public:
 
     void showSimIdentifier(bool value);
 };
-
-#endif // WWAN_LINK_ITEM_H
-

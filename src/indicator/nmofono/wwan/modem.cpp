@@ -304,7 +304,7 @@ public Q_SLOTS:
         {
             setOperatorName(m_networkRegistration->name());
             setStatus(str2status(m_networkRegistration->status()));
-            setStrength(m_networkRegistration->strength());
+            setStrength((int8_t)m_networkRegistration->strength());
         }
         else
         {

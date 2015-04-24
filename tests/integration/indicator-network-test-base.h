@@ -100,7 +100,7 @@ protected:
 
     void disableWiFi();
 
-    QString createAccessPoint(const QString& id, const QString& ssid, const QString& device, int strength = 100,
+    QString createAccessPoint(const QString& id, const QString& ssid, const QString& device, uchar strength = 100,
                               Secure secure = Secure::secure, ApMode apMode = ApMode::infra);
 
     void removeAccessPoint(const QString& device, const QString& ap);
@@ -138,7 +138,7 @@ protected:
     static menuharness::MenuItemMatcher flightModeSwitch(bool toggled = false);
 
     static menuharness::MenuItemMatcher accessPoint(const std::string& ssid, Secure secure,
-                ApMode apMode, ConnectionStatus connectionStatus, int strength = 100);
+                ApMode apMode, ConnectionStatus connectionStatus, uchar strength = 100);
 
     static menuharness::MenuItemMatcher wifiEnableSwitch(bool toggled = true);
 

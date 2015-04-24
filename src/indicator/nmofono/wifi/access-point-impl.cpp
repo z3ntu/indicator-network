@@ -80,7 +80,7 @@ void AccessPointImpl::ap_properties_changed(const QVariantMap &properties)
     auto strengthIt = properties.find("Strength");
     if (strengthIt != properties.cend())
     {
-        m_strength = qvariant_cast<uchar>(*strengthIt);
+        m_strength = qvariant_cast<int8_t>(*strengthIt);
         Q_EMIT strengthUpdated(m_strength);
     }
 }

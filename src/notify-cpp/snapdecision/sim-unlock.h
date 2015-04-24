@@ -17,8 +17,7 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#ifndef SIM_UNLOCK_DIALOG_H
-#define SIM_UNLOCK_DIALOG_H
+#pragma once
 
 #include <memory>
 
@@ -97,4 +96,3 @@ Q_SIGNALS:
 
 }
 }
-#endif

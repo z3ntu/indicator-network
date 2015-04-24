@@ -16,6 +16,7 @@
  * Authors:
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
+
 #pragma once
 
 #include <nmofono/manager.h>

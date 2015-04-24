@@ -17,8 +17,7 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#ifndef SIM_UNLOCK_DIALOG
-#define SIM_UNLOCK_DIALOG
+#pragma once
 
 #include <nmofono/wwan/modem.h>
 
@@ -64,5 +63,3 @@ Q_SIGNALS:
 
     void showSimIdentifiersUpdated(bool showSimIdentifiers);
 };
-
-#endif

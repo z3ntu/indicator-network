@@ -17,8 +17,7 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#ifndef ITEM_H
-#define ITEM_H
+#pragma once
 
 #include <menumodel-cpp/action-group-merger.h>
 #include <menumodel-cpp/menu-item.h>
@@ -54,5 +53,3 @@ protected:
 
 private:
 };
-
-#endif // ITEM_H

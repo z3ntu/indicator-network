@@ -268,9 +268,6 @@ SimUnlockDialog::Private::update()
     std::map<wwan::Modem::PinType, std::pair<std::uint8_t, std::uint8_t>> lengths;
     lengths = {{wwan::Modem::PinType::pin, {4, 8}},
                {wwan::Modem::PinType::puk, {8, 8}}};
-    std::map<wwan::Modem::PinType, std::uint8_t> maxRetries;
-    maxRetries = {{wwan::Modem::PinType::pin, 3},
-                  {wwan::Modem::PinType::puk, 10}};
 
     auto type = m_modem->requiredPin();
     auto retries = m_modem->retries();

@@ -17,8 +17,7 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#ifndef WIFI_SECTION_H
-#define WIFI_SECTION_H
+#pragma once
 
 #include <nmofono/manager.h>
 
@@ -42,5 +41,3 @@ public:
     MenuModel::Ptr settingsModel();
     SwitchItem::Ptr wifiSwitch();
 };
-
-#endif

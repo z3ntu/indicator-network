@@ -57,7 +57,7 @@ public:
 
             if(secflags  < other.secflags)
                 return true;
-            if(secflags > secflags)
+            if(secflags > other.secflags)
                 return false;
 
             if(mode < other.mode)
@@ -76,11 +76,11 @@ public:
             mode = curap->m_mode;
         }
     };
-    friend class Key;
+    friend struct Key;
 
 
     AccessPointImpl(std::shared_ptr<OrgFreedesktopNetworkManagerAccessPointInterface> ap);
-    double strength() const;
+    double strength() const override;
     virtual ~AccessPointImpl() = default;
 
     // time when last connected to this access point
@@ -99,7 +99,7 @@ public:
     QDBusObjectPath object_path() const override;
 
     bool operator==(const AccessPointImpl &other) const;
-    bool operator!=(const AccessPointImpl &other) const { return !(*this == other); };
+    bool operator!=(const AccessPointImpl &other) const { return !(*this == other); }
 
 Q_SIGNALS:
     void lastConnectedUpdated(std::chrono::system_clock::time_point lastConnected);

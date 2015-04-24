@@ -17,8 +17,7 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#ifndef ROOT_STATE_MANAGER
-#define ROOT_STATE_MANAGER
+#pragma once
 
 #include <nmofono/manager.h>
 
@@ -46,5 +45,3 @@ public:
 Q_SIGNALS:
     void stateUpdated(const Variant& state);
 };
-
-#endif

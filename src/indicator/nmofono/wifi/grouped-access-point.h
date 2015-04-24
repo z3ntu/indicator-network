@@ -40,7 +40,7 @@ class GroupedAccessPoint : public AccessPoint
 
 public:
     GroupedAccessPoint(const std::shared_ptr<AccessPointImpl> &ap);
-    double strength() const;
+    double strength() const override;
     virtual ~GroupedAccessPoint();
 
     // time when last connected to this access point
@@ -68,7 +68,7 @@ Q_SIGNALS:
     void lastConnectedUpdated(std::chrono::system_clock::time_point lastConnected);
 
 private:
-    struct Private;
+    class Private;
     std::unique_ptr<Private> p;
 };
 

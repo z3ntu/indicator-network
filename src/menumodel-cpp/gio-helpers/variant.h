@@ -17,8 +17,7 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#ifndef VARIANT_H
-#define VARIANT_H
+#pragma once
 
 #include <map>
 #include <vector>
@@ -286,5 +285,3 @@ struct Codec<std::vector<Variant>>
         }
     }
 };
-
-#endif // VARIANT_H

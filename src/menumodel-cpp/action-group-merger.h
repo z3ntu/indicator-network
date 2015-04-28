@@ -17,8 +17,7 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#ifndef ACTION_GROUP_MERGER_H
-#define ACTION_GROUP_MERGER_H
+#pragma once
 
 #include <memory>
 #include <gio/gio.h>
@@ -58,5 +57,3 @@ public:
 
     ActionGroup::Ptr actionGroup();
 };
-
-#endif // ACTION_GROUP_MERGER_H

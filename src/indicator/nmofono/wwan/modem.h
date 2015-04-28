@@ -128,7 +128,7 @@ public:
 
     int index() const;
 
-    QString name() const;
+    QString name() const override;
 
     WwanType wwanType() const override;
 

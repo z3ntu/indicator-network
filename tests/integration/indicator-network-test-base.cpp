@@ -148,7 +148,7 @@ void IndicatorNetworkTestBase::disableWiFi()
     urfkillInterface.Block(1, true).waitForFinished();
 }
 
-QString IndicatorNetworkTestBase::createAccessPoint(const QString& id, const QString& ssid, const QString& device, int strength,
+QString IndicatorNetworkTestBase::createAccessPoint(const QString& id, const QString& ssid, const QString& device, uchar strength,
                           Secure secure, ApMode apMode)
 {
 
@@ -289,7 +289,7 @@ mh::MenuItemMatcher IndicatorNetworkTestBase::flightModeSwitch(bool toggled)
 }
 
 mh::MenuItemMatcher IndicatorNetworkTestBase::accessPoint(const string& ssid, Secure secure,
-            ApMode apMode, ConnectionStatus connectionStatus, int strength)
+            ApMode apMode, ConnectionStatus connectionStatus, uchar strength)
 {
     return mh::MenuItemMatcher::checkbox()
         .label(ssid)

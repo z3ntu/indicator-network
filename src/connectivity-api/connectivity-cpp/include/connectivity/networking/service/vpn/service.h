@@ -17,8 +17,7 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#ifndef CONNECTIVITY_NETWORKING_SERVICE_VPN_SERVICE
-#define CONNECTIVITY_NETWORKING_SERVICE_VPN_SERVICE
+#pragma once
 
 #include <connectivity/networking/service.h>
 
@@ -45,5 +44,3 @@ protected:
 }
 }
 }
-
-#endif

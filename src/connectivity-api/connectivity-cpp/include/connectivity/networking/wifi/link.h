@@ -17,8 +17,7 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#ifndef CONNECTIVITY_NETWORKING_WIFI_LINK
-#define CONNECTIVITY_NETWORKING_WIFI_LINK
+#pragma once
 
 #include <connectivity/networking/link.h>
 #include <connectivity/networking/wifi/access-point.h>
@@ -57,5 +56,3 @@ public:
 }
 }
 }
-
-#endif

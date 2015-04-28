@@ -19,7 +19,7 @@
 
 #include <factory.h>
 #include <util/unix-signal-handler.h>
-#include <DBusTypes.h>
+#include <dbus-types.h>
 
 #include <QCoreApplication>
 
@@ -38,6 +38,7 @@ main(int argc, char **argv)
 {
     QCoreApplication app(argc, argv);
     DBusTypes::registerMetaTypes();
+    Variant::registerMetaTypes();
 
     util::UnixSignalHandler handler([]{
         QCoreApplication::exit(0);
@@ -60,8 +61,8 @@ main(int argc, char **argv)
     {
         Factory factory;
         auto menu = factory.newMenuBuilder();
-        auto connectivityService = factory.newConnectivityService();
         auto secretAgent = factory.newSecretAgent();
+        auto connectivityService = factory.newConnectivityService();
 
         QObject::connect(connectivityService.get(), &ConnectivityService::unlockAllModems, menu.get(), &MenuBuilder::unlockAllModems);
         QObject::connect(connectivityService.get(), &ConnectivityService::unlockModem, menu.get(), &MenuBuilder::unlockModem);

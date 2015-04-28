@@ -81,14 +81,11 @@ public:
     };
 
     /// @private
-    virtual void enableFlightMode()  = 0;
-
-    /// @private
-    virtual void disableFlightMode() = 0;
-
-    /// @private
     Q_PROPERTY(Manager::FlightModeStatus flightMode READ flightMode NOTIFY flightModeUpdated)
     virtual FlightModeStatus flightMode() const = 0;
+
+    Q_PROPERTY(bool unstoppableOperationHappening READ unstoppableOperationHappening NOTIFY unstoppableOperationHappeningUpdated)
+    virtual bool unstoppableOperationHappening() const = 0;
 
     /// @private
     Q_PROPERTY(QSet<Link::Ptr> links READ links NOTIFY linksUpdated)
@@ -123,10 +120,6 @@ public:
     Q_PROPERTY(bool wifiEnabled READ wifiEnabled NOTIFY wifiEnabledUpdated)
     virtual bool wifiEnabled() const = 0;
 
-    virtual bool enableWifi() = 0;
-
-    virtual bool disableWifi() = 0;
-
     virtual bool roaming() const = 0;
 
     virtual void unlockModem(wwan::Modem::Ptr modem) = 0;
@@ -147,6 +140,13 @@ Q_SIGNALS:
     void hasWifiUpdated(bool);
 
     void wifiEnabledUpdated(bool);
+
+    void unstoppableOperationHappeningUpdated(bool);
+
+public Q_SLOTS:
+    virtual bool setWifiEnabled(bool) = 0;
+
+    virtual void setFlightMode(bool)  = 0;
 
 protected:
     /**

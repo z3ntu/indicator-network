@@ -20,13 +20,10 @@
 
 #include <nmofono/kill-switch.h>
 #include <backend-utils.h>
+#include <dbus-types.h>
 
 #include <URfkillInterface.h>
 #include <URfkillKillswitchInterface.h>
-
-static QString const cBusName = "org.freedesktop.URfkill";
-static QString const cURfkillPath = "/org/freedesktop/URfkill";
-static QString const cURfkillKillswitchPath = "/org/freedesktop/URfkill/WLAN";
 
 namespace nmofono
 {
@@ -60,12 +57,12 @@ public:
 
 KillSwitch::KillSwitch(const QDBusConnection& systemBus)
 {
-    auto urfkill = std::make_shared<OrgFreedesktopURfkillInterface>(cBusName,
-                                                                    cURfkillPath,
+    auto urfkill = std::make_shared<OrgFreedesktopURfkillInterface>(DBusTypes::URFKILL_BUS_NAME,
+                                                                    DBusTypes::URFKILL_OBJ_PATH,
                                                                     systemBus);
 
-    auto killSwitch = std::make_shared<OrgFreedesktopURfkillKillswitchInterface>(cBusName,
-                                                                                 cURfkillKillswitchPath,
+    auto killSwitch = std::make_shared<OrgFreedesktopURfkillKillswitchInterface>(DBusTypes::URFKILL_BUS_NAME,
+                                                                                 DBusTypes::URFKILL_WIFI_OBJ_PATH,
                                                                                  systemBus);
 
     connect(urfkill.get(), SIGNAL(FlightModeChanged(bool)), this, SLOT(setFlightMode(bool)));

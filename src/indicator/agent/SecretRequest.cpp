@@ -20,6 +20,8 @@
 #include <agent/SecretAgent.h>
 #include <util/localisation.h>
 
+#include <NotificationsInterface.h>
+
 namespace agent
 {
 

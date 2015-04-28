@@ -18,50 +18,52 @@
 
 #pragma once
 
+#include <dbus-types.h>
+
 #include <memory>
 
-#include <QScopedPointer>
 #include <QDBusConnection>
 #include <QDBusContext>
 #include <QMap>
 
-#include <DBusTypes.h>
-#include <agent/SecretRequest.h>
-#include <AgentManagerInterface.h>
-#include <NotificationsInterface.h>
-
+class OrgFreedesktopNotificationsInterface;
 class SecretAgentAdaptor;
 
 namespace agent
 {
 
+class SecretRequest;
+
 class SecretAgent: public QObject, protected QDBusContext {
-Q_OBJECT
+	Q_OBJECT
+
+	friend SecretAgentAdaptor;
+	friend SecretRequest;
 
 public:
-    typedef std::shared_ptr<SecretAgent> Ptr;
-    typedef std::unique_ptr<SecretAgent> UPtr;
+	typedef std::shared_ptr<SecretAgent> Ptr;
+	typedef std::unique_ptr<SecretAgent> UPtr;
 
-	static const QString CONNECTION_SETTING_NAME;
-	static const QString WIRELESS_SECURITY_SETTING_NAME;
+	static constexpr char const* CONNECTION_SETTING_NAME = "connection";
+	static constexpr char const* WIRELESS_SECURITY_SETTING_NAME = "802-11-wireless-security";
 
-	static const QString CONNECTION_ID;
+	static constexpr char const* CONNECTION_ID = "id";
 
-	static const QString WIRELESS_SECURITY_PSK;
-	static const QString WIRELESS_SECURITY_WEP_KEY0;
+	static constexpr char const* WIRELESS_SECURITY_PSK = "psk";
+	static constexpr char const* WIRELESS_SECURITY_WEP_KEY0 = "wep-key0";
 
-	static const QString WIRELESS_SECURITY_KEY_MGMT;
+	static constexpr char const* WIRELESS_SECURITY_KEY_MGMT = "key-mgmt";
 
-	static const QString KEY_MGMT_WPA_NONE;
-	static const QString KEY_MGMT_WPA_PSK;
-	static const QString KEY_MGMT_NONE;
+	static constexpr char const* KEY_MGMT_WPA_NONE = "wpa-none";
+	static constexpr char const* KEY_MGMT_WPA_PSK = "wpa-psk";
+	static constexpr char const* KEY_MGMT_NONE = "none";
 
 	explicit SecretAgent(const QDBusConnection &systemConnection,
 			const QDBusConnection &sessionConnection, QObject *parent = 0);
 
 	virtual ~SecretAgent();
 
-public Q_SLOTS:
+protected Q_SLOTS:
 	QVariantDictMap GetSecrets(const QVariantDictMap &connection,
 			const QDBusObjectPath &connectionPath, const QString &settingName,
 			const QStringList &hints, uint flags);
@@ -79,24 +81,9 @@ public Q_SLOTS:
 
 	OrgFreedesktopNotificationsInterface & notifications();
 
-protected Q_SLOTS:
-    void serviceOwnerChanged(const QString &name, const QString &oldOwner,
-            const QString &newOwner);
-
 protected:
-	QScopedPointer<SecretAgentAdaptor> m_adaptor;
-
-	QDBusConnection m_systemConnection;
-
-	QDBusConnection m_sessionConnection;
-
-	QDBusServiceWatcher m_managerWatcher;
-
-	OrgFreedesktopNetworkManagerAgentManagerInterface m_agentManager;
-
-	OrgFreedesktopNotificationsInterface m_notifications;
-
-	std::shared_ptr<SecretRequest> m_request;
+	class Priv;
+	std::shared_ptr<Priv> d;
 };
 
 }

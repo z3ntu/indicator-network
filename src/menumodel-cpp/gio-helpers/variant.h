@@ -24,12 +24,15 @@
 #include <vector>
 #include <memory>
 #include <gio/gio.h>
+#include <QObject>
 
 #include <cassert>
 
 #include "util.h"
 
 class Variant;
+
+Q_DECLARE_METATYPE(Variant)
 
 template<typename T>
 struct Codec
@@ -41,6 +44,11 @@ struct Codec
 class Variant
 {
 public:
+    static void registerMetaTypes()
+    {
+        qRegisterMetaType<Variant>("Variant");
+    }
+
     static Variant fromGVariant(GVariant *variant) {
         return Variant(variant);
     }

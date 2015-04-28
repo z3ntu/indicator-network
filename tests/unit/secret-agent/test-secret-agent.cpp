@@ -18,6 +18,7 @@
 
 #include <agent/SecretAgent.h>
 #include <SecretAgentInterface.h>
+#include <NotificationsInterface.h>
 #include <NetworkManager.h>
 
 #include <libqtdbustest/DBusTestRunner.h>
@@ -42,11 +43,7 @@ protected:
 
 		DBusTypes::registerMetaTypes();
 
-		dbusMock.registerCustomMock("org.freedesktop.Notifications",
-				"/org/freedesktop/Notifications",
-				OrgFreedesktopNotificationsInterface::staticInterfaceName(),
-				QDBusConnection::SessionBus);
-
+		dbusMock.registerNotificationDaemon();
 		dbusMock.registerNetworkManager();
 		dbusTestRunner.startServices();
 
@@ -62,6 +59,7 @@ protected:
 		agentInterface.reset(
 				new OrgFreedesktopNetworkManagerSecretAgentInterface(agentBus,
 				NM_DBUS_PATH_SECRET_AGENT, dbusTestRunner.systemConnection()));
+
 
 		notificationsInterface.reset(
 				new OrgFreedesktopDBusMockInterface(
@@ -162,10 +160,6 @@ static void transform(QVariantList &list) {
 }
 
 TEST_P(TestSecretAgentGetSecrets, ProvidesPasswordForWpaPsk) {
-	notificationsInterface->AddMethod(
-			OrgFreedesktopNotificationsInterface::staticInterfaceName(),
-			"Notify", "susssasa{sv}i", "u", "ret = 1").waitForFinished();
-
 	QDBusPendingReply<QVariantDictMap> reply(
 			agentInterface->GetSecrets(connection(GetParam().keyManagement),
 					QDBusObjectPath("/connection/foo"),
@@ -206,7 +200,7 @@ TEST_P(TestSecretAgentGetSecrets, ProvidesPasswordForWpaPsk) {
 
 		menuSpy.wait();
 
-		menuModel.changeState(0, "hard-coded-password");
+		menuModel.changeState(0, GetParam().password);
 
 		// It seems like UnityMenuModel or the GLib
 		// DBus connection needs some grace time to
@@ -229,6 +223,10 @@ TEST_P(TestSecretAgentGetSecrets, ProvidesPasswordForWpaPsk) {
 INSTANTIATE_TEST_CASE_P(WpaPsk, TestSecretAgentGetSecrets,
 		Values(TestSecretAgentParams( { SecretAgent::KEY_MGMT_WPA_PSK,
 				SecretAgent::WIRELESS_SECURITY_PSK, "hard-coded-password" })));
+
+INSTANTIATE_TEST_CASE_P(WpaPskLongPassword, TestSecretAgentGetSecrets,
+		Values(TestSecretAgentParams( { SecretAgent::KEY_MGMT_WPA_PSK,
+				SecretAgent::WIRELESS_SECURITY_PSK, "123456789012345678901234567890123456789012345678901234" })));
 
 INSTANTIATE_TEST_CASE_P(WpaNone, TestSecretAgentGetSecrets,
 		Values(TestSecretAgentParams( { SecretAgent::KEY_MGMT_WPA_NONE,
@@ -262,13 +260,6 @@ TEST_F(TestSecretAgent, GetSecretsWithNone) {
 /* Tests that if we request secrets and then cancel the request
    that we close the notification */
 TEST_F(TestSecretAgent, CancelGetSecrets) {
-	notificationsInterface->AddMethod(
-			OrgFreedesktopNotificationsInterface::staticInterfaceName(),
-			"Notify", "susssasa{sv}i", "u", "ret = 1").waitForFinished();
-	notificationsInterface->AddMethod(
-			OrgFreedesktopNotificationsInterface::staticInterfaceName(),
-			"CloseNotification", "u", "", "").waitForFinished();
-
 	agentInterface->GetSecrets(
 			connection(SecretAgent::KEY_MGMT_WPA_PSK),
 			QDBusObjectPath("/connection/foo"),
@@ -297,13 +288,6 @@ TEST_F(TestSecretAgent, CancelGetSecrets) {
 /* Ensures that if we request secrets twice we close the notification
    for the first request */
 TEST_F(TestSecretAgent, MultiSecrets) {
-	notificationsInterface->AddMethod(
-			OrgFreedesktopNotificationsInterface::staticInterfaceName(),
-			"Notify", "susssasa{sv}i", "u", "ret = 1").waitForFinished();
-	notificationsInterface->AddMethod(
-			OrgFreedesktopNotificationsInterface::staticInterfaceName(),
-			"CloseNotification", "u", "", "").waitForFinished();
-
 	QSignalSpy notificationSpy(notificationsInterface.data(), SIGNAL(MethodCalled(const QString &, const QVariantList &)));
 
 	agentInterface->GetSecrets(

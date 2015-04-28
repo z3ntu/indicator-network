@@ -67,7 +67,7 @@ public:
 
         m_switch->setState(m_manager->wifiEnabled());
         connect(m_manager.get(), &Manager::wifiEnabledUpdated, m_switch.get(), &SwitchItem::setState);
-        connect(m_switch.get(), &SwitchItem::stateUpdated, this, &Private::switchActivated);
+        connect(m_switch.get(), &SwitchItem::stateUpdated, m_manager.get(), &Manager::setWifiEnabled);
 
         m_openWifiSettings = std::make_shared<TextItem>(_("Wi-Fi settings…"), "wifi", "settings");
         connect(m_openWifiSettings.get(), &TextItem::activated, this, &Private::openWiFiSettings);
@@ -114,18 +114,6 @@ public Q_SLOTS:
             // just take the first one
             break;
         }
-    }
-
-    void switchActivated(bool state)
-    {
-        m_switch->setEnabled(false);
-        runGMainloop();
-        if (state) {
-            m_manager->enableWifi();
-        } else {
-            m_manager->disableWifi();
-        }
-        m_switch->setEnabled(true);
     }
 };
 

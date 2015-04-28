@@ -42,15 +42,15 @@ public:
     ManagerImpl(const QDBusConnection& systemBus);
 
     // Public API
-    void enableFlightMode() override;
-    void disableFlightMode() override;
+    void setFlightMode(bool) override;
     Manager::FlightModeStatus flightMode() const override;
+
+    bool unstoppableOperationHappening() const override;
 
     bool hasWifi() const override;
     bool wifiEnabled() const override;
 
-    bool enableWifi() override;
-    bool disableWifi() override;
+    bool setWifiEnabled(bool) override;
 
     bool roaming() const override;
 

@@ -50,6 +50,15 @@ public:
     Q_PROPERTY(QString Status READ status)
     QString status() const;
 
+    Q_PROPERTY(bool WifiEnabled READ wifiEnabled)
+    bool wifiEnabled() const;
+
+    Q_PROPERTY(bool FlightMode READ flightMode)
+    bool flightMode() const;
+
+    Q_PROPERTY(bool UnstoppableOperationHappening READ unstoppableOperationHappening)
+    bool unstoppableOperationHappening() const;
+
 Q_SIGNALS:
     void unlockAllModems();
 
@@ -75,6 +84,10 @@ protected Q_SLOTS:
     void UnlockAllModems();
 
     void UnlockModem(const QString &modem);
+
+    void SetFlightMode(bool enabled);
+
+    void SetWifiEnabled(bool enabled);
 
 protected:
     ConnectivityService& p;

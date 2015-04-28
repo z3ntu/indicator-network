@@ -36,7 +36,7 @@ class Q_DECL_EXPORT Connectivity: public QObject
 public:
     UNITY_DEFINES_PTRS(Connectivity);
 
-    Connectivity(const QDBusConnection& sessionConnection = QDBusConnection::sessionBus());
+    Connectivity(const QDBusConnection& sessionConnection = QDBusConnection::sessionBus(), QObject* parent = 0);
 
     ~Connectivity();
 

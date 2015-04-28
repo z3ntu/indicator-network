@@ -68,8 +68,8 @@ public Q_SLOTS:
     }
 };
 
-Connectivity::Connectivity(const QDBusConnection& sessionConnection) :
-        d(new Priv(*this, sessionConnection))
+Connectivity::Connectivity(const QDBusConnection& sessionConnection, QObject* parent) :
+        QObject(parent), d(new Priv(*this, sessionConnection))
 {
     d->m_readInterface = make_shared<
             ComUbuntuConnectivity1NetworkingStatusInterface>(

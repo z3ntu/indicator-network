@@ -16,8 +16,8 @@
  * Author: Pete Woods <pete.woods@canonical.com>
  */
 
-#include <Localisation.h>
-#include <SecretAgent.h>
+#include <menumodel-cpp/gio-helpers/util.h>
+#include <agent/SecretAgent.h>
 #include <SecretAgentAdaptor.h>
 
 #include <NetworkManager.h>
@@ -25,11 +25,13 @@
 #include <stdexcept>
 
 using namespace std;
-using namespace org::freedesktop::NetworkManager;
+
+namespace agent
+{
 
 const QString SecretAgent::CONNECTION_SETTING_NAME("connection");
 const QString SecretAgent::WIRELESS_SECURITY_SETTING_NAME(
-		"802-11-wireless-security");
+        "802-11-wireless-security");
 
 const QString SecretAgent::CONNECTION_ID("id");
 
@@ -165,6 +167,8 @@ void SecretAgent::SaveSecrets(const QVariantDictMap &connection,
 	Q_UNUSED(connectionPath);
 }
 
-org::freedesktop::Notifications & SecretAgent::notifications() {
+OrgFreedesktopNotificationsInterface & SecretAgent::notifications() {
 	return m_notifications;
+}
+
 }

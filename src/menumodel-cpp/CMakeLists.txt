@@ -27,12 +27,3 @@ target_link_libraries(
     ${GIO_LIBRARIES}
 )
 
-###########################
-# Installation
-###########################
-
-#install(
-#  TARGETS indicator-network-service
-#  RUNTIME DESTINATION "${CMAKE_INSTALL_LIBEXECDIR}/indicator-network/"
-#)
-

@@ -28,6 +28,7 @@
 #include "menumodel-cpp/menu-merger.h"
 
 #include <util/qhash-sharedptr.h>
+#include <util/localisation.h>
 
 using namespace nmofono;
 

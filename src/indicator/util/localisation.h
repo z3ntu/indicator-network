@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Canonical, Ltd.
+ * Copyright (C) 2015 Canonical, Ltd.
  *
  * This program is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 3, as published
@@ -16,30 +16,11 @@
  * Author: Pete Woods <pete.woods@canonical.com>
  */
 
-#ifndef PASSWORDMENU_H_
-#define PASSWORDMENU_H_
+#pragma once
 
-#include <QString>
-#include <QScopedPointer>
+#include <libintl.h>
+#include <config.h>
 
-class PasswordMenuPriv;
-
-class PasswordMenu {
-public:
-	PasswordMenu();
-
-	virtual ~PasswordMenu();
-
-	const QString & busName() const;
-
-	const QString & password() const;
-
-	const QString & actionPath() const;
-
-	const QString & menuPath() const;
-
-protected:
-	QScopedPointer<PasswordMenuPriv> p;
-};
-
-#endif /* PASSWORDMENU_H_ */
+inline char* _(const char *__msgid) {
+    return dgettext(GETTEXT_PACKAGE, __msgid);
+}

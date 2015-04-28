@@ -16,10 +16,9 @@
  * Author: Pete Woods <pete.woods@canonical.com>
  */
 
-#include <SecretAgent.h>
+#include <agent/SecretAgent.h>
 #include <SecretAgentInterface.h>
 #include <NetworkManager.h>
-#include <DBusTypes.h>
 
 #include <libqtdbustest/DBusTestRunner.h>
 #include <libqtdbusmock/DBusMock.h>
@@ -32,6 +31,7 @@ using namespace std;
 using namespace testing;
 using namespace QtDBusTest;
 using namespace QtDBusMock;
+using namespace agent;
 
 namespace {
 

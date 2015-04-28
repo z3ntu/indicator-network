@@ -20,6 +20,7 @@ set_source_files_properties(
     "${DATA_DIR}/nm-device-wifi.xml"
     "${DATA_DIR}/nm-access-point.xml"
     "${DATA_DIR}/nm-active-connection.xml"
+    "${DATA_DIR}/nm-agent-manager.xml"
     "${DATA_DIR}/com.ubuntu.connectivity1.NetworkingStatus.xml"
     "${DATA_DIR}/com.ubuntu.connectivity1.Private.xml"
     "${DATA_DIR}/org.freedesktop.URfkill.xml"
@@ -32,6 +33,7 @@ set_source_files_properties(
 set_source_files_properties(
     "${DATA_DIR}/nm-settings-connection.xml"
     "${DATA_DIR}/nm-manager.xml"
+    "${DATA_DIR}/org.freedesktop.Notifications.xml"
     PROPERTIES
     NO_NAMESPACE YES
     INCLUDE "DBusTypes.h"
@@ -89,6 +91,18 @@ qt5_add_dbus_interface(
     CONNECTIVITY_BACKEND_SRC
     "${DATA_DIR}/nm-settings-connection.xml"
     NetworkManagerSettingsConnectionInterface
+)
+
+qt5_add_dbus_interface(
+    CONNECTIVITY_BACKEND_SRC
+    "${DATA_DIR}/nm-agent-manager.xml"
+    AgentManagerInterface
+)
+
+qt5_add_dbus_interface(
+    CONNECTIVITY_BACKEND_SRC
+    "${DATA_DIR}/org.freedesktop.Notifications.xml"
+    NotificationsInterface
 )
 
 qt5_add_dbus_interface(

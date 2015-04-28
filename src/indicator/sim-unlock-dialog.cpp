@@ -21,6 +21,7 @@
 
 #include <notify-cpp/notification.h>
 #include <notify-cpp/snapdecision/sim-unlock.h>
+#include <util/localisation.h>
 
 #include <functional>
 #include <sstream>

@@ -18,18 +18,18 @@
  *     Marcus Tomlinson <marcus.tomlinson@canonical.com>
  */
 
-#include <nmofono/kill-switch-impl.h>
+#include <nmofono/kill-switch.h>
 #include <backend-utils.h>
 
 #include <URfkillInterface.h>
 #include <URfkillKillswitchInterface.h>
 
-using namespace backend;
-using namespace platform::nmofono;
-
 static QString const cBusName = "org.freedesktop.URfkill";
 static QString const cURfkillPath = "/org/freedesktop/URfkill";
 static QString const cURfkillKillswitchPath = "/org/freedesktop/URfkill/WLAN";
+
+namespace nmofono
+{
 
 class KillSwitch::Private
 {
@@ -147,4 +147,6 @@ bool KillSwitch::flightMode(bool enable)
 bool KillSwitch::isFlightMode()
 {
     return d->m_flightMode;
+}
+
 }

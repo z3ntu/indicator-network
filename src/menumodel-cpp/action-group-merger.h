@@ -57,8 +57,6 @@ public:
     void remove(ActionGroup::Ptr group);
 
     ActionGroup::Ptr actionGroup();
-
-    operator ActionGroup::Ptr() { return actionGroup(); }
 };
 
 #endif // ACTION_GROUP_MERGER_H

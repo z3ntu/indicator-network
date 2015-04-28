@@ -33,8 +33,7 @@ class AccessPointItem : public Item
 public:
     typedef std::shared_ptr<AccessPointItem> Ptr;
 
-    AccessPointItem() = delete;
-    explicit AccessPointItem(connectivity::networking::wifi::AccessPoint::Ptr accessPoint, bool isActive = false);
+    explicit AccessPointItem(nmofono::wifi::AccessPoint::Ptr accessPoint, bool isActive = false);
     virtual ~AccessPointItem();
 
     void setActive(bool value);

@@ -17,8 +17,7 @@
  *     Jussi Pakkanen <jussi.pakkanen@canonical.com>
  */
 
-#ifndef PLATFORM_NMOFONO_WIFI_GROUPED_ACCESS_POINT
-#define PLATFORM_NMOFONO_WIFI_GROUPED_ACCESS_POINT
+#pragma once
 
 #include <nmofono/wifi/access-point.h>
 
@@ -27,21 +26,20 @@
 #include <QDBusObjectPath>
 #include <QString>
 
-namespace platform {
 namespace nmofono {
 namespace wifi {
 
-class AccessPoint;
+class AccessPointImpl;
 
 // A class that joins multiple access points of the same type into one.
 // Signal strength is the maximum of all subaccesspoints.
 
-class GroupedAccessPoint : public connectivity::networking::wifi::AccessPoint
+class GroupedAccessPoint : public AccessPoint
 {
     Q_OBJECT
 
 public:
-    GroupedAccessPoint(std::shared_ptr<platform::nmofono::wifi::AccessPoint> &ap);
+    GroupedAccessPoint(const std::shared_ptr<AccessPointImpl> &ap);
     double strength() const;
     virtual ~GroupedAccessPoint();
 
@@ -52,16 +50,16 @@ public:
     std::chrono::system_clock::time_point lastConnected() const;
 
     QString ssid() const override;
-    QByteArray raw_ssid() const;
+    QByteArray raw_ssid() const override;
 
     bool secured() const override;
 
     bool adhoc() const override;
 
-    QDBusObjectPath object_path() const;
+    QDBusObjectPath object_path() const override;
 
-    void add_ap(std::shared_ptr<platform::nmofono::wifi::AccessPoint> &ap);
-    void remove_ap(std::shared_ptr<platform::nmofono::wifi::AccessPoint> &ap);
+    void add_ap(std::shared_ptr<AccessPointImpl> &ap);
+    void remove_ap(std::shared_ptr<AccessPointImpl> &ap);
     int num_aps() const;
 
     bool has_object(const QDBusObjectPath &path) const;
@@ -76,6 +74,3 @@ private:
 
 }
 }
-}
-
-#endif

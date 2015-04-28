@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Canonical, Ltd.
+ * Copyright (C) 2015 Canonical, Ltd.
  *
  * This program is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 3, as published
@@ -14,31 +14,21 @@
  * with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  * Authors:
- *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
+ *     Pete Woods <pete.woods@canonical.com>
  */
 
-#ifndef WWAN_LINK_ITEM_H
-#define WWAN_LINK_ITEM_H
+#pragma once
 
-#include "menuitems/section.h"
-#include <nmofono/manager.h>
+#include <nmofono/wwan/modem.h>
 
-class WwanLinkItem : public Section
+class Icons
 {
-    class Private;
-    std::shared_ptr<Private> d;
-
 public:
-    typedef std::shared_ptr<WwanLinkItem> Ptr;
-    WwanLinkItem(nmofono::wwan::Modem::Ptr, nmofono::Manager::Ptr manager);
-    virtual ~WwanLinkItem();
+    Icons() = delete;
 
-    // from Section
-    virtual ActionGroup::Ptr actionGroup();
-    virtual MenuModel::Ptr menuModel();
+    ~Icons() = delete;
 
-    void showSimIdentifier(bool value);
+    static QString strengthIcon(int8_t strength);
+
+    static QString bearerIcon(nmofono::wwan::Modem::Bearer bearer);
 };
-
-#endif // WWAN_LINK_ITEM_H
-

@@ -16,14 +16,14 @@
  * Authors:
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
-#ifndef CONNECTIVITY_NETWORKING_WWAN_DEVICE
-#define CONNECTIVITY_NETWORKING_WWAN_DEVICE
+#pragma once
+
+#include <nmofono/link.h>
 
 #include <memory>
 #include <string>
 
-namespace connectivity {
-namespace networking {
+namespace nmofono {
 namespace wwan {
 
 #ifndef CONNECTIVITY_CPP_EXPORT
@@ -31,24 +31,37 @@ namespace wwan {
 #endif
 
 class CONNECTIVITY_CPP_EXPORT
-Link : public connectivity::networking::Link
+WwanLink : public Link
 {
 public:
     typedef std::shared_ptr<Link> Ptr;
-    enum class Type {
+
+    enum class WwanType {
         GSM,
         CDMA,
         BLUETOOTH_DUN,
         BLUETOOTH_PAN
     };
 
-    virtual ~Link() {}
+    struct Compare
+    {
+        bool operator()(int lhs, int rhs)
+        {
+            if (lhs == -1 && rhs == -1)
+                return false;
+            if (lhs == -1)
+                return false;
+            if (rhs == -1)
+                return true;
+            return lhs < rhs;
+        }
+    };
 
-    virtual State state()   const = 0;
-    virtual Type wwanType() const = 0;
+    virtual ~WwanLink() {}
+
+//    virtual State state()   const = 0;
+    virtual WwanType wwanType() const = 0;
 };
 
 }
 }
-
-#endif

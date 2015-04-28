@@ -17,8 +17,7 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#ifndef PLATFORM_NMOFONO_WIFI_ACCESS_POINT
-#define PLATFORM_NMOFONO_WIFI_ACCESS_POINT
+#pragma once
 
 #include <nmofono/wifi/access-point.h>
 
@@ -27,16 +26,15 @@
 
 #include <chrono>
 
-namespace platform {
 namespace nmofono {
 namespace wifi {
 
-class AccessPoint : public connectivity::networking::wifi::AccessPoint
+class AccessPointImpl : public AccessPoint
 {
     Q_OBJECT
 
 public:
-    typedef std::shared_ptr<AccessPoint> Ptr;
+    typedef std::shared_ptr<AccessPointImpl> Ptr;
 
     struct Key {
         QString ssid;
@@ -70,7 +68,7 @@ public:
         }
 
         Key() = delete;
-        Key(const AccessPoint::Ptr &curap)
+        Key(const AccessPointImpl::Ptr &curap)
         {
             ssid = curap->ssid();
             flags = curap->m_flags;
@@ -81,9 +79,9 @@ public:
     friend class Key;
 
 
-    AccessPoint(std::shared_ptr<OrgFreedesktopNetworkManagerAccessPointInterface> ap);
+    AccessPointImpl(std::shared_ptr<OrgFreedesktopNetworkManagerAccessPointInterface> ap);
     double strength() const;
-    virtual ~AccessPoint() = default;
+    virtual ~AccessPointImpl() = default;
 
     // time when last connected to this access point
     // for APs that have never been connected the
@@ -92,16 +90,16 @@ public:
     std::chrono::system_clock::time_point lastConnected() const;
 
     QString ssid() const override;
-    QByteArray raw_ssid() const;
+    QByteArray raw_ssid() const override;
 
     bool secured() const override;
 
     bool adhoc() const override;
 
-    QDBusObjectPath object_path() const;
+    QDBusObjectPath object_path() const override;
 
-    bool operator==(const platform::nmofono::wifi::AccessPoint &other) const;
-    bool operator!=(const platform::nmofono::wifi::AccessPoint &other) const { return !(*this == other); };
+    bool operator==(const AccessPointImpl &other) const;
+    bool operator!=(const AccessPointImpl &other) const { return !(*this == other); };
 
 Q_SIGNALS:
     void lastConnectedUpdated(std::chrono::system_clock::time_point lastConnected);
@@ -125,6 +123,3 @@ private:
 
 }
 }
-}
-
-#endif

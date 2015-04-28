@@ -21,7 +21,6 @@
 #define ROOT_STATE_MANAGER
 
 #include <nmofono/manager.h>
-#include <modem-manager.h>
 
 #include "menumodel-cpp/gio-helpers/variant.h"
 
@@ -38,8 +37,7 @@ class RootState: public QObject
 public:
     typedef std::shared_ptr<RootState> Ptr;
 
-    RootState() = delete;
-    RootState(std::shared_ptr<connectivity::networking::Manager> manager, ModemManager::Ptr modemManager);
+    RootState(nmofono::Manager::Ptr manager);
     virtual ~RootState();
 
     Q_PROPERTY(Variant state READ state NOTIFY stateUpdated)

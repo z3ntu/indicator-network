@@ -43,7 +43,6 @@ public:
     typedef std::shared_ptr<ActionGroupExporter> Ptr;
     typedef std::unique_ptr<ActionGroupExporter> UPtr;
 
-    ActionGroupExporter() = delete;
     ActionGroupExporter(SessionBus::Ptr sessionBus, ActionGroup::Ptr actionGroup, const std::string &path);
 
     ~ActionGroupExporter();

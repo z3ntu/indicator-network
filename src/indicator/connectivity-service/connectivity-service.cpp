@@ -22,7 +22,7 @@
 #include <NetworkingStatusPrivateAdaptor.h>
 #include <DBusTypes.h>
 
-namespace networking = connectivity::networking;
+using namespace nmofono;
 using namespace std;
 
 namespace connectivity_service
@@ -36,7 +36,7 @@ public:
 
     QDBusConnection m_connection;
 
-    shared_ptr<networking::Manager> m_manager;
+    Manager::Ptr m_manager;
 
     shared_ptr<PrivateService> m_privateService;
 
@@ -78,13 +78,13 @@ public Q_SLOTS:
 
         switch (m_manager->status())
         {
-            case networking::Manager::NetworkingStatus::offline:
+            case Manager::NetworkingStatus::offline:
                 m_status = "offline";
                 break;
-            case networking::Manager::NetworkingStatus::connecting:
+            case Manager::NetworkingStatus::connecting:
                 m_status = "connecting";
                 break;
-            case networking::Manager::NetworkingStatus::online:
+            case Manager::NetworkingStatus::online:
                 m_status = "online";
         }
         if (old_status != m_status)
@@ -95,7 +95,7 @@ public Q_SLOTS:
         QStringList limitations;
         auto characteristics = m_manager->characteristics();
         if ((characteristics
-                & networking::Link::Characteristics::is_bandwidth_limited) != 0)
+                & Link::Characteristics::is_bandwidth_limited) != 0)
         {
             limitations.push_back("bandwith");
         }
@@ -114,7 +114,7 @@ public Q_SLOTS:
     }
 };
 
-ConnectivityService::ConnectivityService(shared_ptr<networking::Manager> manager, const QDBusConnection& connection)
+ConnectivityService::ConnectivityService(nmofono::Manager::Ptr manager, const QDBusConnection& connection)
     : d{new Private(*this, connection)}
 {
     d->m_manager = manager;
@@ -123,8 +123,8 @@ ConnectivityService::ConnectivityService(shared_ptr<networking::Manager> manager
     // Memory is managed by Qt parent ownership
     new NetworkingStatusAdaptor(this);
 
-    connect(d->m_manager.get(), &networking::Manager::characteristicsUpdated, d.get(), &Private::updateNetworkingStatus);
-    connect(d->m_manager.get(), &networking::Manager::statusUpdated, d.get(), &Private::updateNetworkingStatus);
+    connect(d->m_manager.get(), &Manager::characteristicsUpdated, d.get(), &Private::updateNetworkingStatus);
+    connect(d->m_manager.get(), &Manager::statusUpdated, d.get(), &Private::updateNetworkingStatus);
 
     d->updateNetworkingStatus();
 

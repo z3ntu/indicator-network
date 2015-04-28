@@ -18,21 +18,16 @@
  *     Marcus Tomlinson <marcus.tomlinson@canonical.com>
  */
 
-#ifndef PLATFORM_NMOFONO_KILLSWITCH
-#define PLATFORM_NMOFONO_KILLSWITCH
+#pragma once
 
 #include <exception>
 #include <memory>
 
 #include <QDBusConnection>
 
-namespace platform {
 namespace nmofono {
-    class KillSwitch;
-}
-}
 
-class platform::nmofono::KillSwitch : public QObject
+class KillSwitch : public QObject
 {
     Q_OBJECT
 
@@ -92,4 +87,4 @@ private Q_SLOTS:
     void setFlightMode(bool);
 };
 
-#endif
+}

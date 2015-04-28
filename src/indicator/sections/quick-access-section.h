@@ -34,8 +34,7 @@ class QuickAccessSection : public Section
 
 public:
     typedef std::shared_ptr<QuickAccessSection> Ptr;
-    QuickAccessSection() = delete;
-    QuickAccessSection(std::shared_ptr<connectivity::networking::Manager> manager, SwitchItem::Ptr wifiSwitch);
+    QuickAccessSection(nmofono::Manager::Ptr manager, SwitchItem::Ptr wifiSwitch);
     virtual ~QuickAccessSection();
 
     virtual ActionGroup::Ptr actionGroup();

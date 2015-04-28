@@ -20,6 +20,7 @@
 #include <menuitems/wwan-link-item.h>
 #include <menuitems/modem-info-item.h>
 #include <icons.h>
+#include <util/localisation.h>
 
 #include <menumodel-cpp/menu.h>
 

@@ -17,16 +17,15 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#include "root-state.h"
-
-#include <functional>
+#include <root-state.h>
 
 #include <nmofono/wifi/wifi-link.h>
 #include <nmofono/wifi/access-point.h>
 
 #include <icons.h>
-#include <menumodel-cpp/gio-helpers/util.h>
+#include <util/localisation.h>
 
+#include <functional>
 #include <QDebug>
 
 using namespace std;

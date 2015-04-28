@@ -24,6 +24,8 @@
 #include "menumodel-cpp/action-group-merger.h"
 #include "menumodel-cpp/menu-merger.h"
 
+#include <util/localisation.h>
+
 #include <QDebug>
 
 using namespace std;

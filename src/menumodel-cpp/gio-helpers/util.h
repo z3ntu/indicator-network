@@ -20,9 +20,6 @@
 #ifndef GIO_HELPERS_UTIL_H
 #define GIO_HELPERS_UTIL_H
 
-#include <libintl.h>
-#define _(String) gettext (String)
-
 #include <gio/gio.h>
 #include <memory>
 #include <iostream>

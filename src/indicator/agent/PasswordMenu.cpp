@@ -16,14 +16,19 @@
  * Author: Pete Woods <pete.woods@canonical.com>
  */
 
-#include <PasswordMenu.h>
+#include <agent/PasswordMenu.h>
 #include <gio/gio.h>
 
 #include <QString>
 #include <QDebug>
 
+namespace agent
+{
+namespace
+{
 static const QString PASSWORD_ACTION_PATH("/action/%1");
 static const QString PASSWORD_MENU_PATH("/menu/%1");
+}
 
 class PasswordMenuPriv {
 public:
@@ -149,4 +154,6 @@ const QString & PasswordMenu::actionPath() const {
 
 const QString & PasswordMenu::menuPath() const {
 	return p->m_menuPath;
+}
+
 }

@@ -16,10 +16,32 @@
  * Author: Pete Woods <pete.woods@canonical.com>
  */
 
-#ifndef SECRETAGENTINCLUDE_H_
-#define SECRETAGENTINCLUDE_H_
+#pragma once
 
-#include <DBusTypes.h>
-#include <SecretAgent.h>
+#include <QString>
+#include <QScopedPointer>
 
-#endif /* SECRETAGENTINCLUDE_H_ */
+namespace agent
+{
+
+class PasswordMenuPriv;
+
+class PasswordMenu {
+public:
+	PasswordMenu();
+
+	virtual ~PasswordMenu();
+
+	const QString & busName() const;
+
+	const QString & password() const;
+
+	const QString & actionPath() const;
+
+	const QString & menuPath() const;
+
+protected:
+	QScopedPointer<PasswordMenuPriv> p;
+};
+
+}

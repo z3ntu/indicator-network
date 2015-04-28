@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Canonical, Ltd.
+ * Copyright (C) 2015 Canonical, Ltd.
  *
  * This program is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 3, as published
@@ -16,21 +16,11 @@
  * Author: Pete Woods <pete.woods@canonical.com>
  */
 
-#ifndef DBUSTYPES_H_
-#define DBUSTYPES_H_
+#pragma once
 
-#include <QDBusMetaType>
-#include <QMap>
+#include <libintl.h>
+#include <config.h>
 
-typedef QMap<QString, QVariantMap> QVariantDictMap;
-Q_DECLARE_METATYPE(QVariantDictMap)
-
-class DBusTypes {
-public:
-	static void registerMetaTypes() {
-		qRegisterMetaType<QVariantDictMap>("QVariantDictMap");
-		qDBusRegisterMetaType<QVariantDictMap>();
-	}
-};
-
-#endif /* DBUSTYPES_H_ */
+inline char* _(const char *__msgid) {
+    return dgettext(GETTEXT_PACKAGE, __msgid);
+}

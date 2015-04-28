@@ -17,8 +17,7 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#ifndef CONNECTIVITY_NETWORKING_SERVICE_TETHERING_SERVICE
-#define CONNECTIVITY_NETWORKING_SERVICE_TETHERING_SERVICE
+#pragma once
 
 #include <com/ubuntu/connectivity/networking/service.h>
 
@@ -55,5 +54,3 @@ protected:
 }
 }
 }
-
-#endif

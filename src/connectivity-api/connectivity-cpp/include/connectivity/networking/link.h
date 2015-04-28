@@ -17,8 +17,7 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#ifndef CONNECTIVITY_NETWORKING_LINK
-#define CONNECTIVITY_NETWORKING_LINK
+#pragma once
 
 #include <core/property.h>
 
@@ -121,5 +120,3 @@ protected:
 
 }
 }
-
-#endif

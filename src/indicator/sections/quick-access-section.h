@@ -17,8 +17,7 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#ifndef QUICK_ACCESS_SECTION_H
-#define QUICK_ACCESS_SECTION_H
+#pragma once
 
 #include <menuitems/section.h>
 #include <menuitems/switch-item.h>
@@ -40,5 +39,3 @@ public:
     virtual ActionGroup::Ptr actionGroup();
     virtual MenuModel::Ptr menuModel();
 };
-
-#endif

@@ -17,8 +17,7 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#ifndef CONNECTIVITY_NETWORKING_SERVICE_TOR_SERVICE
-#define CONNECTIVITY_NETWORKING_SERVICE_TOR_SERVICE
+#pragma once
 
 #include <connectivity/networking/service.h>
 
@@ -42,5 +41,3 @@ public:
 }
 }
 }
-
-#endif

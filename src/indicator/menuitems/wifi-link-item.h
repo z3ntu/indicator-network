@@ -17,8 +17,7 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#ifndef WIFI_LINK_ITEM_H
-#define WIFI_LINK_ITEM_H
+#pragma once
 
 #include <nmofono/wifi/wifi-link.h>
 
@@ -38,5 +37,3 @@ public:
     virtual MenuItem::Ptr menuItem();
     virtual ActionGroup::Ptr actionGroup();
 };
-
-#endif // WIFI_LINK_ITEM_H

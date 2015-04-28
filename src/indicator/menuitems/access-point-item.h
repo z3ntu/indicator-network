@@ -17,8 +17,7 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#ifndef ACCESS_POINT_ITEM_H
-#define ACCESS_POINT_ITEM_H
+#pragma once
 
 #include <nmofono/wifi/access-point.h>
 #include "item.h"
@@ -43,5 +42,3 @@ public:
 Q_SIGNALS:
     void activated();
 };
-
-#endif // ACCESS_POINT_ITEM_H

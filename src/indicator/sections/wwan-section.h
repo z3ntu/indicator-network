@@ -17,8 +17,7 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#ifndef WWAN_SECTION_H
-#define WWAN_SECTION_H
+#pragma once
 
 #include <menuitems/section.h>
 #include <nmofono/manager.h>
@@ -39,5 +38,3 @@ public:
     void unlockAllModems();
     void unlockModem(const QString &name);
 };
-
-#endif

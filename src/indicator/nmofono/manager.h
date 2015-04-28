@@ -17,8 +17,7 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#ifndef CONNECTIVITY_NETWORKING_MANAGER
-#define CONNECTIVITY_NETWORKING_MANAGER
+#pragma once
 
 #include <nmofono/link.h>
 #include <nmofono/wifi/wifi-link.h>
@@ -159,5 +158,3 @@ protected:
 };
 
 }
-
-#endif

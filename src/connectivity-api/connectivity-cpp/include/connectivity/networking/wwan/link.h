@@ -16,8 +16,8 @@
  * Authors:
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
-#ifndef CONNECTIVITY_NETWORKING_WWAN_DEVICE
-#define CONNECTIVITY_NETWORKING_WWAN_DEVICE
+
+#pragma once
 
 #include <memory>
 #include <string>
@@ -50,5 +50,3 @@ public:
 
 }
 }
-
-#endif

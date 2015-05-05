@@ -28,10 +28,9 @@ namespace wifi {
 AccessPointImpl::AccessPointImpl(std::shared_ptr<OrgFreedesktopNetworkManagerAccessPointInterface> ap)
         : m_ap(ap)
 {
-    uint flags = m_ap->flags();
     uint mode = m_ap->mode();
 
-    m_secured = (flags == NM_802_11_AP_FLAGS_PRIVACY);
+
     /// @todo check for the other modes also..
     m_adhoc = (mode != NM_802_11_MODE_INFRA);
 
@@ -65,7 +64,6 @@ AccessPointImpl::AccessPointImpl(std::shared_ptr<OrgFreedesktopNetworkManagerAcc
 
     connect(m_ap.get(), &OrgFreedesktopNetworkManagerAccessPointInterface::PropertiesChanged, this, &AccessPointImpl::ap_properties_changed);
 
-    m_flags = flags;
     /* NetworkManager seems to set the wpa and rns flags
      * for AccessPoints on the same network in a total random manner.
      * Sometimes only wpa_flags or rns_flags is set and sometimes
@@ -73,6 +71,8 @@ AccessPointImpl::AccessPointImpl(std::shared_ptr<OrgFreedesktopNetworkManagerAcc
      */
     m_secflags = m_ap->wpaFlags() | m_ap->rsnFlags();
     m_mode = mode;
+
+    m_secured = (m_secflags != NM_802_11_AP_SEC_NONE);
 }
 
 void AccessPointImpl::ap_properties_changed(const QVariantMap &properties)
@@ -119,11 +119,20 @@ bool AccessPointImpl::adhoc() const
     return m_adhoc;
 }
 
+uint32_t AccessPointImpl::secflags() const
+{
+    return m_secflags;
+}
+
+uint32_t AccessPointImpl::mode() const
+{
+    return m_mode;
+}
+
 bool AccessPointImpl::operator==(const AccessPointImpl &other) const {
     if(this == &other)
         return true;
     return m_ssid == other.m_ssid &&
-            m_flags == other.m_flags &&
             m_secflags == other.m_secflags &&
             m_mode == other.m_mode;
 }

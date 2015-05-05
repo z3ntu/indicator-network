@@ -654,7 +654,7 @@ TEST_F(TestIndicator, FlightMode_NoSIM)
     auto device = createWiFiDevice(NM_DEVICE_STATE_ACTIVATED);
     auto ap = createAccessPoint("0", "the ssid", device, 40, Secure::insecure);
     auto connection = createAccessPointConnection("0", "the ssid", device);
-    createActiveConnection("0", device, connection, ap);
+    auto activeConnection = createActiveConnection("0", device, connection, ap);
 
     // start the indicator
     ASSERT_NO_THROW(startIndicator());
@@ -694,7 +694,10 @@ TEST_F(TestIndicator, FlightMode_NoSIM)
             )
         ).match());
 
+
+    // Disconnect
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
+    removeActiveConnection(device, activeConnection);
     removeWifiConnection(device, connection);
     removeAccessPoint(device, ap);
 
@@ -725,6 +728,10 @@ TEST_F(TestIndicator, FlightMode_NoSIM)
             )
         ).match());
 
+    // And we're back
+    ap = createAccessPoint("1", "the ssid", device, 40, Secure::insecure);
+    connection = createAccessPointConnection("1", "the ssid", device);
+    activeConnection = createActiveConnection("1", device, connection, ap);
     setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
 
     // check that the wifi switch turns back on
@@ -752,7 +759,7 @@ TEST_F(TestIndicator, FlightMode_LockedSIM)
     auto device = createWiFiDevice(NM_DEVICE_STATE_ACTIVATED);
     auto ap = createAccessPoint("0", "the ssid", device, 20, Secure::secure);
     auto connection = createAccessPointConnection("0", "the ssid", device);
-    createActiveConnection("0", device, connection, ap);
+    auto activeConnection = createActiveConnection("0", device, connection, ap);
 
     // start the indicator
     ASSERT_NO_THROW(startIndicator());
@@ -792,9 +799,11 @@ TEST_F(TestIndicator, FlightMode_LockedSIM)
             )
         ).match());
 
-    setGlobalConnectedState(NM_STATE_DISCONNECTED);
+    // Disconnect
+    removeActiveConnection(device, activeConnection);
     removeWifiConnection(device, connection);
     removeAccessPoint(device, ap);
+    setGlobalConnectedState(NM_STATE_DISCONNECTED);
 
     // check that the wifi switch turns off
     // check indicator is a plane icon, a locked sim card and a 0-bar wifi icon
@@ -823,6 +832,10 @@ TEST_F(TestIndicator, FlightMode_LockedSIM)
             )
         ).match());
 
+    // And we're back
+    ap = createAccessPoint("1", "the ssid", device, 20, Secure::secure);
+    connection = createAccessPointConnection("1", "the ssid", device);
+    activeConnection = createActiveConnection("1", device, connection, ap);
     setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
 
     // check that the wifi switch turns back on

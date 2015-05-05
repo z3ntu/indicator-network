@@ -38,7 +38,6 @@ public:
 
     struct Key {
         QString ssid;
-        uint32_t flags;
         uint32_t secflags;
         uint32_t mode;
 
@@ -48,11 +47,6 @@ public:
             if(ssid < other.ssid)
                 return true;
             if(ssid > other.ssid)
-                return false;
-
-            if(flags < other.flags)
-                return true;
-            if(flags > other.flags)
                 return false;
 
             if(secflags  < other.secflags)
@@ -71,7 +65,6 @@ public:
         Key(const AccessPointImpl::Ptr &curap)
         {
             ssid = curap->ssid();
-            flags = curap->m_flags;
             secflags = curap->m_secflags;
             mode = curap->m_mode;
         }
@@ -91,6 +84,9 @@ public:
 
     QString ssid() const override;
     QByteArray raw_ssid() const override;
+
+    std::uint32_t secflags() const;
+    std::uint32_t mode() const;
 
     bool secured() const override;
 
@@ -116,7 +112,6 @@ private:
     bool m_secured;
     bool m_adhoc;
 
-    std::uint32_t m_flags;
     std::uint32_t m_secflags;
     std::uint32_t m_mode;
 };

@@ -118,6 +118,7 @@ public Q_SLOTS:
         if ((characteristics
                 & Link::Characteristics::is_bandwidth_limited) != 0)
         {
+            // FIXME KNOWN TYPO
             limitations.push_back("bandwith");
         }
         m_limitations = limitations;

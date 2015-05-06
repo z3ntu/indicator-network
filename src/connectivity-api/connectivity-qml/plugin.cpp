@@ -36,7 +36,7 @@ connectivitySingletonProvider(QQmlEngine *engine, QJSEngine *scriptEngine)
 void
 QmlConnectivityNetworkingPlugin::registerTypes(const char *uri)
 {
-    Q_UNUSED(uri);
+    connectivityqt::Connectivity::registerMetaTypes();
     qmlRegisterSingletonType<connectivityqt::Connectivity>(uri, 1, 0, "NetworkingStatus", connectivitySingletonProvider);
     qmlRegisterSingletonType<connectivityqt::Connectivity>(uri, 1, 0, "Connectivity", connectivitySingletonProvider);
 }

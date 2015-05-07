@@ -101,24 +101,10 @@ configure_file(
   "config.h"
 )
 
-#####################################################################
-# Enable code coverage calculation with gcov/gcovr/lcov
-# Usage:
-#  * Switch build type to coverage (use ccmake or cmake-gui)
-#  * Invoke make, make test, make coverage
-#  * Find html report in subdir coveragereport
-#  * Find xml report feasible for jenkins in coverage.xml
-#####################################################################
-IF(build_type_lower MATCHES coverage)
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftest-coverage -fprofile-arcs" )
-  SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -ftest-coverage -fprofile-arcs" )
-  SET(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -ftest-coverage -fprofile-arcs" )
-  SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -ftest-coverage -fprofile-arcs" )
-ENDIF()
-
 add_subdirectory(data)
 add_subdirectory(src)
 add_subdirectory(po)
+add_subdirectory(doc)
 
 enable_testing()
 add_subdirectory(tests)
@@ -135,6 +121,9 @@ enable_coverage_report(
     notify_cpp
     qdbus-stubs
     url_dispatcher_cpp
+  TESTS
+    unit-tests
+    integration-tests
   FILTER
     ${CMAKE_SOURCE_DIR}/tests/*
     ${CMAKE_BINARY_DIR}/*

@@ -12,6 +12,7 @@ Build-Depends: cmake,
                doxygen,
                google-mock (>= 1.6.0+svn437),
                graphviz,
+               intltool,
                libglib2.0-dev,
                libnotify-dev,
 #///! TODO: The next line should be removed once all dependancy on qmenumodel is removed

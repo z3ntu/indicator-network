@@ -24,6 +24,5 @@ add_library(menumodel_cpp STATIC ${MENUMODEL_CPP_SOURCES})
 target_link_libraries(
     menumodel_cpp
     ${GLIB_LIBRARIES}
-    ${GIO_LIBRARIES}
 )
 

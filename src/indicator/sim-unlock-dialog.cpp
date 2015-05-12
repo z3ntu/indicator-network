@@ -259,7 +259,9 @@ void
 SimUnlockDialog::Private::update()
 {
     if (!m_modem || !m_sd)
+    {
         return;
+    }
 
     m_sd->setTitle("");
     m_sd->setBody("");
@@ -300,12 +302,17 @@ SimUnlockDialog::Private::update()
             break;
         case wwan::Modem::PinType::puk:
             if (!m_showSimIdentifiers)
+            {
                 title = _("Enter PUK code");
+            }
             else
+            {
                 title = ubuntu::i18n::argumentSubstitute(_("Enter PUK code for %{1}"),
                                                            m_modem->simIdentifier().toStdString());
+            }
             break;
         }
+
         m_sd->setPinMinMax(lengths[type]);
 
         std::string attempts;
@@ -336,6 +343,7 @@ SimUnlockDialog::Private::update()
         m_sd->setPinMinMax(lengths[wwan::Modem::PinType::pin]);
         break;
     }
+
 
     /// @todo should be able to see cleartext puk and pin when entering puk or changing pin.
     m_sd->update();
@@ -429,7 +437,9 @@ void
 SimUnlockDialog::unlock(wwan::Modem::Ptr modem)
 {
     if (d->m_modem)
+    {
         throw std::logic_error("Unlocking already in progress.");
+    }
 
     d->m_modem = modem;
     d->m_state = State::unlocking;
@@ -475,13 +485,17 @@ SimUnlockDialog::unlock(wwan::Modem::Ptr modem)
     else if (type == wwan::Modem::PinType::puk) {
         // we we know the sim is permanently blocked, just show the notification straight away
         if (pukRetries == 0)
+        {
             d->showSimPermanentlyBlockedPopup([this](){ cancel(); });
+        }
         else
+        {
             d->showPinBlockedPopup([this, pukRetries](){
                 if (pukRetries == 1) {
                     d->showLastPukAttemptPopup();
                 }
             });
+        }
     }
 
     d->update();

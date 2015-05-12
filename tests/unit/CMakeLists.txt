@@ -80,7 +80,7 @@ target_link_libraries(
     ${QTDBUSMOCK_LDFLAGS}
     ${QTDBUSTEST_LDFLAGS}
     ${QMENUMODEL_LDFLAGS}
-    ${GIO_LDFLAGS}
+    ${GLIB_LDFLAGS}
     ${GTEST_LIBRARIES}
     ${GMOCK_LIBRARIES}
 )

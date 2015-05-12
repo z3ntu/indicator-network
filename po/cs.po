@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-10-07 20:43+0300\n"
-"PO-Revision-Date: 2015-05-07 08:57+0000\n"
+"PO-Revision-Date: 2015-05-11 12:36+0000\n"
 "Last-Translator: Vojtěch Daněk <vdanek@outlook.com>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-Launchpad-Export-Date: 2015-05-08 05:32+0000\n"
-"X-Generator: Launchpad (build 17474)\n"
+"X-Launchpad-Export-Date: 2015-05-12 05:35+0000\n"
+"X-Generator: Launchpad (build 17487)\n"
+"Language: cs\n"
 
 #: src/indicator/quick-access-section.cpp:48
 msgid "Flight Mode"
@@ -80,61 +81,62 @@ msgstr "Kontaktujte, prosím, svého operátora."
 
 #: src/indicator/sim-unlock-dialog.cpp:199
 msgid "Your SIM card is now permanently blocked and needs replacement."
-msgstr ""
+msgstr "Vaše SIM karta byla permanentně zablokována a potřebuje výměnu."
 
 #: src/indicator/sim-unlock-dialog.cpp:201
 msgid "Please contact your service provider."
-msgstr ""
+msgstr "Kontaktujte, prosím, svého operátora."
 
 #: src/indicator/sim-unlock-dialog.cpp:265
 msgid "Enter %{1} PIN"
-msgstr ""
+msgstr "Vložte %{1} PIN"
 
 #: src/indicator/sim-unlock-dialog.cpp:272
 msgid "Enter PUK code"
-msgstr ""
+msgstr "Vložte PUK kód"
 
 #: src/indicator/sim-unlock-dialog.cpp:274
 msgid "Enter PUK code for %{1}"
-msgstr ""
+msgstr "Vložte PUK kód pro %{1}"
 
 #: src/indicator/sim-unlock-dialog.cpp:282
 #, c-format
 msgid "1 attempt remaining"
 msgid_plural "%d attempts remaining"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Zbývá jeden pokus"
+msgstr[1] "Zbývají %d pokusy"
+msgstr[2] "Zbývá %d pokusů"
 
 #: src/indicator/sim-unlock-dialog.cpp:293
 msgid "Enter new %{1} PIN"
-msgstr ""
+msgstr "Vložte nový %{1} PIN"
 
 #: src/indicator/sim-unlock-dialog.cpp:301
 msgid "Confirm new %{1} PIN"
-msgstr ""
+msgstr "Potvrďte nový %{1} PIN"
 
 #: src/indicator/sim-unlock-dialog.cpp:340
 #: src/indicator/sim-unlock-dialog.cpp:515
 msgid "PIN codes did not match."
-msgstr ""
+msgstr "PIN kódy nesouhlasí"
 
 #: src/indicator/sim-unlock-dialog.cpp:495
 #: src/indicator/sim-unlock-dialog.cpp:523
 msgid "Enter SIM PIN"
-msgstr ""
+msgstr "Vložte nový PIN kód pro SIM"
 
 #: src/indicator/sim-unlock-dialog.cpp:506
 #: src/indicator/sim-unlock-dialog.cpp:516
 msgid "Enter new PIN code"
-msgstr ""
+msgstr "Vložte nový PIN kód"
 
 #: src/indicator/sim-unlock-dialog.cpp:510
 msgid "Confirm new PIN code"
-msgstr ""
+msgstr "Potvrďte nový PIN kód"
 
 #: src/indicator/sim-unlock-dialog.cpp:522
 msgid "Failed to change PIN."
-msgstr ""
+msgstr "Změna PIN kódu selhala."
 
 #: src/indicator/wifi-link-item.h:88
 msgid "Wi-Fi"
@@ -142,7 +144,7 @@ msgstr "Wi-Fi"
 
 #: src/indicator/wifi-link-item.h:152
 msgid "Other network…"
-msgstr ""
+msgstr "Ostatní sítě..."
 
 #: src/indicator/wifi-section.cpp:60
 msgid "Wi-Fi settings…"
@@ -158,23 +160,23 @@ msgstr "Chyba SIM"
 
 #: src/indicator/wwan-link-item.cpp:100
 msgid "SIM Locked"
-msgstr ""
+msgstr "SIM karta zamčená"
 
 #: src/indicator/wwan-link-item.cpp:112
 msgid "Unregistered"
-msgstr ""
+msgstr "Neregistrované"
 
 #: src/indicator/wwan-link-item.cpp:116
 msgid "Unknown"
-msgstr ""
+msgstr "Neznámé"
 
 #: src/indicator/wwan-link-item.cpp:120
 msgid "Denied"
-msgstr ""
+msgstr "Odmítnuté"
 
 #: src/indicator/wwan-link-item.cpp:124
 msgid "Searching"
-msgstr ""
+msgstr "Hledání"
 
 #: src/indicator/wwan-link-item.cpp:135
 msgid "No Signal"
@@ -182,7 +184,7 @@ msgstr "Žádný signál"
 
 #: src/indicator/wwan-link-item.cpp:141
 msgid "Offline"
-msgstr ""
+msgstr "Offline"
 
 #: src/indicator/wwan-section.cpp:79
 msgid "Cellular settings…"
@@ -191,11 +193,11 @@ msgstr "Mobilní nastavení..."
 #: src/secret-agent/SecretRequest.cpp:62
 #, qt-format
 msgid "Connect to “%1”"
-msgstr ""
+msgstr "Připojit k “%1”"
 
 #: src/secret-agent/SecretRequest.cpp:67
 msgid "WPA"
-msgstr ""
+msgstr "WPA"
 
 #: src/secret-agent/SecretRequest.cpp:69
 msgid "WEP"

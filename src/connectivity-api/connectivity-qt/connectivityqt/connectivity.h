@@ -36,18 +36,57 @@ class Q_DECL_EXPORT Connectivity: public QObject
 public:
     UNITY_DEFINES_PTRS(Connectivity);
 
-    Connectivity(const QDBusConnection& sessionConnection = QDBusConnection::sessionBus());
+    Q_DISABLE_COPY(Connectivity)
+
+    Q_ENUMS(Limitations)
+    Q_ENUMS(Status)
+
+    static void registerMetaTypes();
+
+    /**
+      * @brief enum for networking limitations
+      *
+      * Networking limitations may be accessed through the NetworkingStatus::limitations property.
+      */
+    enum class Limitations
+    {
+        /**
+         * indicates that the bandwith of the Internet connection has limitations.
+         * Applications should minimize their bandwith usage if possible.
+         */
+        Bandwith
+    };
+
+    /**
+      * @brief enum for networking status
+      *
+      * Networking status may be accessed through the NetworkingStatus::status property.
+      */
+    enum class Status
+    {
+        Offline,     /**< No Internet connection available.            */
+        Connecting,  /**< System is actively establising a connection. */
+        Online       /**< System is connected to the Internet.         */
+    };
+
+    Connectivity(const QDBusConnection& sessionConnection = QDBusConnection::sessionBus(), QObject* parent = 0);
 
     ~Connectivity();
 
     Q_PROPERTY(bool FlightMode READ flightMode WRITE setFlightMode NOTIFY flightModeUpdated)
     bool flightMode() const;
 
-//    Q_PROPERTY(QStringList Limitations READ limitations NOTIFY limitationsUpdated)
-//    QStringList limitations() const;
+    Q_PROPERTY(bool online READ online NOTIFY onlineUpdated)
+    bool online() const;
 
-//    Q_PROPERTY(QString Status READ status NOTIFY statusUpdated)
-//    QString status() const;
+    Q_PROPERTY(bool limitedBandwith READ limitedBandwith NOTIFY limitedBandwithUpdated)
+    bool limitedBandwith() const;
+
+    Q_PROPERTY(QVector<Limitations> Limitations READ limitations NOTIFY limitationsUpdated)
+    QVector<Limitations> limitations() const;
+
+    Q_PROPERTY(connectivityqt::Connectivity::Status Status READ status NOTIFY statusUpdated)
+    Status status() const;
 
     Q_PROPERTY(bool WifiEnabled READ wifiEnabled WRITE setwifiEnabled NOTIFY wifiEnabledUpdated)
     bool wifiEnabled() const;
@@ -66,9 +105,13 @@ public Q_SLOTS:
 Q_SIGNALS:
     void flightModeUpdated(bool);
 
-//    void limitationsUpdated(const QStringList&);
+    void onlineUpdated(bool value);
 
-//    void statusUpdated(const QString&);
+    void limitedBandwithUpdated(bool value);
+
+    void limitationsUpdated(const QVector<Limitations>&);
+
+    void statusUpdated(connectivityqt::Connectivity::Status value);
 
     void wifiEnabledUpdated(bool);
 
@@ -82,3 +125,8 @@ protected:
 };
 
 }
+
+Q_DECLARE_METATYPE(connectivityqt::Connectivity::Limitations)
+Q_DECLARE_METATYPE(QVector<connectivityqt::Connectivity::Limitations>)
+Q_DECLARE_METATYPE(connectivityqt::Connectivity::Status)
+

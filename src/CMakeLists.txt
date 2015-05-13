@@ -1,8 +1,4 @@
 
-if(NOT build_type_lower MATCHES debug)
-    set(COMMON_FLAGS "${COMMON_FLAGS} -Werror")
-endif()
-
 add_subdirectory(connectivity-api)
 
 add_subdirectory(indicator)

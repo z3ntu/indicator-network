@@ -99,7 +99,6 @@ target_link_libraries(
     qdbus-stubs
     ${DBUSCPP_LIBRARIES}
     ${GLIB_LIBRARIES}
-    ${GIO_LIBRARIES}
     ${NOTIFY_LIBRARIES}
     ${QOFONO_LIBRARIES}
 )

@@ -49,6 +49,41 @@ public:
 
     shared_ptr<ComUbuntuConnectivity1PrivateInterface> m_writeInterface;
 
+    static QVector<Limitations> toLimitations(const QVariant& value)
+    {
+        auto l = value.toStringList();
+        QVector<Limitations> result;
+        for (const auto& limit : l)
+        {
+            // FIXME KNOWN TYPO
+            if (limit == "bandwith")
+            {
+                result.push_back(Limitations::Bandwith);
+            }
+        }
+        return result;
+    }
+
+    static Status toStatus(const QVariant& value)
+    {
+        auto s = value.toString();
+
+        if (s == "offline")
+        {
+            return Status::Offline;
+        }
+        else if (s == "connecting")
+        {
+            return Status::Connecting;
+        }
+        else if (s == "online")
+        {
+            return Status::Online;
+        }
+
+        return Status::Offline;
+    }
+
 public Q_SLOTS:
 
     void propertyChanged(const QString& name, const QVariant& value)
@@ -65,11 +100,32 @@ public Q_SLOTS:
         {
             Q_EMIT p.unstoppableOperationHappeningUpdated(value.toBool());
         }
+        else if (name == "Limitations")
+        {
+            auto limitations = toLimitations(value);
+            Q_EMIT p.limitationsUpdated(limitations);
+            Q_EMIT p.limitedBandwithUpdated(limitations.contains(Limitations::Bandwith));
+        }
+        else if (name == "Status")
+        {
+            auto status = toStatus(value);
+            Q_EMIT p.statusUpdated(status);
+            Q_EMIT p.onlineUpdated(status == Status::Online);
+        }
     }
 };
 
-Connectivity::Connectivity(const QDBusConnection& sessionConnection) :
-        d(new Priv(*this, sessionConnection))
+void Connectivity::registerMetaTypes()
+{
+    DBusTypes::registerMetaTypes();
+
+    qRegisterMetaType<connectivityqt::Connectivity::Limitations>("connectivityqt::Connectivity::Limitations");
+    qRegisterMetaType<QVector<connectivityqt::Connectivity::Limitations>>("QVector<connectivityqt::Connectivity::Limitations>");
+    qRegisterMetaType<connectivityqt::Connectivity::Status>("connectivityqt::Connectivity::Status");
+}
+
+Connectivity::Connectivity(const QDBusConnection& sessionConnection, QObject* parent) :
+        QObject(parent), d(new Priv(*this, sessionConnection))
 {
     d->m_readInterface = make_shared<
             ComUbuntuConnectivity1NetworkingStatusInterface>(
@@ -110,6 +166,31 @@ bool Connectivity::unstoppableOperationHappening() const
     return d->m_propertyCache->get("UnstoppableOperationHappening").toBool();
 }
 
+QVector<Connectivity::Limitations> Connectivity::limitations() const
+{
+    return d->toLimitations(d->m_propertyCache->get("Limitations"));
+}
+
+Connectivity::Status Connectivity::status() const
+{
+    return d->toStatus(d->m_propertyCache->get("Status"));
+}
+
+bool Connectivity::online() const
+{
+    return (status() ==  Status::Online);
+}
+
+bool Connectivity::limitedBandwith() const
+{
+    return limitations().contains(Limitations::Bandwith);
+}
+
+bool Connectivity::isInitialized() const
+{
+    return d->m_propertyCache->isInitialized();
+}
+
 void Connectivity::setFlightMode(bool enabled)
 {
     d->m_writeInterface->SetFlightMode(enabled);
@@ -118,11 +199,6 @@ void Connectivity::setFlightMode(bool enabled)
 void Connectivity::setwifiEnabled(bool enabled)
 {
     d->m_writeInterface->SetWifiEnabled(enabled);
-}
-
-bool Connectivity::isInitialized() const
-{
-    return d->m_propertyCache->isInitialized();
 }
 
 }

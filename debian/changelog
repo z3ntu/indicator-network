@@ -1,3 +1,119 @@
+indicator-network (0.5.1+15.04.20150513.1-0ubuntu1) vivid; urgency=medium
+
+  [ Pete Woods ]
+  * Add flight mode and wifi toggles to connectivity service interface
+    removed: tests/integration/CMakeLists.txt
+    tests/integration/connectivity-cpp/ tests/integration/connectivity-
+    cpp/CMakeLists.txt tests/integration/connectivity-cpp/mocks/
+    tests/integration/connectivity-cpp/mocks/urfkill.h
+    tests/integration/connectivity-cpp/sig_term_catcher.h
+    tests/integration/connectivity-cpp/test_data.h.in
+    tests/integration/connectivity-cpp/test_flight_mode.cpp
+    tests/integration/connectivity-cpp/test_networking_status.cpp
+    tests/integration/connectivity-cpp/test_service.h
+    tests/integration/connectivity-cpp/test_wifi_connect.cpp
+    tests/integration/connectivity-cpp/test_wifi_link.cpp
+    tests/integration/connectivity-cpp/test_wifi_link_dedup.cpp
+    tests/integration/connectivity-cpp/test_wifi_link_enable_disable.cpp
+    tests/integration/indicator/ tests/unit/indicator/CMakeLists.txt
+    tests/unit/indicator/menuitems/CMakeLists.txt tests/unit/menumodel-
+    cpp/CMakeLists.txt tests/unit/secret-agent/CMakeLists.txt
+    tests/unit/test_variant.h added:
+    data/org.freedesktop.DBus.Properties.xml src/connectivity-api/
+    src/connectivity-api/CMakeLists.txt src/connectivity-
+    api/connectivity-qml/ src/connectivity-api/connectivity-
+    qml/CMakeLists.txt src/connectivity-api/connectivity-qt/
+    src/connectivity-api/connectivity-qt/CMakeLists.txt
+    src/connectivity-api/connectivity-qt/connectivityqt/
+    src/connectivity-api/connectivity-qt/connectivityqt/connectivity.cpp
+    src/connectivity-api/connectivity-qt/connectivityqt/connectivity.h
+    src/connectivity-api/connectivity-qt/connectivityqt/internal/
+    src/connectivity-api/connectivity-qt/connectivityqt/internal/dbus-
+    property-cache.cpp src/connectivity-api/connectivity-
+    qt/connectivityqt/internal/dbus-property-cache.h
+    tests/integration/indicator-network-test-base.cpp
+    tests/integration/indicator-network-test-base.h
+    tests/integration/test-connectivity-api.cpp renamed:
+    src/connectivity-cpp/ => src/connectivity-api/connectivity-cpp/
+    src/qdbus-stubs/DBusTypes.h => src/qdbus-stubs/dbus-types.h
+    tests/integration/indicator/CMakeLists.txt =>
+    tests/integration/CMakeLists.txt
+    tests/integration/indicator/TestIndicatorNetworkService.cpp =>
+    tests/integration/test-indicator.cpp tests/unit/secret-
+    agent/TestSecretAgent.cpp => tests/unit/secret-agent/test-secret-
+    agent.cpp
+  * Fixed some clang compiler warnings. Fixed a dodgey self-comparison
+    in operator<(const Key &other). Added some const-correctness here
+    and there. Removed an unused maxRetries variable from sim-unlock-
+    dialog. Replaced #ifndef's with #pragma once. Rename "i-n-
+    extractor.cpp" to "i-n-sniffer.cpp". renamed: src/sniffer/i-n-
+    extractor.cpp => src/sniffer/i-n-sniffer.cpp
+  * Improve grouped access point handling
+  * Merge secret agent functionality into indicator removed:
+    data/indicator-secret-agent.conf.in src/secret-agent/CMakeLists.txt
+    src/secret-agent/DBusTypes.h src/secret-agent/Localisation.h
+    src/secret-agent/gtk/ src/secret-agent/main.cpp added:
+    src/indicator/util/localisation.h tests/unit/secret-agent/secret-
+    agent-main.cpp renamed: src/secret-agent/ => src/indicator/agent/
+  * Move modems inside nmofono, sort out namespacing and class naming
+    removed: src/indicator/modem-manager.cpp src/indicator/modem-
+    manager.h added: src/indicator/icons.cpp src/indicator/icons.h
+    src/indicator/util/qhash-sharedptr.h renamed:
+    src/indicator/modem.cpp => src/indicator/nmofono/wwan/modem.cpp
+    src/indicator/modem.h => src/indicator/nmofono/wwan/modem.h
+    src/indicator/nmofono/kill-switch-impl.cpp =>
+    src/indicator/nmofono/kill-switch.cpp src/indicator/nmofono/kill-
+    switch-impl.h => src/indicator/nmofono/kill-switch.h
+    src/indicator/nmofono/wifi/grouped-access-point-impl.cpp =>
+    src/indicator/nmofono/wifi/grouped-access-point.cpp
+    src/indicator/nmofono/wifi/grouped-access-point-impl.h =>
+    src/indicator/nmofono/wifi/grouped-access-point.h
+    src/indicator/nmofono/wwan/link.h =>
+    src/indicator/nmofono/wwan/wwan-link.h
+  * Restore connectivity-cpp headers to original state removed:
+    src/connectivity-cpp/src/CMakeLists.txt src/connectivity-
+    cpp/src/platform/ src/connectivity-cpp/src/platform/nmofono/ added:
+    src/connectivity-cpp/include/connectivity/ src/connectivity-
+    cpp/include/connectivity/networking/ src/connectivity-
+    cpp/include/connectivity/networking/link.h src/connectivity-
+    cpp/include/connectivity/networking/manager.h src/connectivity-
+    cpp/include/connectivity/networking/service/ src/connectivity-
+    cpp/include/connectivity/networking/service.h src/connectivity-
+    cpp/include/connectivity/networking/service/tethering/
+    src/connectivity-
+    cpp/include/connectivity/networking/service/tethering/service.h
+    src/connectivity-cpp/include/connectivity/networking/service/tor/
+    src/connectivity-
+    cpp/include/connectivity/networking/service/tor/service.h
+    src/connectivity-cpp/include/connectivity/networking/service/vpn/
+    src/connectivity-
+    cpp/include/connectivity/networking/service/vpn/service.h
+    src/connectivity-cpp/include/connectivity/networking/wifi/
+    src/connectivity-cpp/include/connectivity/networking/wifi/access-
+    point.h src/connectivity-
+    cpp/include/connectivity/networking/wifi/link.h src/connectivity-
+    cpp/include/connectivity/networking/wwan/ src/connectivity-
+    cpp/include/connectivity/networking/wwan/link.h
+  * Simplify sniffer code removed: sniffer/nmaccesspoint.cpp
+    sniffer/nmaccesspoint.h sniffer/nmactiveconnection.cpp
+    sniffer/nmactiveconnection.h sniffer/nmconnsettings.cpp
+    sniffer/nmconnsettings.h sniffer/nmroot.cpp sniffer/nmroot.h
+    sniffer/nmsettings.cpp sniffer/nmsettings.h
+    sniffer/nmwirelessdevice.cpp sniffer/nmwirelessdevice.h
+    sniffer/ofonomodemmodem.cpp sniffer/ofonomodemmodem.h
+    sniffer/ofonomodemnetworkregistration.cpp
+    sniffer/ofonomodemnetworkregistration.h
+    sniffer/ofonomodemsimmanager.cpp sniffer/ofonomodemsimmanager.h
+    sniffer/ofonoroot.cpp sniffer/ofonoroot.h sniffer/qdbusdatatypes.h
+    sniffer/urfkillroot.cpp sniffer/urfkillroot.h
+    sniffer/urfkillswitch.cpp sniffer/urfkillswitch.h renamed: sniffer/
+    => src/sniffer/
+  * Take ownership of qt connectivity libraries from connectivity-api
+    source package. Use cmake-extras for docs, translations, etc. (LP:
+    #1447984)
+
+ -- CI Train Bot <ci-train-bot@canonical.com>  Wed, 13 May 2015 15:47:07 +0000
+
 indicator-network (0.5.1+15.04.20150412-0ubuntu1) vivid; urgency=medium
 
   [ Pete Woods ]

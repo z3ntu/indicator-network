@@ -258,18 +258,16 @@ public Q_SLOTS:
             return;
         }
         m_rawAccessPoints = list;
-//        Q_EMIT p.rawAccessPointsUpdated(m_rawAccessPoints);
 
-        for (auto &e : m_grouper) {
-            if (!e.second->has_object(path))
-                continue;
-
-            if(e.second->num_aps() == 1) {
-                m_grouper.erase(e.first);
-            } else {
-                e.second->remove_ap(shap);
+        AccessPointImpl::Key k(shap);
+        auto it = m_grouper.find(k);
+        if (it != m_grouper.end())
+        {
+            it->second->remove_ap(shap);
+            if (it->second->num_aps() == 0)
+            {
+                m_grouper.erase(it);
             }
-            break;
         }
         update_grouped();
     }

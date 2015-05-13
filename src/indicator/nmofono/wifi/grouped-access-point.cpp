@@ -74,7 +74,6 @@ public:
                 new_aps.push_back(i);
             }
         }
-        assert(!new_aps.empty());
         if(new_aps.size() >= aplist.size()) {
             qWarning() << "Tried to remove an AP that has not been added.";
             return;

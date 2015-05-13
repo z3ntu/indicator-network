@@ -9,6 +9,7 @@ set(
     CONNECTIVITY_QT_SRC
     connectivityqt/internal/dbus-property-cache.cpp
     connectivityqt/connectivity.cpp
+    ubuntu/connectivity/networking-status.cpp
 )
 
 set_source_files_properties(

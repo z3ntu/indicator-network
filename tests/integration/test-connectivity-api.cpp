@@ -36,6 +36,7 @@ class TestConnectivityApi: public IndicatorNetworkTestBase
 protected:
     Connectivity::UPtr newConnectivity()
     {
+        Connectivity::registerMetaTypes();
         auto connectivity = make_unique<Connectivity>(dbusTestRunner.sessionConnection());
 
         if (!connectivity->isInitialized())
@@ -284,6 +285,57 @@ TEST_F(TestConnectivityApi, WifiToggleTalksToUrfkill)
     // The icing on the cake
     EXPECT_TRUE(connectivity->wifiEnabled());
     EXPECT_EQ(0, wifiKillswitchInterface.state());
+}
+
+TEST_F(TestConnectivityApi, Status)
+{
+    // Start the indicator
+    ASSERT_NO_THROW(startIndicator());
+
+    // Connect the the service
+    auto connectivity(newConnectivity());
+
+    // Check we are online
+    EXPECT_TRUE(connectivity->online());
+    EXPECT_EQ(Connectivity::Status::Online, connectivity->status());
+
+    // Listen to property changes
+    QSignalSpy onlineSpy(connectivity.get(), SIGNAL(onlineUpdated(bool)));
+    QSignalSpy statusSpy(connectivity.get(), SIGNAL(statusUpdated(connectivityqt::Connectivity::Status)));
+
+    // Set up disconnected with flight mode on
+    setGlobalConnectedState(NM_STATE_DISCONNECTED);
+
+    // Wait for changes
+    ASSERT_TRUE(onlineSpy.wait());
+    if (statusSpy.isEmpty())
+    {
+        ASSERT_TRUE(statusSpy.wait());
+    }
+
+    // Check we are online
+    EXPECT_FALSE(connectivity->online());
+    EXPECT_EQ(Connectivity::Status::Offline, connectivity->status());
+
+    // Check we have just one signal
+    ASSERT_EQ(1, onlineSpy.size());
+    ASSERT_EQ(1, statusSpy.size());
+
+    EXPECT_EQ(QVariantList() << QVariant(false), onlineSpy.first());
+    EXPECT_EQ(Connectivity::Status::Offline, qvariant_cast<Connectivity::Status>(statusSpy.first().first()));
+}
+
+TEST_F(TestConnectivityApi, Limitations)
+{
+    // Start the indicator
+    ASSERT_NO_THROW(startIndicator());
+
+    // Connect the the service
+    auto connectivity(newConnectivity());
+
+    // These methods will always return these values - i.e. are not implemented
+    EXPECT_EQ(QVector<Connectivity::Limitations>(), connectivity->limitations());
+    EXPECT_FALSE(connectivity->limitedBandwith());
 }
 
 }

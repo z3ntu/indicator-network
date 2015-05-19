@@ -1,3 +1,10 @@
+indicator-network (0.5.1+15.10.20150519-0ubuntu1) wily; urgency=medium
+
+  [ Antti Kaijanmäki ]
+  * Fix .pc file and docs. (LP: #1456307)
+
+ -- CI Train Bot <ci-train-bot@canonical.com>  Tue, 19 May 2015 16:21:14 +0000
+
 indicator-network (0.5.1+15.04.20150513.1-0ubuntu1) vivid; urgency=medium
 
   [ Pete Woods ]

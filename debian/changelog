@@ -1,3 +1,10 @@
+indicator-network (0.5.1+15.10.20150604-0ubuntu1) wily; urgency=medium
+
+  [ Pete Woods ]
+  * Remove unity8 dependency to break cycle
+
+ -- CI Train Bot <ci-train-bot@canonical.com>  Thu, 04 Jun 2015 11:04:31 +0000
+
 indicator-network (0.5.1+15.10.20150519-0ubuntu1) wily; urgency=medium
 
   [ Antti Kaijanmäki ]

@@ -172,6 +172,7 @@ public Q_SLOTS:
 
             auto modem = make_shared<wwan::Modem>(modemInterface);
             m_ofonoLinks[path] = modem;
+            connect(modem.get(), &wwan::Modem::readyToUnlock, this, &Private::sim_unlock_ready);
         }
 
         Q_EMIT p.linksUpdated();
@@ -466,10 +467,14 @@ ManagerImpl::unlockModem(wwan::Modem::Ptr modem)
             return;
 
         if (d->m_unlockDialog->state() == SimUnlockDialog::State::ready
-                && d->m_pendingUnlocks.size() == 0)
+                && (d->m_pendingUnlocks.size() == 0) && modem->isReadyToUnlock())
+        {
             d->m_unlockDialog->unlock(modem);
+        }
         else
+        {
             d->m_pendingUnlocks.push_back(modem);
+        }
     } catch(const exception &e) {
         // Something unexpected has happened. As an example, unity8 might have
         // crashed taking the notification server with it. There is no graceful

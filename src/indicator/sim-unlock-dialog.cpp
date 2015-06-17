@@ -474,6 +474,9 @@ SimUnlockDialog::unlock(wwan::Modem::Ptr modem)
         pukRetries = retries[wwan::Modem::PinType::puk];
     }
 
+    qDebug() << __PRETTY_FUNCTION__ << modem->name() << "pinRetries ="
+            << pinRetries << "pukRetries =" << pukRetries;
+
     // remind the user
     if (type == wwan::Modem::PinType::pin && pinRetries == 1)
     {

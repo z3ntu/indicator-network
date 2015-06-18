@@ -146,6 +146,8 @@ public:
 
     bool isReadyToUnlock() const;
 
+    void notifyWhenReadyToUnlock();
+
 Q_SIGNALS:
     void onlineUpdated(bool);
 
@@ -177,7 +179,7 @@ Q_SIGNALS:
 
     void resetPinFailed(const QString& error);
 
-    bool readyToUnlock();
+    bool readyToUnlock(const QString& name);
 };
 
 }

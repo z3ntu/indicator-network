@@ -144,6 +144,15 @@ public Q_SLOTS:
         }
     }
 
+    void modemReadyToUnlock(const QString& name)
+    {
+        auto modem = m_ofonoLinks[name];
+        if (modem)
+        {
+            p.unlockModem(modem);
+        }
+    }
+
     void modems_changed(const QStringList& value)
     {
         QSet<QString> modemPaths(value.toSet());
@@ -162,6 +171,7 @@ public Q_SLOTS:
             {
                 m_unlockDialog->cancel();
                 m_pendingUnlocks.removeOne(modem);
+                disconnect(modem.get(), &wwan::Modem::readyToUnlock, this, &Private::modemReadyToUnlock);
             }
         }
 
@@ -172,7 +182,7 @@ public Q_SLOTS:
 
             auto modem = make_shared<wwan::Modem>(modemInterface);
             m_ofonoLinks[path] = modem;
-            connect(modem.get(), &wwan::Modem::readyToUnlock, this, &Private::sim_unlock_ready);
+            connect(modem.get(), &wwan::Modem::readyToUnlock, this, &Private::modemReadyToUnlock);
         }
 
         Q_EMIT p.linksUpdated();
@@ -467,9 +477,16 @@ ManagerImpl::unlockModem(wwan::Modem::Ptr modem)
             return;
 
         if (d->m_unlockDialog->state() == SimUnlockDialog::State::ready
-                && (d->m_pendingUnlocks.size() == 0) && modem->isReadyToUnlock())
+                && (d->m_pendingUnlocks.size() == 0))
         {
-            d->m_unlockDialog->unlock(modem);
+            if (modem->isReadyToUnlock())
+            {
+                d->m_unlockDialog->unlock(modem);
+            }
+            else
+            {
+                modem->notifyWhenReadyToUnlock();
+            }
         }
         else
         {

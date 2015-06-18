@@ -1,3 +1,11 @@
+indicator-network (0.5.1+15.10.20150618.1-0ubuntu1) wily; urgency=medium
+
+  [ Pete Woods ]
+  * Add debugging to figure out what's happening to the SIM unlock on
+    Arale (LP: #1465214)
+
+ -- CI Train Bot <ci-train-bot@canonical.com>  Thu, 18 Jun 2015 13:48:53 +0000
+
 indicator-network (0.5.1+15.10.20150604-0ubuntu1) wily; urgency=medium
 
   [ Pete Woods ]

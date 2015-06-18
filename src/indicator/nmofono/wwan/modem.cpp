@@ -92,6 +92,10 @@ public:
     Modem::PinType m_requiredPin;
     RetriesType m_retries;
 
+    bool m_simStatusSet = false;
+    bool m_requiredPinSet = false;
+    bool m_retriesSet = false;
+
     QString m_operatorName;
     Modem::ModemStatus m_status;
     int8_t m_strength;
@@ -109,6 +113,8 @@ public:
     shared_ptr<QOfonoSimManager> m_simManager;
 
     QTimer m_updatedTimer;
+
+    bool m_shouldTriggerUnlock = false;
 
     Private(Modem& parent, shared_ptr<QOfonoModem> ofonoModem)
         : p(parent), m_ofonoModem{ofonoModem}
@@ -142,6 +148,12 @@ public Q_SLOTS:
     void fireUpdate()
     {
         Q_EMIT p.updated(p);
+
+        if (p.isReadyToUnlock() && m_shouldTriggerUnlock)
+        {
+            m_shouldTriggerUnlock = false;
+            Q_EMIT p.readyToUnlock(p.name());
+        }
     }
 
     void connectionManagerChanged(shared_ptr<QOfonoConnectionManager> conmgr)
@@ -249,6 +261,9 @@ public Q_SLOTS:
                                          "). Bailing out.");
             }
 
+            m_requiredPinSet = true;
+
+            bool retriesWasSet = true;
             // update retries
             RetriesType tmp;
             QVariantMap retries = m_simManager->pinRetries();
@@ -257,6 +272,10 @@ public Q_SLOTS:
                 i.next();
                 QOfonoSimManager::PinType type = (QOfonoSimManager::PinType) i.key().toInt();
                 int count = i.value().toInt();
+                if (count < 0)
+                {
+                    retriesWasSet = false;
+                }
                 switch(type)
                 {
                     case QOfonoSimManager::PinType::SimPin:
@@ -270,6 +289,8 @@ public Q_SLOTS:
                 }
             }
             setRetries(tmp);
+
+            m_retriesSet = retriesWasSet;
 
             // update simStatus
             bool present = m_simManager->present();
@@ -294,10 +315,16 @@ public Q_SLOTS:
                 }
             }
 
+            m_simStatusSet = true;
+
         } else {
             setRequiredPin(PinType::none);
             setRetries({});
             setSimStatus(SimStatus::not_available);
+
+            m_requiredPinSet = false;
+            m_retriesSet = false;
+            m_simStatusSet = false;
         }
 
         if (m_networkRegistration)
@@ -694,6 +721,19 @@ Link::Id
 Modem::id() const
 {
     return 0;
+}
+
+bool
+Modem::isReadyToUnlock() const
+{
+    return d->m_simStatusSet && d->m_requiredPinSet && d->m_retriesSet
+            && (d->m_requiredPin != PinType::none);
+}
+
+void
+Modem::notifyWhenReadyToUnlock()
+{
+    d->m_shouldTriggerUnlock = true;
 }
 }
 

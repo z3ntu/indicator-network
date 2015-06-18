@@ -144,6 +144,10 @@ public:
 
     Id id() const override;
 
+    bool isReadyToUnlock() const;
+
+    void notifyWhenReadyToUnlock();
+
 Q_SIGNALS:
     void onlineUpdated(bool);
 
@@ -174,6 +178,8 @@ Q_SIGNALS:
     void resetPinSuceeded();
 
     void resetPinFailed(const QString& error);
+
+    bool readyToUnlock(const QString& name);
 };
 
 }

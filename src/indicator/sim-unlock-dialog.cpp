@@ -435,7 +435,8 @@ SimUnlockDialog::unlock(wwan::Modem::Ptr modem)
 {
     if (d->m_modem)
     {
-        throw std::logic_error("Unlocking already in progress.");
+        qWarning() << "Unlocking already in progress.";
+        return;
     }
 
     d->m_modem = modem;
@@ -473,6 +474,9 @@ SimUnlockDialog::unlock(wwan::Modem::Ptr modem)
     {
         pukRetries = retries[wwan::Modem::PinType::puk];
     }
+
+    qDebug() << __PRETTY_FUNCTION__ << modem->name() << "pinRetries ="
+            << pinRetries << "pukRetries =" << pukRetries;
 
     // remind the user
     if (type == wwan::Modem::PinType::pin && pinRetries == 1)

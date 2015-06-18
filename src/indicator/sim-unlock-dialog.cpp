@@ -435,7 +435,8 @@ SimUnlockDialog::unlock(wwan::Modem::Ptr modem)
 {
     if (d->m_modem)
     {
-        throw std::logic_error("Unlocking already in progress.");
+        qWarning() << "Unlocking already in progress.";
+        return;
     }
 
     d->m_modem = modem;

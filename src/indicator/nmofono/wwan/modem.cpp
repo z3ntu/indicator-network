@@ -114,6 +114,8 @@ public:
 
     QTimer m_updatedTimer;
 
+    bool m_shouldTriggerUnlock = false;
+
     Private(Modem& parent, shared_ptr<QOfonoModem> ofonoModem)
         : p(parent), m_ofonoModem{ofonoModem}
     {
@@ -147,9 +149,10 @@ public Q_SLOTS:
     {
         Q_EMIT p.updated(p);
 
-        if (p.isReadyToUnlock())
+        if (p.isReadyToUnlock() && m_shouldTriggerUnlock)
         {
-            Q_EMIT p.readyToUnlock();
+            m_shouldTriggerUnlock = false;
+            Q_EMIT p.readyToUnlock(p.name());
         }
     }
 
@@ -725,6 +728,12 @@ Modem::isReadyToUnlock() const
 {
     return d->m_simStatusSet && d->m_requiredPinSet && d->m_retriesSet
             && (d->m_requiredPin != PinType::none);
+}
+
+void
+Modem::notifyWhenReadyToUnlock()
+{
+    d->m_shouldTriggerUnlock = true;
 }
 }
 

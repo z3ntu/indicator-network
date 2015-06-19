@@ -66,6 +66,12 @@ void IndicatorNetworkTestBase::SetUp()
 
     dbusTestRunner.startServices();
 
+    // mock service creates ril_0 automatically
+    // Initial ConnectionManager properties are insane, fix them here
+    setConnectionManagerProperty(firstModem(), "Bearer", "none");
+    setConnectionManagerProperty(firstModem(), "Powered", false);
+    setConnectionManagerProperty(firstModem(), "Attached", false);
+
     // Identify the test when looking at Bustle logs
     QDBusConnection systemConnection = dbusTestRunner.systemConnection();
     systemConnection.registerService("org.TestIndicatorNetworkService");
@@ -218,31 +224,60 @@ QString IndicatorNetworkTestBase::createModem(const QString& id)
 {
     auto& ofono(dbusMock.ofonoInterface());
     QVariantMap modemProperties {{ "Powered", false } };
-    return ofono.AddModem(id, modemProperties);
+    auto reply = ofono.AddModem(id, modemProperties);
+    reply.waitForFinished();
+    if (reply.isError()) {
+        EXPECT_FALSE(reply.isError()) << reply.error().message().toStdString();
+        return "";
+    }
+    QString path = reply.value();
+
+    // Initial ConnectionManager properties are insane, fix them here
+    setConnectionManagerProperty(path, "Bearer", "none");
+    setConnectionManagerProperty(path, "Powered", false);
+    setConnectionManagerProperty(path, "Attached", false);
+
+    return path;
 }
 
 void IndicatorNetworkTestBase::setModemProperty(const QString& path, const QString& propertyName, const QVariant& value)
 {
     auto& ofono(dbusMock.ofonoModemInterface(path));
-    ofono.SetProperty(propertyName, QDBusVariant(value)).waitForFinished();
+    auto reply = ofono.SetProperty(propertyName, QDBusVariant(value));
+    reply.waitForFinished();
+    if (reply.isError()) {
+        EXPECT_FALSE(reply.isError()) << reply.error().message().toStdString();
+    }
 }
 
 void IndicatorNetworkTestBase::setSimManagerProperty(const QString& path, const QString& propertyName, const QVariant& value)
 {
     auto& ofono(dbusMock.ofonoSimManagerInterface(path));
-    ofono.SetProperty(propertyName, QDBusVariant(value)).waitForFinished();
+    auto reply = ofono.SetProperty(propertyName, QDBusVariant(value));
+    reply.waitForFinished();
+    if (reply.isError()) {
+        EXPECT_FALSE(reply.isError()) << reply.error().message().toStdString();
+    }
 }
 
 void IndicatorNetworkTestBase::setConnectionManagerProperty(const QString& path, const QString& propertyName, const QVariant& value)
 {
     auto& ofono(dbusMock.ofonoConnectionManagerInterface(path));
-    ofono.SetProperty(propertyName, QDBusVariant(value)).waitForFinished();
+    auto reply = ofono.SetProperty(propertyName, QDBusVariant(value));
+    reply.waitForFinished();
+    if (reply.isError()) {
+        EXPECT_FALSE(reply.isError()) << reply.error().message().toStdString();
+    }
 }
 
 void IndicatorNetworkTestBase::setNetworkRegistrationProperty(const QString& path, const QString& propertyName, const QVariant& value)
 {
     auto& ofono(dbusMock.ofonoNetworkRegistrationInterface(path));
-    ofono.SetProperty(propertyName, QDBusVariant(value)).waitForFinished();
+    auto reply = ofono.SetProperty(propertyName, QDBusVariant(value));
+    reply.waitForFinished();
+    if (reply.isError()) {
+        EXPECT_FALSE(reply.isError()) << reply.error().message().toStdString();
+    }
 }
 
 OrgFreedesktopDBusMockInterface& IndicatorNetworkTestBase::notificationsMockInterface()
@@ -317,12 +352,16 @@ mh::MenuItemMatcher IndicatorNetworkTestBase::wifiSettings()
         .action("indicator.wifi.settings");
 }
 
-mh::MenuItemMatcher IndicatorNetworkTestBase::modemInfo(const string& simIdentifier, const string& label, const string& statusIcon, bool locked)
+mh::MenuItemMatcher IndicatorNetworkTestBase::modemInfo(const string& simIdentifier,
+          const string& label,
+          const string& statusIcon,
+          bool locked,
+          const string& connectivityIcon)
 {
     return mh::MenuItemMatcher()
         .widget("com.canonical.indicator.network.modeminfoitem")
         .pass_through_string_attribute("x-canonical-modem-sim-identifier-label-action", simIdentifier)
-        .pass_through_string_attribute("x-canonical-modem-connectivity-icon-action", "")
+        .pass_through_string_attribute("x-canonical-modem-connectivity-icon-action", connectivityIcon)
         .pass_through_string_attribute("x-canonical-modem-status-label-action", label)
         .pass_through_string_attribute("x-canonical-modem-status-icon-action", statusIcon)
         .pass_through_boolean_attribute("x-canonical-modem-roaming-action", false)

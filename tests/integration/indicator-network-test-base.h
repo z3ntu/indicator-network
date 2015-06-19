@@ -144,7 +144,11 @@ protected:
 
     static menuharness::MenuItemMatcher wifiSettings();
 
-    static menuharness::MenuItemMatcher modemInfo(const std::string& simIdentifier, const std::string& label, const std::string& statusIcon, bool locked = false);
+    static menuharness::MenuItemMatcher modemInfo(const std::string& simIdentifier,
+                const std::string& label,
+                const std::string& statusIcon,
+                bool locked = false,
+                const std::string& connectivityIcon = "");
 
     static menuharness::MenuItemMatcher cellularSettings();
 

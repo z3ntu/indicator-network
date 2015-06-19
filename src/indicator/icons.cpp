@@ -41,6 +41,7 @@ QString Icons::bearerIcon(wwan::Modem::Bearer bearer)
     switch (bearer)
     {
     case wwan::Modem::Bearer::notAvailable:
+        return "";
     case wwan::Modem::Bearer::gprs:
         return "network-cellular-pre-edge";
     case wwan::Modem::Bearer::edge:

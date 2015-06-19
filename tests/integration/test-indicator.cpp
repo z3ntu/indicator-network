@@ -991,6 +991,9 @@ TEST_F(TestIndicator, FlightMode_WifiOff)
     setModemProperty(firstModem(), "Online", true);
     setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
 
+    setConnectionManagerProperty(firstModem(), "Bearer", "gprs");
+    setConnectionManagerProperty(firstModem(), "Powered", true);
+
     // check that the wifi switch is still off
     // check indicator is a 3-bar signal icon and 0-bar wifi icon
     // check sim status shows correct carrier name with 3-bar signal icon.
@@ -1001,7 +1004,7 @@ TEST_F(TestIndicator, FlightMode_WifiOff)
             .mode(mh::MenuItemMatcher::Mode::starts_with)
             .item(flightModeSwitch(false))
             .item(mh::MenuItemMatcher()
-                .item(modemInfo("", "fake.tel", "gsm-3g-high"))
+                .item(modemInfo("", "fake.tel", "gsm-3g-high", false, "network-cellular-pre-edge"))
                 .item(cellularSettings())
             )
             .item(wifiEnableSwitch(false))
@@ -1876,7 +1879,7 @@ TEST_F(TestIndicator, CellDataEnabled)
             .mode(mh::MenuItemMatcher::Mode::starts_with)
             .item(flightModeSwitch())
             .item(mh::MenuItemMatcher()
-                .item(modemInfo("SIM 1", "fake.tel", "gsm-3g-high"))
+                .item(modemInfo("SIM 1", "fake.tel", "gsm-3g-high", false, "network-cellular-hspa"))
                 .item(modemInfo("SIM 2", "fake.tel", "gsm-3g-low"))
                 .item(cellularSettings())
             )
@@ -1893,7 +1896,7 @@ TEST_F(TestIndicator, CellDataEnabled)
                 .mode(mh::MenuItemMatcher::Mode::starts_with)
                 .item(flightModeSwitch())
                 .item(mh::MenuItemMatcher()
-                    .item(modemInfo("SIM 1", "fake.tel", "gsm-3g-high"))
+                    .item(modemInfo("SIM 1", "fake.tel", "gsm-3g-high", false, "network-cellular-edge"))
                     .item(modemInfo("SIM 2", "fake.tel", "gsm-3g-low"))
                     .item(cellularSettings())
                 )
@@ -1912,7 +1915,7 @@ TEST_F(TestIndicator, CellDataEnabled)
                 .item(flightModeSwitch())
                 .item(mh::MenuItemMatcher()
                     .item(modemInfo("SIM 1", "fake.tel", "gsm-3g-high"))
-                    .item(modemInfo("SIM 2", "fake.tel", "gsm-3g-low"))
+                    .item(modemInfo("SIM 2", "fake.tel", "gsm-3g-low", false, "network-cellular-3g"))
                     .item(cellularSettings())
                 )
                 .item(wifiEnableSwitch(false))
@@ -1921,7 +1924,7 @@ TEST_F(TestIndicator, CellDataEnabled)
 
 TEST_F(TestIndicator, CellDataDisabled)
 {
-    // We are connected
+    // We are disconnected
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
 
     // Create a WiFi device and power it off
@@ -1971,7 +1974,7 @@ TEST_F(TestIndicator, CellDataDisabled)
             .item(flightModeSwitch())
             .item(mh::MenuItemMatcher()
                 .item(modemInfo("SIM 1", "fake.tel", "gsm-3g-low"))
-                .item(modemInfo("SIM 2", "fake.tel", "gsm-3g-high"))
+                .item(modemInfo("SIM 2", "fake.tel", "gsm-3g-high", false, "network-cellular-3g"))
                 .item(cellularSettings())
             )
             .item(wifiEnableSwitch(false))
@@ -1994,7 +1997,7 @@ TEST_F(TestIndicator, CellDataDisabled)
            .item(flightModeSwitch())
            .item(mh::MenuItemMatcher()
                .item(modemInfo("SIM 1", "fake.tel", "gsm-3g-low"))
-               .item(modemInfo("SIM 2", "fake.tel", "gsm-3g-high"))
+               .item(modemInfo("SIM 2", "fake.tel", "gsm-3g-high", false, "network-cellular-3g"))
                .item(cellularSettings())
             )
             .item(wifiEnableSwitch(true))

@@ -168,6 +168,17 @@ QString GroupedAccessPoint::ssid() const
     return p->aplist.at(0)->ssid();
 }
 
+QString GroupedAccessPoint::bssid() const
+{
+    if (p->aplist.empty())
+    {
+        return QString();
+    }
+
+    return p->aplist.at(0)->bssid();
+}
+
+
 QByteArray GroupedAccessPoint::raw_ssid() const
 {
     if (p->aplist.empty())
@@ -186,6 +197,16 @@ bool GroupedAccessPoint::secured() const
     }
 
     return p->aplist.at(0)->secured();
+}
+
+bool GroupedAccessPoint::enterprise() const
+{
+    if (p->aplist.empty())
+    {
+        return false;
+    }
+
+    return p->aplist.at(0)->enterprise();
 }
 
 bool GroupedAccessPoint::adhoc() const

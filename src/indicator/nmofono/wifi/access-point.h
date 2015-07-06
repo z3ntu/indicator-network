@@ -50,9 +50,11 @@ public:
     virtual double strength() const = 0;
 
     virtual QString ssid()            const = 0;
+    virtual QString bssid()           const = 0;
     virtual QByteArray raw_ssid()     const = 0;
     virtual QDBusObjectPath object_path()     const = 0;
     virtual bool secured()            const = 0;
+    virtual bool enterprise()         const = 0;
     virtual bool adhoc()              const = 0;
 
 Q_SIGNALS:

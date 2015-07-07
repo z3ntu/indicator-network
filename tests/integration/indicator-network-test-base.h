@@ -63,8 +63,9 @@ class IndicatorNetworkTestBase: public testing::Test
 public:
     enum class Secure
     {
-        secure,
-        insecure
+        insecure,
+        wpa,
+        wpa_enterprise
     };
 
     enum class ApMode
@@ -101,7 +102,7 @@ protected:
     void disableWiFi();
 
     QString createAccessPoint(const QString& id, const QString& ssid, const QString& device, uchar strength = 100,
-                              Secure secure = Secure::secure, ApMode apMode = ApMode::infra);
+                              Secure secure = Secure::wpa, ApMode apMode = ApMode::infra, const QString& mac = randomMac());
 
     void removeAccessPoint(const QString& device, const QString& ap);
 

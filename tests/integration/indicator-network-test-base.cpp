@@ -64,7 +64,30 @@ void IndicatorNetworkTestBase::SetUp()
     dbusMock.registerOfono();
     dbusMock.registerURfkill();
 
+    dbusMock.registerCustomMock(
+                        "com.canonical.URLDispatcher",
+                        "/com/canonical/URLDispatcher",
+                        "com.canonical.URLDispatcher",
+                        QDBusConnection::SessionBus);
+
     dbusTestRunner.startServices();
+
+    // Set up a basic URL dispatcher mock
+    auto& urlDispatcher = dbusMock.mockInterface(
+                        "com.canonical.URLDispatcher",
+                        "/com/canonical/URLDispatcher",
+                        "com.canonical.URLDispatcher",
+                        QDBusConnection::SessionBus);
+    urlDispatcher.AddMethod(
+                        "com.canonical.URLDispatcher",
+                        "DispatchURL", "ss", "",
+                        ""
+                     ).waitForFinished();
+    urlDispatcher.AddMethod(
+                        "com.canonical.URLDispatcher",
+                        "TestURL", "as", "as",
+                        "ret = args[0]"
+                     ).waitForFinished();
 
     // mock service creates ril_0 automatically
     // Initial ConnectionManager properties are insane, fix them here
@@ -155,16 +178,29 @@ void IndicatorNetworkTestBase::disableWiFi()
 }
 
 QString IndicatorNetworkTestBase::createAccessPoint(const QString& id, const QString& ssid, const QString& device, uchar strength,
-                          Secure secure, ApMode apMode)
+                          Secure secure, ApMode apMode, const QString& mac)
 {
+    int secflags;
+    if (secure == Secure::insecure)
+    {
+        secflags = NM_802_11_AP_SEC_NONE;
+    }
+    else if (secure == Secure::wpa)
+    {
+        secflags = NM_802_11_AP_SEC_KEY_MGMT_PSK;
+    }
+    else if (secure == Secure::wpa_enterprise)
+    {
+        secflags = NM_802_11_AP_SEC_KEY_MGMT_802_1X;
+    }
 
     auto& networkManager(dbusMock.networkManagerInterface());
     auto reply = networkManager.AddAccessPoint(
                         device, id, ssid,
-                        randomMac(),
+                        mac,
                         apMode == ApMode::adhoc ? NM_802_11_MODE_ADHOC : NM_802_11_MODE_INFRA,
                         0, 0, strength,
-                        secure == Secure::secure ? NM_802_11_AP_SEC_KEY_MGMT_PSK : NM_802_11_AP_SEC_NONE);
+                        secflags);
     reply.waitForFinished();
     return reply;
 }
@@ -333,7 +369,8 @@ mh::MenuItemMatcher IndicatorNetworkTestBase::accessPoint(const string& ssid, Se
         .pass_through_attribute(
             "x-canonical-wifi-ap-strength-action",
             shared_ptr<GVariant>(g_variant_new_byte(strength), &mh::gvariant_deleter))
-        .boolean_attribute("x-canonical-wifi-ap-is-secure", secure == Secure::secure)
+        .boolean_attribute("x-canonical-wifi-ap-is-secure", secure != Secure::insecure)
+        .boolean_attribute("x-canonical-wifi-ap-is-enterprise", secure == Secure::wpa_enterprise)
         .boolean_attribute("x-canonical-wifi-ap-is-adhoc", apMode == ApMode::adhoc);
 }
 

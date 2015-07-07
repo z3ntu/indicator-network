@@ -458,8 +458,8 @@ WifiLinkImpl::connect_to(AccessPoint::Ptr accessPoint)
             if (accessPoint->enterprise()) {
                 // activate system settings URI
                 QUrlQuery q;
-                q.addQueryItem(QString("ssid"), accessPoint->ssid());
-                q.addQueryItem(QString("bssid"), accessPoint->bssid());
+                q.addQueryItem("ssid", accessPoint->raw_ssid());
+                q.addQueryItem("bssid", accessPoint->bssid());
                 QString url = "settings:///wifi?" + q.query(QUrl::FullyEncoded);
 
                 UrlDispatcher::send(url.toStdString(), [](string url, bool success) {

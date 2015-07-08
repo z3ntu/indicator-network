@@ -1,3 +1,14 @@
+indicator-network (0.5.1+15.10.20150708.1-0ubuntu1) wily; urgency=medium
+
+  [ CI Train Bot ]
+  * New rebuild forced.
+
+  [ Pete Woods ]
+  * Enteprise access points invoke the system settings app with details
+    encoded in a URI
+
+ -- CI Train Bot <ci-train-bot@canonical.com>  Wed, 08 Jul 2015 20:06:55 +0000
+
 indicator-network (0.5.1+15.10.20150618.1-0ubuntu1) wily; urgency=medium
 
   [ Pete Woods ]

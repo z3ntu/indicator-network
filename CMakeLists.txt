@@ -122,10 +122,12 @@ enable_coverage_report(
     menumodel_cpp
     notify_cpp
     qdbus-stubs
+    i-n-sniffer
     url_dispatcher_cpp
   TESTS
     unit-tests
     integration-tests
+    secret-agent-test-bin
   FILTER
     ${CMAKE_SOURCE_DIR}/tests/*
     ${CMAKE_BINARY_DIR}/*

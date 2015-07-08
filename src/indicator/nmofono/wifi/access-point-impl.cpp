@@ -60,6 +60,8 @@ AccessPointImpl::AccessPointImpl(std::shared_ptr<OrgFreedesktopNetworkManagerAcc
 
     m_ssid = ssid;
 
+    m_bssid = m_ap->hwAddress();
+
     m_strength = m_ap->strength();
 
     connect(m_ap.get(), &OrgFreedesktopNetworkManagerAccessPointInterface::PropertiesChanged, this, &AccessPointImpl::ap_properties_changed);
@@ -104,9 +106,19 @@ QString AccessPointImpl::ssid() const
     return m_ssid;
 }
 
+QString AccessPointImpl::bssid() const
+{
+    return m_bssid;
+}
+
 QByteArray AccessPointImpl::raw_ssid() const
 {
     return m_raw_ssid;
+}
+
+bool AccessPointImpl::enterprise() const
+{
+    return (m_secflags & NM_802_11_AP_SEC_KEY_MGMT_802_1X) > 0;
 }
 
 bool AccessPointImpl::secured() const
@@ -132,7 +144,8 @@ uint32_t AccessPointImpl::mode() const
 bool AccessPointImpl::operator==(const AccessPointImpl &other) const {
     if(this == &other)
         return true;
-    return m_ssid == other.m_ssid &&
+    return m_raw_ssid == other.m_raw_ssid &&
+            m_bssid == other.m_bssid &&
             m_secflags == other.m_secflags &&
             m_mode == other.m_mode;
 }

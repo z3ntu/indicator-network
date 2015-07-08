@@ -74,7 +74,7 @@ TEST_F(TestIndicator, OneDisconnectedAccessPointAtStartup)
             .item(mh::MenuItemMatcher()
                 .section()
                 .item(accessPoint("the ssid",
-                      Secure::secure,
+                      Secure::wpa,
                       ApMode::infra,
                       ConnectionStatus::disconnected)
                 )
@@ -103,7 +103,7 @@ TEST_F(TestIndicator, OneConnectedAccessPointAtStartup)
             .item(mh::MenuItemMatcher()
                 .section()
                 .item(accessPoint("the ssid",
-                      Secure::secure,
+                      Secure::wpa,
                       ApMode::infra,
                       ConnectionStatus::connected)
                 )
@@ -130,7 +130,7 @@ TEST_F(TestIndicator, AddOneDisconnectedAccessPointAfterStartup)
             .item(mh::MenuItemMatcher()
                 .section()
                 .item(accessPoint("the ssid",
-                      Secure::secure,
+                      Secure::wpa,
                       ApMode::infra,
                       ConnectionStatus::disconnected)
                 )
@@ -160,7 +160,7 @@ TEST_F(TestIndicator, AddOneConnectedAccessPointAfterStartup)
             .item(mh::MenuItemMatcher()
                 .section()
                 .item(accessPoint("the ssid",
-                      Secure::secure,
+                      Secure::wpa,
                       ApMode::infra,
                       ConnectionStatus::connected)
                 )
@@ -757,7 +757,7 @@ TEST_F(TestIndicator, FlightMode_LockedSIM)
 
     // add and connect to 1-bar secure AP
     auto device = createWiFiDevice(NM_DEVICE_STATE_ACTIVATED);
-    auto ap = createAccessPoint("0", "the ssid", device, 20, Secure::secure);
+    auto ap = createAccessPoint("0", "the ssid", device, 20, Secure::wpa);
     auto connection = createAccessPointConnection("0", "the ssid", device);
     auto activeConnection = createActiveConnection("0", device, connection, ap);
 
@@ -782,7 +782,7 @@ TEST_F(TestIndicator, FlightMode_LockedSIM)
             .item(mh::MenuItemMatcher()
                 .section()
                 .item(accessPoint("the ssid",
-                      Secure::secure,
+                      Secure::wpa,
                       ApMode::infra,
                       ConnectionStatus::connected,
                       20)
@@ -833,7 +833,7 @@ TEST_F(TestIndicator, FlightMode_LockedSIM)
         ).match());
 
     // And we're back
-    ap = createAccessPoint("1", "the ssid", device, 20, Secure::secure);
+    ap = createAccessPoint("1", "the ssid", device, 20, Secure::wpa);
     connection = createAccessPointConnection("1", "the ssid", device);
     activeConnection = createActiveConnection("1", device, connection, ap);
     setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
@@ -861,10 +861,10 @@ TEST_F(TestIndicator, FlightMode_WifiOff)
 
     // add some APs (secure / unsecure / adhoc / varied strength)
     auto device = createWiFiDevice(NM_DEVICE_STATE_ACTIVATED);
-    auto ap1 = createAccessPoint("1", "NSD", device, 0, Secure::secure, ApMode::infra);
-    auto ap2 = createAccessPoint("2", "JDR", device, 20, Secure::secure, ApMode::adhoc);
-    auto ap3 = createAccessPoint("3", "DGN", device, 40, Secure::secure, ApMode::infra);
-    auto ap4 = createAccessPoint("4", "JDY", device, 60, Secure::secure, ApMode::adhoc);
+    auto ap1 = createAccessPoint("1", "NSD", device, 0, Secure::wpa, ApMode::infra);
+    auto ap2 = createAccessPoint("2", "JDR", device, 20, Secure::wpa, ApMode::adhoc);
+    auto ap3 = createAccessPoint("3", "DGN", device, 40, Secure::wpa, ApMode::infra);
+    auto ap4 = createAccessPoint("4", "JDY", device, 60, Secure::wpa, ApMode::adhoc);
     auto ap5 = createAccessPoint("5", "SCE", device, 20, Secure::insecure, ApMode::infra);
     auto ap6 = createAccessPoint("6", "ADS", device, 40, Secure::insecure, ApMode::adhoc);
     auto ap7 = createAccessPoint("7", "CFT", device, 60, Secure::insecure, ApMode::infra);
@@ -896,13 +896,13 @@ TEST_F(TestIndicator, FlightMode_WifiOff)
             .item(wifiEnableSwitch(true))
             .item(mh::MenuItemMatcher()
                 .section()
-                .item(accessPoint("DGN", Secure::secure, ApMode::infra, ConnectionStatus::connected, 40))
+                .item(accessPoint("DGN", Secure::wpa, ApMode::infra, ConnectionStatus::connected, 40))
                 .item(accessPoint("ADS", Secure::insecure, ApMode::adhoc, ConnectionStatus::disconnected, 40))
                 .item(accessPoint("CFT", Secure::insecure, ApMode::infra, ConnectionStatus::disconnected, 60))
                 .item(accessPoint("GDF", Secure::insecure, ApMode::adhoc, ConnectionStatus::disconnected, 80))
-                .item(accessPoint("JDR", Secure::secure, ApMode::adhoc, ConnectionStatus::disconnected, 20))
-                .item(accessPoint("JDY", Secure::secure, ApMode::adhoc, ConnectionStatus::disconnected, 60))
-                .item(accessPoint("NSD", Secure::secure, ApMode::infra, ConnectionStatus::disconnected, 0))
+                .item(accessPoint("JDR", Secure::wpa, ApMode::adhoc, ConnectionStatus::disconnected, 20))
+                .item(accessPoint("JDY", Secure::wpa, ApMode::adhoc, ConnectionStatus::disconnected, 60))
+                .item(accessPoint("NSD", Secure::wpa, ApMode::infra, ConnectionStatus::disconnected, 0))
                 .item(accessPoint("SCE", Secure::insecure, ApMode::infra, ConnectionStatus::disconnected, 20))
             )
         ).match());
@@ -991,6 +991,9 @@ TEST_F(TestIndicator, FlightMode_WifiOff)
     setModemProperty(firstModem(), "Online", true);
     setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
 
+    setConnectionManagerProperty(firstModem(), "Bearer", "gprs");
+    setConnectionManagerProperty(firstModem(), "Powered", true);
+
     // check that the wifi switch is still off
     // check indicator is a 3-bar signal icon and 0-bar wifi icon
     // check sim status shows correct carrier name with 3-bar signal icon.
@@ -1001,7 +1004,7 @@ TEST_F(TestIndicator, FlightMode_WifiOff)
             .mode(mh::MenuItemMatcher::Mode::starts_with)
             .item(flightModeSwitch(false))
             .item(mh::MenuItemMatcher()
-                .item(modemInfo("", "fake.tel", "gsm-3g-high"))
+                .item(modemInfo("", "fake.tel", "gsm-3g-high", false, "network-cellular-pre-edge"))
                 .item(cellularSettings())
             )
             .item(wifiEnableSwitch(false))
@@ -1018,10 +1021,10 @@ TEST_F(TestIndicator, FlightMode_WifiOn)
 
     // add some APs (secure / unsecure / adhoc / varied strength)
     auto device = createWiFiDevice(NM_DEVICE_STATE_ACTIVATED);
-    auto ap1 = createAccessPoint("1", "NSD", device, 0, Secure::secure, ApMode::infra);
-    auto ap2 = createAccessPoint("2", "JDR", device, 20, Secure::secure, ApMode::adhoc);
-    auto ap3 = createAccessPoint("3", "DGN", device, 40, Secure::secure, ApMode::infra);
-    auto ap4 = createAccessPoint("4", "JDY", device, 60, Secure::secure, ApMode::adhoc);
+    auto ap1 = createAccessPoint("1", "NSD", device, 0, Secure::wpa, ApMode::infra);
+    auto ap2 = createAccessPoint("2", "JDR", device, 20, Secure::wpa, ApMode::adhoc);
+    auto ap3 = createAccessPoint("3", "DGN", device, 40, Secure::wpa, ApMode::infra);
+    auto ap4 = createAccessPoint("4", "JDY", device, 60, Secure::wpa, ApMode::adhoc);
     auto ap5 = createAccessPoint("5", "SCE", device, 20, Secure::insecure, ApMode::infra);
     auto ap6 = createAccessPoint("6", "ADS", device, 40, Secure::insecure, ApMode::adhoc);
     auto ap7 = createAccessPoint("7", "CFT", device, 60, Secure::insecure, ApMode::infra);
@@ -1055,10 +1058,10 @@ TEST_F(TestIndicator, FlightMode_WifiOn)
                 .item(accessPoint("GDF", Secure::insecure, ApMode::adhoc, ConnectionStatus::connected, 80))
                 .item(accessPoint("ADS", Secure::insecure, ApMode::adhoc, ConnectionStatus::disconnected, 40))
                 .item(accessPoint("CFT", Secure::insecure, ApMode::infra, ConnectionStatus::disconnected, 60))
-                .item(accessPoint("DGN", Secure::secure, ApMode::infra, ConnectionStatus::disconnected, 40))
-                .item(accessPoint("JDR", Secure::secure, ApMode::adhoc, ConnectionStatus::disconnected, 20))
-                .item(accessPoint("JDY", Secure::secure, ApMode::adhoc, ConnectionStatus::disconnected, 60))
-                .item(accessPoint("NSD", Secure::secure, ApMode::infra, ConnectionStatus::disconnected, 0))
+                .item(accessPoint("DGN", Secure::wpa, ApMode::infra, ConnectionStatus::disconnected, 40))
+                .item(accessPoint("JDR", Secure::wpa, ApMode::adhoc, ConnectionStatus::disconnected, 20))
+                .item(accessPoint("JDY", Secure::wpa, ApMode::adhoc, ConnectionStatus::disconnected, 60))
+                .item(accessPoint("NSD", Secure::wpa, ApMode::infra, ConnectionStatus::disconnected, 0))
                 .item(accessPoint("SCE", Secure::insecure, ApMode::infra, ConnectionStatus::disconnected, 20))
             )
         ).match());
@@ -1118,10 +1121,10 @@ TEST_F(TestIndicator, FlightMode_WifiOn)
 
     // NOTE: every newly created access point increments AP index (see: AccessPointItem::Private::ConstructL())
     //       so here we need to start at index 1+8 as we've had 8 APs previously.
-    ap1 = createAccessPoint("9", "NSD", device, 0, Secure::secure, ApMode::infra);
-    ap2 = createAccessPoint("10", "JDR", device, 20, Secure::secure, ApMode::adhoc);
-    ap3 = createAccessPoint("11", "DGN", device, 40, Secure::secure, ApMode::infra);
-    ap4 = createAccessPoint("12", "JDY", device, 60, Secure::secure, ApMode::adhoc);
+    ap1 = createAccessPoint("9", "NSD", device, 0, Secure::wpa, ApMode::infra);
+    ap2 = createAccessPoint("10", "JDR", device, 20, Secure::wpa, ApMode::adhoc);
+    ap3 = createAccessPoint("11", "DGN", device, 40, Secure::wpa, ApMode::infra);
+    ap4 = createAccessPoint("12", "JDY", device, 60, Secure::wpa, ApMode::adhoc);
     ap5 = createAccessPoint("13", "SCE", device, 20, Secure::insecure, ApMode::infra);
     ap6 = createAccessPoint("14", "ADS", device, 40, Secure::insecure, ApMode::adhoc);
     ap7 = createAccessPoint("15", "CFT", device, 60, Secure::insecure, ApMode::infra);
@@ -1149,10 +1152,10 @@ TEST_F(TestIndicator, FlightMode_WifiOn)
                 .item(accessPoint("GDF", Secure::insecure, ApMode::adhoc, ConnectionStatus::connected, 80))
                 .item(accessPoint("ADS", Secure::insecure, ApMode::adhoc, ConnectionStatus::disconnected, 40))
                 .item(accessPoint("CFT", Secure::insecure, ApMode::infra, ConnectionStatus::disconnected, 60))
-                .item(accessPoint("DGN", Secure::secure, ApMode::infra, ConnectionStatus::disconnected, 40))
-                .item(accessPoint("JDR", Secure::secure, ApMode::adhoc, ConnectionStatus::disconnected, 20))
-                .item(accessPoint("JDY", Secure::secure, ApMode::adhoc, ConnectionStatus::disconnected, 60))
-                .item(accessPoint("NSD", Secure::secure, ApMode::infra, ConnectionStatus::disconnected, 0))
+                .item(accessPoint("DGN", Secure::wpa, ApMode::infra, ConnectionStatus::disconnected, 40))
+                .item(accessPoint("JDR", Secure::wpa, ApMode::adhoc, ConnectionStatus::disconnected, 20))
+                .item(accessPoint("JDY", Secure::wpa, ApMode::adhoc, ConnectionStatus::disconnected, 60))
+                .item(accessPoint("NSD", Secure::wpa, ApMode::infra, ConnectionStatus::disconnected, 0))
                 .item(accessPoint("SCE", Secure::insecure, ApMode::infra, ConnectionStatus::disconnected, 20))
             )
         ).match());
@@ -1186,10 +1189,10 @@ TEST_F(TestIndicator, FlightMode_WifiOn)
                 .item(accessPoint("GDF", Secure::insecure, ApMode::adhoc, ConnectionStatus::connected, 80))
                 .item(accessPoint("ADS", Secure::insecure, ApMode::adhoc, ConnectionStatus::disconnected, 40))
                 .item(accessPoint("CFT", Secure::insecure, ApMode::infra, ConnectionStatus::disconnected, 60))
-                .item(accessPoint("DGN", Secure::secure, ApMode::infra, ConnectionStatus::disconnected, 40))
-                .item(accessPoint("JDR", Secure::secure, ApMode::adhoc, ConnectionStatus::disconnected, 20))
-                .item(accessPoint("JDY", Secure::secure, ApMode::adhoc, ConnectionStatus::disconnected, 60))
-                .item(accessPoint("NSD", Secure::secure, ApMode::infra, ConnectionStatus::disconnected, 0))
+                .item(accessPoint("DGN", Secure::wpa, ApMode::infra, ConnectionStatus::disconnected, 40))
+                .item(accessPoint("JDR", Secure::wpa, ApMode::adhoc, ConnectionStatus::disconnected, 20))
+                .item(accessPoint("JDY", Secure::wpa, ApMode::adhoc, ConnectionStatus::disconnected, 60))
+                .item(accessPoint("NSD", Secure::wpa, ApMode::infra, ConnectionStatus::disconnected, 0))
                 .item(accessPoint("SCE", Secure::insecure, ApMode::infra, ConnectionStatus::disconnected, 20))
             )
         ).match());
@@ -1207,7 +1210,7 @@ TEST_F(TestIndicator, GroupedWiFiAccessPoints)
     ASSERT_NO_THROW(startIndicator());
 
     // add a single AP
-    auto ap1 = createAccessPoint("1", "groupA", device, 40, Secure::secure, ApMode::infra);
+    auto ap1 = createAccessPoint("1", "groupA", device, 40, Secure::wpa, ApMode::infra);
 
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
@@ -1217,12 +1220,12 @@ TEST_F(TestIndicator, GroupedWiFiAccessPoints)
             .item(wifiEnableSwitch())
             .item(mh::MenuItemMatcher()
                 .section()
-                .item(accessPoint("groupA", Secure::secure, ApMode::infra, ConnectionStatus::disconnected, 40))
+                .item(accessPoint("groupA", Secure::wpa, ApMode::infra, ConnectionStatus::disconnected, 40))
             )
         ).match());
 
     // add a second AP with the same SSID
-    auto ap2 = createAccessPoint("2", "groupA", device, 60, Secure::secure, ApMode::infra);
+    auto ap2 = createAccessPoint("2", "groupA", device, 60, Secure::wpa, ApMode::infra);
 
     // check that we see a single AP with the higher strength
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
@@ -1233,7 +1236,7 @@ TEST_F(TestIndicator, GroupedWiFiAccessPoints)
             .item(wifiEnableSwitch())
             .item(mh::MenuItemMatcher()
                 .section()
-                .item(accessPoint("groupA", Secure::secure, ApMode::infra, ConnectionStatus::disconnected, 60))
+                .item(accessPoint("groupA", Secure::wpa, ApMode::infra, ConnectionStatus::disconnected, 60))
             )
         ).match());
 
@@ -1249,12 +1252,12 @@ TEST_F(TestIndicator, GroupedWiFiAccessPoints)
             .item(wifiEnableSwitch())
             .item(mh::MenuItemMatcher()
                 .section()
-                .item(accessPoint("groupA", Secure::secure, ApMode::infra, ConnectionStatus::disconnected, 80))
+                .item(accessPoint("groupA", Secure::wpa, ApMode::infra, ConnectionStatus::disconnected, 80))
             )
         ).match());
 
     // add another AP with a different SSID
-    auto ap3 = createAccessPoint("3", "groupB", device, 75, Secure::secure, ApMode::infra);
+    auto ap3 = createAccessPoint("3", "groupB", device, 75, Secure::wpa, ApMode::infra);
 
     // check that we see a single AP with the higher strength
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
@@ -1265,8 +1268,8 @@ TEST_F(TestIndicator, GroupedWiFiAccessPoints)
             .item(wifiEnableSwitch())
             .item(mh::MenuItemMatcher()
                 .section()
-                .item(accessPoint("groupA", Secure::secure, ApMode::infra, ConnectionStatus::disconnected, 80))
-                .item(accessPoint("groupB", Secure::secure, ApMode::infra, ConnectionStatus::disconnected, 75))
+                .item(accessPoint("groupA", Secure::wpa, ApMode::infra, ConnectionStatus::disconnected, 80))
+                .item(accessPoint("groupB", Secure::wpa, ApMode::infra, ConnectionStatus::disconnected, 75))
             )
         ).match());
 
@@ -1282,8 +1285,8 @@ TEST_F(TestIndicator, GroupedWiFiAccessPoints)
             .item(wifiEnableSwitch())
             .item(mh::MenuItemMatcher()
                 .section()
-                .item(accessPoint("groupA", Secure::secure, ApMode::infra, ConnectionStatus::disconnected, 60))
-                .item(accessPoint("groupB", Secure::secure, ApMode::infra, ConnectionStatus::disconnected, 75))
+                .item(accessPoint("groupA", Secure::wpa, ApMode::infra, ConnectionStatus::disconnected, 60))
+                .item(accessPoint("groupB", Secure::wpa, ApMode::infra, ConnectionStatus::disconnected, 75))
             )
         ).match());
 }
@@ -1297,23 +1300,23 @@ TEST_F(TestIndicator, WifiStates_SSIDs)
     auto device = createWiFiDevice(NM_DEVICE_STATE_ACTIVATED);
 
     // prepend a non-utf8 character to the end of AP 1's SSID
-    auto ap1 = createAccessPoint("1", "NSD", device, 20, Secure::secure, ApMode::infra);
+    auto ap1 = createAccessPoint("1", "NSD", device, 20, Secure::wpa, ApMode::infra);
     setNmProperty(ap1, NM_DBUS_INTERFACE_ACCESS_POINT, "Ssid", QByteArray(1, -1) + QByteArray("NSD"));
 
     // append a non-utf8 character to the end of AP 2's SSID
-    auto ap2 = createAccessPoint("2", "DGN", device, 20, Secure::secure, ApMode::infra);
+    auto ap2 = createAccessPoint("2", "DGN", device, 20, Secure::wpa, ApMode::infra);
     setNmProperty(ap2, NM_DBUS_INTERFACE_ACCESS_POINT, "Ssid", QByteArray("DGN") + QByteArray(1, -1));
 
     // insert a non-utf8 character into AP 3's SSID
-    auto ap3 = createAccessPoint("3", "JDY", device, 20, Secure::secure, ApMode::infra);
+    auto ap3 = createAccessPoint("3", "JDY", device, 20, Secure::wpa, ApMode::infra);
     setNmProperty(ap3, NM_DBUS_INTERFACE_ACCESS_POINT, "Ssid", QByteArray("JD") + QByteArray(1, -1) + QByteArray("Y"));
 
     // use only non-utf8 characters for AP 4's SSID
-    auto ap4 = createAccessPoint("4", "---", device, 20, Secure::secure, ApMode::infra);
+    auto ap4 = createAccessPoint("4", "---", device, 20, Secure::wpa, ApMode::infra);
     setNmProperty(ap4, NM_DBUS_INTERFACE_ACCESS_POINT, "Ssid", QByteArray(4, -1));
 
     // leave AP 5's SSID blank
-    auto ap5 = createAccessPoint("5", "", device, 20, Secure::secure, ApMode::infra);
+    auto ap5 = createAccessPoint("5", "", device, 20, Secure::wpa, ApMode::infra);
 
     // start the indicator
     ASSERT_NO_THROW(startIndicator());
@@ -1331,10 +1334,10 @@ TEST_F(TestIndicator, WifiStates_SSIDs)
             )
           .item(wifiEnableSwitch(true))
             .item(mh::MenuItemMatcher()
-                .item(accessPoint("DGN�", Secure::secure, ApMode::infra, ConnectionStatus::disconnected, 20))
-                .item(accessPoint("JD�Y", Secure::secure, ApMode::infra, ConnectionStatus::disconnected, 20))
-                .item(accessPoint("�NSD", Secure::secure, ApMode::infra, ConnectionStatus::disconnected, 20))
-                .item(accessPoint("����", Secure::secure, ApMode::infra, ConnectionStatus::disconnected, 20))
+                .item(accessPoint("DGN�", Secure::wpa, ApMode::infra, ConnectionStatus::disconnected, 20))
+                .item(accessPoint("JD�Y", Secure::wpa, ApMode::infra, ConnectionStatus::disconnected, 20))
+                .item(accessPoint("�NSD", Secure::wpa, ApMode::infra, ConnectionStatus::disconnected, 20))
+                .item(accessPoint("����", Secure::wpa, ApMode::infra, ConnectionStatus::disconnected, 20))
             )
         ).match());
 }
@@ -1391,10 +1394,10 @@ TEST_F(TestIndicator, WifiStates_Connect1AP)
               )
         ).match());
 
-    auto ap1 = createAccessPoint("1", "NSD", device, 20, Secure::secure, ApMode::infra);
-    auto ap2 = createAccessPoint("2", "JDR", device, 40, Secure::secure, ApMode::adhoc);
-    auto ap3 = createAccessPoint("3", "DGN", device, 60, Secure::secure, ApMode::infra);
-    auto ap4 = createAccessPoint("4", "JDY", device, 80, Secure::secure, ApMode::adhoc);
+    auto ap1 = createAccessPoint("1", "NSD", device, 20, Secure::wpa, ApMode::infra);
+    auto ap2 = createAccessPoint("2", "JDR", device, 40, Secure::wpa, ApMode::adhoc);
+    auto ap3 = createAccessPoint("3", "DGN", device, 60, Secure::wpa, ApMode::infra);
+    auto ap4 = createAccessPoint("4", "JDY", device, 80, Secure::wpa, ApMode::adhoc);
     auto ap5 = createAccessPoint("5", "SCE", device, 0, Secure::insecure, ApMode::infra);
     auto ap6 = createAccessPoint("6", "ADS", device, 20, Secure::insecure, ApMode::adhoc);
     auto ap7 = createAccessPoint("7", "CFT", device, 40, Secure::insecure, ApMode::infra);
@@ -1417,11 +1420,11 @@ TEST_F(TestIndicator, WifiStates_Connect1AP)
             .item(mh::MenuItemMatcher()
                 .item(accessPoint("ADS", Secure::insecure, ApMode::adhoc, ConnectionStatus::disconnected, 20))
                 .item(accessPoint("CFT", Secure::insecure, ApMode::infra, ConnectionStatus::disconnected, 40))
-                .item(accessPoint("DGN", Secure::secure, ApMode::infra, ConnectionStatus::disconnected, 60))
+                .item(accessPoint("DGN", Secure::wpa, ApMode::infra, ConnectionStatus::disconnected, 60))
                 .item(accessPoint("GDF", Secure::insecure, ApMode::adhoc, ConnectionStatus::disconnected, 60))
-                .item(accessPoint("JDR", Secure::secure, ApMode::adhoc, ConnectionStatus::disconnected, 40))
-                .item(accessPoint("JDY", Secure::secure, ApMode::adhoc, ConnectionStatus::disconnected, 80))
-                .item(accessPoint("NSD", Secure::secure, ApMode::infra, ConnectionStatus::disconnected, 20))
+                .item(accessPoint("JDR", Secure::wpa, ApMode::adhoc, ConnectionStatus::disconnected, 40))
+                .item(accessPoint("JDY", Secure::wpa, ApMode::adhoc, ConnectionStatus::disconnected, 80))
+                .item(accessPoint("NSD", Secure::wpa, ApMode::infra, ConnectionStatus::disconnected, 20))
                 .item(accessPoint("SCE", Secure::insecure, ApMode::infra, ConnectionStatus::disconnected, 0))
             )
         ).match());
@@ -1442,11 +1445,11 @@ TEST_F(TestIndicator, WifiStates_Connect1AP)
             .item(mh::MenuItemMatcher()
                 .item(accessPoint("ADS", Secure::insecure, ApMode::adhoc, ConnectionStatus::connected, 20))
                 .item(accessPoint("CFT", Secure::insecure, ApMode::infra, ConnectionStatus::disconnected, 40))
-                .item(accessPoint("DGN", Secure::secure, ApMode::infra, ConnectionStatus::disconnected, 60))
+                .item(accessPoint("DGN", Secure::wpa, ApMode::infra, ConnectionStatus::disconnected, 60))
                 .item(accessPoint("GDF", Secure::insecure, ApMode::adhoc, ConnectionStatus::disconnected, 60))
-                .item(accessPoint("JDR", Secure::secure, ApMode::adhoc, ConnectionStatus::disconnected, 40))
-                .item(accessPoint("JDY", Secure::secure, ApMode::adhoc, ConnectionStatus::disconnected, 80))
-                .item(accessPoint("NSD", Secure::secure, ApMode::infra, ConnectionStatus::disconnected, 20))
+                .item(accessPoint("JDR", Secure::wpa, ApMode::adhoc, ConnectionStatus::disconnected, 40))
+                .item(accessPoint("JDY", Secure::wpa, ApMode::adhoc, ConnectionStatus::disconnected, 80))
+                .item(accessPoint("NSD", Secure::wpa, ApMode::infra, ConnectionStatus::disconnected, 20))
                 .item(accessPoint("SCE", Secure::insecure, ApMode::infra, ConnectionStatus::disconnected, 0))
             )
         ).match());
@@ -1562,10 +1565,10 @@ TEST_F(TestIndicator, WifiStates_Connect2APs)
 
     // add some APs (secure / unsecure / adhoc / varied strength)
     auto device = createWiFiDevice(NM_DEVICE_STATE_ACTIVATED);
-    auto ap1 = createAccessPoint("1", "NSD", device, 20, Secure::secure, ApMode::infra);
-    auto ap2 = createAccessPoint("2", "JDR", device, 40, Secure::secure, ApMode::adhoc);
-    auto ap3 = createAccessPoint("3", "DGN", device, 60, Secure::secure, ApMode::infra);
-    auto ap4 = createAccessPoint("4", "JDY", device, 80, Secure::secure, ApMode::adhoc);
+    auto ap1 = createAccessPoint("1", "NSD", device, 20, Secure::wpa, ApMode::infra);
+    auto ap2 = createAccessPoint("2", "JDR", device, 40, Secure::wpa, ApMode::adhoc);
+    auto ap3 = createAccessPoint("3", "DGN", device, 60, Secure::wpa, ApMode::infra);
+    auto ap4 = createAccessPoint("4", "JDY", device, 80, Secure::wpa, ApMode::adhoc);
     auto ap5 = createAccessPoint("5", "SCE", device, 0, Secure::insecure, ApMode::infra);
     auto ap6 = createAccessPoint("6", "ADS", device, 20, Secure::insecure, ApMode::adhoc);
     auto ap7 = createAccessPoint("7", "CFT", device, 40, Secure::insecure, ApMode::infra);
@@ -1591,13 +1594,13 @@ TEST_F(TestIndicator, WifiStates_Connect2APs)
             )
           .item(wifiEnableSwitch(true))
             .item(mh::MenuItemMatcher()
-                .item(accessPoint("JDY", Secure::secure, ApMode::adhoc, ConnectionStatus::connected, 80))
+                .item(accessPoint("JDY", Secure::wpa, ApMode::adhoc, ConnectionStatus::connected, 80))
                 .item(accessPoint("ADS", Secure::insecure, ApMode::adhoc, ConnectionStatus::disconnected, 20))
                 .item(accessPoint("CFT", Secure::insecure, ApMode::infra, ConnectionStatus::disconnected, 40))
-                .item(accessPoint("DGN", Secure::secure, ApMode::infra, ConnectionStatus::disconnected, 60))
+                .item(accessPoint("DGN", Secure::wpa, ApMode::infra, ConnectionStatus::disconnected, 60))
                 .item(accessPoint("GDF", Secure::insecure, ApMode::adhoc, ConnectionStatus::disconnected, 60))
-                .item(accessPoint("JDR", Secure::secure, ApMode::adhoc, ConnectionStatus::disconnected, 40))
-                .item(accessPoint("NSD", Secure::secure, ApMode::infra, ConnectionStatus::disconnected, 20))
+                .item(accessPoint("JDR", Secure::wpa, ApMode::adhoc, ConnectionStatus::disconnected, 40))
+                .item(accessPoint("NSD", Secure::wpa, ApMode::infra, ConnectionStatus::disconnected, 20))
                 .item(accessPoint("SCE", Secure::insecure, ApMode::infra, ConnectionStatus::disconnected, 0))
             )
         ).match());
@@ -1621,11 +1624,11 @@ TEST_F(TestIndicator, WifiStates_Connect2APs)
             .item(mh::MenuItemMatcher()
                 .item(accessPoint("CFT", Secure::insecure, ApMode::infra, ConnectionStatus::connected, 40))
                 .item(accessPoint("ADS", Secure::insecure, ApMode::adhoc, ConnectionStatus::disconnected, 20))
-                .item(accessPoint("DGN", Secure::secure, ApMode::infra, ConnectionStatus::disconnected, 60))
+                .item(accessPoint("DGN", Secure::wpa, ApMode::infra, ConnectionStatus::disconnected, 60))
                 .item(accessPoint("GDF", Secure::insecure, ApMode::adhoc, ConnectionStatus::disconnected, 60))
-                .item(accessPoint("JDR", Secure::secure, ApMode::adhoc, ConnectionStatus::disconnected, 40))
-                .item(accessPoint("JDY", Secure::secure, ApMode::adhoc, ConnectionStatus::disconnected, 80))
-                .item(accessPoint("NSD", Secure::secure, ApMode::infra, ConnectionStatus::disconnected, 20))
+                .item(accessPoint("JDR", Secure::wpa, ApMode::adhoc, ConnectionStatus::disconnected, 40))
+                .item(accessPoint("JDY", Secure::wpa, ApMode::adhoc, ConnectionStatus::disconnected, 80))
+                .item(accessPoint("NSD", Secure::wpa, ApMode::infra, ConnectionStatus::disconnected, 20))
                 .item(accessPoint("SCE", Secure::insecure, ApMode::infra, ConnectionStatus::disconnected, 0))
             )
         ).match());
@@ -1678,10 +1681,10 @@ TEST_F(TestIndicator, WifiStates_Connect2APs)
 
     // NOTE: every newly created access point increments AP index (see: AccessPointItem::Private::ConstructL())
     //       so here we need to start at index 1+8 as we've had 8 APs previously.
-    ap1 = createAccessPoint("9", "NSD", device, 20, Secure::secure, ApMode::infra);
-    ap2 = createAccessPoint("10", "JDR", device, 40, Secure::secure, ApMode::adhoc);
-    ap3 = createAccessPoint("11", "DGN", device, 60, Secure::secure, ApMode::infra);
-    ap4 = createAccessPoint("12", "JDY", device, 80, Secure::secure, ApMode::adhoc);
+    ap1 = createAccessPoint("9", "NSD", device, 20, Secure::wpa, ApMode::infra);
+    ap2 = createAccessPoint("10", "JDR", device, 40, Secure::wpa, ApMode::adhoc);
+    ap3 = createAccessPoint("11", "DGN", device, 60, Secure::wpa, ApMode::infra);
+    ap4 = createAccessPoint("12", "JDY", device, 80, Secure::wpa, ApMode::adhoc);
     ap5 = createAccessPoint("13", "SCE", device, 0, Secure::insecure, ApMode::infra);
     ap6 = createAccessPoint("14", "ADS", device, 20, Secure::insecure, ApMode::adhoc);
     ap7 = createAccessPoint("15", "CFT", device, 40, Secure::insecure, ApMode::infra);
@@ -1700,13 +1703,13 @@ TEST_F(TestIndicator, WifiStates_Connect2APs)
             .mode(mh::MenuItemMatcher::Mode::starts_with)
             .item(flightModeSwitch(false)).item(mh::MenuItemMatcher()).item(wifiEnableSwitch(true))
             .item(mh::MenuItemMatcher()
-                .item(accessPoint("JDY", Secure::secure, ApMode::adhoc, ConnectionStatus::connected, 80))
+                .item(accessPoint("JDY", Secure::wpa, ApMode::adhoc, ConnectionStatus::connected, 80))
                 .item(accessPoint("ADS", Secure::insecure, ApMode::adhoc, ConnectionStatus::disconnected, 20))
                 .item(accessPoint("CFT", Secure::insecure, ApMode::infra, ConnectionStatus::disconnected, 40))
-                .item(accessPoint("DGN", Secure::secure, ApMode::infra, ConnectionStatus::disconnected, 60))
+                .item(accessPoint("DGN", Secure::wpa, ApMode::infra, ConnectionStatus::disconnected, 60))
                 .item(accessPoint("GDF", Secure::insecure, ApMode::adhoc, ConnectionStatus::disconnected, 60))
-                .item(accessPoint("JDR", Secure::secure, ApMode::adhoc, ConnectionStatus::disconnected, 40))
-                .item(accessPoint("NSD", Secure::secure, ApMode::infra, ConnectionStatus::disconnected, 20))
+                .item(accessPoint("JDR", Secure::wpa, ApMode::adhoc, ConnectionStatus::disconnected, 40))
+                .item(accessPoint("NSD", Secure::wpa, ApMode::infra, ConnectionStatus::disconnected, 20))
                 .item(accessPoint("SCE", Secure::insecure, ApMode::infra, ConnectionStatus::disconnected, 0))
             )
         ).match());
@@ -1722,10 +1725,10 @@ TEST_F(TestIndicator, WifiStates_AddAndActivate)
 
     // add some APs (secure / unsecure / adhoc / varied strength)
     auto device = createWiFiDevice(NM_DEVICE_STATE_ACTIVATED);
-    auto ap1 = createAccessPoint("1", "NSD", device, 40, Secure::secure, ApMode::infra);
-    auto ap2 = createAccessPoint("2", "JDR", device, 40, Secure::secure, ApMode::adhoc);
-    auto ap3 = createAccessPoint("3", "DGN", device, 60, Secure::secure, ApMode::infra);
-    auto ap4 = createAccessPoint("4", "JDY", device, 80, Secure::secure, ApMode::adhoc);
+    auto ap1 = createAccessPoint("1", "NSD", device, 40, Secure::wpa, ApMode::infra);
+    auto ap2 = createAccessPoint("2", "JDR", device, 40, Secure::wpa, ApMode::adhoc);
+    auto ap3 = createAccessPoint("3", "DGN", device, 60, Secure::wpa, ApMode::infra);
+    auto ap4 = createAccessPoint("4", "JDY", device, 80, Secure::wpa, ApMode::adhoc);
     auto ap5 = createAccessPoint("5", "SCE", device, 20, Secure::insecure, ApMode::infra);
     auto ap6 = createAccessPoint("6", "ADS", device, 20, Secure::insecure, ApMode::adhoc);
     auto ap7 = createAccessPoint("7", "CFT", device, 40, Secure::insecure, ApMode::infra);
@@ -1750,11 +1753,11 @@ TEST_F(TestIndicator, WifiStates_AddAndActivate)
             .item(mh::MenuItemMatcher()
                 .item(accessPoint("ADS", Secure::insecure, ApMode::adhoc, ConnectionStatus::disconnected, 20))
                 .item(accessPoint("CFT", Secure::insecure, ApMode::infra, ConnectionStatus::disconnected, 40))
-                .item(accessPoint("DGN", Secure::secure, ApMode::infra, ConnectionStatus::disconnected, 60))
+                .item(accessPoint("DGN", Secure::wpa, ApMode::infra, ConnectionStatus::disconnected, 60))
                 .item(accessPoint("GDF", Secure::insecure, ApMode::adhoc, ConnectionStatus::disconnected, 60))
-                .item(accessPoint("JDR", Secure::secure, ApMode::adhoc, ConnectionStatus::disconnected, 40))
-                .item(accessPoint("JDY", Secure::secure, ApMode::adhoc, ConnectionStatus::disconnected, 80))
-                .item(accessPoint("NSD", Secure::secure, ApMode::infra, ConnectionStatus::disconnected, 40))
+                .item(accessPoint("JDR", Secure::wpa, ApMode::adhoc, ConnectionStatus::disconnected, 40))
+                .item(accessPoint("JDY", Secure::wpa, ApMode::adhoc, ConnectionStatus::disconnected, 80))
+                .item(accessPoint("NSD", Secure::wpa, ApMode::infra, ConnectionStatus::disconnected, 40))
                 .item(accessPoint("SCE", Secure::insecure, ApMode::infra, ConnectionStatus::disconnected, 20)
                       .activate())
             )
@@ -1779,11 +1782,11 @@ TEST_F(TestIndicator, WifiStates_AddAndActivate)
                 .item(accessPoint("SCE", Secure::insecure, ApMode::infra, ConnectionStatus::connected, 20))
                 .item(accessPoint("ADS", Secure::insecure, ApMode::adhoc, ConnectionStatus::disconnected, 20))
                 .item(accessPoint("CFT", Secure::insecure, ApMode::infra, ConnectionStatus::disconnected, 40))
-                .item(accessPoint("DGN", Secure::secure, ApMode::infra, ConnectionStatus::disconnected, 60))
+                .item(accessPoint("DGN", Secure::wpa, ApMode::infra, ConnectionStatus::disconnected, 60))
                 .item(accessPoint("GDF", Secure::insecure, ApMode::adhoc, ConnectionStatus::disconnected, 60))
-                .item(accessPoint("JDR", Secure::secure, ApMode::adhoc, ConnectionStatus::disconnected, 40))
-                .item(accessPoint("JDY", Secure::secure, ApMode::adhoc, ConnectionStatus::disconnected, 80))
-                .item(accessPoint("NSD", Secure::secure, ApMode::infra, ConnectionStatus::disconnected, 40)
+                .item(accessPoint("JDR", Secure::wpa, ApMode::adhoc, ConnectionStatus::disconnected, 40))
+                .item(accessPoint("JDY", Secure::wpa, ApMode::adhoc, ConnectionStatus::disconnected, 80))
+                .item(accessPoint("NSD", Secure::wpa, ApMode::infra, ConnectionStatus::disconnected, 40)
                       .activate())
             )
         ).match());
@@ -1805,13 +1808,13 @@ TEST_F(TestIndicator, WifiStates_AddAndActivate)
             )
           .item(wifiEnableSwitch(true))
             .item(mh::MenuItemMatcher()
-                .item(accessPoint("NSD", Secure::secure, ApMode::infra, ConnectionStatus::connected, 40))
+                .item(accessPoint("NSD", Secure::wpa, ApMode::infra, ConnectionStatus::connected, 40))
                 .item(accessPoint("ADS", Secure::insecure, ApMode::adhoc, ConnectionStatus::disconnected, 20))
                 .item(accessPoint("CFT", Secure::insecure, ApMode::infra, ConnectionStatus::disconnected, 40))
-                .item(accessPoint("DGN", Secure::secure, ApMode::infra, ConnectionStatus::disconnected, 60))
+                .item(accessPoint("DGN", Secure::wpa, ApMode::infra, ConnectionStatus::disconnected, 60))
                 .item(accessPoint("GDF", Secure::insecure, ApMode::adhoc, ConnectionStatus::disconnected, 60))
-                .item(accessPoint("JDR", Secure::secure, ApMode::adhoc, ConnectionStatus::disconnected, 40))
-                .item(accessPoint("JDY", Secure::secure, ApMode::adhoc, ConnectionStatus::disconnected, 80))
+                .item(accessPoint("JDR", Secure::wpa, ApMode::adhoc, ConnectionStatus::disconnected, 40))
+                .item(accessPoint("JDY", Secure::wpa, ApMode::adhoc, ConnectionStatus::disconnected, 80))
                 .item(accessPoint("SCE", Secure::insecure, ApMode::infra, ConnectionStatus::disconnected, 20)
                       .activate())
             )
@@ -1836,13 +1839,70 @@ TEST_F(TestIndicator, WifiStates_AddAndActivate)
                 .item(accessPoint("SCE", Secure::insecure, ApMode::infra, ConnectionStatus::connected, 20))
                 .item(accessPoint("ADS", Secure::insecure, ApMode::adhoc, ConnectionStatus::disconnected, 20))
                 .item(accessPoint("CFT", Secure::insecure, ApMode::infra, ConnectionStatus::disconnected, 40))
-                .item(accessPoint("DGN", Secure::secure, ApMode::infra, ConnectionStatus::disconnected, 60))
+                .item(accessPoint("DGN", Secure::wpa, ApMode::infra, ConnectionStatus::disconnected, 60))
                 .item(accessPoint("GDF", Secure::insecure, ApMode::adhoc, ConnectionStatus::disconnected, 60))
-                .item(accessPoint("JDR", Secure::secure, ApMode::adhoc, ConnectionStatus::disconnected, 40))
-                .item(accessPoint("JDY", Secure::secure, ApMode::adhoc, ConnectionStatus::disconnected, 80))
-                .item(accessPoint("NSD", Secure::secure, ApMode::infra, ConnectionStatus::disconnected, 40))
+                .item(accessPoint("JDR", Secure::wpa, ApMode::adhoc, ConnectionStatus::disconnected, 40))
+                .item(accessPoint("JDY", Secure::wpa, ApMode::adhoc, ConnectionStatus::disconnected, 80))
+                .item(accessPoint("NSD", Secure::wpa, ApMode::infra, ConnectionStatus::disconnected, 40))
             )
         ).match());
+}
+
+TEST_F(TestIndicator, EnterpriseWifiConnect)
+{
+    // set wifi on, flight mode off
+    setGlobalConnectedState(NM_STATE_DISCONNECTED);
+
+    // set no sim
+    setSimManagerProperty(firstModem(), "Present", false);
+
+    // add some APs (secure / unsecure / adhoc / varied strength)
+    auto device = createWiFiDevice(NM_DEVICE_STATE_ACTIVATED);
+    auto ap1 = createAccessPoint("1", "ABC", device, 80, Secure::wpa_enterprise, ApMode::infra, "11:22:33:44:55:66");
+
+    // start the indicator
+    ASSERT_NO_THROW(startIndicator());
+
+    // interface to the URL dispatcher
+    auto& urlDispatcher = dbusMock.mockInterface(
+                        "com.canonical.URLDispatcher",
+                        "/com/canonical/URLDispatcher",
+                        "com.canonical.URLDispatcher",
+                        QDBusConnection::SessionBus);
+
+   // Wait for method calls on the URL dispatcher
+   QSignalSpy urlDispatcherSpy(&urlDispatcher, SIGNAL(MethodCalled(const QString &, const QVariantList &)));
+
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .state_icons({"nm-no-connection"})
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .item(flightModeSwitch(false))
+            .item(mh::MenuItemMatcher()
+                .item(modemInfo("", "No SIM", "no-simcard"))
+                .item(cellularSettings())
+            )
+          .item(wifiEnableSwitch(true))
+          .item(mh::MenuItemMatcher()
+               .item(accessPoint("ABC", Secure::wpa_enterprise, ApMode::infra, ConnectionStatus::disconnected, 80).activate())
+           )
+        ).match());
+
+    if (urlDispatcherSpy.isEmpty())
+    {
+        ASSERT_TRUE(urlDispatcherSpy.wait());
+    }
+
+    ASSERT_FALSE(urlDispatcherSpy.isEmpty());
+    EXPECT_EQ(urlDispatcherSpy.first(),
+        QVariantList()
+            << QVariant("DispatchURL")
+            << QVariant(
+                QVariantList()
+                    << QVariant("settings:///system/wifi?ssid=ABC&bssid=11:22:33:44:55:66")
+                    << QVariant("")
+               )
+    );
 }
 
 TEST_F(TestIndicator, CellDataEnabled)
@@ -1876,7 +1936,7 @@ TEST_F(TestIndicator, CellDataEnabled)
             .mode(mh::MenuItemMatcher::Mode::starts_with)
             .item(flightModeSwitch())
             .item(mh::MenuItemMatcher()
-                .item(modemInfo("SIM 1", "fake.tel", "gsm-3g-high"))
+                .item(modemInfo("SIM 1", "fake.tel", "gsm-3g-high", false, "network-cellular-hspa"))
                 .item(modemInfo("SIM 2", "fake.tel", "gsm-3g-low"))
                 .item(cellularSettings())
             )
@@ -1893,7 +1953,7 @@ TEST_F(TestIndicator, CellDataEnabled)
                 .mode(mh::MenuItemMatcher::Mode::starts_with)
                 .item(flightModeSwitch())
                 .item(mh::MenuItemMatcher()
-                    .item(modemInfo("SIM 1", "fake.tel", "gsm-3g-high"))
+                    .item(modemInfo("SIM 1", "fake.tel", "gsm-3g-high", false, "network-cellular-edge"))
                     .item(modemInfo("SIM 2", "fake.tel", "gsm-3g-low"))
                     .item(cellularSettings())
                 )
@@ -1912,7 +1972,7 @@ TEST_F(TestIndicator, CellDataEnabled)
                 .item(flightModeSwitch())
                 .item(mh::MenuItemMatcher()
                     .item(modemInfo("SIM 1", "fake.tel", "gsm-3g-high"))
-                    .item(modemInfo("SIM 2", "fake.tel", "gsm-3g-low"))
+                    .item(modemInfo("SIM 2", "fake.tel", "gsm-3g-low", false, "network-cellular-3g"))
                     .item(cellularSettings())
                 )
                 .item(wifiEnableSwitch(false))
@@ -1921,7 +1981,7 @@ TEST_F(TestIndicator, CellDataEnabled)
 
 TEST_F(TestIndicator, CellDataDisabled)
 {
-    // We are connected
+    // We are disconnected
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
 
     // Create a WiFi device and power it off
@@ -1971,7 +2031,7 @@ TEST_F(TestIndicator, CellDataDisabled)
             .item(flightModeSwitch())
             .item(mh::MenuItemMatcher()
                 .item(modemInfo("SIM 1", "fake.tel", "gsm-3g-low"))
-                .item(modemInfo("SIM 2", "fake.tel", "gsm-3g-high"))
+                .item(modemInfo("SIM 2", "fake.tel", "gsm-3g-high", false, "network-cellular-3g"))
                 .item(cellularSettings())
             )
             .item(wifiEnableSwitch(false))
@@ -1979,7 +2039,7 @@ TEST_F(TestIndicator, CellDataDisabled)
 
     // Enable WiFi and connect to it
     enableWiFi();
-    auto ap1 = createAccessPoint("1", "ABC", device, 20, Secure::secure, ApMode::infra);
+    auto ap1 = createAccessPoint("1", "ABC", device, 20, Secure::wpa, ApMode::infra);
     auto connection = createAccessPointConnection("1", "ABC", device);
     setNmProperty(device, NM_DBUS_INTERFACE_DEVICE, "State", QVariant::fromValue(uint(NM_DEVICE_STATE_ACTIVATED)));
     auto active_connection = createActiveConnection("1", device, connection, ap1);
@@ -1994,13 +2054,13 @@ TEST_F(TestIndicator, CellDataDisabled)
            .item(flightModeSwitch())
            .item(mh::MenuItemMatcher()
                .item(modemInfo("SIM 1", "fake.tel", "gsm-3g-low"))
-               .item(modemInfo("SIM 2", "fake.tel", "gsm-3g-high"))
+               .item(modemInfo("SIM 2", "fake.tel", "gsm-3g-high", false, "network-cellular-3g"))
                .item(cellularSettings())
             )
             .item(wifiEnableSwitch(true))
             .item(mh::MenuItemMatcher()
                 .item(accessPoint("ABC",
-                    Secure::secure,
+                    Secure::wpa,
                     ApMode::infra,
                     ConnectionStatus::connected,
                     20)

@@ -83,13 +83,14 @@ public:
     std::chrono::system_clock::time_point lastConnected() const;
 
     QString ssid() const override;
+    QString bssid() const override;
     QByteArray raw_ssid() const override;
 
     std::uint32_t secflags() const;
     std::uint32_t mode() const;
 
     bool secured() const override;
-
+    bool enterprise() const override;
     bool adhoc() const override;
 
     QDBusObjectPath object_path() const override;
@@ -108,6 +109,7 @@ private:
     std::chrono::system_clock::time_point m_lastConnected;
     std::shared_ptr<OrgFreedesktopNetworkManagerAccessPointInterface> m_ap;
     QString m_ssid;
+    QString m_bssid;
     QByteArray m_raw_ssid;
     bool m_secured;
     bool m_adhoc;

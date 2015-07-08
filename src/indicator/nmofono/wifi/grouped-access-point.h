@@ -50,10 +50,11 @@ public:
     std::chrono::system_clock::time_point lastConnected() const;
 
     QString ssid() const override;
+    QString bssid() const override;
     QByteArray raw_ssid() const override;
 
     bool secured() const override;
-
+    bool enterprise() const override;
     bool adhoc() const override;
 
     QDBusObjectPath object_path() const override;

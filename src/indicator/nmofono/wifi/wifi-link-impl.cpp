@@ -20,6 +20,7 @@
 #include <nmofono/wifi/wifi-link-impl.h>
 #include <nmofono/wifi/access-point-impl.h>
 #include <nmofono/wifi/grouped-access-point.h>
+#include <url-dispatcher-cpp/url-dispatcher.h>
 #include <cassert>
 
 #include <NetworkManagerActiveConnectionInterface.h>
@@ -28,6 +29,7 @@
 
 #include <NetworkManager.h>
 #include <iostream>
+#include <QUrlQuery>
 
 using namespace std;
 
@@ -453,20 +455,37 @@ WifiLinkImpl::connect_to(AccessPoint::Ptr accessPoint)
                                            QDBusObjectPath(d->m_dev->path()),
                                            accessPoint->object_path());
         } else {
-            QVariantDictMap conf;
+            if (accessPoint->enterprise()) {
+                // activate system settings URI
+                QUrlQuery q;
+                q.addQueryItem("ssid", accessPoint->raw_ssid());
+                q.addQueryItem("bssid", accessPoint->bssid());
+                QString url = "settings:///system/wifi?" + q.query(QUrl::FullyEncoded);
 
-            /// @todo getting the ssid multiple times over dbus is stupid.
+                UrlDispatcher::send(url.toStdString(), [](string url, bool success) {
+                    if (!success) {
+                        cerr << "URL Dispatcher failed on " << url << endl;
+                    }
+                });
+            } else {
+                QVariantDictMap conf;
 
-            QVariantMap wireless_conf;
-            wireless_conf["ssid"] = ssid;
+                /// @todo getting the ssid multiple times over dbus is stupid.
 
-            conf["802-11-wireless"] = wireless_conf;
-            auto ret = d->m_nm->AddAndActivateConnection(
-                    conf, QDBusObjectPath(d->m_dev->path()), accessPoint->object_path());
-            ret.waitForFinished();
-            ac = ret.argumentAt<1>();
+                QVariantMap wireless_conf;
+                wireless_conf["ssid"] = ssid;
+
+                conf["802-11-wireless"] = wireless_conf;
+                auto ret = d->m_nm->AddAndActivateConnection(
+                        conf, QDBusObjectPath(d->m_dev->path()), accessPoint->object_path());
+                ret.waitForFinished();
+                ac = ret.argumentAt<1>();
+            }
         }
-        d->updateActiveConnection(ac);
+        // For enterprise access points, the system settings app will perform the connection
+        if (!accessPoint->enterprise()) {
+            d->updateActiveConnection(ac);
+        }
         d->m_connecting = false;
     } catch(const exception &e) {
         // @bug default timeout expired: LP(#1361642)

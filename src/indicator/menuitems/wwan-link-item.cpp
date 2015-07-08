@@ -83,8 +83,6 @@ WwanLinkItem::Private::update()
     } else {
         m_infoItem->setSimIdentifierText("");
     }
-    /// @todo implement me.
-    m_infoItem->setConnectivityIcon("");
 
     switch(m_modem->simStatus()) {
     case wwan::Modem::SimStatus::missing:
@@ -92,12 +90,14 @@ WwanLinkItem::Private::update()
         m_infoItem->setStatusText(_("No SIM"));
         m_infoItem->setLocked(false);
         m_infoItem->setRoaming(false);
+        m_infoItem->setConnectivityIcon("");
         break;
     case wwan::Modem::SimStatus::error:
         m_infoItem->setStatusIcon("simcard-error");
         m_infoItem->setStatusText(_("SIM Error"));
         m_infoItem->setLocked(false);
         m_infoItem->setRoaming(false);
+        m_infoItem->setConnectivityIcon("");
         break;
     case wwan::Modem::SimStatus::locked:
     case wwan::Modem::SimStatus::permanentlyLocked:
@@ -105,6 +105,7 @@ WwanLinkItem::Private::update()
         m_infoItem->setStatusText(_("SIM Locked"));
         m_infoItem->setLocked(true);
         m_infoItem->setRoaming(false);
+        m_infoItem->setConnectivityIcon("");
         break;
     case wwan::Modem::SimStatus::ready:
         m_infoItem->setLocked(false);
@@ -115,18 +116,22 @@ WwanLinkItem::Private::update()
             case wwan::Modem::ModemStatus::unregistered:
                 m_infoItem->setStatusIcon("gsm-3g-disabled");
                 m_infoItem->setStatusText(_("Unregistered"));
+                m_infoItem->setConnectivityIcon("");
                 break;
             case wwan::Modem::ModemStatus::unknown:
                 m_infoItem->setStatusIcon("gsm-3g-disabled");
                 m_infoItem->setStatusText(_("Unknown"));
+                m_infoItem->setConnectivityIcon("");
                 break;
             case wwan::Modem::ModemStatus::denied:
                 m_infoItem->setStatusIcon("gsm-3g-disabled");
                 m_infoItem->setStatusText(_("Denied"));
+                m_infoItem->setConnectivityIcon("");
                 break;
             case wwan::Modem::ModemStatus::searching:
                 m_infoItem->setStatusIcon("gsm-3g-disabled");
                 m_infoItem->setStatusText(_("Searching"));
+                m_infoItem->setConnectivityIcon("");
                 break;
             case wwan::Modem::ModemStatus::roaming:
                 m_infoItem->setRoaming(true);
@@ -139,11 +144,18 @@ WwanLinkItem::Private::update()
                     m_infoItem->setStatusIcon("gsm-3g-no-service");
                     m_infoItem->setStatusText(_("No Signal"));
                 }
+
+                if (m_modem->dataEnabled()) {
+                    m_infoItem->setConnectivityIcon(Icons::bearerIcon(m_modem->bearer()));
+                } else {
+                    m_infoItem->setConnectivityIcon("");
+                }
                 break;
             }
         } else {
             m_infoItem->setStatusIcon("gsm-3g-disabled");
             m_infoItem->setStatusText(_("Offline"));
+            m_infoItem->setConnectivityIcon("");
         }
 
         break;
@@ -152,6 +164,7 @@ WwanLinkItem::Private::update()
         m_infoItem->setStatusText(_("Offline"));
         m_infoItem->setLocked(false);
         m_infoItem->setRoaming(false);
+        m_infoItem->setConnectivityIcon("");
         break;
     }
 }

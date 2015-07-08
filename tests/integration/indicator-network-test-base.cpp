@@ -64,7 +64,36 @@ void IndicatorNetworkTestBase::SetUp()
     dbusMock.registerOfono();
     dbusMock.registerURfkill();
 
+    dbusMock.registerCustomMock(
+                        "com.canonical.URLDispatcher",
+                        "/com/canonical/URLDispatcher",
+                        "com.canonical.URLDispatcher",
+                        QDBusConnection::SessionBus);
+
     dbusTestRunner.startServices();
+
+    // Set up a basic URL dispatcher mock
+    auto& urlDispatcher = dbusMock.mockInterface(
+                        "com.canonical.URLDispatcher",
+                        "/com/canonical/URLDispatcher",
+                        "com.canonical.URLDispatcher",
+                        QDBusConnection::SessionBus);
+    urlDispatcher.AddMethod(
+                        "com.canonical.URLDispatcher",
+                        "DispatchURL", "ss", "",
+                        ""
+                     ).waitForFinished();
+    urlDispatcher.AddMethod(
+                        "com.canonical.URLDispatcher",
+                        "TestURL", "as", "as",
+                        "ret = args[0]"
+                     ).waitForFinished();
+
+    // mock service creates ril_0 automatically
+    // Initial ConnectionManager properties are insane, fix them here
+    setConnectionManagerProperty(firstModem(), "Bearer", "none");
+    setConnectionManagerProperty(firstModem(), "Powered", false);
+    setConnectionManagerProperty(firstModem(), "Attached", false);
 
     // Identify the test when looking at Bustle logs
     QDBusConnection systemConnection = dbusTestRunner.systemConnection();
@@ -149,16 +178,29 @@ void IndicatorNetworkTestBase::disableWiFi()
 }
 
 QString IndicatorNetworkTestBase::createAccessPoint(const QString& id, const QString& ssid, const QString& device, uchar strength,
-                          Secure secure, ApMode apMode)
+                          Secure secure, ApMode apMode, const QString& mac)
 {
+    int secflags;
+    if (secure == Secure::insecure)
+    {
+        secflags = NM_802_11_AP_SEC_NONE;
+    }
+    else if (secure == Secure::wpa)
+    {
+        secflags = NM_802_11_AP_SEC_KEY_MGMT_PSK;
+    }
+    else if (secure == Secure::wpa_enterprise)
+    {
+        secflags = NM_802_11_AP_SEC_KEY_MGMT_802_1X;
+    }
 
     auto& networkManager(dbusMock.networkManagerInterface());
     auto reply = networkManager.AddAccessPoint(
                         device, id, ssid,
-                        randomMac(),
+                        mac,
                         apMode == ApMode::adhoc ? NM_802_11_MODE_ADHOC : NM_802_11_MODE_INFRA,
                         0, 0, strength,
-                        secure == Secure::secure ? NM_802_11_AP_SEC_KEY_MGMT_PSK : NM_802_11_AP_SEC_NONE);
+                        secflags);
     reply.waitForFinished();
     return reply;
 }
@@ -218,31 +260,60 @@ QString IndicatorNetworkTestBase::createModem(const QString& id)
 {
     auto& ofono(dbusMock.ofonoInterface());
     QVariantMap modemProperties {{ "Powered", false } };
-    return ofono.AddModem(id, modemProperties);
+    auto reply = ofono.AddModem(id, modemProperties);
+    reply.waitForFinished();
+    if (reply.isError()) {
+        EXPECT_FALSE(reply.isError()) << reply.error().message().toStdString();
+        return "";
+    }
+    QString path = reply.value();
+
+    // Initial ConnectionManager properties are insane, fix them here
+    setConnectionManagerProperty(path, "Bearer", "none");
+    setConnectionManagerProperty(path, "Powered", false);
+    setConnectionManagerProperty(path, "Attached", false);
+
+    return path;
 }
 
 void IndicatorNetworkTestBase::setModemProperty(const QString& path, const QString& propertyName, const QVariant& value)
 {
     auto& ofono(dbusMock.ofonoModemInterface(path));
-    ofono.SetProperty(propertyName, QDBusVariant(value)).waitForFinished();
+    auto reply = ofono.SetProperty(propertyName, QDBusVariant(value));
+    reply.waitForFinished();
+    if (reply.isError()) {
+        EXPECT_FALSE(reply.isError()) << reply.error().message().toStdString();
+    }
 }
 
 void IndicatorNetworkTestBase::setSimManagerProperty(const QString& path, const QString& propertyName, const QVariant& value)
 {
     auto& ofono(dbusMock.ofonoSimManagerInterface(path));
-    ofono.SetProperty(propertyName, QDBusVariant(value)).waitForFinished();
+    auto reply = ofono.SetProperty(propertyName, QDBusVariant(value));
+    reply.waitForFinished();
+    if (reply.isError()) {
+        EXPECT_FALSE(reply.isError()) << reply.error().message().toStdString();
+    }
 }
 
 void IndicatorNetworkTestBase::setConnectionManagerProperty(const QString& path, const QString& propertyName, const QVariant& value)
 {
     auto& ofono(dbusMock.ofonoConnectionManagerInterface(path));
-    ofono.SetProperty(propertyName, QDBusVariant(value)).waitForFinished();
+    auto reply = ofono.SetProperty(propertyName, QDBusVariant(value));
+    reply.waitForFinished();
+    if (reply.isError()) {
+        EXPECT_FALSE(reply.isError()) << reply.error().message().toStdString();
+    }
 }
 
 void IndicatorNetworkTestBase::setNetworkRegistrationProperty(const QString& path, const QString& propertyName, const QVariant& value)
 {
     auto& ofono(dbusMock.ofonoNetworkRegistrationInterface(path));
-    ofono.SetProperty(propertyName, QDBusVariant(value)).waitForFinished();
+    auto reply = ofono.SetProperty(propertyName, QDBusVariant(value));
+    reply.waitForFinished();
+    if (reply.isError()) {
+        EXPECT_FALSE(reply.isError()) << reply.error().message().toStdString();
+    }
 }
 
 OrgFreedesktopDBusMockInterface& IndicatorNetworkTestBase::notificationsMockInterface()
@@ -298,7 +369,8 @@ mh::MenuItemMatcher IndicatorNetworkTestBase::accessPoint(const string& ssid, Se
         .pass_through_attribute(
             "x-canonical-wifi-ap-strength-action",
             shared_ptr<GVariant>(g_variant_new_byte(strength), &mh::gvariant_deleter))
-        .boolean_attribute("x-canonical-wifi-ap-is-secure", secure == Secure::secure)
+        .boolean_attribute("x-canonical-wifi-ap-is-secure", secure != Secure::insecure)
+        .boolean_attribute("x-canonical-wifi-ap-is-enterprise", secure == Secure::wpa_enterprise)
         .boolean_attribute("x-canonical-wifi-ap-is-adhoc", apMode == ApMode::adhoc);
 }
 
@@ -317,12 +389,16 @@ mh::MenuItemMatcher IndicatorNetworkTestBase::wifiSettings()
         .action("indicator.wifi.settings");
 }
 
-mh::MenuItemMatcher IndicatorNetworkTestBase::modemInfo(const string& simIdentifier, const string& label, const string& statusIcon, bool locked)
+mh::MenuItemMatcher IndicatorNetworkTestBase::modemInfo(const string& simIdentifier,
+          const string& label,
+          const string& statusIcon,
+          bool locked,
+          const string& connectivityIcon)
 {
     return mh::MenuItemMatcher()
         .widget("com.canonical.indicator.network.modeminfoitem")
         .pass_through_string_attribute("x-canonical-modem-sim-identifier-label-action", simIdentifier)
-        .pass_through_string_attribute("x-canonical-modem-connectivity-icon-action", "")
+        .pass_through_string_attribute("x-canonical-modem-connectivity-icon-action", connectivityIcon)
         .pass_through_string_attribute("x-canonical-modem-status-label-action", label)
         .pass_through_string_attribute("x-canonical-modem-status-icon-action", statusIcon)
         .pass_through_boolean_attribute("x-canonical-modem-roaming-action", false)

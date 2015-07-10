@@ -20,8 +20,11 @@
 
 #include <nmofono/manager-impl.h>
 #include <nmofono/wifi/wifi-link-impl.h>
-#include <NetworkManagerInterface.h>
+#include <NetworkManagerActiveConnectionInterface.h>
 #include <NetworkManagerDeviceInterface.h>
+#include <NetworkManagerInterface.h>
+#include <NetworkManagerSettingsInterface.h>
+#include <NetworkManagerSettingsConnectionInterface.h>
 
 #define slots
 #include <qofono-qt5/qofonomanager.h>
@@ -42,6 +45,21 @@
 using namespace std;
 
 namespace nmofono {
+
+namespace
+{
+QString generate_password()
+{
+    static const std::string items("abcdefghijklmnopqrstuvwxyz01234567890");
+    const int passwordLength = 8;
+    std::string result;
+    for (int i = 0; i < passwordLength; i++)
+    {
+        result.push_back(items[std::rand() % items.length()]);
+    }
+    return QString::fromStdString(result);
+}
+}
 
 class ManagerImpl::Private : public QObject
 {
@@ -67,6 +85,12 @@ public:
     SimUnlockDialog::Ptr m_unlockDialog;
     QList<wwan::Modem::Ptr> m_pendingUnlocks;
 
+    QByteArray m_hotspotName;
+    QString m_hotspotPassword;
+    QString m_hotspotSettingsPath;
+    QDBusObjectPath m_hotspotDevicePath;
+    bool m_hotspotActive = false;
+
     Private(Manager& parent) :
         p(parent)
     {
@@ -81,6 +105,176 @@ public:
 
         m_unstoppableOperationHappening = happening;
         Q_EMIT p.unstoppableOperationHappeningUpdated(m_unstoppableOperationHappening);
+    }
+
+    void startAdhoc()
+    {
+        QVariantDictMap connection;
+
+        QDBusObjectPath specific("/");
+
+        QVariantMap wireless;
+        wireless[QStringLiteral("security")] = QVariant(QStringLiteral("802-11-wireless-security"));
+        wireless[QStringLiteral("ssid")] = QVariant(m_hotspotName);
+        wireless[QStringLiteral("mode")] = QVariant(QStringLiteral("adhoc"));
+        connection["802-11-wireless"] = wireless;
+
+        QVariantMap connsettings;
+        connsettings[QStringLiteral("autoconnect")] = QVariant(false);
+        connsettings[QStringLiteral("uuid")] = QVariant(QStringLiteral("aab22b5d-7342-48dc-8920-1b7da31d6829"));
+        connsettings[QStringLiteral("type")] = QVariant(QStringLiteral("802-11-wireless"));
+        connection["connection"] = connsettings;
+
+        QVariantMap ipv4;
+        ipv4[QStringLiteral("addressess")] = QVariant(QStringList());
+        ipv4[QStringLiteral("dns")] = QVariant(QStringList());
+        ipv4[QStringLiteral("method")] = QVariant(QStringLiteral("shared"));
+        ipv4[QStringLiteral("routes")] = QVariant(QStringList());
+        connection["ipv4"] = ipv4;
+
+        QVariantMap security;
+        security[QStringLiteral("proto")] = QVariant(QStringList{"rsn"});
+        security[QStringLiteral("pairwise")] = QVariant(QStringList{"ccmp"});
+        security[QStringLiteral("group")] = QVariant(QStringList{"ccmp"});
+        security[QStringLiteral("key-mgmt")] = QVariant(QStringLiteral("wpa-psk"));
+        security[QStringLiteral("psk")] = QVariant(m_hotspotPassword);
+        connection["802-11-wireless-security"] = security;
+
+        auto reply = nm->AddAndActivateConnection(connection, m_hotspotDevicePath, specific);
+        reply.waitForFinished();
+        if (!reply.isValid())
+        {
+            qWarning() << "Failed to start adhoc network: "
+                    << reply.error().message() << "\n";
+        }
+    }
+
+    void detectAdhoc()
+    {
+        auto activeConnections = nm->activeConnections();
+        OrgFreedesktopNetworkManagerSettingsInterface settings(NM_DBUS_SERVICE, NM_DBUS_PATH_SETTINGS,
+                nm->connection());
+        QSet<QDBusObjectPath> actives;
+        auto r = settings.ListConnections();
+        r.waitForFinished();
+        for (const auto &conn : activeConnections)
+        {
+            OrgFreedesktopNetworkManagerConnectionActiveInterface activeConnection(
+                    NM_DBUS_SERVICE, conn.path(), nm->connection());
+            actives.insert(activeConnection.connection());
+        }
+
+        const char wifiKey[] = "802-11-wireless";
+        for (const auto &i : r.value())
+        {
+            OrgFreedesktopNetworkManagerSettingsConnectionInterface conn(
+                    NM_DBUS_SERVICE, i.path(), nm->connection());
+            auto reply = conn.GetSettings();
+            reply.waitForFinished();
+            auto s = reply.value();
+            if (s.find(wifiKey) != s.end())
+            {
+                auto wsetup = s[wifiKey];
+                if (wsetup["mode"] == "adhoc")
+                {
+                    m_hotspotSettingsPath = i.path();
+                    updateHotspotName(wsetup["ssid"].toByteArray());
+                    auto pwdReply = conn.GetSecrets("802-11-wireless-security");
+                    pwdReply.waitForFinished();
+                    updateHotspotPassword(pwdReply.value()["802-11-wireless-security"]["psk"].toString());
+                    updateHotspotActive(false);
+                    for (const auto &ac : actives)
+                    {
+                        if (i == ac)
+                        {
+                            updateHotspotActive(true);
+                            break;
+                        }
+                    }
+                    return;
+                }
+            }
+        }
+
+        // Couldn't find existing hotspot, so use defaults
+        m_hotspotSettingsPath = "";
+        updateHotspotName("Ubuntu hotspot");
+        updateHotspotPassword(generate_password());
+        updateHotspotActive(false);
+    }
+
+    void updateHotspotActive(bool active)
+    {
+        if (m_hotspotActive == active)
+        {
+            return;
+        }
+
+        m_hotspotActive = active;
+        Q_EMIT p.hotspotActiveUpdated(m_hotspotActive);
+    }
+
+    void updateHotspotName(const QByteArray& name)
+    {
+        if (m_hotspotName == name)
+        {
+            return;
+        }
+
+        m_hotspotName = name;
+        Q_EMIT p.hotspotNameUpdated(m_hotspotName);
+    }
+
+    void updateHotspotPassword(const QString& password)
+    {
+        if (m_hotspotPassword == password)
+        {
+            return;
+        }
+
+        m_hotspotPassword = password;
+        Q_EMIT p.hotspotPasswordUpdated(m_hotspotPassword);
+    }
+
+    void destroyHotspot()
+    {
+        if (m_hotspotSettingsPath.isEmpty())
+        {
+            qWarning() << "Tried to destroy nonexisting hotspot.\n";
+            return;
+        }
+        OrgFreedesktopNetworkManagerSettingsConnectionInterface control(
+                NM_DBUS_SERVICE, m_hotspotSettingsPath, nm->connection());
+        QDBusReply<void> reply = control.Delete();;
+        if (!reply.isValid())
+        {
+            qWarning() << "Could not disconnect adhoc network: "
+                    << reply.error().message() << "\n";
+        }
+        else
+        {
+            updateHotspotActive(false);
+        }
+    }
+
+    void detectWirelessDevice()
+    {
+        auto devices = nm->GetDevices();
+        devices.waitForFinished();
+        for (const auto &dpath : devices.value())
+        {
+            OrgFreedesktopNetworkManagerDeviceInterface device(
+                    NM_DBUS_SERVICE, dpath.path(), nm->connection());
+            auto typeInt = device.deviceType();
+            if (typeInt == NM_DEVICE_TYPE_WIFI)
+            {
+                // Assumptions are that there is only one wifi device and it is not hotpluggable.
+                m_hotspotDevicePath = dpath;
+            }
+        }
+        qWarning()
+                << "Wireless device not found, hotspot functionality is inoperative.\n";
+        m_hotspotDevicePath.setPath("/");
     }
 
 public Q_SLOTS:
@@ -264,6 +458,11 @@ ManagerImpl::ManagerImpl(const QDBusConnection& systemConnection) : d(new Manage
     d->m_characteristics = Link::Characteristics::empty;
 
     d->updateHasWifi();
+
+    // Detect WiFi device and check for existing hotspot setup
+    d->detectWirelessDevice();
+    d->detectAdhoc();
+
 }
 
 void
@@ -548,6 +747,62 @@ QSet<wwan::Modem::Ptr>
 ManagerImpl::modemLinks() const
 {
     return d->m_ofonoLinks.values().toSet();
+}
+
+bool ManagerImpl::hotspotActive() const
+{
+    return d->m_hotspotActive;
+}
+
+QByteArray ManagerImpl::hotspotName() const
+{
+    return d->m_hotspotName;
+}
+
+QString ManagerImpl::hotspotPassword() const
+{
+    return d->m_hotspotPassword;
+}
+
+void ManagerImpl::setHotspotActive(bool active)
+{
+    if (active)
+    {
+        if (!d->m_hotspotSettingsPath.isEmpty())
+        {
+            // Prints a warning message if the connection has disappeared already.
+            d->destroyHotspot();
+            // NM returns from the dbus call immediately but only destroys the
+            // connection some time later. There is no callback for when this happens.
+            // So this is the best we can do with reasonable effort.
+            QThread::sleep(1);
+        }
+        d->startAdhoc();
+        d->detectAdhoc();
+    }
+    else
+    {
+        auto activeConnections = d->nm->activeConnections();
+        for (const auto &aConn : activeConnections)
+        {
+            OrgFreedesktopNetworkManagerConnectionActiveInterface activeConnection(
+                    NM_DBUS_SERVICE, aConn.path(), d->nm->connection());
+            QDBusObjectPath backingConnection = activeConnection.connection();
+            if (backingConnection.path() == d->m_hotspotSettingsPath)
+            {
+                d->nm->DeactivateConnection(aConn);
+                return;
+            }
+        }
+        qWarning() << "Could not find a hotspot setup to disable.\n";
+    }
+}
+
+void ManagerImpl::setupHotspot(const QByteArray &name, const QString &password)
+{
+    d->updateHotspotName(name);
+    d->updateHotspotPassword(password);
+
 }
 
 }

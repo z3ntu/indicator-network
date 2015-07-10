@@ -94,6 +94,17 @@ public:
     Q_PROPERTY(bool UnstoppableOperationHappening READ unstoppableOperationHappening NOTIFY unstoppableOperationHappeningUpdated)
     bool unstoppableOperationHappening() const;
 
+    Q_PROPERTY(QByteArray hotspotName READ hotspotName NOTIFY hotspotNameUpdated)
+    QByteArray hotspotName() const;
+
+    Q_PROPERTY(QString hotspotPassword READ hotspotPassword NOTIFY hotspotPasswordUpdated)
+    QString hotspotPassword() const;
+
+    Q_PROPERTY(bool hotspotActive READ hotspotActive WRITE setHotspotActive NOTIFY hotspotActiveUpdated)
+    bool hotspotActive() const;
+
+    Q_INVOKABLE void setupHotspot(const QByteArray& ssid, const QString& password);
+
     Q_PROPERTY(bool Initialized READ isInitialized NOTIFY initialized)
     bool isInitialized() const;
 
@@ -101,6 +112,8 @@ public Q_SLOTS:
     void setFlightMode(bool enabled);
 
     void setwifiEnabled(bool enabled);
+
+    void setHotspotActive(bool active);
 
 Q_SIGNALS:
     void flightModeUpdated(bool);
@@ -116,6 +129,12 @@ Q_SIGNALS:
     void wifiEnabledUpdated(bool);
 
     void unstoppableOperationHappeningUpdated(bool);
+
+    void hotspotNameUpdated(const QByteArray& name);
+
+    void hotspotPasswordUpdated(const QString& password);
+
+    void hotspotActiveUpdated(bool);
 
     void initialized();
 

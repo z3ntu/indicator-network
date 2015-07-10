@@ -45,6 +45,8 @@ public:
 
     shared_ptr<internal::DBusPropertyCache> m_propertyCache;
 
+    shared_ptr<internal::DBusPropertyCache> m_writePropertyCache;
+
     shared_ptr<ComUbuntuConnectivity1NetworkingStatusInterface> m_readInterface;
 
     shared_ptr<ComUbuntuConnectivity1PrivateInterface> m_writeInterface;
@@ -112,6 +114,18 @@ public Q_SLOTS:
             Q_EMIT p.statusUpdated(status);
             Q_EMIT p.onlineUpdated(status == Status::Online);
         }
+        else if (name == "HotspotActive")
+        {
+            Q_EMIT p.hotspotActiveUpdated(value.toBool());
+        }
+        else if (name == "HotspotName")
+        {
+            Q_EMIT p.hotspotNameUpdated(value.toByteArray());
+        }
+        else if (name == "HotspotPassword")
+        {
+            Q_EMIT p.hotspotPasswordUpdated(value.toString());
+        }
     }
 };
 
@@ -135,6 +149,13 @@ Connectivity::Connectivity(const QDBusConnection& sessionConnection, QObject* pa
     d->m_writeInterface = make_shared<ComUbuntuConnectivity1PrivateInterface>(
             DBusTypes::DBUS_NAME, DBusTypes::PRIVATE_PATH,
             d->m_sessionConnection);
+
+    d->m_writePropertyCache = make_shared<internal::DBusPropertyCache>(
+                DBusTypes::DBUS_NAME, DBusTypes::PRIVATE_INTERFACE,
+                DBusTypes::PRIVATE_PATH, sessionConnection);
+    connect(d->m_writePropertyCache.get(),
+            &internal::DBusPropertyCache::propertyChanged, d.get(),
+            &Priv::propertyChanged);
 
     d->m_propertyCache = make_shared<internal::DBusPropertyCache>(
             DBusTypes::DBUS_NAME, DBusTypes::SERVICE_INTERFACE,
@@ -199,6 +220,31 @@ void Connectivity::setFlightMode(bool enabled)
 void Connectivity::setwifiEnabled(bool enabled)
 {
     d->m_writeInterface->SetWifiEnabled(enabled);
+}
+
+QByteArray Connectivity::hotspotName() const
+{
+    return d->m_propertyCache->get("HotspotName").toByteArray();
+}
+
+QString Connectivity::hotspotPassword() const
+{
+    return d->m_writePropertyCache->get("HotspotPassword").toString();
+}
+
+bool Connectivity::hotspotActive() const
+{
+    return d->m_propertyCache->get("HotspotActive").toBool();
+}
+
+void Connectivity::setupHotspot(const QByteArray& ssid, const QString& password)
+{
+    d->m_writeInterface->SetupHotspot(ssid, password);
+}
+
+void Connectivity::setHotspotActive(bool active)
+{
+    d->m_writeInterface->SetHotspotActive(active);
 }
 
 }

@@ -9,6 +9,9 @@
         <property name="FlightMode" type="b" access="read"/>
         <property name="WifiEnabled" type="b" access="read"/>
 
+        <property name="HotspotName" type="ay" access="read"/>
+        <property name="HotspotActive" type="b" access="read"/>
+
         <property name="UnstoppableOperationHappening" type="b" access="read"/>
 
     </interface>

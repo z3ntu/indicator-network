@@ -180,7 +180,7 @@ void IndicatorNetworkTestBase::disableWiFi()
 QString IndicatorNetworkTestBase::createAccessPoint(const QString& id, const QString& ssid, const QString& device, uchar strength,
                           Secure secure, ApMode apMode, const QString& mac)
 {
-    int secflags;
+    int secflags(NM_802_11_AP_SEC_NONE);
     if (secure == Secure::insecure)
     {
         secflags = NM_802_11_AP_SEC_NONE;

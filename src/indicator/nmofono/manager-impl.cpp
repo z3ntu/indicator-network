@@ -270,6 +270,7 @@ public:
             {
                 // Assumptions are that there is only one wifi device and it is not hotpluggable.
                 m_hotspotDevicePath = dpath;
+                return;
             }
         }
         qWarning()

@@ -87,6 +87,14 @@ public:
     }
 
 public Q_SLOTS:
+    void interfaceInitialized()
+    {
+        // If both interfaces have been initialized then we're good to go
+        if (p.isInitialized())
+        {
+            Q_EMIT p.initialized();
+        }
+    }
 
     void propertyChanged(const QString& name, const QVariant& value)
     {
@@ -156,6 +164,9 @@ Connectivity::Connectivity(const QDBusConnection& sessionConnection, QObject* pa
     connect(d->m_writePropertyCache.get(),
             &internal::DBusPropertyCache::propertyChanged, d.get(),
             &Priv::propertyChanged);
+    connect(d->m_writePropertyCache.get(),
+            &internal::DBusPropertyCache::initialized, d.get(),
+            &Connectivity::Priv::interfaceInitialized);
 
     d->m_propertyCache = make_shared<internal::DBusPropertyCache>(
             DBusTypes::DBUS_NAME, DBusTypes::SERVICE_INTERFACE,
@@ -164,8 +175,8 @@ Connectivity::Connectivity(const QDBusConnection& sessionConnection, QObject* pa
             &internal::DBusPropertyCache::propertyChanged, d.get(),
             &Priv::propertyChanged);
     connect(d->m_propertyCache.get(),
-            &internal::DBusPropertyCache::initialized, this,
-            &Connectivity::initialized);
+            &internal::DBusPropertyCache::initialized, d.get(),
+            &Connectivity::Priv::interfaceInitialized);
 }
 
 Connectivity::~Connectivity()
@@ -209,7 +220,8 @@ bool Connectivity::limitedBandwith() const
 
 bool Connectivity::isInitialized() const
 {
-    return d->m_propertyCache->isInitialized();
+    return d->m_propertyCache->isInitialized()
+            && d->m_writePropertyCache->isInitialized();
 }
 
 void Connectivity::setFlightMode(bool enabled)

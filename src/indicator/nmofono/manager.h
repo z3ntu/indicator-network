@@ -19,6 +19,7 @@
 
 #pragma once
 
+#include <nmofono/hotspot-manager.h>
 #include <nmofono/link.h>
 #include <nmofono/wifi/wifi-link.h>
 #include <nmofono/wwan/modem.h>
@@ -86,14 +87,7 @@ public:
     Q_PROPERTY(bool unstoppableOperationHappening READ unstoppableOperationHappening NOTIFY unstoppableOperationHappeningUpdated)
     virtual bool unstoppableOperationHappening() const = 0;
 
-    Q_PROPERTY(bool HotspotActive READ hotspotActive NOTIFY hotspotActiveUpdated)
-    virtual bool hotspotActive() const = 0;
-
-    Q_PROPERTY(QByteArray HotspotName READ hotspotName NOTIFY hotspotNameUpdated)
-    virtual QByteArray hotspotName() const = 0;
-
-    Q_PROPERTY(QString HotspotPassword READ hotspotPassword NOTIFY hotspotPasswordUpdated)
-    virtual QString hotspotPassword() const = 0;
+    virtual HotspotManager::SPtr hotspotManager() const = 0;
 
     /// @private
     Q_PROPERTY(QSet<Link::Ptr> links READ links NOTIFY linksUpdated)
@@ -151,20 +145,10 @@ Q_SIGNALS:
 
     void unstoppableOperationHappeningUpdated(bool);
 
-    void hotspotActiveUpdated(bool);
-
-    void hotspotNameUpdated(const QByteArray& name);
-
-    void hotspotPasswordUpdated(const QString& password);
-
 public Q_SLOTS:
     virtual bool setWifiEnabled(bool) = 0;
 
     virtual void setFlightMode(bool)  = 0;
-
-    virtual void setHotspotActive(bool active) = 0;
-
-    virtual void setupHotspot(const QByteArray &ssid, const QString &password) = 0;
 
 protected:
     /**

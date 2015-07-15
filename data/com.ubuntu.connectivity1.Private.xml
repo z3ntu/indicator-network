@@ -18,16 +18,27 @@
             <arg type="b" direction="in" name="enabled"/>
         </method>
 
-        <method name="SetupHotspot">
+        <method name="SetHotspotSsid">
             <arg type="ay" direction="in" name="ssid"/>
+        </method>
+
+        <method name="SetHotspotPassword">
             <arg type="s" direction="in" name="password"/>
         </method>
 
-        <method name="SetHotspotActive">
-            <arg type="b" direction="in" name="active"/>
+        <method name="SetHotspotEnabled">
+            <arg type="b" direction="in" name="enabled"/>
+        </method>
+
+        <method name="SetHotspotMode">
+            <arg type="s" direction="in" name="mode"/>
         </method>
 
         <property name="HotspotPassword" type="s" access="read"/>
+
+        <signal name="ReportError">
+            <arg type="i" direction="out" name="reason"/>
+        </signal>
 
     </interface>
 </node>

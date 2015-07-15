@@ -66,11 +66,7 @@ public:
     void unlockAllModems() override;
     void unlockModemByName(const QString &name) override;
 
-    bool hotspotActive() const;
-    QByteArray hotspotName() const;
-    QString hotspotPassword() const;
-    void setHotspotActive(bool active);
-    void setupHotspot(const QByteArray &ssid, const QString &password);
+    HotspotManager::SPtr hotspotManager() const;
 
 private Q_SLOTS:
     void device_added(const QDBusObjectPath &path);

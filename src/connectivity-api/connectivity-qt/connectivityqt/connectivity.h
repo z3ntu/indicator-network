@@ -94,16 +94,20 @@ public:
     Q_PROPERTY(bool UnstoppableOperationHappening READ unstoppableOperationHappening NOTIFY unstoppableOperationHappeningUpdated)
     bool unstoppableOperationHappening() const;
 
-    Q_PROPERTY(QByteArray hotspotName READ hotspotName NOTIFY hotspotNameUpdated)
-    QByteArray hotspotName() const;
+    Q_PROPERTY(QByteArray hotspotSsid READ hotspotSsid WRITE setHotspotSsid NOTIFY hotspotSsidUpdated)
+    QByteArray hotspotSsid() const;
 
-    Q_PROPERTY(QString hotspotPassword READ hotspotPassword NOTIFY hotspotPasswordUpdated)
+    Q_PROPERTY(QString hotspotPassword READ hotspotPassword WRITE setHotspotPassword NOTIFY hotspotPasswordUpdated)
     QString hotspotPassword() const;
 
-    Q_PROPERTY(bool hotspotActive READ hotspotActive WRITE setHotspotActive NOTIFY hotspotActiveUpdated)
-    bool hotspotActive() const;
+    Q_PROPERTY(bool hotspotEnabled READ hotspotEnabled WRITE setHotspotEnabled NOTIFY hotspotEnabledUpdated)
+    bool hotspotEnabled() const;
 
-    Q_INVOKABLE void setupHotspot(const QByteArray& ssid, const QString& password);
+    Q_PROPERTY(QString hotspotMode READ hotspotMode WRITE setHotspotMode NOTIFY hotspotModeUpdated)
+    QString hotspotMode() const;
+
+    Q_PROPERTY(bool hotspotStored READ hotspotStored NOTIFY hotspotStoredUpdated)
+    bool hotspotStored() const;
 
     Q_PROPERTY(bool Initialized READ isInitialized NOTIFY initialized)
     bool isInitialized() const;
@@ -113,7 +117,13 @@ public Q_SLOTS:
 
     void setwifiEnabled(bool enabled);
 
-    void setHotspotActive(bool active);
+    void setHotspotEnabled(bool active);
+
+    void setHotspotSsid(const QByteArray& ssid);
+
+    void setHotspotPassword(const QString& password);
+
+    void setHotspotMode(const QString& mode);
 
 Q_SIGNALS:
     void flightModeUpdated(bool);
@@ -130,11 +140,15 @@ Q_SIGNALS:
 
     void unstoppableOperationHappeningUpdated(bool);
 
-    void hotspotNameUpdated(const QByteArray& name);
+    void hotspotSsidUpdated(const QByteArray& name);
 
     void hotspotPasswordUpdated(const QString& password);
 
-    void hotspotActiveUpdated(bool);
+    void hotspotEnabledUpdated(bool);
+
+    void hotspotModeUpdated(const QString& mode);
+
+    void hotspotStoredUpdated(bool);
 
     void initialized();
 

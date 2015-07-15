@@ -656,7 +656,7 @@ public:
 };
 
 HotspotManager::HotspotManager(const QDBusConnection& connection, QObject *parent) :
-        QObject(parent)
+        QObject(parent), d(new Priv(*this))
 {
     d->m_manager = make_unique<OrgFreedesktopNetworkManagerInterface>(
             NM_DBUS_SERVICE, NM_DBUS_PATH, connection);

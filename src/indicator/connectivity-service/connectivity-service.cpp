@@ -90,18 +90,18 @@ public Q_SLOTS:
                               { "UnstoppableOperationHappening" });
     }
 
-    void hotspotNameUpdated()
+    void hotspotSsidUpdated()
     {
         notifyPropertyChanged(DBusTypes::SERVICE_PATH,
                               DBusTypes::SERVICE_INTERFACE,
-                              { "HotspotName" });
+                              { "HotspotSsid" });
     }
 
-    void hotspotActiveUpdated()
+    void hotspotEnabledUpdated()
     {
         notifyPropertyChanged(DBusTypes::SERVICE_PATH,
                               DBusTypes::SERVICE_INTERFACE,
-                              { "HotspotActive" });
+                              { "HotspotEnabled" });
     }
 
     void hotspotPasswordUpdated()
@@ -110,6 +110,20 @@ public Q_SLOTS:
         notifyPropertyChanged(DBusTypes::PRIVATE_PATH,
                               DBusTypes::PRIVATE_INTERFACE,
                               { "HotspotPassword" });
+    }
+
+    void hotspotModeUpdated()
+    {
+        notifyPropertyChanged(DBusTypes::SERVICE_PATH,
+                              DBusTypes::SERVICE_INTERFACE,
+                              { "HotspotMode" });
+    }
+
+    void hotspotStoredUpdated()
+    {
+        notifyPropertyChanged(DBusTypes::SERVICE_PATH,
+                              DBusTypes::SERVICE_INTERFACE,
+                              { "HotspotStored" });
     }
 
     void updateNetworkingStatus()
@@ -172,9 +186,15 @@ ConnectivityService::ConnectivityService(nmofono::Manager::Ptr manager, const QD
     connect(d->m_manager.get(), &Manager::flightModeUpdated, d.get(), &Private::flightModeUpdated);
     connect(d->m_manager.get(), &Manager::wifiEnabledUpdated, d.get(), &Private::wifiEnabledUpdated);
     connect(d->m_manager.get(), &Manager::unstoppableOperationHappeningUpdated, d.get(), &Private::unstoppableOperationHappeningUpdated);
-    connect(d->m_manager.get(), &Manager::hotspotActiveUpdated, d.get(), &Private::hotspotActiveUpdated);
-    connect(d->m_manager.get(), &Manager::hotspotNameUpdated, d.get(), &Private::hotspotNameUpdated);
-    connect(d->m_manager.get(), &Manager::hotspotPasswordUpdated, d.get(), &Private::hotspotPasswordUpdated);
+
+    auto hotspotManager = d->m_manager->hotspotManager();
+    connect(hotspotManager.get(), &HotspotManager::enabledChanged, d.get(), &Private::hotspotEnabledUpdated);
+    connect(hotspotManager.get(), &HotspotManager::ssidChanged, d.get(), &Private::hotspotSsidUpdated);
+    connect(hotspotManager.get(), &HotspotManager::passwordChanged, d.get(), &Private::hotspotPasswordUpdated);
+    connect(hotspotManager.get(), &HotspotManager::modeChanged, d.get(), &Private::hotspotModeUpdated);
+    connect(hotspotManager.get(), &HotspotManager::storedChanged, d.get(), &Private::hotspotStoredUpdated);
+
+    connect(hotspotManager.get(), &HotspotManager::reportError, d->m_privateService.get(), &PrivateService::ReportError);
 
     d->updateNetworkingStatus();
 
@@ -225,14 +245,24 @@ bool ConnectivityService::unstoppableOperationHappening() const
     return d->m_manager->unstoppableOperationHappening();
 }
 
-bool ConnectivityService::hotspotActive() const
+bool ConnectivityService::hotspotEnabled() const
 {
-    return d->m_manager->hotspotActive();
+    return d->m_manager->hotspotManager()->enabled();
 }
 
-QByteArray ConnectivityService::hotspotName() const
+QByteArray ConnectivityService::hotspotSsid() const
 {
-    return d->m_manager->hotspotName();
+    return d->m_manager->hotspotManager()->ssid();
+}
+
+QString ConnectivityService::hotspotMode() const
+{
+    return d->m_manager->hotspotManager()->mode();
+}
+
+bool ConnectivityService::hotspotStored() const
+{
+    return d->m_manager->hotspotManager()->stored();
 }
 
 PrivateService::PrivateService(ConnectivityService& parent) :
@@ -262,19 +292,29 @@ void PrivateService::SetWifiEnabled(bool enabled)
     p.d->m_manager->setWifiEnabled(enabled);
 }
 
-void PrivateService::SetHotspotActive(bool active)
+void PrivateService::SetHotspotEnabled(bool enabled)
 {
-    p.d->m_manager->setHotspotActive(active);
+    p.d->m_manager->hotspotManager()->setEnabled(enabled);
 }
 
-void PrivateService::SetupHotspot(const QByteArray &ssid, const QString &password)
+void PrivateService::SetHotspotSsid(const QByteArray &ssid)
 {
-    p.d->m_manager->setupHotspot(ssid, password);
+    p.d->m_manager->hotspotManager()->setSsid(ssid);
+}
+
+void PrivateService::SetHotspotPassword(const QString &password)
+{
+    p.d->m_manager->hotspotManager()->setPassword(password);
+}
+
+void PrivateService::SetHotspotMode(const QString &mode)
+{
+    p.d->m_manager->hotspotManager()->setMode(mode);
 }
 
 QString PrivateService::hotspotPassword() const
 {
-    return p.d->m_manager->hotspotPassword();
+    return p.d->m_manager->hotspotManager()->password();
 }
 
 }

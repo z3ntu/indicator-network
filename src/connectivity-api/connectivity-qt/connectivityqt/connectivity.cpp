@@ -122,17 +122,25 @@ public Q_SLOTS:
             Q_EMIT p.statusUpdated(status);
             Q_EMIT p.onlineUpdated(status == Status::Online);
         }
-        else if (name == "HotspotActive")
+        else if (name == "HotspotEnabled")
         {
-            Q_EMIT p.hotspotActiveUpdated(value.toBool());
+            Q_EMIT p.hotspotEnabledUpdated(value.toBool());
         }
-        else if (name == "HotspotName")
+        else if (name == "HotspotSsid")
         {
-            Q_EMIT p.hotspotNameUpdated(value.toByteArray());
+            Q_EMIT p.hotspotSsidUpdated(value.toByteArray());
         }
         else if (name == "HotspotPassword")
         {
             Q_EMIT p.hotspotPasswordUpdated(value.toString());
+        }
+        else if (name == "HotspotMode")
+        {
+            Q_EMIT p.hotspotModeUpdated(value.toString());
+        }
+        else if (name == "HotspotStored")
+        {
+            Q_EMIT p.hotspotStoredUpdated(value.toBool());
         }
     }
 };
@@ -234,9 +242,9 @@ void Connectivity::setwifiEnabled(bool enabled)
     d->m_writeInterface->SetWifiEnabled(enabled);
 }
 
-QByteArray Connectivity::hotspotName() const
+QByteArray Connectivity::hotspotSsid() const
 {
-    return d->m_propertyCache->get("HotspotName").toByteArray();
+    return d->m_propertyCache->get("HotspotSsid").toByteArray();
 }
 
 QString Connectivity::hotspotPassword() const
@@ -244,19 +252,39 @@ QString Connectivity::hotspotPassword() const
     return d->m_writePropertyCache->get("HotspotPassword").toString();
 }
 
-bool Connectivity::hotspotActive() const
+bool Connectivity::hotspotEnabled() const
 {
-    return d->m_propertyCache->get("HotspotActive").toBool();
+    return d->m_propertyCache->get("HotspotEnabled").toBool();
 }
 
-void Connectivity::setupHotspot(const QByteArray& ssid, const QString& password)
+QString Connectivity::hotspotMode() const
 {
-    d->m_writeInterface->SetupHotspot(ssid, password);
+    return d->m_propertyCache->get("HotspotMode").toString();
 }
 
-void Connectivity::setHotspotActive(bool active)
+bool Connectivity::hotspotStored() const
 {
-    d->m_writeInterface->SetHotspotActive(active);
+    return d->m_propertyCache->get("HotspotStored").toBool();
+}
+
+void Connectivity::setHotspotSsid(const QByteArray& ssid)
+{
+    d->m_writeInterface->SetHotspotSsid(ssid);
+}
+
+void Connectivity::setHotspotPassword(const QString& password)
+{
+    d->m_writeInterface->SetHotspotPassword(password);
+}
+
+void Connectivity::setHotspotEnabled(bool enabled)
+{
+    d->m_writeInterface->SetHotspotEnabled(enabled);
+}
+
+void Connectivity::setHotspotMode(const QString& mode)
+{
+    d->m_writeInterface->SetHotspotMode(mode);
 }
 
 }

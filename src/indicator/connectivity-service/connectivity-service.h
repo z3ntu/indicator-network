@@ -59,11 +59,17 @@ public:
     Q_PROPERTY(bool UnstoppableOperationHappening READ unstoppableOperationHappening)
     bool unstoppableOperationHappening() const;
 
-    Q_PROPERTY(bool HotspotActive READ hotspotActive)
-    bool hotspotActive() const;
+    Q_PROPERTY(bool HotspotEnabled READ hotspotEnabled)
+    bool hotspotEnabled() const;
 
-    Q_PROPERTY(QByteArray HotspotName READ hotspotName)
-    QByteArray hotspotName() const;
+    Q_PROPERTY(QByteArray HotspotSsid READ hotspotSsid)
+    QByteArray hotspotSsid() const;
+
+    Q_PROPERTY(bool HotspotStored READ hotspotStored)
+    bool hotspotStored() const;
+
+    Q_PROPERTY(QString HotspotMode READ hotspotMode)
+    QString hotspotMode() const;
 
 Q_SIGNALS:
     void unlockAllModems();
@@ -98,9 +104,16 @@ protected Q_SLOTS:
 
     void SetWifiEnabled(bool enabled);
 
-    void SetHotspotActive(bool active);
+    void SetHotspotEnabled(bool enabled);
 
-    void SetupHotspot(const QByteArray &ssid, const QString &password);
+    void SetHotspotSsid(const QByteArray &ssid);
+
+    void SetHotspotPassword(const QString &password);
+
+    void SetHotspotMode(const QString &mode);
+
+Q_SIGNALS:
+    void ReportError(int reason);
 
 protected:
     ConnectivityService& p;

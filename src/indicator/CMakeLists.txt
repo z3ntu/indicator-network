@@ -26,6 +26,7 @@ add_custom_target(QtCreatorHeaderHack SOURCES ${NETWORK_SERVICE_HEADERS})
 set(NETWORK_SERVICE_SOURCES
     ${NETWORK_SERVICE_HEADERS}
 
+    nmofono/hotspot-manager.cpp
     nmofono/kill-switch.cpp
     nmofono/manager.cpp
     nmofono/manager-impl.cpp

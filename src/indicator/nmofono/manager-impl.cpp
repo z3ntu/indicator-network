@@ -46,21 +46,6 @@ using namespace std;
 
 namespace nmofono {
 
-namespace
-{
-QString generate_password()
-{
-    static const std::string items("abcdefghijklmnopqrstuvwxyz01234567890");
-    const int passwordLength = 8;
-    std::string result;
-    for (int i = 0; i < passwordLength; i++)
-    {
-        result.push_back(items[std::rand() % items.length()]);
-    }
-    return QString::fromStdString(result);
-}
-}
-
 class ManagerImpl::Private : public QObject
 {
     Q_OBJECT

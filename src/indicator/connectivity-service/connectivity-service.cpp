@@ -49,7 +49,8 @@ public:
     {
     }
 
-    void notifyPropertyChanged( const QString& path,
+    void notifyPropertyChanged( const QObject& o,
+                                const QString& path,
                                 const QString& interface,
                                 const QStringList& propertyNames )
     {
@@ -61,7 +62,7 @@ public:
         QVariantMap changedProps;
         for(const auto& propertyName: propertyNames)
         {
-            changedProps.insert(propertyName, p.property(qPrintable(propertyName)));
+            changedProps.insert(propertyName, o.property(qPrintable(propertyName)));
         }
         signal << changedProps;
         signal << QStringList();
@@ -71,35 +72,40 @@ public:
 public Q_SLOTS:
     void flightModeUpdated()
     {
-        notifyPropertyChanged(DBusTypes::SERVICE_PATH,
+        notifyPropertyChanged(p,
+                              DBusTypes::SERVICE_PATH,
                               DBusTypes::SERVICE_INTERFACE,
                               { "FlightMode" });
     }
 
     void wifiEnabledUpdated()
     {
-        notifyPropertyChanged(DBusTypes::SERVICE_PATH,
+        notifyPropertyChanged(p,
+                              DBusTypes::SERVICE_PATH,
                               DBusTypes::SERVICE_INTERFACE,
                               { "WifiEnabled" });
     }
 
     void unstoppableOperationHappeningUpdated()
     {
-        notifyPropertyChanged(DBusTypes::SERVICE_PATH,
+        notifyPropertyChanged(p,
+                              DBusTypes::SERVICE_PATH,
                               DBusTypes::SERVICE_INTERFACE,
                               { "UnstoppableOperationHappening" });
     }
 
     void hotspotSsidUpdated()
     {
-        notifyPropertyChanged(DBusTypes::SERVICE_PATH,
+        notifyPropertyChanged(p,
+                              DBusTypes::SERVICE_PATH,
                               DBusTypes::SERVICE_INTERFACE,
                               { "HotspotSsid" });
     }
 
     void hotspotEnabledUpdated()
     {
-        notifyPropertyChanged(DBusTypes::SERVICE_PATH,
+        notifyPropertyChanged(p,
+                              DBusTypes::SERVICE_PATH,
                               DBusTypes::SERVICE_INTERFACE,
                               { "HotspotEnabled" });
     }
@@ -107,21 +113,24 @@ public Q_SLOTS:
     void hotspotPasswordUpdated()
     {
         // Note that this is on the private object
-        notifyPropertyChanged(DBusTypes::PRIVATE_PATH,
+        notifyPropertyChanged(*m_privateService,
+                              DBusTypes::PRIVATE_PATH,
                               DBusTypes::PRIVATE_INTERFACE,
                               { "HotspotPassword" });
     }
 
     void hotspotModeUpdated()
     {
-        notifyPropertyChanged(DBusTypes::SERVICE_PATH,
+        notifyPropertyChanged(p,
+                              DBusTypes::SERVICE_PATH,
                               DBusTypes::SERVICE_INTERFACE,
                               { "HotspotMode" });
     }
 
     void hotspotStoredUpdated()
     {
-        notifyPropertyChanged(DBusTypes::SERVICE_PATH,
+        notifyPropertyChanged(p,
+                              DBusTypes::SERVICE_PATH,
                               DBusTypes::SERVICE_INTERFACE,
                               { "HotspotStored" });
     }
@@ -165,7 +174,8 @@ public Q_SLOTS:
 
         if (!changed.empty())
         {
-            notifyPropertyChanged(DBusTypes::SERVICE_PATH,
+            notifyPropertyChanged(p,
+                                  DBusTypes::SERVICE_PATH,
                                   DBusTypes::SERVICE_INTERFACE,
                                   changed);
         }

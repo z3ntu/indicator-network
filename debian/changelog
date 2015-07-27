@@ -1,3 +1,13 @@
+indicator-network (0.5.1+15.10.20150727-0ubuntu1) wily; urgency=medium
+
+  [ CI Train Bot ]
+  * New rebuild forced.
+
+  [ Charles Kerr ]
+  * drop build-dependency on g++-4.9 Edit (LP: #1452327)
+
+ -- CI Train Bot <ci-train-bot@canonical.com>  Mon, 27 Jul 2015 18:07:08 +0000
+
 indicator-network (0.5.1+15.10.20150708.1-0ubuntu1) wily; urgency=medium
 
   [ CI Train Bot ]

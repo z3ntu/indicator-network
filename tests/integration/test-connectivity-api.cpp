@@ -338,4 +338,38 @@ TEST_F(TestConnectivityApi, Limitations)
     EXPECT_FALSE(connectivity->limitedBandwith());
 }
 
+TEST_F(TestConnectivityApi, HotspotConfig)
+{
+    setGlobalConnectedState(NM_STATE_DISCONNECTED);
+    auto device = createWiFiDevice(NM_DEVICE_STATE_DISCONNECTED);
+
+    // Start the indicator
+    ASSERT_NO_THROW(startIndicator());
+
+    // Connect the the service
+    auto connectivity(newConnectivity());
+
+    QSignalSpy storedSpy(connectivity.get(), SIGNAL(hotspotStoredUpdated(bool)));
+    QSignalSpy passwordSpy(connectivity.get(), SIGNAL(hotspotPasswordUpdated(const QString&)));
+
+    EXPECT_EQ("Ubuntu", connectivity->hotspotSsid().toStdString());
+    EXPECT_FALSE(connectivity->hotspotStored());
+    EXPECT_FALSE(connectivity->hotspotEnabled());
+
+    connectivity->setHotspotPassword("the password");
+    connectivity->setHotspotEnabled(true);
+
+    if (passwordSpy.empty())
+    {
+        ASSERT_TRUE(passwordSpy.wait());
+    }
+    if (storedSpy.empty())
+    {
+        ASSERT_TRUE(storedSpy.wait());
+    }
+
+    EXPECT_FALSE(storedSpy.empty());
+    EXPECT_FALSE(passwordSpy.empty());
+}
+
 }

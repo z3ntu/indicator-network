@@ -98,6 +98,7 @@ target_link_libraries(
     notify_cpp
     url_dispatcher_cpp
     qdbus-stubs
+    qpowerd
     ${DBUSCPP_LIBRARIES}
     ${GLIB_LIBRARIES}
     ${NOTIFY_LIBRARIES}

@@ -185,6 +185,10 @@ Connectivity::Connectivity(const QDBusConnection& sessionConnection, QObject* pa
     connect(d->m_propertyCache.get(),
             &internal::DBusPropertyCache::initialized, d.get(),
             &Connectivity::Priv::interfaceInitialized);
+
+    connect(d->m_writeInterface.get(),
+            &ComUbuntuConnectivity1PrivateInterface::ReportError, this,
+            &Connectivity::reportError);
 }
 
 Connectivity::~Connectivity()

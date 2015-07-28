@@ -346,10 +346,28 @@ TEST_F(TestConnectivityApi, HotspotConfig)
     // Start the indicator
     ASSERT_NO_THROW(startIndicator());
 
+    auto& powerdMock = dbusMock.mockInterface(DBusTypes::POWERD_DBUS_NAME,
+                           DBusTypes::POWERD_DBUS_PATH,
+                           DBusTypes::POWERD_DBUS_INTERFACE,
+                           QDBusConnection::SystemBus);
+    QSignalSpy powerdMockCallSpy(
+                           &powerdMock,
+                           SIGNAL(MethodCalled(const QString &, const QVariantList &)));
+
+    auto& nmSettingsMock = dbusMock.mockInterface(NM_DBUS_SERVICE,
+                           NM_DBUS_PATH_SETTINGS,
+                           NM_DBUS_IFACE_SETTINGS,
+                           QDBusConnection::SystemBus);
+    QSignalSpy nmSettingsMockCallSpy(
+                           &nmSettingsMock,
+                           SIGNAL(MethodCalled(const QString &, const QVariantList &)));
+
+
     // Connect the the service
     auto connectivity(newConnectivity());
 
     QSignalSpy storedSpy(connectivity.get(), SIGNAL(hotspotStoredUpdated(bool)));
+    QSignalSpy enabledSpy(connectivity.get(), SIGNAL(hotspotEnabledUpdated(bool)));
     QSignalSpy passwordSpy(connectivity.get(), SIGNAL(hotspotPasswordUpdated(const QString&)));
 
     EXPECT_EQ("Ubuntu", connectivity->hotspotSsid().toStdString());
@@ -357,19 +375,67 @@ TEST_F(TestConnectivityApi, HotspotConfig)
     EXPECT_FALSE(connectivity->hotspotEnabled());
 
     connectivity->setHotspotPassword("the password");
-    connectivity->setHotspotEnabled(true);
 
     if (passwordSpy.empty())
     {
         ASSERT_TRUE(passwordSpy.wait());
     }
+    EXPECT_FALSE(passwordSpy.empty());
+    EXPECT_EQ("the password", connectivity->hotspotPassword().toStdString());
+
+    connectivity->setHotspotEnabled(true);
+
+    if (enabledSpy.empty())
+    {
+        ASSERT_TRUE(enabledSpy.wait());
+    }
+    EXPECT_FALSE(enabledSpy.empty());
+
     if (storedSpy.empty())
     {
         ASSERT_TRUE(storedSpy.wait());
     }
-
     EXPECT_FALSE(storedSpy.empty());
-    EXPECT_FALSE(passwordSpy.empty());
+
+    if (powerdMockCallSpy.empty())
+    {
+        ASSERT_TRUE(powerdMockCallSpy.wait());
+    }
+    EXPECT_FALSE(powerdMockCallSpy.empty());
+
+    if (nmSettingsMockCallSpy.empty())
+    {
+        ASSERT_TRUE(nmSettingsMockCallSpy.wait());
+    }
+    EXPECT_FALSE(nmSettingsMockCallSpy.empty());
+
+    EXPECT_TRUE(connectivity->hotspotEnabled());
+    EXPECT_TRUE(connectivity->hotspotStored());
+
+    // Expect a wakelock request
+    EXPECT_EQ(
+            QVariantList()
+                << "requestSysState"
+                << QVariant(QVariantList() << "connectivity-service" << int(1)),
+            powerdMockCallSpy.first());
+
+    EXPECT_EQ(QVariant("AddConnection"), nmSettingsMockCallSpy.first().at(0));
+    // Decode the QDBusArgument
+    QVariantDictMap connection;
+    qvariant_cast<QDBusArgument>(nmSettingsMockCallSpy.first().at(1).toList().first()) >> connection;
+    EXPECT_EQ(QVariantMap({
+        {"mode", "ap"},
+        {"security", "802-11-wireless-security"},
+        {"ssid", "Ubuntu"}
+    }), connection["802-11-wireless"]);
+    EXPECT_EQ(QVariantMap({
+        {"group", "ccmp"},
+        {"key-mgmt", "wpa-psk"},
+        {"pairwise" ,  QStringList{"ccmp"}},
+        {"proto" ,  QStringList{"rsn"}},
+        {"psk", "the password"}
+    }), connection["802-11-wireless-security"]);
+    EXPECT_TRUE(connection["connection"]["autoconnect"].toBool());
 }
 
 }

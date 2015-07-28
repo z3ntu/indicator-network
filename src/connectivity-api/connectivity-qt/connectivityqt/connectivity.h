@@ -150,6 +150,8 @@ Q_SIGNALS:
 
     void hotspotStoredUpdated(bool);
 
+    void reportError(int reason);
+
     void initialized();
 
 protected:

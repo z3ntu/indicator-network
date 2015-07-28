@@ -65,6 +65,12 @@ void IndicatorNetworkTestBase::SetUp()
     dbusMock.registerURfkill();
 
     dbusMock.registerCustomMock(
+                        DBusTypes::POWERD_DBUS_NAME,
+                        DBusTypes::POWERD_DBUS_PATH,
+                        DBusTypes::POWERD_DBUS_INTERFACE,
+                        QDBusConnection::SystemBus);
+
+    dbusMock.registerCustomMock(
                         "com.canonical.URLDispatcher",
                         "/com/canonical/URLDispatcher",
                         "com.canonical.URLDispatcher",
@@ -87,6 +93,27 @@ void IndicatorNetworkTestBase::SetUp()
                         "com.canonical.URLDispatcher",
                         "TestURL", "as", "as",
                         "ret = args[0]"
+                     ).waitForFinished();
+
+    // Set up a basic powerd mock - only supports power states
+    auto& powerd = dbusMock.mockInterface(
+                        DBusTypes::POWERD_DBUS_NAME,
+                        DBusTypes::POWERD_DBUS_PATH,
+                        DBusTypes::POWERD_DBUS_INTERFACE,
+                        QDBusConnection::SystemBus);
+    powerd.AddMethod(
+                        DBusTypes::POWERD_DBUS_INTERFACE,
+                        "requestSysState",
+                        "si",
+                        "s",
+                        "ret = 'dummy_cookie'"
+                     ).waitForFinished();
+    powerd.AddMethod(
+                        DBusTypes::POWERD_DBUS_INTERFACE,
+                        "clearSysState",
+                        "s",
+                        "",
+                        ""
                      ).waitForFinished();
 
     // mock service creates ril_0 automatically

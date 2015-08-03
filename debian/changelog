@@ -1,3 +1,9 @@
+indicator-network (0.5.1+15.10.20150727-0ubuntu2~gcc5.1) wily; urgency=medium
+
+  * No change rebuild using GCC 5.
+
+ -- Matthias Klose <doko@ubuntu.com>  Tue, 28 Jul 2015 11:04:40 +0200
+
 indicator-network (0.5.1+15.10.20150727-0ubuntu1) wily; urgency=medium
 
   [ CI Train Bot ]

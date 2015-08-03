@@ -50,7 +50,8 @@ protected:
 		QProcessEnvironment env(QProcessEnvironment::systemEnvironment());
 		env.insert("SECRET_AGENT_DEBUG_PASSWORD", "1");
 		secretAgent.setProcessEnvironment(env);
-		secretAgent.setProcessChannelMode(QProcess::MergedChannels);
+		secretAgent.setReadChannel(QProcess::StandardOutput);
+		secretAgent.setProcessChannelMode(QProcess::ForwardedErrorChannel);
 		secretAgent.start(SECRET_AGENT_BIN, QStringList() << "--print-address");
 		secretAgent.waitForStarted();
 		secretAgent.waitForReadyRead();
@@ -260,13 +261,14 @@ TEST_F(TestSecretAgent, GetSecretsWithNone) {
 /* Tests that if we request secrets and then cancel the request
    that we close the notification */
 TEST_F(TestSecretAgent, CancelGetSecrets) {
+	QSignalSpy notificationSpy(notificationsInterface.data(), SIGNAL(MethodCalled(const QString &, const QVariantList &)));
+
 	agentInterface->GetSecrets(
 			connection(SecretAgent::KEY_MGMT_WPA_PSK),
 			QDBusObjectPath("/connection/foo"),
 			SecretAgent::WIRELESS_SECURITY_SETTING_NAME, QStringList(),
 			5);
 
-	QSignalSpy notificationSpy(notificationsInterface.data(), SIGNAL(MethodCalled(const QString &, const QVariantList &)));
 	notificationSpy.wait();
 
 	ASSERT_EQ(1, notificationSpy.size());

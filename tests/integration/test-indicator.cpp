@@ -2274,6 +2274,135 @@ TEST_F(TestIndicator, UnlockSIM_Cancel)
     notificationsSpy.clear();
 }
 
+TEST_F(TestIndicator, UnlockSIM_CancelFirstUnlockSecond)
+{
+    // set flight mode off, wifi off, and cell data off, and sim in
+    setGlobalConnectedState(NM_STATE_DISCONNECTED);
+
+    // set sim locked
+    setSimManagerProperty(firstModem(), "PinRequired", "pin");
+
+    // Create a second locked modem
+    auto secondModem = createModem("ril_1");
+    setSimManagerProperty(secondModem, "PinRequired", "pin");
+
+    QSignalSpy notificationsSpy(&notificationsMockInterface(),
+                               SIGNAL(MethodCalled(const QString &, const QVariantList &)));
+
+    QSignalSpy secondModemMockInterfaceSpy(&modemMockInterface(secondModem),
+                               SIGNAL(MethodCalled(const QString &, const QVariantList &)));
+
+    // start the indicator
+    ASSERT_NO_THROW(startIndicator());
+
+    // check indicator is a locked sim card and a 0-bar wifi icon.
+    // check sim status shows “SIM Locked”, with locked sim card icon and a “Unlock SIM” button beneath.
+    // check that the “Unlock SIM” button has the correct action name.
+    // unlock first SIM
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .item(flightModeSwitch())
+            .item(mh::MenuItemMatcher()
+                .item(modemInfo("SIM 1", "SIM Locked", "simcard-locked", true)
+                      .pass_through_activate("x-canonical-modem-locked-action")
+                )
+                .item(modemInfo("SIM 2", "SIM Locked", "simcard-locked", true))
+                .item(cellularSettings())
+            )
+        ).match());
+
+    // check that the "GetServerInformation" method was called
+    // check method arguments are correct
+    std::string busName;
+    WAIT_FOR_SIGNALS(notificationsSpy, 2);
+    CHECK_METHOD_CALL(notificationsSpy, 0, "GetServerInformation", /* no_args */);
+    CHECK_METHOD_CALL(notificationsSpy, 1, "Notify", {1, 0}, {3, "Enter SIM 1 PIN"}, {4, "3 attempts remaining"});
+    {
+        QVariantList const& call(notificationsSpy.at(1));
+        QVariantList const& args(call.at(1).toList());
+        QVariantMap hints;
+        QVariantMap menuInfo;
+        ASSERT_TRUE(qDBusArgumentToMap(args.at(6), hints));
+        ASSERT_TRUE(qDBusArgumentToMap(hints["x-canonical-private-menu-model"], menuInfo));
+        busName = menuInfo["busName"].toString().toStdString();
+    }
+    notificationsSpy.clear();
+
+    // cancel the notification
+    QSignalSpy notificationClosedSpy(&dbusMock.notificationDaemonInterface(),
+                                     SIGNAL(NotificationClosed(uint, uint)));
+
+    EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
+        .item(mh::MenuItemMatcher()
+            .action("notifications.simunlock")
+            .string_attribute("x-canonical-type", "com.canonical.snapdecision.pinlock")
+            .string_attribute("x-canonical-pin-min-max", "notifications.pinMinMax")
+            .string_attribute("x-canonical-pin-popup", "notifications.popup")
+            .string_attribute("x-canonical-pin-error", "notifications.error")
+            .activate(shared_ptr<GVariant>(g_variant_new_boolean(false), &mh::gvariant_deleter))
+        ).match());
+
+    // check that the "NotificationClosed" signal was emitted
+    WAIT_FOR_SIGNALS(notificationClosedSpy, 1);
+    EXPECT_EQ(notificationClosedSpy.first(), QVariantList() << QVariant(1) << QVariant(1));
+    notificationClosedSpy.clear();
+
+    // check that the "CloseNotification" method was called
+    // check method arguments are correct
+    WAIT_FOR_SIGNALS(notificationsSpy, 1);
+    CHECK_METHOD_CALL(notificationsSpy, 0, "CloseNotification", {0, "1"});
+    notificationsSpy.clear();
+
+    // Activate  the second SIM unlock
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .item(flightModeSwitch())
+            .item(mh::MenuItemMatcher()
+                .item(modemInfo("SIM 1", "SIM Locked", "simcard-locked", true))
+                .item(modemInfo("SIM 2", "SIM Locked", "simcard-locked", true)
+                      .pass_through_activate("x-canonical-modem-locked-action")
+                )
+                .item(cellularSettings())
+            )
+        ).match());
+
+    // check that the "Notify" method was called
+    // check method arguments are correct (we re-use the same notification and reopen it)
+    WAIT_FOR_SIGNALS(notificationsSpy, 1);
+    CHECK_METHOD_CALL(notificationsSpy, 0, "Notify", {1, 1}, {3, "Enter SIM 2 PIN"});
+    notificationsSpy.clear();
+
+    secondModemMockInterfaceSpy.clear();
+
+    // enter the PIN
+    EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
+        .item(mh::MenuItemMatcher()
+            .action("notifications.simunlock")
+            .string_attribute("x-canonical-type", "com.canonical.snapdecision.pinlock")
+            .string_attribute("x-canonical-pin-min-max", "notifications.pinMinMax")
+            .string_attribute("x-canonical-pin-popup", "notifications.popup")
+            .string_attribute("x-canonical-pin-error", "notifications.error")
+            .set_action_state(shared_ptr<GVariant>(g_variant_new_string("1234"), &mh::gvariant_deleter))
+        ).match());
+
+    // Check the PIN was sent to Ofono
+    WAIT_FOR_SIGNALS(secondModemMockInterfaceSpy, 1);
+    CHECK_METHOD_CALL(secondModemMockInterfaceSpy, 0, "EnterPin", {0, "pin"}, {1, "1234"});
+
+    // check that the "NotificationClosed" signal was emitted (new notification index should be 1)
+    WAIT_FOR_SIGNALS(notificationClosedSpy, 1);
+    EXPECT_EQ(notificationClosedSpy.first(), QVariantList() << QVariant(1) << QVariant(1));
+    notificationClosedSpy.clear();
+
+    // check that the "CloseNotification" method was called
+    // check method arguments are correct (still using the same notification: 1)
+    WAIT_FOR_SIGNALS(notificationsSpy, 1);
+    CHECK_METHOD_CALL(notificationsSpy, 0, "CloseNotification", {0, "1"});
+    notificationsSpy.clear();
+}
+
 TEST_F(TestIndicator, UnlockSIM_CorrectPin)
 {
     // set flight mode off, wifi off, and cell data off, and sim in

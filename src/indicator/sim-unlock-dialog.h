@@ -20,6 +20,7 @@
 #pragma once
 
 #include <nmofono/wwan/modem.h>
+#include <notify-cpp/notification-manager.h>
 
 #include <memory>
 #include <QObject>
@@ -42,7 +43,7 @@ public:
     };
 
     typedef std::shared_ptr<SimUnlockDialog> Ptr;
-    SimUnlockDialog();
+    SimUnlockDialog(notify::NotificationManager::SPtr notificationManager);
     ~SimUnlockDialog();
 
     void unlock(nmofono::wwan::Modem::Ptr modem);

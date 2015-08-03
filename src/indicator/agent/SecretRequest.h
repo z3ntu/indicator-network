@@ -20,6 +20,7 @@
 
 #include <dbus-types.h>
 #include <agent/PasswordMenu.h>
+#include <notify-cpp/notification.h>
 
 #include <QDBusMessage>
 #include <QDBusObjectPath>
@@ -42,8 +43,8 @@ public:
 	virtual ~SecretRequest();
 
 public Q_SLOTS:
-	void actionInvoked(uint id, const QString &actionKey);
-	void notificationClosed(uint id, uint reason);
+	void actionInvoked(const QString &actionKey);
+	void notificationClosed(uint reason);
 
 public:
 	const QVariantDictMap & connection() const;
@@ -51,7 +52,7 @@ public:
 	const QDBusMessage & message() const;
 
 protected:
-	unsigned int m_notificationId;
+	notify::Notification::UPtr m_notification;
 
 	SecretAgent &m_secretAgent;
 

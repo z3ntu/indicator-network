@@ -17,9 +17,11 @@
  *     Pete Woods <pete.woods@canonical.com>
  */
 
+#include <config.h>
 #include <factory.h>
 
 #include <nmofono/manager-impl.h>
+#include <notify-cpp/notification-manager.h>
 
 using namespace std;
 
@@ -28,6 +30,17 @@ struct Factory::Private
     shared_ptr<nmofono::Manager> m_nmofono;
 
     SessionBus::Ptr m_sessionBus;
+
+    notify::NotificationManager::SPtr m_notificationManager;
+
+    notify::NotificationManager::SPtr singletonNotificationManager()
+    {
+        if (!m_notificationManager)
+        {
+            m_notificationManager = make_shared<notify::NotificationManager>(GETTEXT_PACKAGE);
+        }
+        return m_notificationManager;
+    }
 
     SessionBus::Ptr singletonSessionBus()
     {
@@ -42,7 +55,9 @@ struct Factory::Private
     {
         if (!m_nmofono)
         {
-            m_nmofono = make_shared<nmofono::ManagerImpl>(QDBusConnection::systemBus());
+            m_nmofono = make_shared<nmofono::ManagerImpl>(
+                    singletonNotificationManager(),
+                    QDBusConnection::systemBus());
         }
         return m_nmofono;
     }
@@ -117,7 +132,8 @@ BusName::UPtr Factory::newBusName(string name,
 
 agent::SecretAgent::UPtr Factory::newSecretAgent()
 {
-    return make_unique<agent::SecretAgent>(QDBusConnection::systemBus(),
+    return make_unique<agent::SecretAgent>(d->singletonNotificationManager(),
+                                           QDBusConnection::systemBus(),
                                            QDBusConnection::sessionBus());
 }
 

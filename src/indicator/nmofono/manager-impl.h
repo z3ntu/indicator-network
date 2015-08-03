@@ -25,6 +25,11 @@
 #include <QDBusObjectPath>
 #include <QVariantMap>
 
+namespace notify
+{
+class NotificationManager;
+}
+
 namespace nmofono {
     class Manager;
 
@@ -40,7 +45,7 @@ Q_OBJECT
 public:
     typedef std::shared_ptr<ManagerImpl> Ptr;
 
-    ManagerImpl(const QDBusConnection& systemBus);
+    ManagerImpl(std::shared_ptr<notify::NotificationManager> notificationManager, const QDBusConnection& systemBus);
 
     // Public API
     void setFlightMode(bool) override;

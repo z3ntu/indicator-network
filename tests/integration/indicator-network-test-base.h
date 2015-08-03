@@ -30,7 +30,11 @@
 #include <gtest/gtest.h>
 
 inline void PrintTo(const QVariant& variant, std::ostream* os) {
-        *os << "QVariant(" << variant.toString().toStdString() << ")";
+    QString output;
+    QDebug dbg(&output);
+    dbg << variant;
+
+    *os << "QVariant(" << output.toStdString() << ")";
 }
 
 #define WAIT_FOR_SIGNALS(signalSpy, signalsExpected)\

@@ -25,7 +25,12 @@
 
 #include <QObject>
 
-namespace notify {
+class OrgFreedesktopNotificationsInterface;
+
+namespace notify
+{
+
+class NotificationManager;
 
 class Notification: public QObject
 {
@@ -36,35 +41,38 @@ class Notification: public QObject
 
 public:
 
-    typedef std::shared_ptr<Notification> Ptr;
+    typedef std::unique_ptr<Notification> UPtr;
+    typedef std::shared_ptr<Notification> SPtr;
 
-    Notification() = delete;
-    Notification(const QString &summary,
-                 const QString &body,
-                 const QString &icon);
     virtual ~Notification();
 
     /// @todo remember show() after set().
-    Q_PROPERTY(QString summary READ summary NOTIFY summaryUpdated)
-    QString summary();
+    Q_PROPERTY(QString summary READ summary WRITE setSummary NOTIFY summaryUpdated)
+    QString summary() const;
 
     /// @todo remember show() after set().
-    Q_PROPERTY(QString body READ body NOTIFY bodyUpdated)
-    QString body();
+    Q_PROPERTY(QString body READ body WRITE setBody NOTIFY bodyUpdated)
+    QString body() const;
 
     /// @todo remember show() after set().
-    Q_PROPERTY(QString icon READ icon NOTIFY iconUpdated)
-    QString icon();
+    Q_PROPERTY(QString icon READ icon WRITE setIcon NOTIFY iconUpdated)
+    QString icon() const;
 
-    void update();
+    Q_PROPERTY(QStringList actions READ actions WRITE setActions NOTIFY actionsUpdated)
+    QStringList actions() const;
+
+    Q_PROPERTY(QVariantMap hints READ hints WRITE setHints NOTIFY hintsUpdated)
+    QVariantMap hints() const;
 
     void show();
     void close();
 
 public Q_SLOTS:
-    void setHint(const QString &key, Variant value);
+    void setActions(const QStringList& actions);
 
-    void setHintString(const QString &key, const QString &value);
+    void setHints(const QVariantMap& hints);
+
+    void addHint(const QString &key, const QVariant& value);
 
     void setSummary(const QString& summary);
 
@@ -73,12 +81,25 @@ public Q_SLOTS:
     void setIcon(const QString& icon);
 
 Q_SIGNALS:
-    void closed();
+    void closed(uint reason);
+
+    void hintsUpdated(const QVariantMap&);
+
+    void actionsUpdated(const QStringList&);
 
     void summaryUpdated(const QString&);
 
     void bodyUpdated(const QString&);
 
     void iconUpdated(const QString&);
+
+    void actionInvoked(const QString& name);
+
+public:
+    Notification(const QString& appName,
+                 const QString &summary, const QString &body,
+                 const QString &icon, const QStringList &actions,
+                 const QVariantMap &hints, int expireTimeout,
+                 std::shared_ptr<OrgFreedesktopNotificationsInterface> notificationsInterface);
 };
 }

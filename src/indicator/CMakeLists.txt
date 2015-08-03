@@ -101,7 +101,6 @@ target_link_libraries(
     qpowerd
     ${DBUSCPP_LIBRARIES}
     ${GLIB_LIBRARIES}
-    ${NOTIFY_LIBRARIES}
     ${QOFONO_LIBRARIES}
 )
 

@@ -28,7 +28,6 @@
 #include <ctime>
 
 #include <glib.h>
-#include <libnotify/notify.h>
 
 #include <config.h>
 
@@ -53,25 +52,17 @@ main(int argc, char **argv)
     bindtextdomain(GETTEXT_PACKAGE, LOCALE_DIR);
     textdomain(GETTEXT_PACKAGE);
 
-    notify_init(GETTEXT_PACKAGE);
-
     if (argc == 2 && QString("--print-address") == argv[1])
     {
         qDebug() << QDBusConnection::systemBus().baseService();
     }
 
-    int result = 0;
-    {
-        Factory factory;
-        auto menu = factory.newMenuBuilder();
-        auto secretAgent = factory.newSecretAgent();
-        auto connectivityService = factory.newConnectivityService();
+    Factory factory;
+    auto menu = factory.newMenuBuilder();
+    auto secretAgent = factory.newSecretAgent();
+    auto connectivityService = factory.newConnectivityService();
 
-        QObject::connect(connectivityService.get(), &ConnectivityService::unlockAllModems, menu.get(), &MenuBuilder::unlockAllModems);
-        QObject::connect(connectivityService.get(), &ConnectivityService::unlockModem, menu.get(), &MenuBuilder::unlockModem);
-        result = app.exec();
-    }
-    notify_uninit();
-
-    return result;
+    QObject::connect(connectivityService.get(), &ConnectivityService::unlockAllModems, menu.get(), &MenuBuilder::unlockAllModems);
+    QObject::connect(connectivityService.get(), &ConnectivityService::unlockModem, menu.get(), &MenuBuilder::unlockModem);
+    return app.exec();
 }

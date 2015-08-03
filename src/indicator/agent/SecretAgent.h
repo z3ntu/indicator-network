@@ -26,8 +26,12 @@
 #include <QDBusContext>
 #include <QMap>
 
-class OrgFreedesktopNotificationsInterface;
 class SecretAgentAdaptor;
+
+namespace notify
+{
+class NotificationManager;
+}
 
 namespace agent
 {
@@ -58,8 +62,9 @@ public:
 	static constexpr char const* KEY_MGMT_WPA_PSK = "wpa-psk";
 	static constexpr char const* KEY_MGMT_NONE = "none";
 
-	explicit SecretAgent(const QDBusConnection &systemConnection,
-			const QDBusConnection &sessionConnection, QObject *parent = 0);
+	explicit SecretAgent(std::shared_ptr<notify::NotificationManager> notificationManager,
+            const QDBusConnection &systemConnection,
+            const QDBusConnection &sessionConnection, QObject *parent = 0);
 
 	virtual ~SecretAgent();
 
@@ -79,7 +84,7 @@ protected Q_SLOTS:
 	void SaveSecrets(const QVariantDictMap &connection,
 			const QDBusObjectPath &connectionPath);
 
-	OrgFreedesktopNotificationsInterface & notifications();
+	std::shared_ptr<notify::NotificationManager> notifications();
 
 protected:
 	class Priv;

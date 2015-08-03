@@ -18,7 +18,6 @@
  */
 
 #include "sim-unlock.h"
-#include <notify-cpp/notification.h>
 
 #include "menumodel-cpp/menu.h"
 #include "menumodel-cpp/menu-exporter.h"
@@ -31,6 +30,7 @@
 #include <QDebug>
 
 using namespace notify::snapdecision;
+using namespace std;
 
 class SimUnlock::Private: public QObject
 {
@@ -39,8 +39,8 @@ class SimUnlock::Private: public QObject
 public:
     SimUnlock& p;
 
-    Notification::Ptr m_notification;
-    Notification::Ptr m_pending;
+    NotificationManager::SPtr m_notificationManager;
+    Notification::UPtr m_notification;
 
     QString m_title;
     QString m_body;
@@ -48,7 +48,7 @@ public:
 
     std::shared_ptr<SessionBus> m_sessionBus;
 
-    std::map<std::string, Variant> m_modelPaths;
+    QVariantMap m_modelPaths;
 
     Action::Ptr m_notifyAction;
     Action::Ptr m_pinMinMaxAction;
@@ -65,11 +65,6 @@ public:
     std::function<void()> m_pendingPopupClosed;
 
 public Q_SLOTS:
-    void notificationClosed()
-    {
-        resetNotification(m_title, m_body);
-        Q_EMIT p.closed();
-    }
 
     void resetActionStates()
     {
@@ -90,16 +85,31 @@ public Q_SLOTS:
         }
     }
 
-    void resetNotification(const QString &title,
-                           const QString &body)
+    void resetNotification()
     {
-        m_pending = m_notification;
-        m_notification = std::make_shared<notify::Notification>(title, body, "");
-        m_notification->setHintString("x-canonical-snap-decisions", "true");
-        m_notification->setHint("x-canonical-snap-decisions-timeout", TypedVariant<std::int32_t>(std::numeric_limits<std::int32_t>::max()));
-        m_notification->setHint("x-canonical-private-menu-model", TypedVariant<std::map<std::string, Variant>>(m_modelPaths));
+        QVariantMap hints({
+            { "x-canonical-snap-decisions", "true" },
+            { "x-canonical-snap-decisions-timeout", numeric_limits<int32_t>::max() },
+            { "x-canonical-private-menu-model", m_modelPaths }
+        });
+
+        if (m_notification)
+        {
+            m_notification->setSummary(m_title);
+            m_notification->setBody(m_body);
+            m_notification->setIcon("");
+            m_notification->setActions(QStringList());
+            m_notification->setHints(hints);
+        }
+        else
+        {
+            m_notification = m_notificationManager->notify(
+                m_title, m_body, "", QStringList(), hints);
+
+            connect(&p, &SimUnlock::titleUpdated, m_notification.get(), &Notification::setSummary);
+            connect(&p, &SimUnlock::bodyUpdated, m_notification.get(), &Notification::setBody);
+        }
         resetActionStates();
-        connect(m_notification.get(), &Notification::closed, this, &Private::notificationClosed);
     }
 
     void pinEntered(const Variant& state)
@@ -111,6 +121,7 @@ public Q_SLOTS:
     {
         if (!parameter.as<bool>())
         {
+            p.close();
             Q_EMIT p.cancelled();
         }
     }
@@ -145,11 +156,13 @@ public Q_SLOTS:
 
 public:
     Private(SimUnlock& parent,
+            NotificationManager::SPtr notificationManager,
             const QString &title,
             const QString &body,
             std::pair<std::uint8_t, std::uint8_t> pinMinMax)
         : p(parent)
     {
+        m_notificationManager = notificationManager;
         m_title = title;
         m_body = body;
         m_pinMinMax = pinMinMax;
@@ -162,12 +175,12 @@ public:
         std::string menuPath = "/com/canonical/indicator/network/unlocksim" + std::to_string(exportId);
         ++exportId;
 
-        std::map<std::string, Variant> modelActions;
-        modelActions["notifications"] = TypedVariant<std::string>(actionPath);
+        QVariantMap modelActions;
+        modelActions["notifications"] = QString::fromStdString(actionPath);
 
-        m_modelPaths["busName"] = TypedVariant<std::string>(m_sessionBus->address());
-        m_modelPaths["menuPath"] = TypedVariant<std::string>(menuPath);
-        m_modelPaths["actions"] = TypedVariant<std::map<std::string, Variant>>(modelActions);
+        m_modelPaths["busName"] = QString::fromStdString(m_sessionBus->address());
+        m_modelPaths["menuPath"] = QString::fromStdString(menuPath);
+        m_modelPaths["actions"] = modelActions;
 
         m_menu = std::make_shared<Menu>();
         m_menuItem = std::make_shared<MenuItem>("", "notifications.simunlock");
@@ -205,19 +218,18 @@ public:
         m_menuExporter = std::make_shared<MenuExporter>(m_sessionBus, menuPath, m_menu);
         m_actionGroupExporter = std::make_shared<ActionGroupExporter>(m_sessionBus, m_actionGroup, actionPath);
 
-        resetNotification(title, body);
+        resetNotification();
 
-        connect(&p, &SimUnlock::titleUpdated, m_notification.get(), &Notification::setSummary);
-        connect(&p, &SimUnlock::bodyUpdated, m_notification.get(), &Notification::setBody);
         connect(&p, &SimUnlock::pinMinMaxUpdated, this, &Private::pinMinMaxChanged);
     }
 };
 
-SimUnlock::SimUnlock(const QString &title,
-                                 const QString &body,
-                                 std::pair<std::uint8_t, std::uint8_t> pinMinMax)
+SimUnlock::SimUnlock(NotificationManager::SPtr notificationManager,
+                     const QString &title,
+                     const QString &body,
+                     std::pair<std::uint8_t, std::uint8_t> pinMinMax)
 {
-    d.reset(new Private(*this, title, body, pinMinMax));
+    d.reset(new Private(*this, notificationManager, title, body, pinMinMax));
 }
 
 SimUnlock::~SimUnlock()

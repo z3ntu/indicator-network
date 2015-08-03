@@ -31,6 +31,7 @@
 #include <qofono-qt5/qofonomodem.h>
 #undef slots
 
+#include <notify-cpp/notification-manager.h>
 #include <notify-cpp/snapdecision/sim-unlock.h>
 #include <sim-unlock-dialog.h>
 #include <util/qhash-sharedptr.h>
@@ -224,11 +225,11 @@ ManagerImpl::updateNetworkingStatus(uint status)
     Q_EMIT statusUpdated(d->m_status);
 }
 
-ManagerImpl::ManagerImpl(const QDBusConnection& systemConnection) : d(new ManagerImpl::Private(*this))
+ManagerImpl::ManagerImpl(notify::NotificationManager::SPtr notificationManager, const QDBusConnection& systemConnection) : d(new ManagerImpl::Private(*this))
 {
     d->nm = make_shared<OrgFreedesktopNetworkManagerInterface>(NM_DBUS_SERVICE, NM_DBUS_PATH, systemConnection);
 
-    d->m_unlockDialog = make_shared<SimUnlockDialog>();
+    d->m_unlockDialog = make_shared<SimUnlockDialog>(notificationManager);
     connect(d->m_unlockDialog.get(), &SimUnlockDialog::ready, d.get(), &Private::sim_unlock_ready);
 
     d->m_ofono = make_shared<QOfonoManager>();

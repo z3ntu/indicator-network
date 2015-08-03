@@ -19,7 +19,7 @@
 
 #include "sim-unlock-dialog.h"
 
-#include <notify-cpp/notification.h>
+#include <notify-cpp/notification-manager.h>
 #include <notify-cpp/snapdecision/sim-unlock.h>
 #include <util/localisation.h>
 
@@ -196,7 +196,7 @@ public:
         m_sd->showPopup(output.str(), closed);
     }
 
-    Private(SimUnlockDialog& parent);
+    Private(SimUnlockDialog& parent, notify::NotificationManager::SPtr);
 
 public Q_SLOTS:
     void update();
@@ -204,8 +204,6 @@ public Q_SLOTS:
     void cancelled();
 
     void pinEntered(const QString& pin);
-
-    void closed();
 
     void reset();
 
@@ -244,13 +242,12 @@ public Q_SLOTS:
     }
 };
 
-SimUnlockDialog::Private::Private(SimUnlockDialog& parent)
+SimUnlockDialog::Private::Private(SimUnlockDialog& parent, notify::NotificationManager::SPtr notificationManager)
     : p(parent), m_doCleanUp{true}
 {
-    m_sd = std::make_shared<notify::snapdecision::SimUnlock>();
+    m_sd = make_shared<notify::snapdecision::SimUnlock>(notificationManager);
     connect(m_sd.get(), &notify::snapdecision::SimUnlock::cancelled, this, &Private::cancelled);
     connect(m_sd.get(), &notify::snapdecision::SimUnlock::pinEntered, this, &Private::pinEntered);
-    connect(m_sd.get(), &notify::snapdecision::SimUnlock::closed, this, &Private::closed);
 
     reset();
 }
@@ -309,6 +306,7 @@ SimUnlockDialog::Private::update()
             }
             break;
         }
+
 
         m_sd->setPinMinMax(lengths[type]);
 
@@ -386,12 +384,6 @@ SimUnlockDialog::Private::pinEntered(const QString& pin)
 void
 SimUnlockDialog::Private::cancelled()
 {
-    m_sd->close();
-}
-
-void
-SimUnlockDialog::Private::closed()
-{
     reset();
 }
 
@@ -421,8 +413,8 @@ SimUnlockDialog::Private::reset()
     m_doCleanUp = true;
 }
 
-SimUnlockDialog::SimUnlockDialog() :
-        d(new Private(*this))
+SimUnlockDialog::SimUnlockDialog(notify::NotificationManager::SPtr notificationManager) :
+        d(new Private(*this, notificationManager))
 {
 }
 
@@ -474,9 +466,6 @@ SimUnlockDialog::unlock(wwan::Modem::Ptr modem)
     {
         pukRetries = retries[wwan::Modem::PinType::puk];
     }
-
-    qDebug() << __PRETTY_FUNCTION__ << modem->name() << "pinRetries ="
-            << pinRetries << "pukRetries =" << pukRetries;
 
     // remind the user
     if (type == wwan::Modem::PinType::pin && pinRetries == 1)

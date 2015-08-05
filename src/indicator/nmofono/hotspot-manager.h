@@ -123,8 +123,6 @@ public:
 
     bool enabled() const;
 
-    void setEnabled(bool);
-
     bool stored() const;
 
     QByteArray ssid() const;
@@ -155,6 +153,8 @@ Q_SIGNALS:
     void reportError(int reason);
 
 public Q_SLOTS:
+    void setEnabled(bool);
+
     void setSsid(const QByteArray&);
 
     void setPassword(const QString&);

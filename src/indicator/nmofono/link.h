@@ -92,12 +92,6 @@ public:
     };
 
     /// @private
-    virtual void enable()  = 0;
-
-    /// @private
-    virtual void disable() = 0;
-
-    /// @private
     virtual Type type() const = 0;
 
     /// @private

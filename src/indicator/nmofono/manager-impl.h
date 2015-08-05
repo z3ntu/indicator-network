@@ -51,7 +51,7 @@ public:
     bool hasWifi() const override;
     bool wifiEnabled() const override;
 
-    bool setWifiEnabled(bool) override;
+    void setWifiEnabled(bool) override;
 
     bool roaming() const override;
 

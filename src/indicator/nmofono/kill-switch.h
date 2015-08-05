@@ -37,24 +37,6 @@ class KillSwitch : public QObject
 public:
     typedef std::shared_ptr<KillSwitch> Ptr;
 
-    struct exception
-    {
-        struct HardBlocked : public std::runtime_error
-        {
-            HardBlocked()
-                : std::runtime_error("Killswitch is hard blocked.")
-            {}
-        };
-
-        struct Failed : public std::runtime_error
-        {
-            Failed() = delete;
-            Failed(std::string what)
-                : std::runtime_error(what)
-            {}
-        };
-    };
-
     enum class State
     {
         not_available = -1,
@@ -68,12 +50,7 @@ public:
     KillSwitch(const QDBusConnection& systemBus);
     ~KillSwitch();
 
-    /// @throws exception::Failed if the switch fails to block
-    void block();
-
-    /// @throws exception::HardBlocked if trying to unblock when switch is hard blocked
-    /// @throws exception::Failed if the switch fails to unblock
-    void unblock();
+    void setBlock(bool block);
 
     State state() const;
     bool flightMode(bool enable);

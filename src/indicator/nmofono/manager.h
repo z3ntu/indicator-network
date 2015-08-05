@@ -171,7 +171,7 @@ Q_SIGNALS:
     void unstoppableOperationHappeningUpdated(bool);
 
 public Q_SLOTS:
-    virtual bool setWifiEnabled(bool) = 0;
+    virtual void setWifiEnabled(bool) = 0;
 
     virtual void setFlightMode(bool)  = 0;
 

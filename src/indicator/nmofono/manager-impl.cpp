@@ -263,16 +263,7 @@ ManagerImpl::ManagerImpl(const QDBusConnection& systemConnection) : d(new Manage
     connect(d->nm.get(), &OrgFreedesktopNetworkManagerInterface::PropertiesChanged, this, &ManagerImpl::nm_properties_changed);
 
     connect(d->m_killSwitch.get(), &KillSwitch::flightModeChanged, d.get(), &Private::setFlightMode);
-    try
-    {
-        d->setFlightMode(d->m_killSwitch->isFlightMode());
-    }
-    catch (exception const& e)
-    {
-        cerr << __PRETTY_FUNCTION__ << ": " << e.what() << endl;
-        cerr << "Failed to retrieve initial flight mode state, assuming state is false." << endl;
-        d->setFlightMode(false);
-    }
+    d->setFlightMode(d->m_killSwitch->isFlightMode());
 
     /// @todo set by the default connections.
     d->m_characteristics = Link::Characteristics::empty;
@@ -425,48 +416,23 @@ ManagerImpl::wifiEnabled() const
 }
 
 
-bool
+void
 ManagerImpl::setWifiEnabled(bool enabled)
 {
     if (!d->m_hasWifi)
     {
-        return false;
+        return;
     }
 
     if (d->m_wifiEnabled == enabled)
     {
-        return false;
+        return;
     }
 
-    bool success = true;
     d->setUnstoppableOperationHappening(true);
-
-    try
-    {
-        if (enabled)
-        {
-            if (d->m_killSwitch->state() == KillSwitch::State::soft_blocked)
-            {
-                // try to unblock. throws if fails.
-                d->m_killSwitch->unblock();
-            }
-        }
-        else
-        {
-            if (d->m_killSwitch->state() == KillSwitch::State::unblocked) {
-                // block the device. that will disable it also
-                d->m_killSwitch->block();
-            }
-        }
-        d->nm->setWirelessEnabled(enabled);
-    }
-    catch (runtime_error &e)
-    {
-        qWarning() << __PRETTY_FUNCTION__ << ": " << e.what();
-        success = false;
-    }
+    d->m_killSwitch->setBlock(!enabled);
+    d->nm->setWirelessEnabled(enabled);
     d->setUnstoppableOperationHappening(false);
-    return success;
 }
 
 bool
@@ -597,7 +563,9 @@ ManagerImpl::hotspotMode() const
 void
 ManagerImpl::setHotspotEnabled(bool enabled)
 {
+    d->setUnstoppableOperationHappening(true);
     d->m_hotspotManager->setEnabled(enabled);
+    d->setUnstoppableOperationHappening(false);
 }
 
 void

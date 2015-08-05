@@ -671,16 +671,6 @@ Modem::wwanType() const
     return WwanType::GSM;
 }
 
-void
-Modem::enable()
-{
-}
-
-void
-Modem::disable()
-{
-}
-
 Link::Type
 Modem::type() const
 {

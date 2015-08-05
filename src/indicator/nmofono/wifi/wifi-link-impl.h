@@ -43,9 +43,6 @@ public:
     ~WifiLinkImpl();
 
     // public API
-    void enable() override;
-    void disable() override;
-
     Type type() const override;
     Id id() const override;
     QString name() const override;

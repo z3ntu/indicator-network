@@ -244,6 +244,13 @@ ManagerImpl::ManagerImpl(const QDBusConnection& systemConnection) : d(new Manage
     connect(d->m_killSwitch.get(), &KillSwitch::stateChanged, d.get(), &Private::updateHasWifi);
 
     d->m_hotspotManager = make_shared<HotspotManager>(systemConnection);
+    connect(d->m_hotspotManager.get(), &HotspotManager::enabledChanged, this, &Manager::hotspotEnabledChanged);
+    connect(d->m_hotspotManager.get(), &HotspotManager::ssidChanged, this, &Manager::hotspotSsidChanged);
+    connect(d->m_hotspotManager.get(), &HotspotManager::passwordChanged, this, &Manager::hotspotPasswordChanged);
+    connect(d->m_hotspotManager.get(), &HotspotManager::modeChanged, this, &Manager::hotspotModeChanged);
+    connect(d->m_hotspotManager.get(), &HotspotManager::storedChanged, this, &Manager::hotspotStoredChanged);
+
+    connect(d->m_hotspotManager.get(), &HotspotManager::reportError, this, &Manager::reportError);
 
     connect(d->nm.get(), &OrgFreedesktopNetworkManagerInterface::DeviceAdded, this, &ManagerImpl::device_added);
     QList<QDBusObjectPath> devices(d->nm->GetDevices());
@@ -557,9 +564,58 @@ ManagerImpl::modemLinks() const
     return d->m_ofonoLinks.values().toSet();
 }
 
-HotspotManager::SPtr ManagerImpl::hotspotManager() const
+bool
+ManagerImpl::hotspotEnabled() const
 {
-    return d->m_hotspotManager;
+    return d->m_hotspotManager->enabled();
+}
+
+bool
+ManagerImpl::hotspotStored() const
+{
+    return d->m_hotspotManager->stored();
+}
+
+QByteArray
+ManagerImpl::hotspotSsid() const
+{
+    return d->m_hotspotManager->ssid();
+}
+
+QString
+ManagerImpl::hotspotPassword() const
+{
+    return d->m_hotspotManager->password();
+}
+
+QString
+ManagerImpl::hotspotMode() const
+{
+    return d->m_hotspotManager->mode();
+}
+
+void
+ManagerImpl::setHotspotEnabled(bool enabled)
+{
+    d->m_hotspotManager->setEnabled(enabled);
+}
+
+void
+ManagerImpl::setHotspotSsid(const QByteArray& ssid)
+{
+    d->m_hotspotManager->setSsid(ssid);
+}
+
+void
+ManagerImpl::setHotspotPassword(const QString& password)
+{
+    d->m_hotspotManager->setPassword(password);
+}
+
+void
+ManagerImpl::setHotspotMode(const QString& mode)
+{
+    d->m_hotspotManager->setMode(mode);
 }
 
 }

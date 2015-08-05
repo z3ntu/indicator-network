@@ -87,8 +87,6 @@ public:
     Q_PROPERTY(bool unstoppableOperationHappening READ unstoppableOperationHappening NOTIFY unstoppableOperationHappeningUpdated)
     virtual bool unstoppableOperationHappening() const = 0;
 
-    virtual HotspotManager::SPtr hotspotManager() const = 0;
-
     /// @private
     Q_PROPERTY(QSet<Link::Ptr> links READ links NOTIFY linksUpdated)
     virtual QSet<Link::Ptr> links() const = 0;
@@ -130,6 +128,21 @@ public:
 
     virtual void unlockModemByName(const QString &name) = 0;
 
+    Q_PROPERTY(bool hotspotEnabled READ hotspotEnabled WRITE setHotspotEnabled NOTIFY hotspotEnabledChanged)
+    virtual bool hotspotEnabled() const = 0;
+
+    Q_PROPERTY(bool hotspotStored READ hotspotStored NOTIFY hotspotStoredChanged)
+    virtual bool hotspotStored() const = 0;
+
+    Q_PROPERTY(QByteArray hotspotSsid READ hotspotSsid WRITE setHotspotSsid NOTIFY hotspotSsidChanged)
+    virtual QByteArray hotspotSsid() const = 0;
+
+    Q_PROPERTY(QString hotspotPassword READ hotspotPassword WRITE setHotspotPassword NOTIFY hotspotPasswordChanged)
+    virtual QString hotspotPassword() const = 0;
+
+    Q_PROPERTY(QString hotspotMode READ hotspotMode WRITE setHotspotMode NOTIFY hotspotModeChanged)
+    virtual QString hotspotMode() const = 0;
+
 Q_SIGNALS:
     void flightModeUpdated(FlightModeStatus);
 
@@ -143,12 +156,32 @@ Q_SIGNALS:
 
     void wifiEnabledUpdated(bool);
 
+    void hotspotEnabledChanged(bool enabled);
+
+    void hotspotStoredChanged(bool stored);
+
+    void hotspotSsidChanged(const QByteArray& ssid);
+
+    void hotspotPasswordChanged(const QString& password);
+
+    void hotspotModeChanged(const QString& mode);
+
+    void reportError(int reason);
+
     void unstoppableOperationHappeningUpdated(bool);
 
 public Q_SLOTS:
     virtual bool setWifiEnabled(bool) = 0;
 
     virtual void setFlightMode(bool)  = 0;
+
+    virtual void setHotspotEnabled(bool) = 0;
+
+    virtual void setHotspotSsid(const QByteArray&) = 0;
+
+    virtual void setHotspotPassword(const QString&) = 0;
+
+    virtual void setHotspotMode(const QString&) = 0;
 
 protected:
     /**

@@ -288,7 +288,7 @@ public Q_SLOTS:
         updateDeviceState(new_state);
     }
 
-    void kill_switch_updated()
+    void kill_switch_updated(KillSwitch::State)
     {
         updateDeviceState(m_lastState);
     }

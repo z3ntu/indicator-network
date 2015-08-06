@@ -271,6 +271,69 @@ ManagerImpl::ManagerImpl(const QDBusConnection& systemConnection) : d(new Manage
     d->updateHasWifi();
 }
 
+bool
+ManagerImpl::wifiEnabled() const
+{
+    return d->m_wifiEnabled;
+}
+
+
+void
+ManagerImpl::setWifiEnabled(bool enabled)
+{
+    if (!d->m_hasWifi)
+    {
+        return;
+    }
+
+    if (d->m_wifiEnabled == enabled)
+    {
+        return;
+    }
+
+    d->setUnstoppableOperationHappening(true);
+    d->m_killSwitch->setBlock(!enabled);
+    d->nm->setWirelessEnabled(enabled);
+    d->setUnstoppableOperationHappening(false);
+}
+
+bool
+ManagerImpl::hotspotEnabled() const
+{
+    return d->m_hotspotManager->enabled();
+}
+
+void
+ManagerImpl::setHotspotEnabled(bool enabled)
+{
+    d->setUnstoppableOperationHappening(true);
+    d->m_hotspotManager->setEnabled(enabled);
+    d->setUnstoppableOperationHappening(false);
+}
+
+void
+ManagerImpl::setFlightMode(bool enabled)
+{
+    if (enabled == d->m_killSwitch->isFlightMode())
+    {
+        return;
+    }
+
+    d->setUnstoppableOperationHappening(true);
+
+    if (!d->m_killSwitch->flightMode(enabled))
+    {
+        qWarning() << "Failed to change flightmode.";
+    }
+    d->setUnstoppableOperationHappening(false);
+}
+
+Manager::FlightModeStatus
+ManagerImpl::flightMode() const
+{
+    return d->m_flightMode;
+}
+
 void
 ManagerImpl::nm_properties_changed(const QVariantMap &properties)
 {
@@ -345,35 +408,6 @@ ManagerImpl::device_added(const QDBusObjectPath &path)
 }
 
 
-void
-ManagerImpl::setFlightMode(bool enabled)
-{
-#ifdef INDICATOR_NETWORK_TRACE_MESSAGES
-    qDebug() << __PRETTY_FUNCTION__ << enabled;
-#endif
-    if (enabled == d->m_killSwitch->isFlightMode())
-    {
-        return;
-    }
-
-    d->setUnstoppableOperationHappening(true);
-
-    if (!d->m_killSwitch->flightMode(enabled))
-    {
-        qWarning() << "Failed to change flightmode.";
-    }
-    d->setUnstoppableOperationHappening(false);
-}
-
-Manager::FlightModeStatus
-ManagerImpl::flightMode() const
-{
-    // - connect to each individual URfkill.Killswitch interface
-    // - make this property to reflect their combined state
-    /// @todo implement flightmode status properly when URfkill gets the flightmode API
-    return d->m_flightMode;
-}
-
 bool
 ManagerImpl::unstoppableOperationHappening() const
 {
@@ -407,32 +441,6 @@ bool
 ManagerImpl::hasWifi() const
 {
     return d->m_hasWifi;
-}
-
-bool
-ManagerImpl::wifiEnabled() const
-{
-    return d->m_wifiEnabled;
-}
-
-
-void
-ManagerImpl::setWifiEnabled(bool enabled)
-{
-    if (!d->m_hasWifi)
-    {
-        return;
-    }
-
-    if (d->m_wifiEnabled == enabled)
-    {
-        return;
-    }
-
-    d->setUnstoppableOperationHappening(true);
-    d->m_killSwitch->setBlock(!enabled);
-    d->nm->setWirelessEnabled(enabled);
-    d->setUnstoppableOperationHappening(false);
 }
 
 bool
@@ -531,12 +539,6 @@ ManagerImpl::modemLinks() const
 }
 
 bool
-ManagerImpl::hotspotEnabled() const
-{
-    return d->m_hotspotManager->enabled();
-}
-
-bool
 ManagerImpl::hotspotStored() const
 {
     return d->m_hotspotManager->stored();
@@ -558,14 +560,6 @@ QString
 ManagerImpl::hotspotMode() const
 {
     return d->m_hotspotManager->mode();
-}
-
-void
-ManagerImpl::setHotspotEnabled(bool enabled)
-{
-    d->setUnstoppableOperationHappening(true);
-    d->m_hotspotManager->setEnabled(enabled);
-    d->setUnstoppableOperationHappening(false);
 }
 
 void

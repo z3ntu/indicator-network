@@ -46,12 +46,15 @@ public:
     virtual ~WifiLink() = default;
 
     Q_PROPERTY(QSet<nmofono::wifi::AccessPoint::Ptr> accessPoints READ accessPoints NOTIFY accessPointsUpdated)
-    virtual const QSet<AccessPoint::Ptr>& accessPoints() const = 0;
+    virtual QSet<AccessPoint::Ptr> accessPoints() const = 0;
 
     virtual void connect_to(AccessPoint::Ptr accessPoint) = 0;
 
     Q_PROPERTY(nmofono::wifi::AccessPoint::Ptr activeAccessPoint READ activeAccessPoint NOTIFY activeAccessPointUpdated)
     virtual AccessPoint::Ptr activeAccessPoint() = 0;
+
+public Q_SLOTS:
+    virtual void setHideAccessPoints(bool) = 0;
 
 Q_SIGNALS:
     void accessPointsUpdated(const QSet<AccessPoint::Ptr>&);

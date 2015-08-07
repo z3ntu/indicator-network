@@ -76,6 +76,7 @@ public:
     QString m_name;
     shared_ptr<OrgFreedesktopNetworkManagerConnectionActiveInterface> m_activeConnection;
     bool m_connecting = false;
+    bool m_hideAccessPoints = false;
 
     void setStatus(Status status)
     {
@@ -234,7 +235,7 @@ public Q_SLOTS:
             } else {
                 m_grouper[k] = make_shared<GroupedAccessPoint>(shap);
             }
-            update_grouped();
+            update_grouped_access_points();
         } catch(const exception &e) {
             /// @bug dbus-cpp internal logic exploded
             // If this happens, indicator-network is in an unknown state with no clear way of
@@ -271,16 +272,25 @@ public Q_SLOTS:
                 m_grouper.erase(it);
             }
         }
-        update_grouped();
+        update_grouped_access_points();
     }
 
-    void update_grouped() {
-        QSet<AccessPoint::Ptr> new_grouped;
-        for(auto &i : m_grouper) {
-            new_grouped.insert(i.second);
+    void update_grouped_access_points()
+    {
+        m_groupedAccessPoints.clear();
+        for (auto &i : m_grouper)
+        {
+            m_groupedAccessPoints.insert(i.second);
         }
-        m_groupedAccessPoints = new_grouped;
-        Q_EMIT p.accessPointsUpdated(new_grouped);
+
+        if (m_hideAccessPoints)
+        {
+            Q_EMIT p.accessPointsUpdated(QSet<AccessPoint::Ptr>());
+        }
+        else
+        {
+            Q_EMIT p.accessPointsUpdated(m_groupedAccessPoints);
+        }
     }
 
     void state_changed(uint new_state, uint, uint)
@@ -346,8 +356,13 @@ WifiLinkImpl::name() const
     return d->m_name;
 }
 
-const QSet<AccessPoint::Ptr>&
+QSet<AccessPoint::Ptr>
 WifiLinkImpl::accessPoints() const {
+    if (d->m_hideAccessPoints)
+    {
+        return QSet<AccessPoint::Ptr>();
+    }
+
     return d->m_groupedAccessPoints;
 }
 
@@ -436,6 +451,18 @@ WifiLinkImpl::activeAccessPoint()
 
 QDBusObjectPath WifiLinkImpl::device_path() const {
     return QDBusObjectPath(d->m_dev->path());
+}
+
+void
+WifiLinkImpl::setHideAccessPoints(bool hide)
+{
+    if (hide == d->m_hideAccessPoints)
+    {
+        return;
+    }
+
+    d->m_hideAccessPoints = hide;
+    d->update_grouped_access_points();
 }
 
 }

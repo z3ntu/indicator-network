@@ -50,11 +50,13 @@ public:
     std::uint32_t characteristics() const override;
     Status status() const override;
 
-    const QSet<AccessPoint::Ptr>& accessPoints() const override;
+    QSet<AccessPoint::Ptr> accessPoints() const override;
     void connect_to(AccessPoint::Ptr accessPoint) override;
     AccessPoint::Ptr activeAccessPoint() override;
 
     QDBusObjectPath device_path() const;
+
+    void setHideAccessPoints(bool) override;
 
 private:
     struct Private;

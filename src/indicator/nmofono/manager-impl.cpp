@@ -388,9 +388,16 @@ ManagerImpl::device_added(const QDBusObjectPath &path)
         auto dev = make_shared<OrgFreedesktopNetworkManagerDeviceInterface>(
             NM_DBUS_SERVICE, path.path(), d->nm->connection());
         if (dev->deviceType() == NM_DEVICE_TYPE_WIFI) {
-            link = make_shared<wifi::WifiLinkImpl>(dev,
+            wifi::WifiLink::Ptr tmp = make_shared<wifi::WifiLinkImpl>(dev,
                                                 d->nm,
                                                 d->m_killSwitch);
+
+            // Wire up enabling / disabling AP visibility to the hotspot enabled state
+            tmp->setHideAccessPoints(d->m_hotspotManager->enabled());
+            QObject::connect(d->m_hotspotManager.get(), &HotspotManager::enabledChanged,
+                    tmp.get(), &wifi::WifiLink::setHideAccessPoints);
+
+            link = tmp;
         }
     } catch (const exception &e) {
         qDebug() << __PRETTY_FUNCTION__ << ": failed to create Device proxy for "<< path.path() << ": ";

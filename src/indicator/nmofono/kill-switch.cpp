@@ -25,11 +25,15 @@
 #include <URfkillInterface.h>
 #include <URfkillKillswitchInterface.h>
 
+using namespace std;
+
 namespace nmofono
 {
 
-class KillSwitch::Private
+class KillSwitch::Private: public QObject
 {
+    Q_OBJECT
+
 public:
     enum class DeviceType
     {
@@ -43,15 +47,48 @@ public:
         nfc = 8
     };
 
+    KillSwitch& p;
+
     std::shared_ptr<OrgFreedesktopURfkillInterface> urfkill;
     std::shared_ptr<OrgFreedesktopURfkillKillswitchInterface> killSwitch;
 
     bool m_flightMode = false;
+    State m_state = State::not_available;
 
-    Private(std::shared_ptr<OrgFreedesktopURfkillInterface> urfkill,
+    Private(KillSwitch& parent,
+            std::shared_ptr<OrgFreedesktopURfkillInterface> urfkill,
             std::shared_ptr<OrgFreedesktopURfkillKillswitchInterface> killSwitch)
-        : urfkill(urfkill),
+        : p(parent),
+          urfkill(urfkill),
           killSwitch(killSwitch) {}
+
+public Q_SLOTS:
+    void setFlightMode(bool flightMode)
+    {
+        if (flightMode == m_flightMode)
+        {
+            return;
+        }
+
+        m_flightMode = flightMode;
+        Q_EMIT p.flightModeChanged(flightMode);
+    }
+
+    void stateChanged()
+    {
+        int stateIndex = killSwitch->state();
+        if (stateIndex >= static_cast<int>(State::first_) &&
+            stateIndex <= static_cast<int>(State::last_))
+        {
+            m_state = static_cast<KillSwitch::State>(stateIndex);
+        }
+        else
+        {
+            m_state = KillSwitch::State::not_available;
+        }
+
+        Q_EMIT p.stateChanged(m_state);
+    }
 };
 
 
@@ -65,27 +102,16 @@ KillSwitch::KillSwitch(const QDBusConnection& systemBus)
                                                                                  DBusTypes::URFKILL_WIFI_OBJ_PATH,
                                                                                  systemBus);
 
-    connect(urfkill.get(), SIGNAL(FlightModeChanged(bool)), this, SLOT(setFlightMode(bool)));
-    connect(killSwitch.get(), SIGNAL(StateChanged()), this, SIGNAL(stateChanged()));
+    d = make_unique<Private>(*this, urfkill, killSwitch);
+    d->setFlightMode(urfkill->IsFlightMode());
+    d->stateChanged();
 
-    d.reset(new Private(urfkill, killSwitch));
-
-    setFlightMode(urfkill->IsFlightMode());
+    connect(urfkill.get(), &OrgFreedesktopURfkillInterface::FlightModeChanged, d.get(), &Private::setFlightMode);
+    connect(killSwitch.get(), &OrgFreedesktopURfkillKillswitchInterface::StateChanged, d.get(), &Private::stateChanged);
 }
 
 KillSwitch::~KillSwitch()
 {}
-
-void KillSwitch::setFlightMode(bool flightMode)
-{
-    if (flightMode == d->m_flightMode)
-    {
-        return;
-    }
-
-    d->m_flightMode = flightMode;
-    Q_EMIT flightModeChanged(flightMode);
-}
 
 void
 KillSwitch::setBlock(bool block)
@@ -121,13 +147,7 @@ KillSwitch::setBlock(bool block)
 
 KillSwitch::State KillSwitch::state() const
 {
-    int stateIndex = d->killSwitch->state();
-    if (stateIndex >= static_cast<int>(State::first_) &&
-        stateIndex <= static_cast<int>(State::last_))
-    {
-        return static_cast<KillSwitch::State>(stateIndex);
-    }
-    return KillSwitch::State::not_available;
+    return d->m_state;
 }
 
 bool KillSwitch::flightMode(bool enable)
@@ -154,3 +174,5 @@ bool KillSwitch::isFlightMode()
 }
 
 }
+
+#include "kill-switch.moc"

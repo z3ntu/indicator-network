@@ -24,6 +24,8 @@
 #include <QCoreApplication>
 
 #include <libintl.h>
+#include <cstdlib>
+#include <ctime>
 
 #include <glib.h>
 #include <libnotify/notify.h>
@@ -39,6 +41,7 @@ main(int argc, char **argv)
     QCoreApplication app(argc, argv);
     DBusTypes::registerMetaTypes();
     Variant::registerMetaTypes();
+    std::srand(std::time(0));
 
     util::UnixSignalHandler handler([]{
         QCoreApplication::exit(0);

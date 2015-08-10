@@ -35,6 +35,12 @@ namespace DBusTypes
         qDBusRegisterMetaType<QVariantDictMap>();
     }
 
+    static constexpr char const* POWERD_DBUS_NAME = "com.canonical.powerd";
+
+    static constexpr char const* POWERD_DBUS_INTERFACE = "com.canonical.powerd";
+
+    static constexpr char const* POWERD_DBUS_PATH = "/com/canonical/powerd";
+
     static constexpr char const* DBUS_NAME = "com.ubuntu.connectivity1";
 
     static constexpr char const* SERVICE_INTERFACE = "com.ubuntu.connectivity1.NetworkingStatus";

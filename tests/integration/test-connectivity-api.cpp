@@ -19,6 +19,7 @@
 #include <indicator-network-test-base.h>
 #include <connectivityqt/connectivity.h>
 #include <dbus-types.h>
+#include <NetworkManagerSettingsInterface.h>
 
 #include <QDebug>
 #include <QTestEventLoop>
@@ -46,6 +47,18 @@ protected:
         }
 
         return connectivity;
+    }
+
+    QVariantList getMethodCall(const QSignalSpy& spy, const QString& method)
+    {
+        for(const auto& call: spy)
+        {
+            if (call.first().toString() == method)
+            {
+                return call.at(1).toList();
+            }
+        }
+        throw domain_error(qPrintable("No method call [" + method + "] could be found"));
     }
 };
 
@@ -336,6 +349,170 @@ TEST_F(TestConnectivityApi, Limitations)
     // These methods will always return these values - i.e. are not implemented
     EXPECT_EQ(QVector<Connectivity::Limitations>(), connectivity->limitations());
     EXPECT_FALSE(connectivity->limitedBandwith());
+}
+
+TEST_F(TestConnectivityApi, HotspotConfig)
+{
+    setGlobalConnectedState(NM_STATE_DISCONNECTED);
+    auto device = createWiFiDevice(NM_DEVICE_STATE_DISCONNECTED);
+
+    // Start the indicator
+    ASSERT_NO_THROW(startIndicator());
+
+    auto& powerdMock = dbusMock.mockInterface(DBusTypes::POWERD_DBUS_NAME,
+                           DBusTypes::POWERD_DBUS_PATH,
+                           DBusTypes::POWERD_DBUS_INTERFACE,
+                           QDBusConnection::SystemBus);
+    QSignalSpy powerdMockCallSpy(
+                           &powerdMock,
+                           SIGNAL(MethodCalled(const QString &, const QVariantList &)));
+
+    auto& nmSettingsMock = dbusMock.mockInterface(NM_DBUS_SERVICE,
+                           NM_DBUS_PATH_SETTINGS,
+                           NM_DBUS_IFACE_SETTINGS,
+                           QDBusConnection::SystemBus);
+    QSignalSpy nmSettingsMockCallSpy(
+                           &nmSettingsMock,
+                           SIGNAL(MethodCalled(const QString &, const QVariantList &)));
+
+    OrgFreedesktopNetworkManagerSettingsInterface settings(
+            NM_DBUS_SERVICE, NM_DBUS_PATH_SETTINGS, dbusTestRunner.systemConnection());
+    QSignalSpy settingsNewConnectionSpy(
+                           &settings,
+                           SIGNAL(NewConnection(const QDBusObjectPath &)));
+
+    // Connect the the service
+    auto connectivity(newConnectivity());
+
+    QSignalSpy storedSpy(connectivity.get(), SIGNAL(hotspotStoredUpdated(bool)));
+    QSignalSpy enabledSpy(connectivity.get(), SIGNAL(hotspotEnabledUpdated(bool)));
+    QSignalSpy passwordSpy(connectivity.get(), SIGNAL(hotspotPasswordUpdated(const QString&)));
+
+    EXPECT_EQ("Ubuntu", connectivity->hotspotSsid().toStdString());
+    EXPECT_FALSE(connectivity->hotspotStored());
+    EXPECT_FALSE(connectivity->hotspotEnabled());
+
+    connectivity->setHotspotPassword("the password");
+
+    if (passwordSpy.empty())
+    {
+        ASSERT_TRUE(passwordSpy.wait());
+    }
+    EXPECT_FALSE(passwordSpy.empty());
+    EXPECT_EQ("the password", connectivity->hotspotPassword().toStdString());
+
+    connectivity->setHotspotEnabled(true);
+
+    if (enabledSpy.empty())
+    {
+        ASSERT_TRUE(enabledSpy.wait());
+    }
+    EXPECT_FALSE(enabledSpy.empty());
+
+    if (storedSpy.empty())
+    {
+        ASSERT_TRUE(storedSpy.wait());
+    }
+    EXPECT_FALSE(storedSpy.empty());
+
+    if (powerdMockCallSpy.empty())
+    {
+        ASSERT_TRUE(powerdMockCallSpy.wait());
+    }
+    EXPECT_FALSE(powerdMockCallSpy.empty());
+
+    if (nmSettingsMockCallSpy.empty())
+    {
+        ASSERT_TRUE(nmSettingsMockCallSpy.wait());
+    }
+    EXPECT_FALSE(nmSettingsMockCallSpy.empty());
+
+    if (settingsNewConnectionSpy.empty())
+    {
+        ASSERT_TRUE(settingsNewConnectionSpy.wait());
+    }
+    EXPECT_FALSE(settingsNewConnectionSpy.empty());
+
+    EXPECT_TRUE(connectivity->hotspotEnabled());
+    EXPECT_TRUE(connectivity->hotspotStored());
+
+    // Connect to method calls on the newly added connection
+    auto connectionPath = qvariant_cast<QDBusObjectPath>(settingsNewConnectionSpy.first().first());
+    auto& connectionSettingsMock = dbusMock.mockInterface(NM_DBUS_SERVICE, connectionPath.path(),
+                           NM_DBUS_IFACE_SETTINGS_CONNECTION,
+                           QDBusConnection::SystemBus);
+    QSignalSpy connectionSettingsMockCallSpy(
+                           &connectionSettingsMock,
+                           SIGNAL(MethodCalled(const QString &, const QVariantList &)));
+
+    // Expect a wakelock request
+    EXPECT_EQ(
+        QVariantList({"connectivity-service", int(1)}),
+        getMethodCall(powerdMockCallSpy, "requestSysState"));
+
+    {
+        auto call = getMethodCall(nmSettingsMockCallSpy, "AddConnection");
+        // Decode the QDBusArgument
+        QVariantDictMap connection;
+        qvariant_cast<QDBusArgument>(call.first()) >> connection;
+        EXPECT_EQ(QVariantMap({
+            {"mode", "ap"},
+            {"security", "802-11-wireless-security"},
+            {"ssid", "Ubuntu"}
+        }), connection["802-11-wireless"]);
+        EXPECT_EQ(QVariantMap({
+            {"group", "ccmp"},
+            {"key-mgmt", "wpa-psk"},
+            {"pairwise" ,  QStringList{"ccmp"}},
+            {"proto" ,  QStringList{"rsn"}},
+            {"psk", "the password"}
+        }), connection["802-11-wireless-security"]);
+        EXPECT_TRUE(connection["connection"]["autoconnect"].toBool());
+    }
+
+    // Next we'll disable the hotspot
+    storedSpy.clear();
+    enabledSpy.clear();
+    passwordSpy.clear();
+    powerdMockCallSpy.clear();
+    nmSettingsMockCallSpy.clear();
+
+    connectivity->setHotspotEnabled(false);
+
+    if (powerdMockCallSpy.empty())
+    {
+        ASSERT_TRUE(powerdMockCallSpy.wait());
+    }
+    EXPECT_FALSE(powerdMockCallSpy.empty());
+
+    if (connectionSettingsMockCallSpy.empty())
+    {
+        ASSERT_TRUE(connectionSettingsMockCallSpy.wait());
+    }
+    EXPECT_FALSE(connectionSettingsMockCallSpy.empty());
+
+    if (enabledSpy.empty())
+    {
+        ASSERT_TRUE(enabledSpy.wait());
+    }
+    EXPECT_FALSE(enabledSpy.empty());
+
+    EXPECT_FALSE(connectivity->hotspotEnabled());
+    EXPECT_TRUE(connectivity->hotspotStored());
+
+    // Expect a wakelock cancel
+    EXPECT_EQ(
+        QVariantList{"dummy_cookie"},
+        getMethodCall(powerdMockCallSpy, "clearSysState"));
+
+    // The connection should no-longer auto-connect
+    {
+        auto call = getMethodCall(connectionSettingsMockCallSpy, "Update");
+        // Decode the QDBusArgument
+        QVariantDictMap connection;
+        qvariant_cast<QDBusArgument>(call.first()) >> connection;
+        EXPECT_FALSE(connection["connection"]["autoconnect"].toBool());
+    }
 }
 
 }

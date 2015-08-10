@@ -19,6 +19,7 @@
 */
 
 #include <nmofono/hotspot-manager.h>
+#include <qpowerd/qpowerd.h>
 #include <NetworkManagerActiveConnectionInterface.h>
 #include <NetworkManagerDeviceInterface.h>
 #include <NetworkManagerInterface.h>
@@ -142,6 +143,16 @@ public:
         if (m_enabled != value)
         {
             m_enabled = value;
+            // Request or clear the wakelock, depending on the hotspot state
+            if (value)
+            {
+                m_wakelock = m_powerd->requestSysState(
+                        "connectivity-service", QPowerd::SysPowerState::active);
+            }
+            else
+            {
+                m_wakelock.reset();
+            }
             Q_EMIT p.enabledChanged(value);
         }
     }
@@ -644,6 +655,9 @@ public:
 
     QDBusObjectPath m_device_path;
 
+    QPowerd::UPtr m_powerd;
+    QPowerd::RequestSPtr m_wakelock;
+
     /**
      * NetworkManager dbus interface proxy we will use to query
      * against NetworkManager. See
@@ -670,6 +684,8 @@ HotspotManager::HotspotManager(const QDBusConnection& connection, QObject *paren
             NM_DBUS_SERVICE, NM_DBUS_PATH, connection);
     d->m_settings = make_unique<OrgFreedesktopNetworkManagerSettingsInterface>(
             NM_DBUS_SERVICE, NM_DBUS_PATH_SETTINGS, connection);
+
+    d->m_powerd = make_unique<QPowerd>(connection);
 
     d->generatePassword();
     d->getWirelessDevice();

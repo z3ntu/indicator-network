@@ -88,27 +88,34 @@ void KillSwitch::setFlightMode(bool flightMode)
 }
 
 void
-KillSwitch::block()
+KillSwitch::setBlock(bool block)
 {
-    if (state() == KillSwitch::State::hard_blocked)
-        throw KillSwitch::exception::HardBlocked();
-
-    try {
-        if (!utils::getOrThrow(d->urfkill->Block(static_cast<uint>(Private::DeviceType::wlan), true)))
-            throw KillSwitch::exception::Failed("Failed to block killswitch");
-    } catch (std::exception &e) {
-        throw KillSwitch::exception::Failed(e.what());
+    if (!block && state() == State::hard_blocked)
+    {
+        qCritical() << __PRETTY_FUNCTION__ << "Killswitch is hard blocked.";
+        return;
     }
-}
 
-void
-KillSwitch::unblock()
-{
-    try {
-        if (!utils::getOrThrow(d->urfkill->Block(static_cast<uint>(Private::DeviceType::wlan), false)))
-            throw KillSwitch::exception::Failed("Failed to unblock killswitch");
-    } catch (std::exception &e) {
-        throw KillSwitch::exception::Failed(e.what());
+    if (!block && state() != State::soft_blocked)
+    {
+        return;
+    }
+
+    if (block && state() != State::unblocked)
+    {
+        return;
+    }
+
+    try
+    {
+        if (!utils::getOrThrow(d->urfkill->Block(static_cast<uint>(Private::DeviceType::wlan), block)))
+        {
+            throw std::runtime_error("Failed to block killswitch");
+        }
+    }
+    catch (std::exception &e)
+    {
+        qCritical() << __PRETTY_FUNCTION__ << e.what();
     }
 }
 

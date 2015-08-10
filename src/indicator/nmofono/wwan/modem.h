@@ -132,10 +132,6 @@ public:
 
     WwanType wwanType() const override;
 
-    void enable() override;
-
-    void disable() override;
-
     Type type() const override;
 
     std::uint32_t characteristics() const override;

@@ -19,6 +19,7 @@
 
 #pragma once
 
+#include <nmofono/hotspot-manager.h>
 #include <nmofono/link.h>
 #include <nmofono/wifi/wifi-link.h>
 #include <nmofono/wwan/modem.h>
@@ -85,6 +86,8 @@ public:
 
     Q_PROPERTY(bool unstoppableOperationHappening READ unstoppableOperationHappening NOTIFY unstoppableOperationHappeningUpdated)
     virtual bool unstoppableOperationHappening() const = 0;
+
+    virtual HotspotManager::SPtr hotspotManager() const = 0;
 
     /// @private
     Q_PROPERTY(QSet<Link::Ptr> links READ links NOTIFY linksUpdated)

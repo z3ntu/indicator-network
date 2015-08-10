@@ -244,6 +244,13 @@ ManagerImpl::ManagerImpl(const QDBusConnection& systemConnection) : d(new Manage
     connect(d->m_killSwitch.get(), &KillSwitch::stateChanged, d.get(), &Private::updateHasWifi);
 
     d->m_hotspotManager = make_shared<HotspotManager>(systemConnection);
+    connect(d->m_hotspotManager.get(), &HotspotManager::enabledChanged, this, &Manager::hotspotEnabledChanged);
+    connect(d->m_hotspotManager.get(), &HotspotManager::ssidChanged, this, &Manager::hotspotSsidChanged);
+    connect(d->m_hotspotManager.get(), &HotspotManager::passwordChanged, this, &Manager::hotspotPasswordChanged);
+    connect(d->m_hotspotManager.get(), &HotspotManager::modeChanged, this, &Manager::hotspotModeChanged);
+    connect(d->m_hotspotManager.get(), &HotspotManager::storedChanged, this, &Manager::hotspotStoredChanged);
+
+    connect(d->m_hotspotManager.get(), &HotspotManager::reportError, this, &Manager::reportError);
 
     connect(d->nm.get(), &OrgFreedesktopNetworkManagerInterface::DeviceAdded, this, &ManagerImpl::device_added);
     QList<QDBusObjectPath> devices(d->nm->GetDevices());
@@ -256,16 +263,7 @@ ManagerImpl::ManagerImpl(const QDBusConnection& systemConnection) : d(new Manage
     connect(d->nm.get(), &OrgFreedesktopNetworkManagerInterface::PropertiesChanged, this, &ManagerImpl::nm_properties_changed);
 
     connect(d->m_killSwitch.get(), &KillSwitch::flightModeChanged, d.get(), &Private::setFlightMode);
-    try
-    {
-        d->setFlightMode(d->m_killSwitch->isFlightMode());
-    }
-    catch (exception const& e)
-    {
-        cerr << __PRETTY_FUNCTION__ << ": " << e.what() << endl;
-        cerr << "Failed to retrieve initial flight mode state, assuming state is false." << endl;
-        d->setFlightMode(false);
-    }
+    d->setFlightMode(d->m_killSwitch->isFlightMode());
 
     /// @todo set by the default connections.
     d->m_characteristics = Link::Characteristics::empty;
@@ -418,48 +416,23 @@ ManagerImpl::wifiEnabled() const
 }
 
 
-bool
+void
 ManagerImpl::setWifiEnabled(bool enabled)
 {
     if (!d->m_hasWifi)
     {
-        return false;
+        return;
     }
 
     if (d->m_wifiEnabled == enabled)
     {
-        return false;
+        return;
     }
 
-    bool success = true;
     d->setUnstoppableOperationHappening(true);
-
-    try
-    {
-        if (enabled)
-        {
-            if (d->m_killSwitch->state() == KillSwitch::State::soft_blocked)
-            {
-                // try to unblock. throws if fails.
-                d->m_killSwitch->unblock();
-            }
-        }
-        else
-        {
-            if (d->m_killSwitch->state() == KillSwitch::State::unblocked) {
-                // block the device. that will disable it also
-                d->m_killSwitch->block();
-            }
-        }
-        d->nm->setWirelessEnabled(enabled);
-    }
-    catch (runtime_error &e)
-    {
-        qWarning() << __PRETTY_FUNCTION__ << ": " << e.what();
-        success = false;
-    }
+    d->m_killSwitch->setBlock(!enabled);
+    d->nm->setWirelessEnabled(enabled);
     d->setUnstoppableOperationHappening(false);
-    return success;
 }
 
 bool
@@ -557,9 +530,60 @@ ManagerImpl::modemLinks() const
     return d->m_ofonoLinks.values().toSet();
 }
 
-HotspotManager::SPtr ManagerImpl::hotspotManager() const
+bool
+ManagerImpl::hotspotEnabled() const
 {
-    return d->m_hotspotManager;
+    return d->m_hotspotManager->enabled();
+}
+
+bool
+ManagerImpl::hotspotStored() const
+{
+    return d->m_hotspotManager->stored();
+}
+
+QByteArray
+ManagerImpl::hotspotSsid() const
+{
+    return d->m_hotspotManager->ssid();
+}
+
+QString
+ManagerImpl::hotspotPassword() const
+{
+    return d->m_hotspotManager->password();
+}
+
+QString
+ManagerImpl::hotspotMode() const
+{
+    return d->m_hotspotManager->mode();
+}
+
+void
+ManagerImpl::setHotspotEnabled(bool enabled)
+{
+    d->setUnstoppableOperationHappening(true);
+    d->m_hotspotManager->setEnabled(enabled);
+    d->setUnstoppableOperationHappening(false);
+}
+
+void
+ManagerImpl::setHotspotSsid(const QByteArray& ssid)
+{
+    d->m_hotspotManager->setSsid(ssid);
+}
+
+void
+ManagerImpl::setHotspotPassword(const QString& password)
+{
+    d->m_hotspotManager->setPassword(password);
+}
+
+void
+ManagerImpl::setHotspotMode(const QString& mode)
+{
+    d->m_hotspotManager->setMode(mode);
 }
 
 }

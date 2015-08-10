@@ -29,6 +29,7 @@ set_source_files_properties(
 )
 
 set_source_files_properties(
+    "${DATA_DIR}/nm-settings.xml"
     "${DATA_DIR}/nm-settings-connection.xml"
     "${DATA_DIR}/nm-manager.xml"
     "${DATA_DIR}/org.freedesktop.Notifications.xml"
@@ -95,6 +96,18 @@ qt5_add_dbus_interface(
     CONNECTIVITY_BACKEND_SRC
     "${DATA_DIR}/nm-agent-manager.xml"
     AgentManagerInterface
+)
+
+qt5_add_dbus_interface(
+    CONNECTIVITY_BACKEND_SRC
+    "${DATA_DIR}/nm-settings-connection.xml"
+    NetworkManagerSettingsConnectionInterface
+)
+
+qt5_add_dbus_interface(
+    CONNECTIVITY_BACKEND_SRC
+    "${DATA_DIR}/nm-settings.xml"
+    NetworkManagerSettingsInterface
 )
 
 qt5_add_dbus_interface(

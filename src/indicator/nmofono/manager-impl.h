@@ -66,6 +66,8 @@ public:
     void unlockAllModems() override;
     void unlockModemByName(const QString &name) override;
 
+    HotspotManager::SPtr hotspotManager() const;
+
 private Q_SLOTS:
     void device_added(const QDBusObjectPath &path);
     void device_removed(const QDBusObjectPath &path);

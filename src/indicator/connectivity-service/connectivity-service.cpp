@@ -49,7 +49,8 @@ public:
     {
     }
 
-    void notifyPropertyChanged( const QString& path,
+    void notifyPropertyChanged( const QObject& o,
+                                const QString& path,
                                 const QString& interface,
                                 const QStringList& propertyNames )
     {
@@ -61,7 +62,7 @@ public:
         QVariantMap changedProps;
         for(const auto& propertyName: propertyNames)
         {
-            changedProps.insert(propertyName, p.property(qPrintable(propertyName)));
+            changedProps.insert(propertyName, o.property(qPrintable(propertyName)));
         }
         signal << changedProps;
         signal << QStringList();
@@ -71,23 +72,67 @@ public:
 public Q_SLOTS:
     void flightModeUpdated()
     {
-        notifyPropertyChanged(DBusTypes::SERVICE_PATH,
+        notifyPropertyChanged(p,
+                              DBusTypes::SERVICE_PATH,
                               DBusTypes::SERVICE_INTERFACE,
                               { "FlightMode" });
     }
 
     void wifiEnabledUpdated()
     {
-        notifyPropertyChanged(DBusTypes::SERVICE_PATH,
+        notifyPropertyChanged(p,
+                              DBusTypes::SERVICE_PATH,
                               DBusTypes::SERVICE_INTERFACE,
                               { "WifiEnabled" });
     }
 
     void unstoppableOperationHappeningUpdated()
     {
-        notifyPropertyChanged(DBusTypes::SERVICE_PATH,
+        notifyPropertyChanged(p,
+                              DBusTypes::SERVICE_PATH,
                               DBusTypes::SERVICE_INTERFACE,
                               { "UnstoppableOperationHappening" });
+    }
+
+    void hotspotSsidUpdated()
+    {
+        notifyPropertyChanged(p,
+                              DBusTypes::SERVICE_PATH,
+                              DBusTypes::SERVICE_INTERFACE,
+                              { "HotspotSsid" });
+    }
+
+    void hotspotEnabledUpdated()
+    {
+        notifyPropertyChanged(p,
+                              DBusTypes::SERVICE_PATH,
+                              DBusTypes::SERVICE_INTERFACE,
+                              { "HotspotEnabled" });
+    }
+
+    void hotspotPasswordUpdated()
+    {
+        // Note that this is on the private object
+        notifyPropertyChanged(*m_privateService,
+                              DBusTypes::PRIVATE_PATH,
+                              DBusTypes::PRIVATE_INTERFACE,
+                              { "HotspotPassword" });
+    }
+
+    void hotspotModeUpdated()
+    {
+        notifyPropertyChanged(p,
+                              DBusTypes::SERVICE_PATH,
+                              DBusTypes::SERVICE_INTERFACE,
+                              { "HotspotMode" });
+    }
+
+    void hotspotStoredUpdated()
+    {
+        notifyPropertyChanged(p,
+                              DBusTypes::SERVICE_PATH,
+                              DBusTypes::SERVICE_INTERFACE,
+                              { "HotspotStored" });
     }
 
     void updateNetworkingStatus()
@@ -129,7 +174,8 @@ public Q_SLOTS:
 
         if (!changed.empty())
         {
-            notifyPropertyChanged(DBusTypes::SERVICE_PATH,
+            notifyPropertyChanged(p,
+                                  DBusTypes::SERVICE_PATH,
                                   DBusTypes::SERVICE_INTERFACE,
                                   changed);
         }
@@ -150,6 +196,15 @@ ConnectivityService::ConnectivityService(nmofono::Manager::Ptr manager, const QD
     connect(d->m_manager.get(), &Manager::flightModeUpdated, d.get(), &Private::flightModeUpdated);
     connect(d->m_manager.get(), &Manager::wifiEnabledUpdated, d.get(), &Private::wifiEnabledUpdated);
     connect(d->m_manager.get(), &Manager::unstoppableOperationHappeningUpdated, d.get(), &Private::unstoppableOperationHappeningUpdated);
+
+    auto hotspotManager = d->m_manager->hotspotManager();
+    connect(hotspotManager.get(), &HotspotManager::enabledChanged, d.get(), &Private::hotspotEnabledUpdated);
+    connect(hotspotManager.get(), &HotspotManager::ssidChanged, d.get(), &Private::hotspotSsidUpdated);
+    connect(hotspotManager.get(), &HotspotManager::passwordChanged, d.get(), &Private::hotspotPasswordUpdated);
+    connect(hotspotManager.get(), &HotspotManager::modeChanged, d.get(), &Private::hotspotModeUpdated);
+    connect(hotspotManager.get(), &HotspotManager::storedChanged, d.get(), &Private::hotspotStoredUpdated);
+
+    connect(hotspotManager.get(), &HotspotManager::reportError, d->m_privateService.get(), &PrivateService::ReportError);
 
     d->updateNetworkingStatus();
 
@@ -200,6 +255,26 @@ bool ConnectivityService::unstoppableOperationHappening() const
     return d->m_manager->unstoppableOperationHappening();
 }
 
+bool ConnectivityService::hotspotEnabled() const
+{
+    return d->m_manager->hotspotManager()->enabled();
+}
+
+QByteArray ConnectivityService::hotspotSsid() const
+{
+    return d->m_manager->hotspotManager()->ssid();
+}
+
+QString ConnectivityService::hotspotMode() const
+{
+    return d->m_manager->hotspotManager()->mode();
+}
+
+bool ConnectivityService::hotspotStored() const
+{
+    return d->m_manager->hotspotManager()->stored();
+}
+
 PrivateService::PrivateService(ConnectivityService& parent) :
         p(parent)
 {
@@ -225,6 +300,31 @@ void PrivateService::SetFlightMode(bool enabled)
 void PrivateService::SetWifiEnabled(bool enabled)
 {
     p.d->m_manager->setWifiEnabled(enabled);
+}
+
+void PrivateService::SetHotspotEnabled(bool enabled)
+{
+    p.d->m_manager->hotspotManager()->setEnabled(enabled);
+}
+
+void PrivateService::SetHotspotSsid(const QByteArray &ssid)
+{
+    p.d->m_manager->hotspotManager()->setSsid(ssid);
+}
+
+void PrivateService::SetHotspotPassword(const QString &password)
+{
+    p.d->m_manager->hotspotManager()->setPassword(password);
+}
+
+void PrivateService::SetHotspotMode(const QString &mode)
+{
+    p.d->m_manager->hotspotManager()->setMode(mode);
+}
+
+QString PrivateService::hotspotPassword() const
+{
+    return p.d->m_manager->hotspotManager()->password();
 }
 
 }

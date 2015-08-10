@@ -20,8 +20,11 @@
 
 #include <nmofono/manager-impl.h>
 #include <nmofono/wifi/wifi-link-impl.h>
-#include <NetworkManagerInterface.h>
+#include <NetworkManagerActiveConnectionInterface.h>
 #include <NetworkManagerDeviceInterface.h>
+#include <NetworkManagerInterface.h>
+#include <NetworkManagerSettingsInterface.h>
+#include <NetworkManagerSettingsConnectionInterface.h>
 
 #define slots
 #include <qofono-qt5/qofonomanager.h>
@@ -66,6 +69,8 @@ public:
 
     SimUnlockDialog::Ptr m_unlockDialog;
     QList<wwan::Modem::Ptr> m_pendingUnlocks;
+
+    HotspotManager::SPtr m_hotspotManager;
 
     Private(Manager& parent) :
         p(parent)
@@ -237,6 +242,8 @@ ManagerImpl::ManagerImpl(const QDBusConnection& systemConnection) : d(new Manage
 
     d->m_killSwitch = make_shared<KillSwitch>(systemConnection);
     connect(d->m_killSwitch.get(), &KillSwitch::stateChanged, d.get(), &Private::updateHasWifi);
+
+    d->m_hotspotManager = make_shared<HotspotManager>(systemConnection);
 
     connect(d->nm.get(), &OrgFreedesktopNetworkManagerInterface::DeviceAdded, this, &ManagerImpl::device_added);
     QList<QDBusObjectPath> devices(d->nm->GetDevices());
@@ -548,6 +555,11 @@ QSet<wwan::Modem::Ptr>
 ManagerImpl::modemLinks() const
 {
     return d->m_ofonoLinks.values().toSet();
+}
+
+HotspotManager::SPtr ManagerImpl::hotspotManager() const
+{
+    return d->m_hotspotManager;
 }
 
 }

@@ -75,7 +75,10 @@ public Q_SLOTS:
         notifyPropertyChanged(p,
                               DBusTypes::SERVICE_PATH,
                               DBusTypes::SERVICE_INTERFACE,
-                              { "FlightMode" });
+                              {
+                                  "FlightMode",
+                                  "HotspotSwitchEnabled",
+                              });
     }
 
     void wifiEnabledUpdated()
@@ -83,7 +86,10 @@ public Q_SLOTS:
         notifyPropertyChanged(p,
                               DBusTypes::SERVICE_PATH,
                               DBusTypes::SERVICE_INTERFACE,
-                              { "WifiEnabled" });
+                              {
+                                  "WifiEnabled",
+                                  "HotspotSwitchEnabled"
+                              });
     }
 
     void unstoppableOperationHappeningUpdated()
@@ -91,7 +97,11 @@ public Q_SLOTS:
         notifyPropertyChanged(p,
                               DBusTypes::SERVICE_PATH,
                               DBusTypes::SERVICE_INTERFACE,
-                              { "UnstoppableOperationHappening" });
+                              {
+                                   "FlightModeSwitchEnabled",
+                                   "WifiSwitchEnabled",
+                                   "HotspotSwitchEnabled"
+                              });
     }
 
     void hotspotSsidUpdated()
@@ -249,9 +259,21 @@ bool ConnectivityService::flightMode() const
     return (d->m_manager->flightMode() == Manager::FlightModeStatus::on);
 }
 
-bool ConnectivityService::unstoppableOperationHappening() const
+bool ConnectivityService::flightModeSwitchEnabled() const
 {
-    return d->m_manager->unstoppableOperationHappening();
+    return !d->m_manager->unstoppableOperationHappening();
+}
+
+bool ConnectivityService::wifiSwitchEnabled() const
+{
+    return !d->m_manager->unstoppableOperationHappening();
+}
+
+bool ConnectivityService::hotspotSwitchEnabled() const
+{
+    return !d->m_manager->unstoppableOperationHappening()
+            && (d->m_manager->flightMode() == Manager::FlightModeStatus::off)
+            && (d->m_manager->wifiEnabled());
 }
 
 bool ConnectivityService::hotspotEnabled() const

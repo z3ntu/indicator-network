@@ -294,6 +294,11 @@ ManagerImpl::setWifiEnabled(bool enabled)
 
     d->setUnstoppableOperationHappening(true);
     d->m_killSwitch->setBlock(!enabled);
+    // Disable hotspot before disabling WiFi
+    if (!enabled)
+    {
+        d->m_hotspotManager->setEnabled(false);
+    }
     d->nm->setWirelessEnabled(enabled);
     d->setUnstoppableOperationHappening(false);
 }
@@ -307,6 +312,18 @@ ManagerImpl::hotspotEnabled() const
 void
 ManagerImpl::setHotspotEnabled(bool enabled)
 {
+    if (enabled && (d->m_flightMode == Manager::FlightModeStatus::on))
+    {
+        qWarning() << __PRETTY_FUNCTION__ << "Cannot set hotspot enabled when flight mode is on";
+        return;
+    }
+
+    if (enabled && !d->m_wifiEnabled)
+    {
+        qWarning() << __PRETTY_FUNCTION__ << "Cannot set hotspot enabled when WiFi is disabled";
+        return;
+    }
+
     d->setUnstoppableOperationHappening(true);
     d->m_hotspotManager->setEnabled(enabled);
     d->setUnstoppableOperationHappening(false);
@@ -321,7 +338,11 @@ ManagerImpl::setFlightMode(bool enabled)
     }
 
     d->setUnstoppableOperationHappening(true);
-
+    // Disable hotspot before enabling flight mode
+    if (enabled)
+    {
+        d->m_hotspotManager->setEnabled(false);
+    }
     if (!d->m_killSwitch->flightMode(enabled))
     {
         qWarning() << "Failed to change flightmode.";

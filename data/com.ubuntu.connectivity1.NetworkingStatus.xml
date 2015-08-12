@@ -14,7 +14,9 @@
         <property name="HotspotMode" type="s" access="read"/>
         <property name="HotspotStored" type="b" access="read"/>
 
-        <property name="UnstoppableOperationHappening" type="b" access="read"/>
+        <property name="FlightModeSwitchEnabled" type="b" access="read"/>
+        <property name="WifiSwitchEnabled" type="b" access="read"/>
+        <property name="HotspotSwitchEnabled" type="b" access="read"/>
 
     </interface>
 </node>

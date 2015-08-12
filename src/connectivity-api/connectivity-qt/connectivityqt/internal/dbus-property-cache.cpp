@@ -103,8 +103,11 @@ public Q_SLOTS:
         while (it.hasNext())
         {
             it.next();
-            m_propertyCache[it.key()] = it.value();
-            Q_EMIT p.propertyChanged(it.key(), it.value());
+            if (m_propertyCache[it.key()] != it.value())
+            {
+                m_propertyCache[it.key()] = it.value();
+                Q_EMIT p.propertyChanged(it.key(), it.value());
+            }
         }
 
         refreshProperties(invalidatedProperties);

@@ -19,8 +19,11 @@
 #include <agent/PasswordMenu.h>
 #include <gio/gio.h>
 
+#include <iostream>
 #include <QString>
 #include <QDebug>
+
+using namespace std;
 
 namespace agent
 {
@@ -51,7 +54,7 @@ public:
 	void passwordChanged(GVariant *variant) {
 		m_password = QString::fromUtf8(g_variant_get_string(variant, 0));
 		if (qEnvironmentVariableIsSet("SECRET_AGENT_DEBUG_PASSWORD")) {
-			qDebug() << "Password received";
+			cout << "Password received" << endl;
 		}
 	}
 

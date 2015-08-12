@@ -18,14 +18,17 @@
  */
 
 #include "notification.h"
+#include <NotificationsInterface.h>
 
-#include <libnotify/notify.h>
 #include <QDebug>
 
 using namespace notify;
+using namespace std;
 
-class notify::Notification::Private
+class notify::Notification::Private: public QObject
 {
+    Q_OBJECT
+
 public:
     Private(Notification& parent) :
         p(parent)
@@ -34,76 +37,135 @@ public:
 
     Notification& p;
 
+    QString m_appName;
     QString m_summary;
     QString m_body;
     QString m_icon;
+    QStringList m_actions;
+    QVariantMap m_hints;
+    int m_expireTimeout = 0;
+    uint m_id = 0;
 
-    std::unique_ptr<NotifyNotification, GObjectDeleter> m_notification;
+    shared_ptr<OrgFreedesktopNotificationsInterface> m_notificationsInterface;
 
-    static void closed_cb(NotifyNotification *,
-                          gpointer user_data)
+    bool m_open = false;
+    bool m_dirty = false;
+
+public Q_SLOTS:
+    void notificationClosed(uint id, uint reason)
     {
-        Private *that = static_cast<Private *>(user_data);
-        Q_EMIT that->p.closed();
+        if (id == m_id)
+        {
+            m_open = false;
+            Q_EMIT p.closed(reason);
+        }
     }
 
-    gulong disconnectId = 0;
+    void actionInvoked(uint id, const QString& name)
+    {
+        if (id == m_id)
+        {
+            Q_EMIT p.actionInvoked(name);
+        }
+    }
 };
 
-Notification::Notification(const QString &summary,
-                           const QString &body,
-                           const QString &icon)
+Notification::Notification(
+        const QString& appName, const QString &summary, const QString &body,
+        const QString &icon, const QStringList &actions,
+        const QVariantMap &hints, int expireTimeout,
+        shared_ptr<OrgFreedesktopNotificationsInterface> notificationsInterface)
 {
     d.reset(new Private(*this));
+    d->m_appName = appName;
     d->m_summary = summary;
     d->m_body = body;
     d->m_icon = icon;
+    d->m_actions = actions;
+    d->m_hints = hints;
+    d->m_expireTimeout = expireTimeout;
+    d->m_notificationsInterface = notificationsInterface;
 
-    d->m_notification.reset(notify_notification_new(summary.toUtf8().constData(), body.toUtf8().constData(), icon.toUtf8().constData()));
-    d->disconnectId = g_signal_connect(d->m_notification.get(), "closed", G_CALLBACK(Private::closed_cb), d.get());
+    connect(d->m_notificationsInterface.get(), &OrgFreedesktopNotificationsInterface::NotificationClosed, d.get(), &Private::notificationClosed);
+
+    connect(d->m_notificationsInterface.get(), &OrgFreedesktopNotificationsInterface::ActionInvoked, d.get(), &Private::actionInvoked);
 }
 
 Notification::~Notification()
 {
-    g_signal_handler_disconnect(d->m_notification.get(), d->disconnectId);
-
-// TODO Uncomment this when the notification service is more robust
-//    GError* error = nullptr;
-//    if (notify_notification_close(d->m_notification.get(), &error) == FALSE)
-//    {
-//        qWarning() << __PRETTY_FUNCTION__ << error->message;
-//        g_error_free(error);
-//    }
+    if (d->m_id > 0 && d->m_open)
+    {
+        auto reply = d->m_notificationsInterface->CloseNotification(d->m_id);
+        reply.waitForFinished();
+        if (reply.isError())
+        {
+            qCritical() << __PRETTY_FUNCTION__ << reply.error().message();
+        }
+    }
 }
 
 QString
-Notification::summary()
+Notification::summary() const
 {
     return d->m_summary;
 }
 
 QString
-Notification::body()
+Notification::body() const
 {
     return d->m_body;
 }
 
 QString
-Notification::icon()
+Notification::icon() const
 {
     return d->m_icon;
 }
 
-void
-Notification::setHint(const QString &key, Variant value)
+QStringList
+Notification::actions() const
 {
-    notify_notification_set_hint(d->m_notification.get(), key.toUtf8().constData(), value);
+    return d->m_actions;
+}
+
+QVariantMap
+Notification::hints() const
+{
+    return d->m_hints;
 }
 
 void
-Notification::setHintString(const QString &key, const QString &value)
+Notification::addHint(const QString &key, const QVariant& value)
 {
-    notify_notification_set_hint_string(d->m_notification.get(), key.toUtf8().constData(), value.toUtf8().constData());
+    d->m_hints[key] = value;
+    d->m_dirty = true;
+    Q_EMIT hintsUpdated(d->m_hints);
+}
+
+void
+Notification::setHints(const QVariantMap& hints)
+{
+    if (d->m_hints == hints)
+    {
+        return;
+    }
+
+    d->m_hints = hints;
+    d->m_dirty = true;
+    Q_EMIT hintsUpdated(d->m_hints);
+}
+
+void
+Notification::setActions(const QStringList& actions)
+{
+    if (d->m_actions == actions)
+    {
+        return;
+    }
+
+    d->m_actions = actions;
+    d->m_dirty = true;
+    Q_EMIT actionsUpdated(d->m_actions);
 }
 
 void
@@ -115,7 +177,7 @@ Notification::setSummary(const QString& summary)
     }
 
     d->m_summary = summary;
-    g_object_set(d->m_notification.get(), "summary", d->m_summary.toUtf8().constData(), nullptr);
+    d->m_dirty = true;
     Q_EMIT summaryUpdated(d->m_summary);
 }
 
@@ -128,7 +190,7 @@ Notification::setBody(const QString& body)
     }
 
     d->m_body = body;
-    g_object_set(d->m_notification.get(), "body", d->m_body.toUtf8().constData(), nullptr);
+    d->m_dirty = true;
     Q_EMIT bodyUpdated(d->m_body);
 }
 
@@ -141,35 +203,50 @@ Notification::setIcon(const QString& icon)
     }
 
     d->m_icon = icon;
-    g_object_set(d->m_notification.get(), "icon", d->m_icon.toUtf8().constData(), nullptr);
+    d->m_dirty = true;
     Q_EMIT iconUpdated(d->m_icon);
-}
-
-void
-Notification::update()
-{
-    notify_notification_update(d->m_notification.get(), d->m_summary.toUtf8().constData(),
-                               d->m_body.toUtf8().constData(), d->m_icon.toUtf8().constData());
 }
 
 void
 Notification::show()
 {
-    GError *error = nullptr;
-    notify_notification_show(d->m_notification.get(), &error);
-    if (error) {
-        qCritical() << __PRETTY_FUNCTION__ << error->message;
-        g_error_free(error);
+    if (d->m_dirty || !d->m_open)
+    {
+        auto reply = d->m_notificationsInterface->Notify(d->m_appName, d->m_id,
+                                                     d->m_icon, d->m_summary,
+                                                     d->m_body, d->m_actions,
+                                                     d->m_hints,
+                                                     d->m_expireTimeout);
+        reply.waitForFinished();
+        if (reply.isError())
+        {
+            qCritical() << __PRETTY_FUNCTION__ << reply.error().message();
+        }
+        else
+        {
+            d->m_id = reply;
+            d->m_dirty = false;
+            d->m_open = true;
+        }
     }
 }
 
 void
 Notification::close()
 {
-    GError *error = nullptr;
-    notify_notification_close(d->m_notification.get(), &error);
-    if (error) {
-        qCritical() << __PRETTY_FUNCTION__ << error->message;
-        g_error_free(error);
+    if (d->m_id > 0)
+    {
+        auto reply = d->m_notificationsInterface->CloseNotification(d->m_id);
+        reply.waitForFinished();
+        if (reply.isError())
+        {
+            qCritical() << __PRETTY_FUNCTION__ << reply.error().message();
+        }
+        else
+        {
+            d->m_open = false;
+        }
     }
 }
+
+#include "notification.moc"

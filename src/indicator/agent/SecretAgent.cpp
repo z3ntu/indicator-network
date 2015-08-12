@@ -19,7 +19,7 @@
 #include <agent/SecretAgent.h>
 #include <agent/SecretRequest.h>
 #include <AgentManagerInterface.h>
-#include <NotificationsInterface.h>
+#include <notify-cpp/notification-manager.h>
 #include <SecretAgentAdaptor.h>
 
 #include <NetworkManager.h>
@@ -34,13 +34,13 @@ class SecretAgent::Priv : public QObject {
 	Q_OBJECT
 
 public:
-	Priv(const QDBusConnection &systemConnection,
+	Priv(notify::NotificationManager::SPtr notificationManager, const QDBusConnection &systemConnection,
 			const QDBusConnection &sessionConnection) :
 			m_systemConnection(systemConnection),
 			m_sessionConnection(sessionConnection),
 			m_managerWatcher(NM_DBUS_SERVICE, m_systemConnection),
 			m_agentManager(NM_DBUS_SERVICE, NM_DBUS_PATH_AGENT_MANAGER, m_systemConnection),
-			m_notifications("org.freedesktop.Notifications", "/org/freedesktop/Notifications", m_sessionConnection),
+			m_notifications(notificationManager),
 			m_request(nullptr) {
 	}
 
@@ -64,14 +64,15 @@ public:
 
 	OrgFreedesktopNetworkManagerAgentManagerInterface m_agentManager;
 
-	OrgFreedesktopNotificationsInterface m_notifications;
+	notify::NotificationManager::SPtr m_notifications;
 
 	std::shared_ptr<SecretRequest> m_request;
 };
 
-SecretAgent::SecretAgent(const QDBusConnection &systemConnection,
+SecretAgent::SecretAgent(notify::NotificationManager::SPtr notificationManager,
+        const QDBusConnection &systemConnection,
 		const QDBusConnection &sessionConnection, QObject *parent) :
-		QObject(parent), d(new Priv(systemConnection, sessionConnection))
+		QObject(parent), d(new Priv(notificationManager, systemConnection, sessionConnection))
 	{
 	// Memory managed by Qt
 	new SecretAgentAdaptor(this);
@@ -182,7 +183,7 @@ void SecretAgent::SaveSecrets(const QVariantDictMap &connection,
 	Q_UNUSED(connectionPath);
 }
 
-OrgFreedesktopNotificationsInterface & SecretAgent::notifications() {
+notify::NotificationManager::SPtr SecretAgent::notifications() {
 	return d->m_notifications;
 }
 

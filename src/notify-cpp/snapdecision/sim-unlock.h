@@ -24,6 +24,8 @@
 #include <QObject>
 #include <QString>
 
+#include <notify-cpp/notification-manager.h>
+
 namespace notify {
 namespace snapdecision {
 
@@ -38,7 +40,8 @@ public:
 
     typedef std::shared_ptr<SimUnlock> Ptr;
 
-    explicit SimUnlock(const QString &title = "",
+    explicit SimUnlock(NotificationManager::SPtr notificationManager,
+              const QString &title = "",
               const QString &body = "",
               std::pair<std::uint8_t, std::uint8_t> pinMinMax = {0, 0});
     ~SimUnlock();
@@ -83,8 +86,6 @@ Q_SIGNALS:
     void pinEntered(const QString&);
 
     void cancelled();
-
-    void closed();
 
     void titleUpdated(const QString&);
 

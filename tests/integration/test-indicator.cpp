@@ -2077,11 +2077,11 @@ TEST_F(TestIndicator, UnlockSIM_MenuContents)
     // set sim locked
     setSimManagerProperty(firstModem(), "PinRequired", "pin");
 
-    // start the indicator
-    ASSERT_NO_THROW(startIndicator());
-
     QSignalSpy notificationsSpy(&notificationsMockInterface(),
                                SIGNAL(MethodCalled(const QString &, const QVariantList &)));
+
+    // start the indicator
+    ASSERT_NO_THROW(startIndicator());
 
     // check indicator is a locked sim card and a 0-bar wifi icon.
     // check sim status shows “SIM Locked”, with locked sim card icon and a “Unlock SIM” button beneath.
@@ -2100,10 +2100,9 @@ TEST_F(TestIndicator, UnlockSIM_MenuContents)
         ).match());
 
     // check that the "GetServerInformation" method was called
-    // check that the "Notify" method was called twice
     // check method arguments are correct
-    std::string busName;
-    WAIT_FOR_SIGNALS(notificationsSpy, 3);
+    string busName;
+    WAIT_FOR_SIGNALS(notificationsSpy, 2);
     {
         QVariantList const& call(notificationsSpy.at(0));
         EXPECT_EQ("GetServerInformation", call.at(0));
@@ -2147,45 +2146,9 @@ TEST_F(TestIndicator, UnlockSIM_MenuContents)
         ASSERT_TRUE(actions.contains("notifications"));
         EXPECT_EQ("/com/canonical/indicator/network/unlocksim0", actions["notifications"]);
     }
-    {
-        QVariantList const& call(notificationsSpy.at(2));
-        EXPECT_EQ("Notify", call.at(0));
-        QVariantList const& args(call.at(1).toList());
-        ASSERT_EQ(8, args.size());
-        EXPECT_EQ("indicator-network", args.at(0));
-        EXPECT_EQ(1, args.at(1));
-        EXPECT_EQ("", args.at(2));
-        EXPECT_EQ("Enter SIM PIN", args.at(3));
-        EXPECT_EQ("3 attempts remaining", args.at(4));
-        EXPECT_EQ(QStringList(), args.at(5));
-        EXPECT_EQ(-1, args.at(7));
-
-        QVariantMap hints;
-        ASSERT_TRUE(qDBusArgumentToMap(args.at(6), hints));
-        ASSERT_EQ(3, hints.size());
-        ASSERT_TRUE(hints.contains("x-canonical-private-menu-model"));
-        ASSERT_TRUE(hints.contains("x-canonical-snap-decisions"));
-        ASSERT_TRUE(hints.contains("x-canonical-snap-decisions-timeout"));
-        EXPECT_EQ(true, hints["x-canonical-snap-decisions"]);
-        EXPECT_EQ(numeric_limits<int32_t>::max(), hints["x-canonical-snap-decisions-timeout"]);
-
-        QVariantMap menuInfo;
-        ASSERT_TRUE(qDBusArgumentToMap(hints["x-canonical-private-menu-model"], menuInfo));
-        ASSERT_EQ(3, menuInfo.size());
-        ASSERT_TRUE(menuInfo.contains("actions"));
-        ASSERT_TRUE(menuInfo.contains("busName"));
-        ASSERT_TRUE(menuInfo.contains("menuPath"));
-        EXPECT_EQ(busName, menuInfo["busName"].toString().toStdString());
-        EXPECT_EQ("/com/canonical/indicator/network/unlocksim0", menuInfo["menuPath"]);
-
-        QVariantMap actions;
-        ASSERT_TRUE(qDBusArgumentToMap(menuInfo["actions"], actions));
-        ASSERT_EQ(1, actions.size());
-        ASSERT_TRUE(actions.contains("notifications"));
-        EXPECT_EQ("/com/canonical/indicator/network/unlocksim0", actions["notifications"]);
-    }
     notificationsSpy.clear();
 
+    ASSERT_FALSE(busName.empty());
     // check contents of x-canonical-private-menu-model
     EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
         .item(mh::MenuItemMatcher()
@@ -2205,11 +2168,11 @@ TEST_F(TestIndicator, UnlockSIM_Cancel)
     // set sim locked
     setSimManagerProperty(firstModem(), "PinRequired", "pin");
 
-    // start the indicator
-    ASSERT_NO_THROW(startIndicator());
-
     QSignalSpy notificationsSpy(&notificationsMockInterface(),
                                SIGNAL(MethodCalled(const QString &, const QVariantList &)));
+
+    // start the indicator
+    ASSERT_NO_THROW(startIndicator());
 
     // check indicator is a locked sim card and a 0-bar wifi icon.
     // check sim status shows “SIM Locked”, with locked sim card icon and a “Unlock SIM” button beneath.
@@ -2228,15 +2191,13 @@ TEST_F(TestIndicator, UnlockSIM_Cancel)
         ).match());
 
     // check that the "GetServerInformation" method was called
-    // check that the "Notify" method was called twice
     // check method arguments are correct
     std::string busName;
-    WAIT_FOR_SIGNALS(notificationsSpy, 3);
+    WAIT_FOR_SIGNALS(notificationsSpy, 2);
     CHECK_METHOD_CALL(notificationsSpy, 0, "GetServerInformation", /* no_args */);
     CHECK_METHOD_CALL(notificationsSpy, 1, "Notify", {1, 0}, {3, "Enter SIM PIN"}, {4, "3 attempts remaining"});
-    CHECK_METHOD_CALL(notificationsSpy, 2, "Notify", {1, 1}, {3, "Enter SIM PIN"}, {4, "3 attempts remaining"});
     {
-        QVariantList const& call(notificationsSpy.at(2));
+        QVariantList const& call(notificationsSpy.at(1));
         QVariantList const& args(call.at(1).toList());
         QVariantMap hints;
         QVariantMap menuInfo;
@@ -2284,11 +2245,10 @@ TEST_F(TestIndicator, UnlockSIM_Cancel)
             )
         ).match());
 
-    // check that the "Notify" method was called twice
-    // check method arguments are correct (new notification index should be 2)
-    WAIT_FOR_SIGNALS(notificationsSpy, 2);
-    CHECK_METHOD_CALL(notificationsSpy, 0, "Notify", {1, 0});
-    CHECK_METHOD_CALL(notificationsSpy, 1, "Notify", {1, 2});
+    // check that the "Notify" method was called
+    // check method arguments are correct (we re-use the same notification and reopen it)
+    WAIT_FOR_SIGNALS(notificationsSpy, 1);
+    CHECK_METHOD_CALL(notificationsSpy, 0, "Notify", {1, 1});
     notificationsSpy.clear();
 
     // cancel the notification again
@@ -2302,15 +2262,144 @@ TEST_F(TestIndicator, UnlockSIM_Cancel)
             .activate(shared_ptr<GVariant>(g_variant_new_boolean(false), &mh::gvariant_deleter))
         ).match());
 
-    // check that the "NotificationClosed" signal was emitted (new notification index should be 2)
+    // check that the "NotificationClosed" signal was emitted (new notification index should be 1)
     WAIT_FOR_SIGNALS(notificationClosedSpy, 1);
-    EXPECT_EQ(notificationClosedSpy.first(), QVariantList() << QVariant(2) << QVariant(1));
+    EXPECT_EQ(notificationClosedSpy.first(), QVariantList() << QVariant(1) << QVariant(1));
     notificationClosedSpy.clear();
 
     // check that the "CloseNotification" method was called
-    // check method arguments are correct (new notification index should be 2)
+    // check method arguments are correct (still using the same notification: 1)
     WAIT_FOR_SIGNALS(notificationsSpy, 1);
-    CHECK_METHOD_CALL(notificationsSpy, 0, "CloseNotification", {0, "2"});
+    CHECK_METHOD_CALL(notificationsSpy, 0, "CloseNotification", {0, "1"});
+    notificationsSpy.clear();
+}
+
+TEST_F(TestIndicator, UnlockSIM_CancelFirstUnlockSecond)
+{
+    // set flight mode off, wifi off, and cell data off, and sim in
+    setGlobalConnectedState(NM_STATE_DISCONNECTED);
+
+    // set sim locked
+    setSimManagerProperty(firstModem(), "PinRequired", "pin");
+
+    // Create a second locked modem
+    auto secondModem = createModem("ril_1");
+    setSimManagerProperty(secondModem, "PinRequired", "pin");
+
+    QSignalSpy notificationsSpy(&notificationsMockInterface(),
+                               SIGNAL(MethodCalled(const QString &, const QVariantList &)));
+
+    QSignalSpy secondModemMockInterfaceSpy(&modemMockInterface(secondModem),
+                               SIGNAL(MethodCalled(const QString &, const QVariantList &)));
+
+    // start the indicator
+    ASSERT_NO_THROW(startIndicator());
+
+    // check indicator is a locked sim card and a 0-bar wifi icon.
+    // check sim status shows “SIM Locked”, with locked sim card icon and a “Unlock SIM” button beneath.
+    // check that the “Unlock SIM” button has the correct action name.
+    // unlock first SIM
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .item(flightModeSwitch())
+            .item(mh::MenuItemMatcher()
+                .item(modemInfo("SIM 1", "SIM Locked", "simcard-locked", true)
+                      .pass_through_activate("x-canonical-modem-locked-action")
+                )
+                .item(modemInfo("SIM 2", "SIM Locked", "simcard-locked", true))
+                .item(cellularSettings())
+            )
+        ).match());
+
+    // check that the "GetServerInformation" method was called
+    // check method arguments are correct
+    std::string busName;
+    WAIT_FOR_SIGNALS(notificationsSpy, 2);
+    CHECK_METHOD_CALL(notificationsSpy, 0, "GetServerInformation", /* no_args */);
+    CHECK_METHOD_CALL(notificationsSpy, 1, "Notify", {1, 0}, {3, "Enter SIM 1 PIN"}, {4, "3 attempts remaining"});
+    {
+        QVariantList const& call(notificationsSpy.at(1));
+        QVariantList const& args(call.at(1).toList());
+        QVariantMap hints;
+        QVariantMap menuInfo;
+        ASSERT_TRUE(qDBusArgumentToMap(args.at(6), hints));
+        ASSERT_TRUE(qDBusArgumentToMap(hints["x-canonical-private-menu-model"], menuInfo));
+        busName = menuInfo["busName"].toString().toStdString();
+    }
+    notificationsSpy.clear();
+
+    // cancel the notification
+    QSignalSpy notificationClosedSpy(&dbusMock.notificationDaemonInterface(),
+                                     SIGNAL(NotificationClosed(uint, uint)));
+
+    EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
+        .item(mh::MenuItemMatcher()
+            .action("notifications.simunlock")
+            .string_attribute("x-canonical-type", "com.canonical.snapdecision.pinlock")
+            .string_attribute("x-canonical-pin-min-max", "notifications.pinMinMax")
+            .string_attribute("x-canonical-pin-popup", "notifications.popup")
+            .string_attribute("x-canonical-pin-error", "notifications.error")
+            .activate(shared_ptr<GVariant>(g_variant_new_boolean(false), &mh::gvariant_deleter))
+        ).match());
+
+    // check that the "NotificationClosed" signal was emitted
+    WAIT_FOR_SIGNALS(notificationClosedSpy, 1);
+    EXPECT_EQ(notificationClosedSpy.first(), QVariantList() << QVariant(1) << QVariant(1));
+    notificationClosedSpy.clear();
+
+    // check that the "CloseNotification" method was called
+    // check method arguments are correct
+    WAIT_FOR_SIGNALS(notificationsSpy, 1);
+    CHECK_METHOD_CALL(notificationsSpy, 0, "CloseNotification", {0, "1"});
+    notificationsSpy.clear();
+
+    // Activate  the second SIM unlock
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .item(flightModeSwitch())
+            .item(mh::MenuItemMatcher()
+                .item(modemInfo("SIM 1", "SIM Locked", "simcard-locked", true))
+                .item(modemInfo("SIM 2", "SIM Locked", "simcard-locked", true)
+                      .pass_through_activate("x-canonical-modem-locked-action")
+                )
+                .item(cellularSettings())
+            )
+        ).match());
+
+    // check that the "Notify" method was called
+    // check method arguments are correct (we re-use the same notification and reopen it)
+    WAIT_FOR_SIGNALS(notificationsSpy, 1);
+    CHECK_METHOD_CALL(notificationsSpy, 0, "Notify", {1, 1}, {3, "Enter SIM 2 PIN"});
+    notificationsSpy.clear();
+
+    secondModemMockInterfaceSpy.clear();
+
+    // enter the PIN
+    EXPECT_MATCHRESULT(mh::MenuMatcher(unlockSimParameters(busName, 0))
+        .item(mh::MenuItemMatcher()
+            .action("notifications.simunlock")
+            .string_attribute("x-canonical-type", "com.canonical.snapdecision.pinlock")
+            .string_attribute("x-canonical-pin-min-max", "notifications.pinMinMax")
+            .string_attribute("x-canonical-pin-popup", "notifications.popup")
+            .string_attribute("x-canonical-pin-error", "notifications.error")
+            .set_action_state(shared_ptr<GVariant>(g_variant_new_string("1234"), &mh::gvariant_deleter))
+        ).match());
+
+    // Check the PIN was sent to Ofono
+    WAIT_FOR_SIGNALS(secondModemMockInterfaceSpy, 1);
+    CHECK_METHOD_CALL(secondModemMockInterfaceSpy, 0, "EnterPin", {0, "pin"}, {1, "1234"});
+
+    // check that the "NotificationClosed" signal was emitted (new notification index should be 1)
+    WAIT_FOR_SIGNALS(notificationClosedSpy, 1);
+    EXPECT_EQ(notificationClosedSpy.first(), QVariantList() << QVariant(1) << QVariant(1));
+    notificationClosedSpy.clear();
+
+    // check that the "CloseNotification" method was called
+    // check method arguments are correct (still using the same notification: 1)
+    WAIT_FOR_SIGNALS(notificationsSpy, 1);
+    CHECK_METHOD_CALL(notificationsSpy, 0, "CloseNotification", {0, "1"});
     notificationsSpy.clear();
 }
 
@@ -2322,11 +2411,11 @@ TEST_F(TestIndicator, UnlockSIM_CorrectPin)
     // set sim locked
     setSimManagerProperty(firstModem(), "PinRequired", "pin");
 
-    // start the indicator
-    ASSERT_NO_THROW(startIndicator());
-
     QSignalSpy notificationsSpy(&notificationsMockInterface(),
                                SIGNAL(MethodCalled(const QString &, const QVariantList &)));
+
+    // start the indicator
+    ASSERT_NO_THROW(startIndicator());
 
     // check indicator is a locked sim card and a 0-bar wifi icon.
     // check sim status shows “SIM Locked”, with locked sim card icon and a “Unlock SIM” button beneath.
@@ -2348,12 +2437,11 @@ TEST_F(TestIndicator, UnlockSIM_CorrectPin)
     // check that the "Notify" method was called twice
     // check method arguments are correct
     std::string busName;
-    WAIT_FOR_SIGNALS(notificationsSpy, 3);
+    WAIT_FOR_SIGNALS(notificationsSpy, 2);
     CHECK_METHOD_CALL(notificationsSpy, 0, "GetServerInformation", /* no_args */);
     CHECK_METHOD_CALL(notificationsSpy, 1, "Notify", {1, 0}, {3, "Enter SIM PIN"}, {4, "3 attempts remaining"});
-    CHECK_METHOD_CALL(notificationsSpy, 2, "Notify", {1, 1}, {3, "Enter SIM PIN"}, {4, "3 attempts remaining"});
     {
-        QVariantList const& call(notificationsSpy.at(2));
+        QVariantList const& call(notificationsSpy.at(1));
         QVariantList const& args(call.at(1).toList());
         QVariantMap hints;
         QVariantMap menuInfo;
@@ -2406,11 +2494,11 @@ TEST_F(TestIndicator, UnlockSIM_IncorrectPin)
     // set sim locked
     setSimManagerProperty(firstModem(), "PinRequired", "pin");
 
-    // start the indicator
-    ASSERT_NO_THROW(startIndicator());
-
     QSignalSpy notificationsSpy(&notificationsMockInterface(),
                                 SIGNAL(MethodCalled(const QString &, const QVariantList &)));
+
+    // start the indicator
+    ASSERT_NO_THROW(startIndicator());
 
     // check indicator is a locked sim card and a 0-bar wifi icon.
     // check sim status shows “SIM Locked”, with locked sim card icon and a “Unlock SIM” button beneath.
@@ -2432,12 +2520,11 @@ TEST_F(TestIndicator, UnlockSIM_IncorrectPin)
     // check that the "Notify" method was called twice
     // check method arguments are correct
     std::string busName;
-    WAIT_FOR_SIGNALS(notificationsSpy, 3);
+    WAIT_FOR_SIGNALS(notificationsSpy, 2);
     CHECK_METHOD_CALL(notificationsSpy, 0, "GetServerInformation", /* no_args */);
     CHECK_METHOD_CALL(notificationsSpy, 1, "Notify", {1, 0}, {3, "Enter SIM PIN"}, {4, "3 attempts remaining"});
-    CHECK_METHOD_CALL(notificationsSpy, 2, "Notify", {1, 1}, {3, "Enter SIM PIN"}, {4, "3 attempts remaining"});
     {
-        QVariantList const& call(notificationsSpy.at(2));
+        QVariantList const& call(notificationsSpy.at(1));
         QVariantList const& args(call.at(1).toList());
         QVariantMap hints;
         QVariantMap menuInfo;
@@ -2464,13 +2551,11 @@ TEST_F(TestIndicator, UnlockSIM_IncorrectPin)
     CHECK_METHOD_CALL(modemSpy, 0, "EnterPin", {0, "pin"}, {1, "4321"});
     modemSpy.clear();
 
-    // check that the "Notify" method was called twice when retries changes, then twice again for incorrect pin
+    // check that the "Notify" method was called when retries changes, then again for incorrect pin
     // check method arguments are correct (notification index should still be 1)
-    WAIT_FOR_SIGNALS(notificationsSpy, 4);
+    WAIT_FOR_SIGNALS(notificationsSpy, 2);
     CHECK_METHOD_CALL(notificationsSpy, 0, "Notify", {1, 1}, {3, "Enter SIM PIN"}, {4, "2 attempts remaining"});
     CHECK_METHOD_CALL(notificationsSpy, 1, "Notify", {1, 1}, {3, "Enter SIM PIN"}, {4, "2 attempts remaining"});
-    CHECK_METHOD_CALL(notificationsSpy, 2, "Notify", {1, 1}, {3, "Enter SIM PIN"}, {4, "2 attempts remaining"});
-    CHECK_METHOD_CALL(notificationsSpy, 3, "Notify", {1, 1}, {3, "Enter SIM PIN"}, {4, "2 attempts remaining"});
     notificationsSpy.clear();
 
     // check that the notification is displaying the appropriate error message
@@ -2498,13 +2583,11 @@ TEST_F(TestIndicator, UnlockSIM_IncorrectPin)
     CHECK_METHOD_CALL(modemSpy, 0, "EnterPin", {0, "pin"}, {1, "4321"});
     modemSpy.clear();
 
-    // check that the "Notify" method was called twice when retries changes, then twice again for incorrect pin
+    // check that the "Notify" method was called when retries changes, then again for incorrect pin
     // check method arguments are correct (notification index should still be 1)
-    WAIT_FOR_SIGNALS(notificationsSpy, 4);
+    WAIT_FOR_SIGNALS(notificationsSpy, 2);
     CHECK_METHOD_CALL(notificationsSpy, 0, "Notify", {1, 1}, {3, "Enter SIM PIN"}, {4, "1 attempt remaining"});
     CHECK_METHOD_CALL(notificationsSpy, 1, "Notify", {1, 1}, {3, "Enter SIM PIN"}, {4, "1 attempt remaining"});
-    CHECK_METHOD_CALL(notificationsSpy, 2, "Notify", {1, 1}, {3, "Enter SIM PIN"}, {4, "1 attempt remaining"});
-    CHECK_METHOD_CALL(notificationsSpy, 3, "Notify", {1, 1}, {3, "Enter SIM PIN"}, {4, "1 attempt remaining"});
     notificationsSpy.clear();
 
     // check that the error message and last attempt popup are displayed
@@ -2537,13 +2620,11 @@ TEST_F(TestIndicator, UnlockSIM_IncorrectPin)
     CHECK_METHOD_CALL(modemSpy, 0, "EnterPin", {0, "pin"}, {1, "4321"});
     modemSpy.clear();
 
-    // check that the "Notify" method was called twice when retries changes, then twice again for incorrect pin
+    // check that the "Notify" method was called when retries changes, then again for incorrect pin
     // check method arguments are correct (notification index should still be 1)
-    WAIT_FOR_SIGNALS(notificationsSpy, 4);
+    WAIT_FOR_SIGNALS(notificationsSpy, 2);
     CHECK_METHOD_CALL(notificationsSpy, 0, "Notify", {1, 1}, {3, "Enter SIM PIN"}, {4, "0 attempts remaining"});
     CHECK_METHOD_CALL(notificationsSpy, 1, "Notify", {1, 1}, {3, "Enter SIM PIN"}, {4, "0 attempts remaining"});
-    CHECK_METHOD_CALL(notificationsSpy, 2, "Notify", {1, 1}, {3, "Enter SIM PIN"}, {4, "0 attempts remaining"});
-    CHECK_METHOD_CALL(notificationsSpy, 3, "Notify", {1, 1}, {3, "Enter SIM PIN"}, {4, "0 attempts remaining"});
     notificationsSpy.clear();
 
     // set sim blocked
@@ -2553,11 +2634,10 @@ TEST_F(TestIndicator, UnlockSIM_IncorrectPin)
     WAIT_FOR_SIGNALS(modemSpy, 1);
     modemSpy.clear();
 
-    // check that the "Notify" method was called twice
+    // check that the "Notify" method was called
     // check method arguments are correct (notification index should still be 1)
-    WAIT_FOR_SIGNALS(notificationsSpy, 2);
+    WAIT_FOR_SIGNALS(notificationsSpy, 1);
     CHECK_METHOD_CALL(notificationsSpy, 0, "Notify", {1, 1}, {3, "Enter PUK code"}, {4, "10 attempts remaining"});
-    CHECK_METHOD_CALL(notificationsSpy, 1, "Notify", {1, 1}, {3, "Enter PUK code"}, {4, "10 attempts remaining"});
     notificationsSpy.clear();
 
     // check that the error message and last attempt popup are displayed
@@ -2585,11 +2665,10 @@ TEST_F(TestIndicator, UnlockSIM_IncorrectPin)
             .set_action_state(shared_ptr<GVariant>(g_variant_new_string("87654321"), &mh::gvariant_deleter))
         ).match());
 
-    // check that the "Notify" method was called twice
+    // check that the "Notify" method was called
     // check method arguments are correct (notification index should still be 1)
-    WAIT_FOR_SIGNALS(notificationsSpy, 2);
+    WAIT_FOR_SIGNALS(notificationsSpy, 1);
     CHECK_METHOD_CALL(notificationsSpy, 0, "Notify", {1, 1}, {3, "Enter new SIM PIN"}, {4, "Create new PIN"});
-    CHECK_METHOD_CALL(notificationsSpy, 1, "Notify", {1, 1}, {3, "Enter new SIM PIN"}, {4, "Create new PIN"});
     notificationsSpy.clear();
 
     // enter new pin
@@ -2598,11 +2677,10 @@ TEST_F(TestIndicator, UnlockSIM_IncorrectPin)
             .set_action_state(shared_ptr<GVariant>(g_variant_new_string("4321"), &mh::gvariant_deleter))
         ).match());
 
-    // check that the "Notify" method was called twice
+    // check that the "Notify" method was called
     // check method arguments are correct (notification index should still be 1)
-    WAIT_FOR_SIGNALS(notificationsSpy, 2);
+    WAIT_FOR_SIGNALS(notificationsSpy, 1);
     CHECK_METHOD_CALL(notificationsSpy, 0, "Notify", {1, 1}, {3, "Confirm new SIM PIN"}, {4, "Create new PIN"});
-    CHECK_METHOD_CALL(notificationsSpy, 1, "Notify", {1, 1}, {3, "Confirm new SIM PIN"}, {4, "Create new PIN"});
     notificationsSpy.clear();
 
     // enter new pin again
@@ -2617,13 +2695,11 @@ TEST_F(TestIndicator, UnlockSIM_IncorrectPin)
     CHECK_METHOD_CALL(modemSpy, 0, "ResetPin", {0, "puk"}, {1, "87654321"}, {2, "4321"});
     modemSpy.clear();
 
-    // check that the "Notify" method was called twice when retries changes, then twice again for incorrect pin
+    // check that the "Notify" method was called when retries changes, then again for incorrect pin
     // check method arguments are correct (notification index should still be 1)
-    WAIT_FOR_SIGNALS(notificationsSpy, 4);
+    WAIT_FOR_SIGNALS(notificationsSpy, 2);
     CHECK_METHOD_CALL(notificationsSpy, 0, "Notify", {1, 1}, {3, "Confirm new SIM PIN"}, {4, "Create new PIN"});
-    CHECK_METHOD_CALL(notificationsSpy, 1, "Notify", {1, 1}, {3, "Confirm new SIM PIN"}, {4, "Create new PIN"});
-    CHECK_METHOD_CALL(notificationsSpy, 2, "Notify", {1, 1}, {3, "Enter PUK code"}, {4, "9 attempts remaining"});
-    CHECK_METHOD_CALL(notificationsSpy, 3, "Notify", {1, 1}, {3, "Enter PUK code"}, {4, "9 attempts remaining"});
+    CHECK_METHOD_CALL(notificationsSpy, 1, "Notify", {1, 1}, {3, "Enter PUK code"}, {4, "9 attempts remaining"});
     notificationsSpy.clear();
 
     // check that the notification is displaying the appropriate error message
@@ -2649,10 +2725,9 @@ TEST_F(TestIndicator, UnlockSIM_IncorrectPin)
             .set_action_state(shared_ptr<GVariant>(g_variant_new_string("12345678"), &mh::gvariant_deleter))
         ).match());
 
-    // check that the "Notify" method was called twice
-    WAIT_FOR_SIGNALS(notificationsSpy, 2);
+    // check that the "Notify" method was called
+    WAIT_FOR_SIGNALS(notificationsSpy, 1);
     CHECK_METHOD_CALL(notificationsSpy, 0, "Notify", {1, 1}, {3, "Enter new SIM PIN"}, {4, "Create new PIN"});
-    CHECK_METHOD_CALL(notificationsSpy, 1, "Notify", {1, 1}, {3, "Enter new SIM PIN"}, {4, "Create new PIN"});
     notificationsSpy.clear();
 
     // enter new pin
@@ -2661,10 +2736,9 @@ TEST_F(TestIndicator, UnlockSIM_IncorrectPin)
             .set_action_state(shared_ptr<GVariant>(g_variant_new_string("4321"), &mh::gvariant_deleter))
         ).match());
 
-    // check that the "Notify" method was called twice
-    WAIT_FOR_SIGNALS(notificationsSpy, 2);
+    // check that the "Notify" method was called
+    WAIT_FOR_SIGNALS(notificationsSpy, 1);
     CHECK_METHOD_CALL(notificationsSpy, 0, "Notify", {1, 1}, {3, "Confirm new SIM PIN"}, {4, "Create new PIN"});
-    CHECK_METHOD_CALL(notificationsSpy, 1, "Notify", {1, 1}, {3, "Confirm new SIM PIN"}, {4, "Create new PIN"});
     notificationsSpy.clear();
 
     // enter new pin again
@@ -2687,10 +2761,9 @@ TEST_F(TestIndicator, UnlockSIM_IncorrectPin)
     // check that the "Notify" method was called twice when retries changes
     // check that the "CloseNotification" method was called
     // check method arguments are correct
-    WAIT_FOR_SIGNALS(notificationsSpy, 3);
+    WAIT_FOR_SIGNALS(notificationsSpy, 2);
     CHECK_METHOD_CALL(notificationsSpy, 0, "Notify", {1, 1}, {3, "Confirm new SIM PIN"}, {4, "Create new PIN"});
-    CHECK_METHOD_CALL(notificationsSpy, 1, "Notify", {1, 1}, {3, "Confirm new SIM PIN"}, {4, "Create new PIN"});
-    CHECK_METHOD_CALL(notificationsSpy, 2, "CloseNotification", {0, "1"});
+    CHECK_METHOD_CALL(notificationsSpy, 1, "CloseNotification", {0, "1"});
     notificationsSpy.clear();
 }
 
@@ -2703,11 +2776,11 @@ TEST_F(TestIndicator, UnlockSIM2_IncorrectPin)
     auto secondModem = createModem("ril_1");
     setSimManagerProperty(secondModem, "PinRequired", "pin");
 
-    // start the indicator
-    ASSERT_NO_THROW(startIndicator());
-
     QSignalSpy notificationsSpy(&notificationsMockInterface(),
                                 SIGNAL(MethodCalled(const QString &, const QVariantList &)));
+
+    // start the indicator
+    ASSERT_NO_THROW(startIndicator());
 
     // check indicator is a locked sim card and a 0-bar wifi icon.
     // check sim status shows “SIM Locked”, with locked sim card icon and a “Unlock SIM” button beneath.
@@ -2730,12 +2803,11 @@ TEST_F(TestIndicator, UnlockSIM2_IncorrectPin)
     // check that the "Notify" method was called twice
     // check method arguments are correct
     std::string busName;
-    WAIT_FOR_SIGNALS(notificationsSpy, 3);
+    WAIT_FOR_SIGNALS(notificationsSpy, 2);
     CHECK_METHOD_CALL(notificationsSpy, 0, "GetServerInformation", /* no_args */);
     CHECK_METHOD_CALL(notificationsSpy, 1, "Notify", {1, 0}, {3, "Enter SIM 2 PIN"}, {4, "3 attempts remaining"});
-    CHECK_METHOD_CALL(notificationsSpy, 2, "Notify", {1, 1}, {3, "Enter SIM 2 PIN"}, {4, "3 attempts remaining"});
     {
-        QVariantList const& call(notificationsSpy.at(2));
+        QVariantList const& call(notificationsSpy.at(1));
         QVariantList const& args(call.at(1).toList());
         QVariantMap hints;
         QVariantMap menuInfo;
@@ -2762,13 +2834,11 @@ TEST_F(TestIndicator, UnlockSIM2_IncorrectPin)
     CHECK_METHOD_CALL(modemSpy, 0, "EnterPin", {0, "pin"}, {1, "4321"});
     modemSpy.clear();
 
-    // check that the "Notify" method was called twice when retries changes, then twice again for incorrect pin
+    // check that the "Notify" method was called when retries changes, then again for incorrect pin
     // check method arguments are correct (notification index should still be 1)
-    WAIT_FOR_SIGNALS(notificationsSpy, 4);
+    WAIT_FOR_SIGNALS(notificationsSpy, 2);
     CHECK_METHOD_CALL(notificationsSpy, 0, "Notify", {1, 1}, {3, "Enter SIM 2 PIN"}, {4, "2 attempts remaining"});
     CHECK_METHOD_CALL(notificationsSpy, 1, "Notify", {1, 1}, {3, "Enter SIM 2 PIN"}, {4, "2 attempts remaining"});
-    CHECK_METHOD_CALL(notificationsSpy, 2, "Notify", {1, 1}, {3, "Enter SIM 2 PIN"}, {4, "2 attempts remaining"});
-    CHECK_METHOD_CALL(notificationsSpy, 3, "Notify", {1, 1}, {3, "Enter SIM 2 PIN"}, {4, "2 attempts remaining"});
     notificationsSpy.clear();
 
     // check that the notification is displaying the appropriate error message
@@ -2796,13 +2866,11 @@ TEST_F(TestIndicator, UnlockSIM2_IncorrectPin)
     CHECK_METHOD_CALL(modemSpy, 0, "EnterPin", {0, "pin"}, {1, "4321"});
     modemSpy.clear();
 
-    // check that the "Notify" method was called twice when retries changes, then twice again for incorrect pin
+    // check that the "Notify" method was called when retries changes, then again for incorrect pin
     // check method arguments are correct (notification index should still be 1)
-    WAIT_FOR_SIGNALS(notificationsSpy, 4);
+    WAIT_FOR_SIGNALS(notificationsSpy, 2);
     CHECK_METHOD_CALL(notificationsSpy, 0, "Notify", {1, 1}, {3, "Enter SIM 2 PIN"}, {4, "1 attempt remaining"});
     CHECK_METHOD_CALL(notificationsSpy, 1, "Notify", {1, 1}, {3, "Enter SIM 2 PIN"}, {4, "1 attempt remaining"});
-    CHECK_METHOD_CALL(notificationsSpy, 2, "Notify", {1, 1}, {3, "Enter SIM 2 PIN"}, {4, "1 attempt remaining"});
-    CHECK_METHOD_CALL(notificationsSpy, 3, "Notify", {1, 1}, {3, "Enter SIM 2 PIN"}, {4, "1 attempt remaining"});
     notificationsSpy.clear();
 
     // check that the error message and last attempt popup are displayed
@@ -2835,13 +2903,11 @@ TEST_F(TestIndicator, UnlockSIM2_IncorrectPin)
     CHECK_METHOD_CALL(modemSpy, 0, "EnterPin", {0, "pin"}, {1, "4321"});
     modemSpy.clear();
 
-    // check that the "Notify" method was called twice when retries changes, then twice again for incorrect pin
+    // check that the "Notify" method was called when retries changes, then again for incorrect pin
     // check method arguments are correct (notification index should still be 1)
-    WAIT_FOR_SIGNALS(notificationsSpy, 4);
+    WAIT_FOR_SIGNALS(notificationsSpy, 2);
     CHECK_METHOD_CALL(notificationsSpy, 0, "Notify", {1, 1}, {3, "Enter SIM 2 PIN"}, {4, "0 attempts remaining"});
     CHECK_METHOD_CALL(notificationsSpy, 1, "Notify", {1, 1}, {3, "Enter SIM 2 PIN"}, {4, "0 attempts remaining"});
-    CHECK_METHOD_CALL(notificationsSpy, 2, "Notify", {1, 1}, {3, "Enter SIM 2 PIN"}, {4, "0 attempts remaining"});
-    CHECK_METHOD_CALL(notificationsSpy, 3, "Notify", {1, 1}, {3, "Enter SIM 2 PIN"}, {4, "0 attempts remaining"});
     notificationsSpy.clear();
 
     // set sim blocked
@@ -2851,11 +2917,10 @@ TEST_F(TestIndicator, UnlockSIM2_IncorrectPin)
     WAIT_FOR_SIGNALS(modemSpy, 1);
     modemSpy.clear();
 
-    // check that the "Notify" method was called twice
+    // check that the "Notify" method was called
     // check method arguments are correct (notification index should still be 1)
-    WAIT_FOR_SIGNALS(notificationsSpy, 2);
+    WAIT_FOR_SIGNALS(notificationsSpy, 1);
     CHECK_METHOD_CALL(notificationsSpy, 0, "Notify", {1, 1}, {3, "Enter PUK code for SIM 2"}, {4, "10 attempts remaining"});
-    CHECK_METHOD_CALL(notificationsSpy, 1, "Notify", {1, 1}, {3, "Enter PUK code for SIM 2"}, {4, "10 attempts remaining"});
     notificationsSpy.clear();
 
     // check that the error message and last attempt popup are displayed
@@ -2883,11 +2948,10 @@ TEST_F(TestIndicator, UnlockSIM2_IncorrectPin)
             .set_action_state(shared_ptr<GVariant>(g_variant_new_string("87654321"), &mh::gvariant_deleter))
         ).match());
 
-    // check that the "Notify" method was called twice
+    // check that the "Notify" method was called
     // check method arguments are correct (notification index should still be 1)
-    WAIT_FOR_SIGNALS(notificationsSpy, 2);
+    WAIT_FOR_SIGNALS(notificationsSpy, 1);
     CHECK_METHOD_CALL(notificationsSpy, 0, "Notify", {1, 1}, {3, "Enter new SIM 2 PIN"}, {4, "Create new PIN"});
-    CHECK_METHOD_CALL(notificationsSpy, 1, "Notify", {1, 1}, {3, "Enter new SIM 2 PIN"}, {4, "Create new PIN"});
     notificationsSpy.clear();
 
     // enter new pin
@@ -2896,11 +2960,10 @@ TEST_F(TestIndicator, UnlockSIM2_IncorrectPin)
             .set_action_state(shared_ptr<GVariant>(g_variant_new_string("4321"), &mh::gvariant_deleter))
         ).match());
 
-    // check that the "Notify" method was called twice
+    // check that the "Notify" method was called
     // check method arguments are correct (notification index should still be 1)
-    WAIT_FOR_SIGNALS(notificationsSpy, 2);
+    WAIT_FOR_SIGNALS(notificationsSpy, 1);
     CHECK_METHOD_CALL(notificationsSpy, 0, "Notify", {1, 1}, {3, "Confirm new SIM 2 PIN"}, {4, "Create new PIN"});
-    CHECK_METHOD_CALL(notificationsSpy, 1, "Notify", {1, 1}, {3, "Confirm new SIM 2 PIN"}, {4, "Create new PIN"});
     notificationsSpy.clear();
 
     // enter new pin again
@@ -2915,13 +2978,11 @@ TEST_F(TestIndicator, UnlockSIM2_IncorrectPin)
     CHECK_METHOD_CALL(modemSpy, 0, "ResetPin", {0, "puk"}, {1, "87654321"}, {2, "4321"});
     modemSpy.clear();
 
-    // check that the "Notify" method was called twice when retries changes, then twice again for incorrect pin
+    // check that the "Notify" method was called when retries changes, then again for incorrect pin
     // check method arguments are correct (notification index should still be 1)
-    WAIT_FOR_SIGNALS(notificationsSpy, 4);
+    WAIT_FOR_SIGNALS(notificationsSpy, 2);
     CHECK_METHOD_CALL(notificationsSpy, 0, "Notify", {1, 1}, {3, "Confirm new SIM 2 PIN"}, {4, "Create new PIN"});
-    CHECK_METHOD_CALL(notificationsSpy, 1, "Notify", {1, 1}, {3, "Confirm new SIM 2 PIN"}, {4, "Create new PIN"});
-    CHECK_METHOD_CALL(notificationsSpy, 2, "Notify", {1, 1}, {3, "Enter PUK code for SIM 2"}, {4, "9 attempts remaining"});
-    CHECK_METHOD_CALL(notificationsSpy, 3, "Notify", {1, 1}, {3, "Enter PUK code for SIM 2"}, {4, "9 attempts remaining"});
+    CHECK_METHOD_CALL(notificationsSpy, 1, "Notify", {1, 1}, {3, "Enter PUK code for SIM 2"}, {4, "9 attempts remaining"});
     notificationsSpy.clear();
 
     // check that the notification is displaying the appropriate error message
@@ -2947,10 +3008,9 @@ TEST_F(TestIndicator, UnlockSIM2_IncorrectPin)
             .set_action_state(shared_ptr<GVariant>(g_variant_new_string("12345678"), &mh::gvariant_deleter))
         ).match());
 
-    // check that the "Notify" method was called twice
-    WAIT_FOR_SIGNALS(notificationsSpy, 2);
+    // check that the "Notify" method was called
+    WAIT_FOR_SIGNALS(notificationsSpy, 1);
     CHECK_METHOD_CALL(notificationsSpy, 0, "Notify", {1, 1}, {3, "Enter new SIM 2 PIN"}, {4, "Create new PIN"});
-    CHECK_METHOD_CALL(notificationsSpy, 1, "Notify", {1, 1}, {3, "Enter new SIM 2 PIN"}, {4, "Create new PIN"});
     notificationsSpy.clear();
 
     // enter new pin
@@ -2959,10 +3019,9 @@ TEST_F(TestIndicator, UnlockSIM2_IncorrectPin)
             .set_action_state(shared_ptr<GVariant>(g_variant_new_string("4321"), &mh::gvariant_deleter))
         ).match());
 
-    // check that the "Notify" method was called twice
-    WAIT_FOR_SIGNALS(notificationsSpy, 2);
+    // check that the "Notify" method was called
+    WAIT_FOR_SIGNALS(notificationsSpy, 1);
     CHECK_METHOD_CALL(notificationsSpy, 0, "Notify", {1, 1}, {3, "Confirm new SIM 2 PIN"}, {4, "Create new PIN"});
-    CHECK_METHOD_CALL(notificationsSpy, 1, "Notify", {1, 1}, {3, "Confirm new SIM 2 PIN"}, {4, "Create new PIN"});
     notificationsSpy.clear();
 
     // enter new pin again
@@ -2985,10 +3044,9 @@ TEST_F(TestIndicator, UnlockSIM2_IncorrectPin)
     // check that the "Notify" method was called twice when retries changes
     // check that the "CloseNotification" method was called
     // check method arguments are correct
-    WAIT_FOR_SIGNALS(notificationsSpy, 3);
+    WAIT_FOR_SIGNALS(notificationsSpy, 2);
     CHECK_METHOD_CALL(notificationsSpy, 0, "Notify", {1, 1}, {3, "Confirm new SIM 2 PIN"}, {4, "Create new PIN"});
-    CHECK_METHOD_CALL(notificationsSpy, 1, "Notify", {1, 1}, {3, "Confirm new SIM 2 PIN"}, {4, "Create new PIN"});
-    CHECK_METHOD_CALL(notificationsSpy, 2, "CloseNotification", {0, "1"});
+    CHECK_METHOD_CALL(notificationsSpy, 1, "CloseNotification", {0, "1"});
     notificationsSpy.clear();
 }
 

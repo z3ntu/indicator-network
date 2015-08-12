@@ -60,13 +60,6 @@ pkg_check_modules(
 )
 include_directories(${OFONO_INCLUDE_DIRS})
 
-set(NOTIFY_REQUIRED_VERSION 0.7.5)
-pkg_check_modules(
-  NOTIFY REQUIRED
-  libnotify>=${NOTIFY_REQUIRED_VERSION}
-)
-include_directories(${NOTIFY_INCLUDE_DIRS})
-
 find_package(Qt5Core REQUIRED)
 include_directories(${Qt5Core_INCLUDE_DIRS})
 

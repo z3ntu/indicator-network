@@ -20,7 +20,7 @@
 #include <agent/SecretAgent.h>
 #include <util/localisation.h>
 
-#include <NotificationsInterface.h>
+#include <notify-cpp/notification-manager.h>
 
 namespace agent
 {
@@ -34,12 +34,6 @@ SecretRequest::SecretRequest(SecretAgent &secretAgent,
 				connection), m_connectionPath(connectionPath), m_settingName(
 				settingName), m_hints(hints), m_flags(flags), m_message(
 				message), m_menu() {
-
-	connect(&m_secretAgent.notifications(),
-	SIGNAL(ActionInvoked(uint, const QString &)), this,
-	SLOT(actionInvoked(uint, const QString &)));
-
-	connect(&m_secretAgent.notifications(), SIGNAL(NotificationClosed(uint, uint)), this, SLOT(notificationClosed(uint, uint)));
 
 	// indicate to the notification-daemon, that we want to use snap-decisions
 	QVariantMap notificationHints;
@@ -74,29 +68,28 @@ SecretRequest::SecretRequest(SecretAgent &secretAgent,
 		subject = _("WEP");
 	}
 
-	m_notificationId = m_secretAgent.notifications().Notify("indicator-network",
-			0, "wifi-full-secure",
+	m_notification = m_secretAgent.notifications()->notify(
 			title.arg(conn[SecretAgent::CONNECTION_ID].toString()), subject,
+			"wifi-full-secure",
 			QStringList() << "connect_id" << _("Connect") << "cancel_id"
 					<< _("Cancel"), notificationHints, 0);
+
+    connect(m_notification.get(), &notify::Notification::actionInvoked, this,
+            &SecretRequest::actionInvoked);
+
+    connect(m_notification.get(), &notify::Notification::closed, this,
+            &SecretRequest::notificationClosed);
+
+    m_notification->show();
 }
 
 SecretRequest::~SecretRequest() {
-	/* Close the notification if it's open */
-	if (m_notificationId != 0) {
-		m_secretAgent.notifications().CloseNotification(m_notificationId).waitForFinished();
-		m_notificationId = 0;
-	}
 }
 
 /* Called when the user submits a password */
-void SecretRequest::actionInvoked(uint id, const QString &actionKey) {
-	// Ignore other requests' notifications
-	if (id != m_notificationId) {
-		return;
-	}
+void SecretRequest::actionInvoked(const QString &actionKey) {
 
-	m_notificationId = 0;
+    m_notification.reset();
 
 	if (actionKey != "connect_id") {
 		m_secretAgent.FinishGetSecrets(*this, true);
@@ -121,15 +114,10 @@ void SecretRequest::actionInvoked(uint id, const QString &actionKey) {
 }
 
 /* Called when the user closes the dialog */
-void SecretRequest::notificationClosed(uint id, uint reason) {
+void SecretRequest::notificationClosed(uint reason) {
 	Q_UNUSED(reason);
 
-	// Ignore other requests' notifications
-	if (id != m_notificationId) {
-		return;
-	}
-
-	m_notificationId = 0;
+	m_notification.reset();
 
 	m_secretAgent.FinishGetSecrets(*this, true);
 }

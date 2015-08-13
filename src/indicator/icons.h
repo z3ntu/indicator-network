@@ -19,6 +19,7 @@
 
 #pragma once
 
+#include <nmofono/wifi/wifi-link.h>
 #include <nmofono/wwan/modem.h>
 
 class Icons
@@ -31,4 +32,6 @@ public:
     static QString strengthIcon(int8_t strength);
 
     static QString bearerIcon(nmofono::wwan::Modem::Bearer bearer);
+
+    static QString wifiIcon(nmofono::wifi::WifiLink::Signal signal);
 };

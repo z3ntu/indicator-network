@@ -59,3 +59,33 @@ QString Icons::bearerIcon(wwan::Modem::Bearer bearer)
     return QString();
 }
 
+QString Icons::wifiIcon(nmofono::wifi::WifiLink::Signal signal)
+{
+    switch (signal)
+    {
+    case wifi::WifiLink::Signal::disconnected:
+        return "wifi-no-connection";
+    case wifi::WifiLink::Signal::signal_0:
+        return "nm-signal-00";
+    case wifi::WifiLink::Signal::signal_0_secure:
+        return "nm-signal-00-secure";
+    case wifi::WifiLink::Signal::signal_25:
+        return "nm-signal-25";
+    case wifi::WifiLink::Signal::signal_25_secure:
+        return "nm-signal-25-secure";
+    case wifi::WifiLink::Signal::signal_50:
+        return "nm-signal-50";
+    case wifi::WifiLink::Signal::signal_50_secure:
+        return "nm-signal-50-secure";
+    case wifi::WifiLink::Signal::signal_75:
+        return "nm-signal-75";
+    case wifi::WifiLink::Signal::signal_75_secure:
+        return "nm-signal-75-secure";
+    case wifi::WifiLink::Signal::signal_100:
+        return "nm-signal-100";
+    case wifi::WifiLink::Signal::signal_100_secure:
+        return "nm-signal-100-secure";
+    }
+    // shouldn't be reached
+    return QString();
+}

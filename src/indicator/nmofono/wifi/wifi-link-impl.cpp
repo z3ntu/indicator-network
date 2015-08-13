@@ -356,6 +356,18 @@ WifiLinkImpl::name() const
     return d->m_name;
 }
 
+WifiLink::Mode WifiLinkImpl::mode() const
+{
+    static const map<uint, WifiLink::Mode> modeMap
+    {
+        {NM_802_11_MODE_UNKNOWN, Mode::unknown},
+        {NM_802_11_MODE_ADHOC, Mode::adhoc},
+        {NM_802_11_MODE_INFRA, Mode::infra},
+        {NM_802_11_MODE_AP, Mode::ap}
+    };
+    return modeMap.find(d->m_wireless.mode())->second;
+}
+
 QSet<AccessPoint::Ptr>
 WifiLinkImpl::accessPoints() const {
     if (d->m_hideAccessPoints)

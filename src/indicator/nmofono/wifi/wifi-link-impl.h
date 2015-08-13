@@ -58,7 +58,9 @@ public:
 
     void setHideAccessPoints(bool) override;
 
-    Mode mode() const;
+    Mode mode() const override;
+
+    Signal signal() const override;
 
 private:
     struct Private;

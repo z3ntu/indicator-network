@@ -414,12 +414,16 @@ ManagerImpl::device_added(const QDBusObjectPath &path)
                                                 d->nm,
                                                 d->m_killSwitch);
 
-            // Wire up enabling / disabling AP visibility to the hotspot enabled state
-            tmp->setHideAccessPoints(d->m_hotspotManager->enabled());
-            QObject::connect(d->m_hotspotManager.get(), &HotspotManager::enabledChanged,
-                    tmp.get(), &wifi::WifiLink::setHideAccessPoints);
+            // We're not interested in showing access points
+            if (tmp->mode() != wifi::WifiLink::Mode::ap)
+            {
+                // Wire up enabling / disabling AP visibility to the hotspot enabled state
+                tmp->setHideAccessPoints(d->m_hotspotManager->enabled());
+                QObject::connect(d->m_hotspotManager.get(), &HotspotManager::enabledChanged,
+                        tmp.get(), &wifi::WifiLink::setHideAccessPoints);
 
-            link = tmp;
+                link = tmp;
+            }
         }
     } catch (const exception &e) {
         qDebug() << __PRETTY_FUNCTION__ << ": failed to create Device proxy for "<< path.path() << ": ";

@@ -228,8 +228,7 @@ RootState::Private::updateNetworkingIcon()
 
         if (m_manager->hotspotEnabled())
         {
-            // FIXME Temporary value, needs adding to theme
-            m_networkingIcons << "/usr/share/ubuntu/settings/system/icons/settings-hotspot.svg";
+            m_networkingIcons << "hotspot-active";
         }
         break;
     }

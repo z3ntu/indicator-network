@@ -34,7 +34,4 @@ public:
 
     virtual ActionGroup::Ptr actionGroup();
     virtual MenuModel::Ptr menuModel();
-
-    void unlockAllModems();
-    void unlockModem(const QString &name);
 };

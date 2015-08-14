@@ -131,13 +131,3 @@ MenuBuilder::MenuBuilder(Factory& factory) :
 #endif
                                 });
 }
-
-void MenuBuilder::unlockAllModems()
-{
-    d->m_wwanSection->unlockAllModems();
-}
-
-void MenuBuilder::unlockModem(const QString &name)
-{
-    d->m_wwanSection->unlockModem(name);
-}

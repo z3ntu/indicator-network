@@ -19,6 +19,7 @@
 
 #include <sections/wwan-section.h>
 #include <menuitems/wwan-link-item.h>
+#include <menuitems/switch-item.h>
 #include <menuitems/text-item.h>
 
 #include "menumodel-cpp/action-group-merger.h"
@@ -37,6 +38,7 @@ using namespace nmofono;
 class WwanSection::Private: public QObject
 {
     Q_OBJECT
+
 public:
 
     ActionGroupMerger::Ptr m_actionGroupMerger;
@@ -52,12 +54,13 @@ public:
 
     Manager::Ptr m_manager;
 
+    SwitchItem::Ptr m_hotspotSwitch;
     TextItem::Ptr m_openCellularSettings;
 
     QMap<wwan::Modem::Ptr, WwanLinkItem::Ptr> m_items;
 
     Private() = delete;
-    Private(Manager::Ptr modemManager);
+    Private(Manager::Ptr modemManager, SwitchItem::Ptr hotspotSwitch);
 
 public Q_SLOTS:
     void modemsChanged();
@@ -74,8 +77,8 @@ public Q_SLOTS:
     }
 };
 
-WwanSection::Private::Private(Manager::Ptr modemManager)
-    : m_manager{modemManager}
+WwanSection::Private::Private(Manager::Ptr modemManager, SwitchItem::Ptr hotspotSwitch)
+    : QObject(nullptr), m_manager{modemManager}, m_hotspotSwitch{hotspotSwitch}
 {
     m_actionGroupMerger = make_shared<ActionGroupMerger>();
     m_menuMerger = make_shared<MenuMerger>();
@@ -97,8 +100,8 @@ WwanSection::Private::Private(Manager::Ptr modemManager)
     connect(m_openCellularSettings.get(), &TextItem::activated, this, &Private::openCellularSettings);
     m_actionGroupMerger->add(m_openCellularSettings->actionGroup());
 
-    // already synced with GMainLoop
     connect(m_manager.get(), &Manager::linksUpdated, this, &Private::modemsChanged);
+    connect(m_manager.get(), &Manager::hotspotStoredChanged, this, &Private::modemsChanged);
     modemsChanged();
 }
 
@@ -150,6 +153,26 @@ WwanSection::Private::modemsChanged()
     }
     else
     {
+        // Add the hotspot button if we have configuration stored
+        if (m_manager->hotspotStored())
+        {
+            // Check if the switch is already present
+            if (m_bottomMenu->find(m_hotspotSwitch->menuItem()) == m_bottomMenu->end())
+            {
+                // If not, add it
+                m_bottomMenu->insert(m_hotspotSwitch->menuItem(), m_bottomMenu->begin());
+            }
+        }
+        else
+        {
+            // Check if the switch is already present
+            if (m_bottomMenu->find(m_hotspotSwitch->menuItem()) == m_bottomMenu->end())
+            {
+                // If so, remove it
+                m_bottomMenu->removeAll(m_hotspotSwitch->menuItem());
+            }
+        }
+
         if (m_bottomMenu->find(m_openCellularSettings->menuItem()) == m_bottomMenu->end())
         {
             m_bottomMenu->append(m_openCellularSettings->menuItem());
@@ -163,8 +186,8 @@ WwanSection::Private::modemsChanged()
     }
 }
 
-WwanSection::WwanSection(nmofono::Manager::Ptr manager)
-    : d{new Private(manager)}
+WwanSection::WwanSection(nmofono::Manager::Ptr manager, SwitchItem::Ptr hotspotSwitch)
+    : d{new Private(manager, hotspotSwitch)}
 {
 }
 

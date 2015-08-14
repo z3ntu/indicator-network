@@ -49,7 +49,7 @@ public:
 
     // Public API
     void setFlightMode(bool) override;
-    Manager::FlightModeStatus flightMode() const override;
+    bool flightMode() const override;
 
     bool unstoppableOperationHappening() const override;
 

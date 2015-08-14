@@ -56,7 +56,7 @@ public:
     shared_ptr<OrgFreedesktopNetworkManagerInterface> nm;
     shared_ptr<QOfonoManager> m_ofono;
 
-    Manager::FlightModeStatus m_flightMode = FlightModeStatus::on;
+    bool m_flightMode = true;
     bool m_unstoppableOperationHappening = false;
     Manager::NetworkingStatus m_status = NetworkingStatus::offline;
     uint32_t m_characteristics = 0;
@@ -123,11 +123,8 @@ public Q_SLOTS:
         Q_EMIT p.wifiEnabledUpdated(m_wifiEnabled);
     }
 
-    void setFlightMode(bool flightMode)
+    void setFlightMode(bool newStatus)
     {
-        FlightModeStatus newStatus =
-                flightMode ? FlightModeStatus::on : FlightModeStatus::off;
-
         if (m_flightMode == newStatus)
         {
             return;
@@ -312,7 +309,12 @@ ManagerImpl::hotspotEnabled() const
 void
 ManagerImpl::setHotspotEnabled(bool enabled)
 {
-    if (enabled && (d->m_flightMode == Manager::FlightModeStatus::on))
+    if (d->m_hotspotManager->enabled() == enabled)
+    {
+        return;
+    }
+
+    if (enabled && d->m_flightMode)
     {
         qWarning() << __PRETTY_FUNCTION__ << "Cannot set hotspot enabled when flight mode is on";
         return;
@@ -350,7 +352,7 @@ ManagerImpl::setFlightMode(bool enabled)
     d->setUnstoppableOperationHappening(false);
 }
 
-Manager::FlightModeStatus
+bool
 ManagerImpl::flightMode() const
 {
     return d->m_flightMode;

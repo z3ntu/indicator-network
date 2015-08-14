@@ -34,9 +34,4 @@ class MenuBuilder: public QObject
 
 public:
     MenuBuilder(Factory& factory);
-
-public Q_SLOTS:
-    void unlockAllModems();
-
-    void unlockModem(const QString &name);
 };

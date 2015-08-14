@@ -77,11 +77,6 @@ public:
     Q_PROPERTY(QString HotspotMode READ hotspotMode)
     QString hotspotMode() const;
 
-Q_SIGNALS:
-    void unlockAllModems();
-
-    void unlockModem(const QString& modem);
-
 private:
     class Private;
     std::shared_ptr<Private> d;

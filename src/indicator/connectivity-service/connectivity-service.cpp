@@ -305,12 +305,12 @@ PrivateService::PrivateService(ConnectivityService& parent) :
 
 void PrivateService::UnlockAllModems()
 {
-    Q_EMIT p.unlockAllModems();
+    p.d->m_manager->unlockAllModems();
 }
 
 void PrivateService::UnlockModem(const QString &modem)
 {
-    Q_EMIT p.unlockModem(modem);
+    p.d->m_manager->unlockModemByName(modem);
 }
 
 void PrivateService::SetFlightMode(bool enabled)

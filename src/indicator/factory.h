@@ -28,6 +28,7 @@
 #include <sections/quick-access-section.h>
 #include <sections/wifi-section.h>
 #include <sections/wwan-section.h>
+#include <menuitems/switch-item.h>
 #include <agent/SecretAgent.h>
 
 #include <memory>
@@ -52,15 +53,21 @@ public:
 
     virtual std::unique_ptr<MenuExporter> newMenuExporter(const std::string &path, MenuModel::Ptr menuModel);
 
-    virtual std::unique_ptr<QuickAccessSection> newQuickAccessSection(SwitchItem::Ptr wifiSwitch);
+    virtual std::unique_ptr<QuickAccessSection> newQuickAccessSection(SwitchItem::Ptr flightModeSwitch);
 
-    virtual std::unique_ptr<WwanSection> newWwanSection();
+    virtual std::unique_ptr<WwanSection> newWwanSection(SwitchItem::Ptr hotspotSwitch);
 
-    virtual std::unique_ptr<WifiSection> newWiFiSection();
+    virtual std::unique_ptr<WifiSection> newWiFiSection(SwitchItem::Ptr wifiSwitch);
 
     virtual ActionGroupMerger::UPtr newActionGroupMerger();
 
     virtual ActionGroupExporter::UPtr newActionGroupExporter(ActionGroup::Ptr actionGroup, const std::string &path);
+
+    virtual SwitchItem::UPtr newWifiSwitch();
+
+    virtual SwitchItem::UPtr newFlightModeSwitch();
+
+    virtual SwitchItem::UPtr newHotspotSwitch();
 
     virtual BusName::UPtr newBusName(std::string name,
                                      std::function<void(std::string)> acquired,

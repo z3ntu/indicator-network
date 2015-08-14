@@ -258,12 +258,9 @@ RootState::Private::updateRootState()
     vector<string> icons;
     map<string, Variant> state;
 
-    switch(m_manager->flightMode()) {
-    case Manager::FlightModeStatus::off:
-        break;
-    case Manager::FlightModeStatus::on:
+    if(m_manager->flightMode())
+    {
         icons.push_back("airplane-mode");
-        break;
     }
 
     multimap<int, QString, wwan::WwanLink::Compare> sorted;

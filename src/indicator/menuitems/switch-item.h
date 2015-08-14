@@ -30,6 +30,7 @@ class SwitchItem : public Item
 
 public:
     typedef std::shared_ptr<SwitchItem> Ptr;
+    typedef std::unique_ptr<SwitchItem> UPtr;
 
     SwitchItem() = delete;
     virtual  ~SwitchItem() = default;

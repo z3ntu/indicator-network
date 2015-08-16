@@ -45,7 +45,7 @@ const static QString wpa_supplicant_path = "/fi/w1/wpa_supplicant1";
 
 class HotspotManager::Priv: public QObject
 {
-    Q_SLOTS
+
 public:
     Priv(HotspotManager& parent) :
         p(parent)

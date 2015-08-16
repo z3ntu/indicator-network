@@ -262,11 +262,17 @@ bool Connectivity::isInitialized() const
 void Connectivity::setFlightMode(bool enabled)
 {
     d->m_writeInterface->SetFlightMode(enabled);
+
+    // TODO Remove this when SDK switch widget isn't broken
+    d->m_propertyCache->setProperty("FlightMode", enabled);
 }
 
 void Connectivity::setwifiEnabled(bool enabled)
 {
     d->m_writeInterface->SetWifiEnabled(enabled);
+
+    // TODO Remove this when SDK switch widget isn't broken
+    d->m_propertyCache->setProperty("WifiEnabled", enabled);
 }
 
 QByteArray Connectivity::hotspotSsid() const
@@ -307,6 +313,9 @@ void Connectivity::setHotspotPassword(const QString& password)
 void Connectivity::setHotspotEnabled(bool enabled)
 {
     d->m_writeInterface->SetHotspotEnabled(enabled);
+
+    // TODO Remove this when SDK switch widget isn't broken
+    d->m_propertyCache->setProperty("HotspotEnabled", enabled);
 }
 
 void Connectivity::setHotspotMode(const QString& mode)

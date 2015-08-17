@@ -114,6 +114,10 @@ class HotspotManager : public QObject
         READ stored
         NOTIFY storedChanged)
 
+    Q_PROPERTY( bool disconnectWifi
+        READ disconnectWifi
+        NOTIFY disconnectWifiChanged)
+
 public:
     typedef std::shared_ptr<HotspotManager> SPtr;
 
@@ -131,6 +135,8 @@ public:
 
     QString mode() const;
 
+    bool disconnectWifi() const;
+
 Q_SIGNALS:
     void enabledChanged(bool enabled);
 
@@ -141,6 +147,8 @@ Q_SIGNALS:
     void passwordChanged(const QString& password);
 
     void modeChanged(const QString& mode);
+
+    void disconnectWifiChanged(bool disconnect);
 
     /*
      * The mapping of code to string is taken from

@@ -38,6 +38,7 @@
 
 #include <QMap>
 #include <QList>
+#include <QRegularExpression>
 #include <NetworkManager.h>
 #include <QDebug>
 #include <algorithm>
@@ -46,6 +47,8 @@
 using namespace std;
 
 namespace nmofono {
+
+static const QRegularExpression ACCESS_POINT_EXPRESSION("^ap\\d+$");
 
 class ManagerImpl::Private : public QObject
 {
@@ -417,12 +420,17 @@ ManagerImpl::device_added(const QDBusObjectPath &path)
                                                 d->m_killSwitch);
 
             // We're not interested in showing access points
-            if (tmp->mode() != wifi::WifiLink::Mode::ap)
+            if (!ACCESS_POINT_EXPRESSION.match(tmp->name()).hasMatch())
             {
                 // Wire up enabling / disabling AP visibility to the hotspot enabled state
                 tmp->setHideAccessPoints(d->m_hotspotManager->enabled());
                 QObject::connect(d->m_hotspotManager.get(), &HotspotManager::enabledChanged,
                         tmp.get(), &wifi::WifiLink::setHideAccessPoints);
+
+                // Disconnect wifi if we're on hybris
+                tmp->setDisconnectWifi(d->m_hotspotManager->disconnectWifi());
+                QObject::connect(d->m_hotspotManager.get(), &HotspotManager::disconnectWifiChanged,
+                        tmp.get(), &wifi::WifiLink::setDisconnectWifi);
 
                 link = tmp;
             }

@@ -83,6 +83,8 @@ public:
 public Q_SLOTS:
     virtual void setHideAccessPoints(bool) = 0;
 
+    virtual void setDisconnectWifi(bool) = 0;
+
 Q_SIGNALS:
     void accessPointsUpdated(const QSet<AccessPoint::Ptr>&);
 

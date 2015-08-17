@@ -323,13 +323,14 @@ ManagerImpl::setHotspotEnabled(bool enabled)
         return;
     }
 
+    d->setUnstoppableOperationHappening(true);
+
     if (enabled && !d->m_wifiEnabled)
     {
-        qWarning() << __PRETTY_FUNCTION__ << "Cannot set hotspot enabled when WiFi is disabled";
-        return;
+        d->m_killSwitch->setBlock(false);
+        d->nm->setWirelessEnabled(true);
     }
 
-    d->setUnstoppableOperationHappening(true);
     d->m_hotspotManager->setEnabled(enabled);
     d->setUnstoppableOperationHappening(false);
 }

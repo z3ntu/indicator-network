@@ -87,8 +87,7 @@ public Q_SLOTS:
     {
         m_hotspotSwitch->setEnabled(
             !m_manager->unstoppableOperationHappening()
-            && !m_manager->flightMode()
-            && m_manager->wifiEnabled());
+            && !m_manager->flightMode());
     }
 };
 

@@ -1,7 +1,7 @@
 indicator-network (0.5.3-0ubuntu1) UNRELEASED; urgency=medium
 
-  * Link flight, WiFi and hotspot toggles.
-  * Add properties for when different toggles should be enabled.
+  * Link flight, WiFi and hotspot toggles. (LP: #11478159)
+  * Add properties for when different toggles should be enabled. (LP: #1478159)
 
  -- Pete Woods <pete.woods@canonical.com>  Tue, 11 Aug 2015 12:56:36 +0100
 

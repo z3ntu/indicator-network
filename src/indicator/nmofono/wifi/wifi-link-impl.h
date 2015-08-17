@@ -58,6 +58,8 @@ public:
 
     void setHideAccessPoints(bool) override;
 
+    void setDisconnectWifi(bool) override;
+
     Mode mode() const override;
 
     Signal signal() const override;

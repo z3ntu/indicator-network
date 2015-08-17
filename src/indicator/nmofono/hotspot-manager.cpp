@@ -67,7 +67,6 @@ public:
         // Get new settings
         QVariantDictMap new_settings = createConnectionSettings(m_ssid,
                                                                 m_password,
-                                                                m_device_path,
                                                                 m_mode, false);
         auto updating = m_hotspot->Update(new_settings);
         updating.waitForFinished();
@@ -202,18 +201,16 @@ public:
         QStringList arguments;
         arguments << "urfkill.hybris.wlan";
 
-        QProcess *getprop = new QProcess();
-        getprop->start(program, arguments);
+        QProcess getprop;
+        getprop.start(program, arguments);
 
-        if (!getprop->waitForFinished())
+        if (!getprop.waitForFinished())
         {
-            qCritical() << "getprop process failed:" << getprop->errorString();
-            delete getprop;
+            qCritical() << "getprop process failed:" << getprop.errorString();
             return false;
         }
 
-        int index = getprop->readAllStandardOutput().indexOf("1");
-        delete getprop;
+        int index = getprop.readAllStandardOutput().indexOf("1");
 
         // A non-negative integer means getprop returned 1
         return index >= 0;
@@ -231,7 +228,7 @@ public:
             return true;
         }
 
-        if (isHybrisWlan())
+        if (m_isHybrisWlan)
         {
             QDBusInterface wpasIface(wpa_supplicant_service,
                                      wpa_supplicant_path,
@@ -305,9 +302,8 @@ public:
      */
     QVariantDictMap createConnectionSettings(
         const QByteArray &ssid, const QString &password,
-        const QDBusObjectPath &devicePath, QString mode, bool autoConnect = true)
+        QString mode, bool autoConnect = true)
     {
-        Q_UNUSED(devicePath);
         QVariantDictMap connection;
 
         QString s_ssid = QString::fromLatin1(ssid);
@@ -386,7 +382,7 @@ public:
     void addConnection()
     {
         QVariantDictMap connection = createConnectionSettings(m_ssid, m_password,
-                                                              m_device_path, m_mode);
+                                                              m_mode);
 
         auto add_connection_reply = m_settings->AddConnection(connection);
         add_connection_reply.waitForFinished();
@@ -437,39 +433,6 @@ public:
             }
         }
         m_hotspot.reset();
-    }
-
-    /**
-     * Returns a QDBusObjectPath of a wireless device. For now
-     * it returns the first device.
-     */
-    void getWirelessDevice ()
-    {
-        // find the first wlan adapter for now
-        auto reply1 = m_manager->GetDevices();
-        reply1.waitForFinished();
-
-        if(!reply1.isValid()) {
-            qCritical() << "Could not get network device: "
-                << reply1.error().message();
-            m_device_path = QDBusObjectPath();
-            return;
-        }
-        auto devices = reply1.value();
-
-        QDBusObjectPath dev;
-        for (const auto &d : devices) {
-            OrgFreedesktopNetworkManagerDeviceInterface iface(NM_DBUS_SERVICE, d.path(), m_manager->connection());
-            auto type_v = iface.deviceType();
-
-            if (type_v == NM_DEVICE_TYPE_WIFI)
-            {
-                m_device_path = d;
-                return;
-            }
-        }
-        qCritical() << "Wireless device not found, hotspot functionality is inoperative.";
-        m_device_path = dev;
     }
 
     /**
@@ -528,6 +491,22 @@ public:
         }
 
         m_password = QString::fromStdString(result);
+    }
+
+    void setDisconnectWifi(bool disconnect)
+    {
+        if (!m_isHybrisWlan)
+        {
+            return;
+        }
+
+        if (m_disconnectWifi == disconnect)
+        {
+            return;
+        }
+
+        m_disconnectWifi = disconnect;
+        Q_EMIT p.disconnectWifiChanged(m_disconnectWifi);
     }
 
 public Q_SLOTS:
@@ -653,10 +632,11 @@ public:
     QString m_password;
     QByteArray m_ssid = "Ubuntu";
 
-    QDBusObjectPath m_device_path;
-
     QPowerd::UPtr m_powerd;
     QPowerd::RequestSPtr m_wakelock;
+
+    bool m_isHybrisWlan = false;
+    bool m_disconnectWifi = false;
 
     /**
      * NetworkManager dbus interface proxy we will use to query
@@ -680,6 +660,8 @@ public:
 HotspotManager::HotspotManager(const QDBusConnection& connection, QObject *parent) :
         QObject(parent), d(new Priv(*this))
 {
+    d->m_isHybrisWlan = d->isHybrisWlan();
+
     d->m_manager = make_unique<OrgFreedesktopNetworkManagerInterface>(
             NM_DBUS_SERVICE, NM_DBUS_PATH, connection);
     d->m_settings = make_unique<OrgFreedesktopNetworkManagerSettingsInterface>(
@@ -688,7 +670,6 @@ HotspotManager::HotspotManager(const QDBusConnection& connection, QObject *paren
     d->m_powerd = make_unique<QPowerd>(connection);
 
     d->generatePassword();
-    d->getWirelessDevice();
 
     // Stored is false if hotspot path is empty.
     d->getHotspot();
@@ -728,6 +709,8 @@ void HotspotManager::setEnabled(bool value)
         d->setEnable(false);
         return;
     }
+
+    d->setDisconnectWifi(value);
 
     // We are enabling a hotspot
     if (value)
@@ -839,4 +822,9 @@ void HotspotManager::setMode(const QString& value) {
         d->m_mode = value;
         Q_EMIT modeChanged(value);
     }
+}
+
+bool HotspotManager::disconnectWifi() const
+{
+    return d->m_disconnectWifi;
 }

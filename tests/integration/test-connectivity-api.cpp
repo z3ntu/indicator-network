@@ -307,6 +307,13 @@ TEST_F(TestConnectivityApi, WifiToggleTalksToUrfkill)
     ASSERT_EQ(2, flightModeSwitchSpy.size());
     EXPECT_EQ(flightModeSwitchSpy.last(), QVariantList() << QVariant(true));
 
+    if (hotspotSwitchSpy.size() != 2)
+    {
+        ASSERT_TRUE(hotspotSwitchSpy.wait());
+    }
+    ASSERT_EQ(2, hotspotSwitchSpy.size());
+    EXPECT_EQ(hotspotSwitchSpy.last(), QVariantList() << QVariant(true));
+
     if (wifiSwitchSpy.size() != 2)
     {
         ASSERT_TRUE(wifiSwitchSpy.wait());
@@ -325,7 +332,7 @@ TEST_F(TestConnectivityApi, WifiToggleTalksToUrfkill)
     // Check switches are enabled
     EXPECT_TRUE(connectivity->flightModeSwitchEnabled());
     EXPECT_TRUE(connectivity->wifiSwitchEnabled());
-    EXPECT_FALSE(connectivity->hotspotSwitchEnabled());
+    EXPECT_TRUE(connectivity->hotspotSwitchEnabled());
 
     // The icing on the cake
     EXPECT_FALSE(connectivity->wifiEnabled());
@@ -338,7 +345,7 @@ TEST_F(TestConnectivityApi, WifiToggleTalksToUrfkill)
     hotspotSwitchSpy.clear();
     wifiEnabledSpy.clear();
 
-    // Disable flight mode
+    // Enable wifi
     connectivity->setwifiEnabled(true);
 
     // Toggles should be disabled
@@ -352,6 +359,13 @@ TEST_F(TestConnectivityApi, WifiToggleTalksToUrfkill)
     }
     ASSERT_EQ(1, wifiSwitchSpy.size());
     EXPECT_EQ(wifiSwitchSpy.first(), QVariantList() << QVariant(false));
+
+    if (hotspotSwitchSpy.size() != 1)
+    {
+        ASSERT_TRUE(hotspotSwitchSpy.wait());
+    }
+    ASSERT_EQ(1, hotspotSwitchSpy.size());
+    EXPECT_EQ(hotspotSwitchSpy.first(), QVariantList() << QVariant(false));
 
     // Wait to be notified that wifi was toggled
     if (urfkillSpy.size() != 1)
@@ -375,12 +389,12 @@ TEST_F(TestConnectivityApi, WifiToggleTalksToUrfkill)
     ASSERT_EQ(2, wifiSwitchSpy.size());
     EXPECT_EQ(wifiSwitchSpy.last(), QVariantList() << QVariant(true));
 
-    // Hotspot shout become available again
-    if (hotspotSwitchSpy.size() != 1)
+    // Hotspot should become available again
+    if (hotspotSwitchSpy.size() != 2)
     {
         ASSERT_TRUE(hotspotSwitchSpy.wait());
     }
-    ASSERT_EQ(1, hotspotSwitchSpy.size());
+    ASSERT_EQ(2, hotspotSwitchSpy.size());
     EXPECT_EQ(hotspotSwitchSpy.last(), QVariantList() << QVariant(true));
 
     // Wait for wifi enabled property change

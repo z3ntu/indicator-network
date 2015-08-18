@@ -79,6 +79,7 @@ public:
     unique_ptr<QMetaObject::Connection> m_signalStrengthConnection;
     bool m_connecting = false;
     bool m_hideAccessPoints = false;
+    bool m_disconnectWifi = false;
 
     void setStatus(Status status)
     {
@@ -544,6 +545,23 @@ WifiLinkImpl::setHideAccessPoints(bool hide)
     d->m_hideAccessPoints = hide;
     d->update_grouped_access_points();
     d->strengthUpdated();
+}
+
+void
+WifiLinkImpl::setDisconnectWifi(bool disconnect)
+{
+    if (disconnect == d->m_disconnectWifi)
+    {
+        return;
+    }
+
+    d->m_dev->setAutoconnect(!disconnect);
+    if (disconnect && d->m_activeConnection)
+    {
+        // Disconnect from the current network
+        d->m_nm->DeactivateConnection(
+                QDBusObjectPath(d->m_activeConnection->path()));
+    }
 }
 
 }

@@ -185,16 +185,4 @@ WwanSection::menuModel()
     return d->m_topMenu;
 }
 
-void
-WwanSection::unlockAllModems()
-{
-    d->m_manager->unlockAllModems();
-}
-
-void
-WwanSection::unlockModem(const QString &name)
-{
-    d->m_manager->unlockModemByName(name);
-}
-
 #include "wwan-section.moc"

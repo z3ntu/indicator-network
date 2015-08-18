@@ -25,6 +25,11 @@
 
 class Factory;
 
+namespace nmofono
+{
+class Manager;
+}
+
 class MenuBuilder: public QObject
 {
     Q_OBJECT
@@ -33,5 +38,5 @@ class MenuBuilder: public QObject
     std::shared_ptr<Priv> d;
 
 public:
-    MenuBuilder(Factory& factory);
+    MenuBuilder(std::shared_ptr<nmofono::Manager> manager, Factory& factory);
 };

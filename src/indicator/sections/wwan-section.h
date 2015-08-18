@@ -19,6 +19,7 @@
 
 #pragma once
 
+#include <menuitems/switch-item.h>
 #include <menuitems/section.h>
 #include <nmofono/manager.h>
 
@@ -29,7 +30,7 @@ class WwanSection : public Section
 
 public:
     typedef std::shared_ptr<WwanSection> Ptr;
-    explicit WwanSection(nmofono::Manager::Ptr modemManager);
+    explicit WwanSection(nmofono::Manager::Ptr modemManager, SwitchItem::Ptr hotspotSwitch);
     virtual ~WwanSection();
 
     virtual ActionGroup::Ptr actionGroup();

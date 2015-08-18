@@ -256,7 +256,7 @@ bool ConnectivityService::wifiEnabled() const
 
 bool ConnectivityService::flightMode() const
 {
-    return (d->m_manager->flightMode() == Manager::FlightModeStatus::on);
+    return d->m_manager->flightMode();
 }
 
 bool ConnectivityService::flightModeSwitchEnabled() const
@@ -272,8 +272,8 @@ bool ConnectivityService::wifiSwitchEnabled() const
 bool ConnectivityService::hotspotSwitchEnabled() const
 {
     return !d->m_manager->unstoppableOperationHappening()
-            && (d->m_manager->flightMode() == Manager::FlightModeStatus::off)
-            && (d->m_manager->wifiEnabled());
+            && !d->m_manager->flightMode()
+            && d->m_manager->wifiEnabled();
 }
 
 bool ConnectivityService::hotspotEnabled() const

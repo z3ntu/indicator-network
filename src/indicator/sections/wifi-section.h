@@ -31,7 +31,7 @@ class WifiSection : public Section
 
 public:
     typedef std::shared_ptr<WifiSection> Ptr;
-    explicit WifiSection(nmofono::Manager::Ptr manager);
+    explicit WifiSection(nmofono::Manager::Ptr manager, SwitchItem::Ptr wifiSwitch);
     virtual ~WifiSection();
 
     // from Section
@@ -39,5 +39,4 @@ public:
     virtual MenuModel::Ptr menuModel();
 
     MenuModel::Ptr settingsModel();
-    SwitchItem::Ptr wifiSwitch();
 };

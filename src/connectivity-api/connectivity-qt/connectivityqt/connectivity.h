@@ -73,6 +73,7 @@ public:
 
     ~Connectivity();
 
+    Q_PROPERTY(bool flightMode READ flightMode WRITE setFlightMode NOTIFY flightModeUpdated)
     Q_PROPERTY(bool FlightMode READ flightMode WRITE setFlightMode NOTIFY flightModeUpdated)
     bool flightMode() const;
 
@@ -88,6 +89,7 @@ public:
     Q_PROPERTY(connectivityqt::Connectivity::Status Status READ status NOTIFY statusUpdated)
     Status status() const;
 
+    Q_PROPERTY(bool wifiEnabled READ wifiEnabled WRITE setwifiEnabled NOTIFY wifiEnabledUpdated)
     Q_PROPERTY(bool WifiEnabled READ wifiEnabled WRITE setwifiEnabled NOTIFY wifiEnabledUpdated)
     bool wifiEnabled() const;
 
@@ -95,12 +97,15 @@ public:
     bool unstoppableOperationHappening() const;
 
     Q_PROPERTY(bool FlightModeSwitchEnabled READ flightModeSwitchEnabled NOTIFY flightModeSwitchEnabledUpdated)
+    Q_PROPERTY(bool flightModeSwitchEnabled READ flightModeSwitchEnabled NOTIFY flightModeSwitchEnabledUpdated)
     bool flightModeSwitchEnabled() const;
 
     Q_PROPERTY(bool WifiSwitchEnabled READ wifiSwitchEnabled NOTIFY wifiSwitchEnabledUpdated)
+    Q_PROPERTY(bool wifiSwitchEnabled READ wifiSwitchEnabled NOTIFY wifiSwitchEnabledUpdated)
     bool wifiSwitchEnabled() const;
 
     Q_PROPERTY(bool HotspotSwitchEnabled READ hotspotSwitchEnabled NOTIFY hotspotSwitchEnabledUpdated)
+    Q_PROPERTY(bool hotspotSwitchEnabled READ hotspotSwitchEnabled NOTIFY hotspotSwitchEnabledUpdated)
     bool hotspotSwitchEnabled() const;
 
     Q_PROPERTY(QByteArray hotspotSsid READ hotspotSsid WRITE setHotspotSsid NOTIFY hotspotSsidUpdated)

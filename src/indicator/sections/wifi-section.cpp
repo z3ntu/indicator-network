@@ -48,26 +48,19 @@ public:
     WifiLinkItem::Ptr m_wifiLink;
     TextItem::Ptr m_openWifiSettings;
 
-    Private(Manager::Ptr manager)
-        : m_manager{manager}
+    Private(Manager::Ptr manager, SwitchItem::Ptr wifiSwitch)
+        : m_manager{manager}, m_switch{wifiSwitch}
     {
         m_actionGroupMerger = std::make_shared<ActionGroupMerger>();
         m_menu = std::make_shared<Menu>();
         m_settingsMenu = std::make_shared<Menu>();
 
-        m_switch = std::make_shared<SwitchItem>(_("Wi-Fi"), "wifi", "enable");
-
         /// @todo don't now really care about actully being able to detach the whole
         ///       wifi chipset. on touch devices we always have wifi.
         if (m_manager->hasWifi()) {
-            m_actionGroupMerger->add(m_switch->actionGroup());
             m_menu->append(m_switch->menuItem());
             m_settingsMenu->append(m_switch->menuItem());
         }
-
-        m_switch->setState(m_manager->wifiEnabled());
-        connect(m_manager.get(), &Manager::wifiEnabledUpdated, m_switch.get(), &SwitchItem::setState);
-        connect(m_switch.get(), &SwitchItem::stateUpdated, m_manager.get(), &Manager::setWifiEnabled);
 
         m_openWifiSettings = std::make_shared<TextItem>(_("Wi-Fi settings…"), "wifi", "settings");
         connect(m_openWifiSettings.get(), &TextItem::activated, this, &Private::openWiFiSettings);
@@ -117,8 +110,8 @@ public Q_SLOTS:
     }
 };
 
-WifiSection::WifiSection(Manager::Ptr manager)
-    : d{new Private(manager)}
+WifiSection::WifiSection(Manager::Ptr manager, SwitchItem::Ptr wifiSwitch)
+    : d{new Private(manager, wifiSwitch)}
 {
 }
 
@@ -141,12 +134,6 @@ MenuModel::Ptr
 WifiSection::settingsModel()
 {
     return d->m_settingsMenu;
-}
-
-SwitchItem::Ptr
-WifiSection::wifiSwitch()
-{
-    return d->m_switch;
 }
 
 #include "wifi-section.moc"

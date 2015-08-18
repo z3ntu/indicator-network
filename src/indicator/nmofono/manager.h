@@ -58,12 +58,6 @@ public:
     virtual ~Manager()                 = default;
     Manager(const Manager&)            = delete;
 
-    /// @private
-    enum class FlightModeStatus {
-        on,
-        off
-    };
-
     /**
      * @brief enum class for networking status
      *
@@ -81,8 +75,8 @@ public:
     };
 
     /// @private
-    Q_PROPERTY(Manager::FlightModeStatus flightMode READ flightMode NOTIFY flightModeUpdated)
-    virtual FlightModeStatus flightMode() const = 0;
+    Q_PROPERTY(bool flightMode READ flightMode NOTIFY flightModeUpdated)
+    virtual bool flightMode() const = 0;
 
     Q_PROPERTY(bool unstoppableOperationHappening READ unstoppableOperationHappening NOTIFY unstoppableOperationHappeningUpdated)
     virtual bool unstoppableOperationHappening() const = 0;
@@ -144,7 +138,7 @@ public:
     virtual QString hotspotMode() const = 0;
 
 Q_SIGNALS:
-    void flightModeUpdated(FlightModeStatus);
+    void flightModeUpdated(bool);
 
     void linksUpdated();
 

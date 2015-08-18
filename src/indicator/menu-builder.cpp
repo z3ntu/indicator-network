@@ -22,8 +22,13 @@
 
 using namespace std;
 
-struct MenuBuilder::Priv
+struct MenuBuilder::Priv: public QObject
 {
+    Q_OBJECT
+
+public:
+    nmofono::Manager::Ptr m_manager;
+
     IndicatorMenu::Ptr m_desktopMenu;
     IndicatorMenu::Ptr m_desktopGreeterMenu;
 
@@ -36,6 +41,10 @@ struct MenuBuilder::Priv
     IndicatorMenu::Ptr m_ubiquityMenu;
 
     RootState::Ptr m_rootState;
+
+    SwitchItem::Ptr m_flightModeSwitch;
+    SwitchItem::Ptr m_hotspotSwitch;
+    SwitchItem::Ptr m_wifiSwitch;
 
     QuickAccessSection::Ptr m_quickAccessSection;
     WifiSection::Ptr m_wifiSection;
@@ -59,11 +68,35 @@ struct MenuBuilder::Priv
     ActionGroupMerger::UPtr m_actionGroupMerger;
 
     BusName::UPtr m_busName;
+
+public Q_SLOTS:
+    void unstoppableOperationHappeningUpdated(bool happening)
+    {
+        m_flightModeSwitch->setEnabled(!happening);
+        m_wifiSwitch->setEnabled(!happening);
+        updateHotspotSwitch();
+
+        if (happening)
+        {
+            // Give the GActionGroup a chance to emit its Changed signal
+            runGMainloop();
+        }
+    }
+
+    void updateHotspotSwitch()
+    {
+        m_hotspotSwitch->setEnabled(
+            !m_manager->unstoppableOperationHappening()
+            && !m_manager->flightMode()
+            && m_manager->wifiEnabled());
+    }
 };
 
-MenuBuilder::MenuBuilder(Factory& factory) :
+MenuBuilder::MenuBuilder(nmofono::Manager::Ptr manager, Factory& factory) :
         d(new Priv)
 {
+    d->m_manager = manager;
+
     d->m_rootState = factory.newRootState();
 
     d->m_desktopMenu = factory.newIndicatorMenu(d->m_rootState, "desktop");
@@ -77,9 +110,23 @@ MenuBuilder::MenuBuilder(Factory& factory) :
 
     d->m_ubiquityMenu = factory.newIndicatorMenu(d->m_rootState, "ubiquity");
 
-    d->m_wifiSection = factory.newWiFiSection();
-    d->m_quickAccessSection = factory.newQuickAccessSection(d->m_wifiSection->wifiSwitch());
-    d->m_wwanSection = factory.newWwanSection();
+    d->m_flightModeSwitch = factory.newFlightModeSwitch();
+    d->m_hotspotSwitch = factory.newHotspotSwitch();
+    d->m_wifiSwitch = factory.newWifiSwitch();
+
+    // Connect the unstoppable operation property to the toggle enabled properties
+    connect(d->m_manager.get(), &nmofono::Manager::unstoppableOperationHappeningUpdated,
+            d.get(), &Priv::unstoppableOperationHappeningUpdated);
+
+    // Hotspot enabled toggle is also controlled by flight and WiFi status
+    connect(d->m_manager.get(), &nmofono::Manager::flightModeUpdated,
+            d.get(), &Priv::updateHotspotSwitch);
+    connect(d->m_manager.get(), &nmofono::Manager::wifiEnabledUpdated,
+            d.get(), &Priv::updateHotspotSwitch);
+
+    d->m_quickAccessSection = factory.newQuickAccessSection(d->m_flightModeSwitch);
+    d->m_wwanSection = factory.newWwanSection(d->m_hotspotSwitch);
+    d->m_wifiSection = factory.newWiFiSection(d->m_wifiSwitch);
 
     d->m_desktopMenu->addSection(d->m_quickAccessSection);
     d->m_desktopGreeterMenu->addSection(d->m_quickAccessSection);
@@ -112,6 +159,9 @@ MenuBuilder::MenuBuilder(Factory& factory) :
 
     // we have a single actiongroup for all the menus.
     d->m_actionGroupMerger = factory.newActionGroupMerger();
+    d->m_actionGroupMerger->add(d->m_flightModeSwitch->actionGroup());
+    d->m_actionGroupMerger->add(d->m_wifiSwitch->actionGroup());
+    d->m_actionGroupMerger->add(d->m_hotspotSwitch->actionGroup());
     d->m_actionGroupMerger->add(d->m_desktopMenu->actionGroup());
     d->m_actionGroupMerger->add(d->m_desktopGreeterMenu->actionGroup());
     d->m_actionGroupMerger->add(d->m_phoneMenu->actionGroup());
@@ -131,3 +181,5 @@ MenuBuilder::MenuBuilder(Factory& factory) :
 #endif
                                 });
 }
+
+#include "menu-builder.moc"

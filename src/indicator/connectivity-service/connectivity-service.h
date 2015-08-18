@@ -56,8 +56,14 @@ public:
     Q_PROPERTY(bool FlightMode READ flightMode)
     bool flightMode() const;
 
-    Q_PROPERTY(bool UnstoppableOperationHappening READ unstoppableOperationHappening)
-    bool unstoppableOperationHappening() const;
+    Q_PROPERTY(bool FlightModeSwitchEnabled READ flightModeSwitchEnabled)
+    bool flightModeSwitchEnabled() const;
+
+    Q_PROPERTY(bool WifiSwitchEnabled READ wifiSwitchEnabled)
+    bool wifiSwitchEnabled() const;
+
+    Q_PROPERTY(bool HotspotSwitchEnabled READ hotspotSwitchEnabled)
+    bool hotspotSwitchEnabled() const;
 
     Q_PROPERTY(bool HotspotEnabled READ hotspotEnabled)
     bool hotspotEnabled() const;

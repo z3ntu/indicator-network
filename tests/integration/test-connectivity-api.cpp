@@ -105,19 +105,35 @@ TEST_F(TestConnectivityApi, FlightModeTalksToURfkill)
     // Follow the flightMode property
     QSignalSpy flightModeSpy(connectivity.get(), SIGNAL(flightModeUpdated(bool)));
 
-    // Follow the unstoppableOperationHappening property
-    QSignalSpy operationSpy(connectivity.get(), SIGNAL(unstoppableOperationHappeningUpdated(bool)));
+    // Follow the switch enabled properties
+    QSignalSpy flightModeSwitchSpy(connectivity.get(), SIGNAL(flightModeSwitchEnabledUpdated(bool)));
+    QSignalSpy wifiSwitchSpy(connectivity.get(), SIGNAL(wifiSwitchEnabledUpdated(bool)));
+    QSignalSpy hotspotSwitchSpy(connectivity.get(), SIGNAL(hotspotSwitchEnabledUpdated(bool)));
 
     // Check that nothing is happening yet
-    EXPECT_FALSE(connectivity->unstoppableOperationHappening());
+    EXPECT_TRUE(connectivity->flightModeSwitchEnabled());
+    EXPECT_TRUE(connectivity->wifiSwitchEnabled());
+    EXPECT_TRUE(connectivity->hotspotSwitchEnabled());
 
     // Enable flight mode
     connectivity->setFlightMode(true);
 
-    // We should first get the unstoppable operation change
-    ASSERT_TRUE(operationSpy.wait());
-    ASSERT_EQ(1, operationSpy.size());
-    EXPECT_EQ(operationSpy.first(), QVariantList() << QVariant(true));
+    // We should first get the switch disabled change
+    ASSERT_TRUE(flightModeSwitchSpy.wait());
+    ASSERT_EQ(1, flightModeSwitchSpy.size());
+    EXPECT_EQ(flightModeSwitchSpy.first(), QVariantList() << QVariant(false));
+    if (wifiSwitchSpy.size() != 1)
+    {
+        ASSERT_TRUE(wifiSwitchSpy.wait());
+    }
+    ASSERT_EQ(1, wifiSwitchSpy.size());
+    EXPECT_EQ(wifiSwitchSpy.first(), QVariantList() << QVariant(false));
+    if (hotspotSwitchSpy.size() != 1)
+    {
+        ASSERT_TRUE(hotspotSwitchSpy.wait());
+    }
+    ASSERT_EQ(1, hotspotSwitchSpy.size());
+    EXPECT_EQ(hotspotSwitchSpy.first(), QVariantList() << QVariant(false));
 
     // Wait to be notified that flight mode was enabled
     if (urfkillSpy.size() != 1)
@@ -127,13 +143,19 @@ TEST_F(TestConnectivityApi, FlightModeTalksToURfkill)
     ASSERT_EQ(1, urfkillSpy.size());
     EXPECT_EQ(urfkillSpy.first(), QVariantList() << QVariant(true));
 
-    // The unstoppable operation should complete
-    if (operationSpy.size() != 2)
+    // The switch enabled change should complete
+    if (flightModeSwitchSpy.size() != 2)
     {
-        ASSERT_TRUE(operationSpy.wait());
+        ASSERT_TRUE(flightModeSwitchSpy.wait());
     }
-    ASSERT_EQ(2, operationSpy.size());
-    EXPECT_EQ(operationSpy.last(), QVariantList() << QVariant(false));
+    ASSERT_EQ(2, flightModeSwitchSpy.size());
+    EXPECT_EQ(flightModeSwitchSpy.last(), QVariantList() << QVariant(true));
+    if (wifiSwitchSpy.size() != 2)
+    {
+        ASSERT_TRUE(wifiSwitchSpy.wait());
+    }
+    ASSERT_EQ(2, wifiSwitchSpy.size());
+    EXPECT_EQ(wifiSwitchSpy.last(), QVariantList() << QVariant(true));
 
     // Wait for flight mode property change
     if (flightModeSpy.size() != 1)
@@ -144,23 +166,35 @@ TEST_F(TestConnectivityApi, FlightModeTalksToURfkill)
     EXPECT_EQ(flightModeSpy.first(), QVariantList() << QVariant(true));
 
     // Check that nothing is happening again
-    EXPECT_FALSE(connectivity->unstoppableOperationHappening());
+    EXPECT_TRUE(connectivity->flightModeSwitchEnabled());
+    EXPECT_TRUE(connectivity->wifiSwitchEnabled());
+
+    // Hotspot not available when in flight mode
+    EXPECT_FALSE(connectivity->hotspotSwitchEnabled());
 
     // The icing on the cake
     EXPECT_TRUE(connectivity->flightMode());
 
     // Start again
     urfkillSpy.clear();
-    operationSpy.clear();
+    flightModeSwitchSpy.clear();
+    wifiSwitchSpy.clear();
+    hotspotSwitchSpy.clear();
     flightModeSpy.clear();
 
     // Disable flight mode
     connectivity->setFlightMode(false);
 
     // We should first get the unstoppable operation change
-    ASSERT_TRUE(operationSpy.wait());
-    ASSERT_EQ(1, operationSpy.size());
-    EXPECT_EQ(operationSpy.first(), QVariantList() << QVariant(true));
+    ASSERT_TRUE(flightModeSwitchSpy.wait());
+    ASSERT_EQ(1, flightModeSwitchSpy.size());
+    EXPECT_EQ(flightModeSwitchSpy.first(), QVariantList() << QVariant(false));
+    if (wifiSwitchSpy.size() != 1)
+    {
+        ASSERT_TRUE(wifiSwitchSpy.wait());
+    }
+    ASSERT_EQ(1, wifiSwitchSpy.size());
+    EXPECT_EQ(wifiSwitchSpy.first(), QVariantList() << QVariant(false));
 
     // Wait to be notified that flight mode was disabled
     if (urfkillSpy.size() != 1)
@@ -170,13 +204,25 @@ TEST_F(TestConnectivityApi, FlightModeTalksToURfkill)
     ASSERT_EQ(1, urfkillSpy.size());
     EXPECT_EQ(urfkillSpy.first(), QVariantList() << QVariant(false));
 
-    // The unstoppable operation should complete
-    if (operationSpy.size() != 2)
+    // The toggles should become enabled again
+    if (flightModeSwitchSpy.size() != 2)
     {
-        ASSERT_TRUE(operationSpy.wait());
+        ASSERT_TRUE(flightModeSwitchSpy.wait());
     }
-    ASSERT_EQ(2, operationSpy.size());
-    EXPECT_EQ(operationSpy.last(), QVariantList() << QVariant(false));
+    ASSERT_EQ(2, flightModeSwitchSpy.size());
+    EXPECT_EQ(wifiSwitchSpy.last(), QVariantList() << QVariant(true));
+    if (wifiSwitchSpy.size() != 2)
+    {
+        ASSERT_TRUE(wifiSwitchSpy.wait());
+    }
+    ASSERT_EQ(2, wifiSwitchSpy.size());
+    EXPECT_EQ(wifiSwitchSpy.last(), QVariantList() << QVariant(true));
+    if (hotspotSwitchSpy.size() != 1)
+    {
+        ASSERT_TRUE(hotspotSwitchSpy.wait());
+    }
+    ASSERT_EQ(1, hotspotSwitchSpy.size());
+    EXPECT_EQ(hotspotSwitchSpy.first(), QVariantList() << QVariant(true));
 
     // Wait for flight mode property change
     if (flightModeSpy.size() != 1)
@@ -187,7 +233,9 @@ TEST_F(TestConnectivityApi, FlightModeTalksToURfkill)
     EXPECT_EQ(flightModeSpy.first(), QVariantList() << QVariant(false));
 
     // Check that nothing is happening again
-    EXPECT_FALSE(connectivity->unstoppableOperationHappening());
+    EXPECT_TRUE(connectivity->flightModeSwitchEnabled());
+    EXPECT_TRUE(connectivity->wifiSwitchEnabled());
+    EXPECT_TRUE(connectivity->hotspotSwitchEnabled());
 
     // The icing on the cake
     EXPECT_FALSE(connectivity->flightMode());
@@ -210,21 +258,39 @@ TEST_F(TestConnectivityApi, WifiToggleTalksToUrfkill)
     // Follow the wifiEnabled property
     QSignalSpy wifiEnabledSpy(connectivity.get(), SIGNAL(wifiEnabledUpdated(bool)));
 
-    // Follow the unstoppableOperationHappening property
-    QSignalSpy operationSpy(connectivity.get(), SIGNAL(unstoppableOperationHappeningUpdated(bool)));
+    // Follow the switch enabled properties
+    QSignalSpy flightModeSwitchSpy(connectivity.get(), SIGNAL(flightModeSwitchEnabledUpdated(bool)));
+    QSignalSpy wifiSwitchSpy(connectivity.get(), SIGNAL(wifiSwitchEnabledUpdated(bool)));
+    QSignalSpy hotspotSwitchSpy(connectivity.get(), SIGNAL(hotspotSwitchEnabledUpdated(bool)));
 
     // Check that nothing is happening yet
-    EXPECT_FALSE(connectivity->unstoppableOperationHappening());
+    EXPECT_TRUE(connectivity->flightModeSwitchEnabled());
+    EXPECT_TRUE(connectivity->wifiSwitchEnabled());
+    EXPECT_TRUE(connectivity->hotspotSwitchEnabled());
     EXPECT_TRUE(connectivity->wifiEnabled());
     EXPECT_EQ(0, wifiKillswitchInterface.state());
 
     // Disable WiFi
     connectivity->setwifiEnabled(false);
 
-    // We should first get the unstoppable operation change
-    ASSERT_TRUE(operationSpy.wait());
-    ASSERT_EQ(1, operationSpy.size());
-    EXPECT_EQ(operationSpy.first(), QVariantList() << QVariant(true));
+    // Check the switch enabled flags change
+    ASSERT_TRUE(flightModeSwitchSpy.wait());
+    ASSERT_EQ(1, flightModeSwitchSpy.size());
+    EXPECT_EQ(flightModeSwitchSpy.first(), QVariantList() << QVariant(false));
+
+    if (wifiSwitchSpy.size() != 1)
+    {
+        ASSERT_TRUE(wifiSwitchSpy.wait());
+    }
+    ASSERT_EQ(1, wifiSwitchSpy.size());
+    EXPECT_EQ(wifiSwitchSpy.first(), QVariantList() << QVariant(false));
+
+    if (hotspotSwitchSpy.size() != 1)
+    {
+        ASSERT_TRUE(hotspotSwitchSpy.wait());
+    }
+    ASSERT_EQ(1, hotspotSwitchSpy.size());
+    EXPECT_EQ(hotspotSwitchSpy.first(), QVariantList() << QVariant(false));
 
     // Wait to be notified that wifi was toggled
     if (urfkillSpy.size() != 1)
@@ -233,13 +299,20 @@ TEST_F(TestConnectivityApi, WifiToggleTalksToUrfkill)
     }
     ASSERT_EQ(1, urfkillSpy.size());
 
-    // The unstoppable operation should complete
-    if (operationSpy.size() != 2)
+    // Switch should be re-enabled now
+    if (flightModeSwitchSpy.size() != 2)
     {
-        ASSERT_TRUE(operationSpy.wait());
+        ASSERT_TRUE(flightModeSwitchSpy.wait());
     }
-    ASSERT_EQ(2, operationSpy.size());
-    EXPECT_EQ(operationSpy.last(), QVariantList() << QVariant(false));
+    ASSERT_EQ(2, flightModeSwitchSpy.size());
+    EXPECT_EQ(flightModeSwitchSpy.last(), QVariantList() << QVariant(true));
+
+    if (wifiSwitchSpy.size() != 2)
+    {
+        ASSERT_TRUE(wifiSwitchSpy.wait());
+    }
+    ASSERT_EQ(2, wifiSwitchSpy.size());
+    EXPECT_EQ(wifiSwitchSpy.last(), QVariantList() << QVariant(true));
 
     // Wait for wifi enabled property change
     if (wifiEnabledSpy.size() != 1)
@@ -249,8 +322,10 @@ TEST_F(TestConnectivityApi, WifiToggleTalksToUrfkill)
     ASSERT_EQ(1, wifiEnabledSpy.size());
     EXPECT_EQ(wifiEnabledSpy.first(), QVariantList() << QVariant(false));
 
-    // Check that nothing is happening again
-    EXPECT_FALSE(connectivity->unstoppableOperationHappening());
+    // Check switches are enabled
+    EXPECT_TRUE(connectivity->flightModeSwitchEnabled());
+    EXPECT_TRUE(connectivity->wifiSwitchEnabled());
+    EXPECT_FALSE(connectivity->hotspotSwitchEnabled());
 
     // The icing on the cake
     EXPECT_FALSE(connectivity->wifiEnabled());
@@ -258,16 +333,25 @@ TEST_F(TestConnectivityApi, WifiToggleTalksToUrfkill)
 
     // Start again
     urfkillSpy.clear();
-    operationSpy.clear();
+    flightModeSwitchSpy.clear();
+    wifiSwitchSpy.clear();
+    hotspotSwitchSpy.clear();
     wifiEnabledSpy.clear();
 
     // Disable flight mode
     connectivity->setwifiEnabled(true);
 
-    // We should first get the unstoppable operation change
-    ASSERT_TRUE(operationSpy.wait());
-    ASSERT_EQ(1, operationSpy.size());
-    EXPECT_EQ(operationSpy.first(), QVariantList() << QVariant(true));
+    // Toggles should be disabled
+    ASSERT_TRUE(flightModeSwitchSpy.wait());
+    ASSERT_EQ(1, flightModeSwitchSpy.size());
+    EXPECT_EQ(flightModeSwitchSpy.first(), QVariantList() << QVariant(false));
+
+    if (wifiSwitchSpy.size() != 1)
+    {
+        ASSERT_TRUE(wifiSwitchSpy.wait());
+    }
+    ASSERT_EQ(1, wifiSwitchSpy.size());
+    EXPECT_EQ(wifiSwitchSpy.first(), QVariantList() << QVariant(false));
 
     // Wait to be notified that wifi was toggled
     if (urfkillSpy.size() != 1)
@@ -276,13 +360,28 @@ TEST_F(TestConnectivityApi, WifiToggleTalksToUrfkill)
     }
     ASSERT_EQ(1, urfkillSpy.size());
 
-    // The unstoppable operation should complete
-    if (operationSpy.size() != 2)
+    // Toggles should be re-enabled
+    if (flightModeSwitchSpy.size() != 2)
     {
-        ASSERT_TRUE(operationSpy.wait());
+        ASSERT_TRUE(flightModeSwitchSpy.wait());
     }
-    ASSERT_EQ(2, operationSpy.size());
-    EXPECT_EQ(operationSpy.last(), QVariantList() << QVariant(false));
+    ASSERT_EQ(2, flightModeSwitchSpy.size());
+    EXPECT_EQ(wifiSwitchSpy.last(), QVariantList() << QVariant(true));
+
+    if (wifiSwitchSpy.size() != 2)
+    {
+        ASSERT_TRUE(wifiSwitchSpy.wait());
+    }
+    ASSERT_EQ(2, wifiSwitchSpy.size());
+    EXPECT_EQ(wifiSwitchSpy.last(), QVariantList() << QVariant(true));
+
+    // Hotspot shout become available again
+    if (hotspotSwitchSpy.size() != 1)
+    {
+        ASSERT_TRUE(hotspotSwitchSpy.wait());
+    }
+    ASSERT_EQ(1, hotspotSwitchSpy.size());
+    EXPECT_EQ(hotspotSwitchSpy.last(), QVariantList() << QVariant(true));
 
     // Wait for wifi enabled property change
     if (wifiEnabledSpy.size() != 1)
@@ -292,8 +391,10 @@ TEST_F(TestConnectivityApi, WifiToggleTalksToUrfkill)
     ASSERT_EQ(1, wifiEnabledSpy.size());
     EXPECT_EQ(wifiEnabledSpy.first(), QVariantList() << QVariant(true));
 
-    // Check that nothing is happening again
-    EXPECT_FALSE(connectivity->unstoppableOperationHappening());
+    // All toggles should be enabled
+    EXPECT_TRUE(connectivity->flightModeSwitchEnabled());
+    EXPECT_TRUE(connectivity->wifiSwitchEnabled());
+    EXPECT_TRUE(connectivity->hotspotSwitchEnabled());
 
     // The icing on the cake
     EXPECT_TRUE(connectivity->wifiEnabled());

@@ -62,7 +62,5 @@ main(int argc, char **argv)
     auto secretAgent = factory.newSecretAgent();
     auto connectivityService = factory.newConnectivityService();
 
-    QObject::connect(connectivityService.get(), &ConnectivityService::unlockAllModems, menu.get(), &MenuBuilder::unlockAllModems);
-    QObject::connect(connectivityService.get(), &ConnectivityService::unlockModem, menu.get(), &MenuBuilder::unlockModem);
     return app.exec();
 }

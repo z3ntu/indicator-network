@@ -88,6 +88,21 @@ public:
 
     bool operator==(const Variant &rhs) const
     {
+        if (!m_variant && !rhs.m_variant)
+        {
+            return true;
+        }
+
+        if (!m_variant && rhs.m_variant)
+        {
+            return false;
+        }
+
+        if (m_variant && !rhs.m_variant)
+        {
+            return false;
+        }
+
         if (g_variant_is_container(m_variant.get()) || g_variant_is_container(rhs.m_variant.get()))
         {
             // Compare by string

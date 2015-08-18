@@ -40,13 +40,10 @@ public:
 
     Manager::Ptr m_manager;
     Variant m_state;
-    wifi::AccessPoint::Ptr m_activeAP;
-    unique_ptr<QMetaObject::Connection> m_activeAP_conn;
 
     string m_label;
 
-    /// @todo multiple adapters etc..
-    QString m_networkingIcon;
+    QStringList m_networkingIcons;
 
     QMap<int, QString> m_cellularIcons;
     QMap<int, QString> m_modemTechIcons;
@@ -73,6 +70,7 @@ RootState::Private::Private(RootState& parent, nmofono::Manager::Ptr manager)
 {
     connect(m_manager.get(), &nmofono::Manager::flightModeUpdated, this, &Private::updateRootState);
 
+    connect(m_manager.get(), &nmofono::Manager::hotspotEnabledChanged, this, &Private::updateNetworkingIcon);
     connect(m_manager.get(), &Manager::statusUpdated, this, &Private::updateNetworkingIcon);
     connect(m_manager.get(), &Manager::linksUpdated, this, &Private::updateNetworkingIcon);
 
@@ -180,98 +178,58 @@ RootState::Private::updateModem(const wwan::Modem& modem)
 void
 RootState::Private::updateNetworkingIcon()
 {
-    m_networkingIcon.clear();
+    m_networkingIcons.clear();
 
     updateModems();
 
     switch (m_manager->status()) {
     case Manager::NetworkingStatus::offline:
-        m_networkingIcon = "nm-no-connection";
+        m_networkingIcons << "nm-no-connection";
         //a11ydesc = _("Network (none)");
         break;
     case Manager::NetworkingStatus::connecting:
-        m_networkingIcon = "nm-no-connection";
+        m_networkingIcons << "nm-no-connection";
         // some sort of connection animation
         break;
     case Manager::NetworkingStatus::online:
         for (auto wifiLink : m_manager->wifiLinks())
         {
-            if (wifiLink->status() != Link::Status::online)
+            connect(wifiLink.get(), &wifi::WifiLink::statusUpdated, this,
+                    &Private::updateNetworkingIcon, Qt::UniqueConnection);
+            connect(wifiLink.get(), &wifi::WifiLink::signalUpdated, this,
+                    &Private::updateNetworkingIcon, Qt::UniqueConnection);
+
+            if (wifiLink->status() != Link::Status::online
+                    && wifiLink->status() != Link::Status::connected)
             {
                 continue;
             }
 
-            int strength = -1;
-            bool secured = false;
-
-            // check if the currently active AP has changed
-            if (m_activeAP != wifiLink->activeAccessPoint())
+            auto signal = wifiLink->signal();
+            if (signal != wifi::WifiLink::Signal::disconnected)
             {
-                // locally store the active AP
-                m_activeAP = wifiLink->activeAccessPoint();
-                if (m_activeAP)
-                {
-                    // connect updateNetworkingIcon() to changes in AP strength
-                    auto c = QObject::connect(
-                            m_activeAP.get(),
-                            &wifi::AccessPoint::strengthUpdated,
-                            this,
-                            &Private::updateNetworkingIcon);
-
-                    if (m_activeAP_conn)
-                    {
-                        disconnect(*m_activeAP_conn);
-                    }
-                    m_activeAP_conn.reset(new QMetaObject::Connection(c));
-                }
-                else
-                {
-                    // there is no active AP, so we disconnect from strength updates
-                    if (m_activeAP_conn)
-                    {
-                        disconnect(*m_activeAP_conn);
-                        m_activeAP_conn.release();
-                    }
-                }
-            }
-
-            if (m_activeAP) {
-                strength = m_activeAP->strength();
-                secured  = m_activeAP->secured();
-            }
-
-            /// @todo deal with a11ydesc
-//                gchar *a11ydesc = nullptr;
-//                if (secured) {
-//                    a11ydesc = g_strdup_printf(_("Network (wireless, %d%%, secure)"), strength);
-//                } else {
-//                    a11ydesc = g_strdup_printf(_("Network (wireless, %d%%)"), strength);
-//                }
-//                m_a11ydesc = {a11ydesc};
-//                g_free(a11ydesc);
-
-            if (strength >= 80) {
-                m_networkingIcon = secured ? "nm-signal-100-secure" : "nm-signal-100";
-            } else if (strength >= 60) {
-                m_networkingIcon = secured ? "nm-signal-75-secure" : "nm-signal-75";
-            } else if (strength >= 40) {
-                m_networkingIcon = secured ? "nm-signal-50-secure" : "nm-signal-50";
-            } else if (strength >= 20) {
-                m_networkingIcon = secured ? "nm-signal-25-secure" : "nm-signal-25";
-            } else {
-                m_networkingIcon = secured ? "nm-signal-0-secure" : "nm-signal-0";
+                m_networkingIcons << Icons::wifiIcon(signal);
             }
         }
 
-        if (m_networkingIcon.isEmpty())
+        // Splat WiFi icons if we are using the hotspot
+        if (m_networkingIcons.isEmpty() || m_manager->hotspotEnabled())
         {
+            m_networkingIcons.clear();
+
             if (m_activeModem != -1) {
                 auto it = m_modemTechIcons.find(m_activeModem);
                 if (it != m_modemTechIcons.end())
                 {
-                    m_networkingIcon = it.value();
+                    m_networkingIcons << it.value();
                 }
             }
+        }
+
+        if (m_manager->hotspotEnabled())
+        {
+            // FIXME Temporary value, needs adding to theme
+            m_networkingIcons << "/usr/share/ubuntu/settings/system/icons/settings-hotspot.svg";
         }
         break;
     }
@@ -328,16 +286,19 @@ RootState::Private::updateRootState()
         icons.push_back("network-cellular-roaming");
     }
 
-    if (!m_networkingIcon.isEmpty()) {
+    if (!m_networkingIcons.isEmpty()) {
         /* We're doing icon always right now so we have a fallback before everyone
            supports multi-icon.  We shouldn't set both in the future. */
         try {
-            state["icon"] = createIcon(m_networkingIcon.toStdString());
+            state["icon"] = createIcon(m_networkingIcons.first().toStdString());
         } catch (exception &e) {
             qWarning() << __PRETTY_FUNCTION__ << e.what();
         }
 
-        icons.push_back(m_networkingIcon.toStdString());
+        for (const auto& icon: m_networkingIcons)
+        {
+            icons.push_back(icon.toStdString());
+        }
     }
 
     if (!m_label.empty())
@@ -364,7 +325,13 @@ RootState::Private::updateRootState()
         state["icons"] = TypedVariant<vector<Variant>>(iconVariants);
     }
 
-    m_state = TypedVariant<map<string, Variant>>(state);
+    TypedVariant<map<string, Variant>> new_state(state);
+    if (m_state == new_state)
+    {
+        return;
+    }
+
+    m_state = new_state;
     Q_EMIT p.stateUpdated(m_state);
 }
 

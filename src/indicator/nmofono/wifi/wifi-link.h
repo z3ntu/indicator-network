@@ -41,6 +41,29 @@ public:
     typedef std::shared_ptr<WifiLink> Ptr;
     typedef unsigned int Id;
 
+    enum class Mode
+    {
+        unknown = 0,
+        adhoc,
+        infra,
+        ap
+    };
+
+    enum class Signal
+    {
+        disconnected = 0,
+        signal_0,
+        signal_0_secure,
+        signal_25,
+        signal_25_secure,
+        signal_50,
+        signal_50_secure,
+        signal_75,
+        signal_75_secure,
+        signal_100,
+        signal_100_secure
+    };
+
     WifiLink() = default;
     WifiLink(const WifiLink&) = delete;
     virtual ~WifiLink() = default;
@@ -53,6 +76,10 @@ public:
     Q_PROPERTY(nmofono::wifi::AccessPoint::Ptr activeAccessPoint READ activeAccessPoint NOTIFY activeAccessPointUpdated)
     virtual AccessPoint::Ptr activeAccessPoint() = 0;
 
+    virtual Mode mode() const = 0;
+
+    virtual Signal signal() const = 0;
+
 public Q_SLOTS:
     virtual void setHideAccessPoints(bool) = 0;
 
@@ -60,6 +87,8 @@ Q_SIGNALS:
     void accessPointsUpdated(const QSet<AccessPoint::Ptr>&);
 
     void activeAccessPointUpdated(AccessPoint::Ptr);
+
+    void signalUpdated(Signal);
 
 };
 

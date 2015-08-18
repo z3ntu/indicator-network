@@ -58,6 +58,10 @@ public:
 
     void setHideAccessPoints(bool) override;
 
+    Mode mode() const override;
+
+    Signal signal() const override;
+
 private:
     struct Private;
     std::unique_ptr<Private> d;

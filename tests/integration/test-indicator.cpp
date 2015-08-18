@@ -1321,11 +1321,11 @@ TEST_F(TestIndicator, WifiStates_SSIDs)
     // start the indicator
     ASSERT_NO_THROW(startIndicator());
 
-    // check indicator is just a 4-bar locked wifi icon
-    // check that AP list contains the connected AP highlighted at top then other APs underneath in alphabetical order.
+    // check indicator is just a mobile data connection (we are not connected to WiFi)
+    // check that AP list contains the 4 APs in alphabetical order.
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
-            .state_icons({"gsm-3g-full", "nm-signal-0"})
+            .state_icons({"gsm-3g-full"})
             .mode(mh::MenuItemMatcher::Mode::starts_with)
             .item(flightModeSwitch(false))
             .item(mh::MenuItemMatcher()
@@ -1404,12 +1404,12 @@ TEST_F(TestIndicator, WifiStates_Connect1AP)
     auto ap8 = createAccessPoint("8", "GDF", device, 60, Secure::insecure, ApMode::adhoc);
     setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
 
-    // check indicator is still a 0-bar wifi icon
+    // check indicator is empty (we aren't connected to WiFi)
     // check that AP list contains available APs in alphabetical order (with correct signal and security icons).
     // check AP items have the correct associated action names.
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
-            .state_icons({"nm-signal-0"})
+            .state_icons({})
             .mode(mh::MenuItemMatcher::Mode::starts_with)
             .item(flightModeSwitch(false))
             .item(mh::MenuItemMatcher()
@@ -1462,7 +1462,7 @@ TEST_F(TestIndicator, WifiStates_Connect1AP)
     auto ap_item = mh::MenuItemMatcher::checkbox();
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
-            .state_icons({"nm-signal-0"})
+            .state_icons({"nm-signal-00"})
             .mode(mh::MenuItemMatcher::Mode::starts_with)
             .item(flightModeSwitch(false)).item(mh::MenuItemMatcher()).item(wifiEnableSwitch(true))
             .item(mh::MenuItemMatcher()

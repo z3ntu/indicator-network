@@ -64,6 +64,7 @@ public:
     QSet<AccessPointImpl::Ptr> m_rawAccessPoints;
     QSet<AccessPoint::Ptr> m_groupedAccessPoints;
     AccessPoint::Ptr m_activeAccessPoint;
+    Signal m_signal = Signal::disconnected;
 
     shared_ptr<OrgFreedesktopNetworkManagerDeviceInterface> m_dev;
     OrgFreedesktopNetworkManagerDeviceWirelessInterface m_wireless;
@@ -75,6 +76,7 @@ public:
     uint32_t m_lastState = 0;
     QString m_name;
     shared_ptr<OrgFreedesktopNetworkManagerConnectionActiveInterface> m_activeConnection;
+    unique_ptr<QMetaObject::Connection> m_signalStrengthConnection;
     bool m_connecting = false;
     bool m_hideAccessPoints = false;
 
@@ -154,6 +156,16 @@ public:
 
     }
 
+
+    void disconnectSignalStengthConnection()
+    {
+        if (m_signalStrengthConnection)
+        {
+            disconnect(*m_signalStrengthConnection);
+            m_signalStrengthConnection.reset();
+        }
+    }
+
     /// '/' path means invalid.
     void updateActiveConnection(const QDBusObjectPath &path)
     {
@@ -162,6 +174,8 @@ public:
             m_activeAccessPoint.reset();
             Q_EMIT p.activeAccessPointUpdated(m_activeAccessPoint);
             m_activeConnection.reset();
+            disconnectSignalStengthConnection();
+            strengthUpdated();
             return;
         }
 
@@ -190,7 +204,14 @@ public:
                     auto shap =  dynamic_pointer_cast<GroupedAccessPoint>(ap);
                     if (shap->has_object(ap_path)) {
                         m_activeAccessPoint = ap;
+                        disconnectSignalStengthConnection();
+                        m_signalStrengthConnection = make_unique<
+                                QMetaObject::Connection>(
+                                connect(m_activeAccessPoint.get(),
+                                        &AccessPoint::strengthUpdated, this,
+                                        &Private::strengthUpdated));
                         Q_EMIT p.activeAccessPointUpdated(m_activeAccessPoint);
+                        strengthUpdated();
                         break;
                     }
                 }
@@ -302,6 +323,46 @@ public Q_SLOTS:
     {
         updateDeviceState(m_lastState);
     }
+
+    void strengthUpdated()
+    {
+        Signal signal = Signal::disconnected;
+
+        if (m_activeAccessPoint && !m_hideAccessPoints)
+        {
+            double strength = m_activeAccessPoint->strength();
+            bool secured  = m_activeAccessPoint->secured();
+
+            if (strength >= 80.0)
+            {
+                signal = secured ? Signal::signal_100_secure : Signal::signal_100;
+            }
+            else if (strength >= 60.0)
+            {
+                signal = secured ? Signal::signal_75_secure : Signal::signal_75;
+            }
+            else if (strength >= 40.0)
+            {
+                signal = secured ? Signal::signal_50_secure : Signal::signal_50;
+            }
+            else if (strength >= 20.0)
+            {
+                signal = secured ? Signal::signal_25_secure : Signal::signal_25;
+            }
+            else
+            {
+                signal = secured ? Signal::signal_0_secure : Signal::signal_0;
+            }
+        }
+
+        if (m_signal == signal)
+        {
+            return;
+        }
+
+        m_signal = signal;
+        Q_EMIT p.signalUpdated(m_signal);
+    }
 };
 
 WifiLinkImpl::WifiLinkImpl(shared_ptr<OrgFreedesktopNetworkManagerDeviceInterface> dev,
@@ -321,6 +382,8 @@ WifiLinkImpl::WifiLinkImpl(shared_ptr<OrgFreedesktopNetworkManagerDeviceInterfac
     d->updateDeviceState(d->m_dev->state());
 
     connect(d->m_killSwitch.get(), &KillSwitch::stateChanged, d.get(), &Private::kill_switch_updated);
+
+    d->strengthUpdated();
 }
 
 WifiLinkImpl::~WifiLinkImpl()
@@ -354,6 +417,23 @@ QString
 WifiLinkImpl::name() const
 {
     return d->m_name;
+}
+
+WifiLink::Mode WifiLinkImpl::mode() const
+{
+    static const map<uint, WifiLink::Mode> modeMap
+    {
+        {NM_802_11_MODE_UNKNOWN, Mode::unknown},
+        {NM_802_11_MODE_ADHOC, Mode::adhoc},
+        {NM_802_11_MODE_INFRA, Mode::infra},
+        {NM_802_11_MODE_AP, Mode::ap}
+    };
+    return modeMap.find(d->m_wireless.mode())->second;
+}
+
+WifiLink::Signal WifiLinkImpl::signal() const
+{
+    return d->m_signal;
 }
 
 QSet<AccessPoint::Ptr>
@@ -463,6 +543,7 @@ WifiLinkImpl::setHideAccessPoints(bool hide)
 
     d->m_hideAccessPoints = hide;
     d->update_grouped_access_points();
+    d->strengthUpdated();
 }
 
 }

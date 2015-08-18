@@ -65,6 +65,7 @@ public:
     uint32_t m_characteristics = 0;
 
     bool m_hasWifi = false;
+    bool m_ignoreWifiUpdates = false;
     bool m_wifiEnabled = false;
     KillSwitch::Ptr m_killSwitch;
 
@@ -81,6 +82,18 @@ public:
     {
     }
 
+    void waitForHotspotEnabledChanged()
+    {
+        m_ignoreWifiUpdates = true;
+
+        QEventLoop loop;
+        connect(m_hotspotManager.get(), &HotspotManager::enabledChanged, &loop, &QEventLoop::quit);
+        QTimer::singleShot(3000, &loop, &QEventLoop::quit);
+        loop.exec();
+
+        m_ignoreWifiUpdates = false;
+    }
+
     void setUnstoppableOperationHappening(bool happening)
     {
         if (m_unstoppableOperationHappening == happening)
@@ -95,6 +108,11 @@ public:
 public Q_SLOTS:
     void updateHasWifi()
     {
+        if (m_ignoreWifiUpdates)
+        {
+            return;
+        }
+
         if (m_killSwitch->state() != KillSwitch::State::not_available)
         {
             m_hasWifi = true;
@@ -293,12 +311,14 @@ ManagerImpl::setWifiEnabled(bool enabled)
     }
 
     d->setUnstoppableOperationHappening(true);
-    d->m_killSwitch->setBlock(!enabled);
     // Disable hotspot before disabling WiFi
-    if (!enabled)
+    if (!enabled && d->m_hotspotManager->enabled())
     {
         d->m_hotspotManager->setEnabled(false);
+        d->waitForHotspotEnabledChanged();
     }
+
+    d->m_killSwitch->setBlock(!enabled);
     d->nm->setWirelessEnabled(enabled);
     d->setUnstoppableOperationHappening(false);
 }
@@ -323,13 +343,14 @@ ManagerImpl::setHotspotEnabled(bool enabled)
         return;
     }
 
+    d->setUnstoppableOperationHappening(true);
+
     if (enabled && !d->m_wifiEnabled)
     {
-        qWarning() << __PRETTY_FUNCTION__ << "Cannot set hotspot enabled when WiFi is disabled";
-        return;
+        d->m_killSwitch->setBlock(false);
+        d->nm->setWirelessEnabled(true);
     }
 
-    d->setUnstoppableOperationHappening(true);
     d->m_hotspotManager->setEnabled(enabled);
     d->setUnstoppableOperationHappening(false);
 }
@@ -344,9 +365,10 @@ ManagerImpl::setFlightMode(bool enabled)
 
     d->setUnstoppableOperationHappening(true);
     // Disable hotspot before enabling flight mode
-    if (enabled)
+    if (enabled && d->m_hotspotManager->enabled())
     {
         d->m_hotspotManager->setEnabled(false);
+        d->waitForHotspotEnabledChanged();
     }
     if (!d->m_killSwitch->flightMode(enabled))
     {

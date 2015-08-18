@@ -272,8 +272,7 @@ bool ConnectivityService::wifiSwitchEnabled() const
 bool ConnectivityService::hotspotSwitchEnabled() const
 {
     return !d->m_manager->unstoppableOperationHappening()
-            && !d->m_manager->flightMode()
-            && d->m_manager->wifiEnabled();
+            && !d->m_manager->flightMode();
 }
 
 bool ConnectivityService::hotspotEnabled() const

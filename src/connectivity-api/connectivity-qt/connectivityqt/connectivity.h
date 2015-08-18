@@ -94,6 +94,15 @@ public:
     Q_PROPERTY(bool UnstoppableOperationHappening READ unstoppableOperationHappening NOTIFY unstoppableOperationHappeningUpdated)
     bool unstoppableOperationHappening() const;
 
+    Q_PROPERTY(bool FlightModeSwitchEnabled READ flightModeSwitchEnabled NOTIFY flightModeSwitchEnabledUpdated)
+    bool flightModeSwitchEnabled() const;
+
+    Q_PROPERTY(bool WifiSwitchEnabled READ wifiSwitchEnabled NOTIFY wifiSwitchEnabledUpdated)
+    bool wifiSwitchEnabled() const;
+
+    Q_PROPERTY(bool HotspotSwitchEnabled READ hotspotSwitchEnabled NOTIFY hotspotSwitchEnabledUpdated)
+    bool hotspotSwitchEnabled() const;
+
     Q_PROPERTY(QByteArray hotspotSsid READ hotspotSsid WRITE setHotspotSsid NOTIFY hotspotSsidUpdated)
     QByteArray hotspotSsid() const;
 
@@ -139,6 +148,12 @@ Q_SIGNALS:
     void wifiEnabledUpdated(bool);
 
     void unstoppableOperationHappeningUpdated(bool);
+
+    void flightModeSwitchEnabledUpdated(bool);
+
+    void wifiSwitchEnabledUpdated(bool);
+
+    void hotspotSwitchEnabledUpdated(bool);
 
     void hotspotSsidUpdated(const QByteArray& name);
 

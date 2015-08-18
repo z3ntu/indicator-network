@@ -106,9 +106,17 @@ public Q_SLOTS:
         {
             Q_EMIT p.wifiEnabledUpdated(value.toBool());
         }
-        else if (name == "UnstoppableOperationHappening")
+        else if (name == "FlightModeSwitchEnabled")
         {
-            Q_EMIT p.unstoppableOperationHappeningUpdated(value.toBool());
+            Q_EMIT p.flightModeSwitchEnabledUpdated(value.toBool());
+        }
+        else if (name == "WifiSwitchEnabled")
+        {
+            Q_EMIT p.wifiSwitchEnabledUpdated(value.toBool());
+        }
+        else if (name == "HotspotSwitchEnabled")
+        {
+            Q_EMIT p.hotspotSwitchEnabledUpdated(value.toBool());
         }
         else if (name == "Limitations")
         {
@@ -207,7 +215,22 @@ bool Connectivity::wifiEnabled() const
 
 bool Connectivity::unstoppableOperationHappening() const
 {
-    return d->m_propertyCache->get("UnstoppableOperationHappening").toBool();
+    return false;
+}
+
+bool Connectivity::flightModeSwitchEnabled() const
+{
+    return d->m_propertyCache->get("FlightModeSwitchEnabled").toBool();
+}
+
+bool Connectivity::wifiSwitchEnabled() const
+{
+    return d->m_propertyCache->get("WifiSwitchEnabled").toBool();
+}
+
+bool Connectivity::hotspotSwitchEnabled() const
+{
+    return d->m_propertyCache->get("HotspotSwitchEnabled").toBool();
 }
 
 QVector<Connectivity::Limitations> Connectivity::limitations() const

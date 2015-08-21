@@ -67,7 +67,7 @@ public:
         // Get new settings
         QVariantDictMap new_settings = createConnectionSettings(m_ssid,
                                                                 m_password,
-                                                                m_mode, false);
+                                                                m_mode, m_auth, false);
         auto updating = m_hotspot->Update(new_settings);
         updating.waitForFinished();
         if (!updating.isValid())
@@ -302,7 +302,7 @@ public:
      */
     QVariantDictMap createConnectionSettings(
         const QByteArray &ssid, const QString &password,
-        QString mode, bool autoConnect = true)
+        QString mode, QString auth, bool autoConnect = true)
     {
         QVariantDictMap connection;
 
@@ -313,7 +313,11 @@ public:
         s_uuid.remove(s_uuid.size() - 1, 1);
 
         QVariantMap wireless;
-        wireless[QStringLiteral("security")] = QVariant(QStringLiteral("802-11-wireless-security"));
+
+        if (auth != "none")
+        {
+            wireless[QStringLiteral("security")] = QVariant(QStringLiteral("802-11-wireless-security"));
+        }
         wireless[QStringLiteral("ssid")] = QVariant(ssid);
         wireless[QStringLiteral("mode")] = QVariant(mode);
 
@@ -337,13 +341,16 @@ public:
         ipv6[QStringLiteral("method")] = QVariant(QStringLiteral("ignore"));
         connection["ipv6"] = ipv6;
 
-        QVariantMap security;
-        security[QStringLiteral("proto")] = QVariant(QStringList{ "rsn" });
-        security[QStringLiteral("pairwise")] = QVariant(QStringList{ "ccmp" });
-        security[QStringLiteral("group")] = QVariant(QStringList{ "ccmp" });
-        security[QStringLiteral("key-mgmt")] = QVariant(QStringLiteral("wpa-psk"));
-        security[QStringLiteral("psk")] = QVariant(password);
-        connection["802-11-wireless-security"] = security;
+        if (auth != "none")
+        {
+            QVariantMap security;
+            security[QStringLiteral("proto")] = QVariant(QStringList{ "rsn" });
+            security[QStringLiteral("pairwise")] = QVariant(QStringList{ "ccmp" });
+            security[QStringLiteral("group")] = QVariant(QStringList{ "ccmp" });
+            security[QStringLiteral("key-mgmt")] = QVariant(auth);
+            security[QStringLiteral("psk")] = QVariant(password);
+            connection["802-11-wireless-security"] = security;
+        }
 
         return connection;
     }
@@ -382,7 +389,7 @@ public:
     void addConnection()
     {
         QVariantDictMap connection = createConnectionSettings(m_ssid, m_password,
-                                                              m_mode);
+                                                              m_mode, m_auth);
 
         auto add_connection_reply = m_settings->AddConnection(connection);
         add_connection_reply.waitForFinished();
@@ -627,6 +634,7 @@ public:
     HotspotManager& p;
 
     QString m_mode = "ap";
+    QString m_auth = "wpa-psk";
     bool m_enabled = false;
     bool m_stored = false;
     QString m_password;
@@ -816,11 +824,23 @@ QString HotspotManager::mode() const {
     return d->m_mode;
 }
 
+QString HotspotManager::auth() const {
+    return d->m_auth;
+}
+
 void HotspotManager::setMode(const QString& value) {
     if (d->m_mode != value)
     {
         d->m_mode = value;
         Q_EMIT modeChanged(value);
+    }
+}
+
+void HotspotManager::setAuth(const QString& value) {
+    if (d->m_auth != value)
+    {
+        d->m_auth = value;
+        Q_EMIT authChanged(value);
     }
 }
 

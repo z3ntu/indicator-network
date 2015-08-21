@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-05-19 14:07+0300\n"
+"POT-Creation-Date: 2015-08-21 14:47+0200\n"
 "PO-Revision-Date: 2014-05-26 09:30+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Arabic <ar@li.org>\n"
@@ -20,56 +20,62 @@ msgstr ""
 "X-Launchpad-Export-Date: 2014-10-09 06:40+0000\n"
 "X-Generator: Launchpad (build 17196)\n"
 
-#: ../src/indicator/sim-unlock-dialog.cpp:317
+#: ../src/indicator/sim-unlock-dialog.cpp:315
 #, c-format
 msgid "1 attempt remaining"
 msgid_plural "%d attempts remaining"
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../src/indicator/agent/SecretRequest.cpp:81
+#: ../src/indicator/agent/SecretRequest.cpp:75
 msgid "Cancel"
 msgstr ""
 
-#: ../src/indicator/sections/wwan-section.cpp:96
+#: ../src/indicator/sections/wwan-section.cpp:99
 msgid "Cellular settings…"
 msgstr "إعدادات الشبكة الخلوية..."
 
-#: ../src/indicator/sim-unlock-dialog.cpp:336
+#: ../src/indicator/sim-unlock-dialog.cpp:334
 msgid "Confirm new %{1} PIN"
 msgstr ""
 
-#: ../src/indicator/agent/SecretRequest.cpp:80
+#: ../src/indicator/agent/SecretRequest.cpp:74
 msgid "Connect"
 msgstr ""
 
-#: ../src/indicator/agent/SecretRequest.cpp:67
+#: ../src/indicator/agent/SecretRequest.cpp:61
 msgid "Connect to “%1”"
 msgstr ""
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:125
+#: ../src/indicator/menuitems/wwan-link-item.cpp:128
 msgid "Denied"
 msgstr ""
 
-#: ../src/indicator/sim-unlock-dialog.cpp:295
+#: ../src/indicator/sim-unlock-dialog.cpp:292
 msgid "Enter %{1} PIN"
 msgstr ""
 
-#: ../src/indicator/sim-unlock-dialog.cpp:303
+#: ../src/indicator/sim-unlock-dialog.cpp:300
 msgid "Enter PUK code"
 msgstr ""
 
-#: ../src/indicator/sim-unlock-dialog.cpp:307
+#: ../src/indicator/sim-unlock-dialog.cpp:304
 msgid "Enter PUK code for %{1}"
 msgstr ""
 
-#: ../src/indicator/sim-unlock-dialog.cpp:328
+#: ../src/indicator/sim-unlock-dialog.cpp:326
 msgid "Enter new %{1} PIN"
 msgstr ""
 
-#: ../src/indicator/sections/quick-access-section.cpp:83
+#. TODO Move this into a new class
+#: ../src/indicator/factory.cpp:141
 msgid "Flight Mode"
 msgstr "وضع الطيران"
+
+#. TODO Move this into a new class
+#: ../src/indicator/factory.cpp:152
+msgid "Hotspot"
+msgstr ""
 
 #: ../src/indicator/sim-unlock-dialog.cpp:151
 msgid ""
@@ -83,20 +89,20 @@ msgid ""
 msgstr ""
 
 #. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
-#: ../src/indicator/root-state.cpp:349
+#: ../src/indicator/root-state.cpp:306
 msgid "Network"
 msgstr "الشبكة"
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:92
+#: ../src/indicator/menuitems/wwan-link-item.cpp:90
 msgid "No SIM"
 msgstr "لا توجد شريحة SIM"
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:140
+#: ../src/indicator/menuitems/wwan-link-item.cpp:145
 msgid "No Signal"
 msgstr "لا توجد إشارة"
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:146
-#: ../src/indicator/menuitems/wwan-link-item.cpp:152
+#: ../src/indicator/menuitems/wwan-link-item.cpp:157
+#: ../src/indicator/menuitems/wwan-link-item.cpp:164
 msgid "Offline"
 msgstr ""
 
@@ -104,7 +110,7 @@ msgstr ""
 msgid "Other network…"
 msgstr ""
 
-#: ../src/indicator/sim-unlock-dialog.cpp:375
+#: ../src/indicator/sim-unlock-dialog.cpp:373
 msgid "PIN codes did not match."
 msgstr ""
 
@@ -120,7 +126,7 @@ msgstr ""
 msgid "Please enter your PUK code to unblock SIM card."
 msgstr ""
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:98
+#: ../src/indicator/menuitems/wwan-link-item.cpp:97
 msgid "SIM Error"
 msgstr "خطأ في شريحة SIM"
 
@@ -128,7 +134,7 @@ msgstr "خطأ في شريحة SIM"
 msgid "SIM Locked"
 msgstr ""
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:129
+#: ../src/indicator/menuitems/wwan-link-item.cpp:133
 msgid "Searching"
 msgstr ""
 
@@ -136,11 +142,11 @@ msgstr ""
 msgid "Sorry, incorrect %{1} PIN."
 msgstr ""
 
-#: ../src/indicator/sim-unlock-dialog.cpp:220
+#: ../src/indicator/sim-unlock-dialog.cpp:218
 msgid "Sorry, incorrect PIN"
 msgstr ""
 
-#: ../src/indicator/sim-unlock-dialog.cpp:232
+#: ../src/indicator/sim-unlock-dialog.cpp:230
 msgid "Sorry, incorrect PUK"
 msgstr ""
 
@@ -158,27 +164,28 @@ msgstr ""
 msgid "This will be your last attempt."
 msgstr ""
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:121
+#: ../src/indicator/menuitems/wwan-link-item.cpp:123
 msgid "Unknown"
 msgstr ""
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:117
+#: ../src/indicator/menuitems/wwan-link-item.cpp:118
 msgid "Unregistered"
 msgstr ""
 
-#: ../src/indicator/agent/SecretRequest.cpp:74
+#: ../src/indicator/agent/SecretRequest.cpp:68
 msgid "WEP"
 msgstr ""
 
-#: ../src/indicator/agent/SecretRequest.cpp:72
+#: ../src/indicator/agent/SecretRequest.cpp:66
 msgid "WPA"
 msgstr ""
 
-#: ../src/indicator/sections/wifi-section.cpp:58
+#. TODO Move this into a new class
+#: ../src/indicator/factory.cpp:130
 msgid "Wi-Fi"
 msgstr "واي فاي"
 
-#: ../src/indicator/sections/wifi-section.cpp:72
+#: ../src/indicator/sections/wifi-section.cpp:65
 msgid "Wi-Fi settings…"
 msgstr "إعدادات الواي فاي..."
 

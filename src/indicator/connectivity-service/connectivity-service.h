@@ -77,6 +77,9 @@ public:
     Q_PROPERTY(QString HotspotMode READ hotspotMode)
     QString hotspotMode() const;
 
+    Q_PROPERTY(QString HotspotAuth READ hotspotAuth)
+    QString hotspotAuth() const;
+
 private:
     class Private;
     std::shared_ptr<Private> d;
@@ -112,6 +115,8 @@ protected Q_SLOTS:
     void SetHotspotPassword(const QString &password);
 
     void SetHotspotMode(const QString &mode);
+
+    void SetHotspotAuth(const QString &auth);
 
 Q_SIGNALS:
     void ReportError(int reason);

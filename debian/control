@@ -32,7 +32,7 @@ Build-Depends: cmake,
                qtdeclarative5-dev,
                qtdeclarative5-dev-tools,
                valgrind [amd64 armhf i386 powerpc],
-Standards-Version: 3.9.3
+Standards-Version: 3.9.5
 # If you aren't a member of ~indicator-applet-developers but need to upload
 # packaging changes, just go ahead. ~indicator-applet-developers will notice
 # and sync up the code again.
@@ -89,8 +89,6 @@ Multi-Arch: same
 Depends: ${misc:Depends},
          ${shlibs:Depends},
          indicator-network (>= ${source:Version}),
-Recommends:
-         indicator-network (>= 0.5.1+14.10.20140819),
 Description: Ubuntu Connectivity Qt API
  Ubuntu Connectivity API - Qt bindings
 

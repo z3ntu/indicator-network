@@ -71,6 +71,10 @@ public:
     void unlockAllModems() override;
     void unlockModemByName(const QString &name) override;
 
+    bool modemAvailable() const override;
+
+    bool hotspotAvailable() const override;
+
     bool hotspotEnabled() const override;
 
     bool hotspotStored() const override;

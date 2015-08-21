@@ -69,6 +69,9 @@ public:
     bool m_wifiEnabled = false;
     KillSwitch::Ptr m_killSwitch;
 
+    bool m_modemAvailable = false;
+    bool m_hotspotAvailable = false;
+
     QSet<Link::Ptr> m_nmLinks;
     QMap<QString, wwan::Modem::Ptr> m_ofonoLinks;
 
@@ -144,6 +147,32 @@ public Q_SLOTS:
         Q_EMIT p.wifiEnabledUpdated(m_wifiEnabled);
     }
 
+    void updateModemAvailable()
+    {
+        bool modemAvailable = !m_ofonoLinks.empty();
+
+        if (m_modemAvailable == modemAvailable)
+        {
+            return;
+        }
+
+        m_modemAvailable = modemAvailable;
+        Q_EMIT p.modemAvailableChanged(m_modemAvailable);
+    }
+
+    void updateHotspotAvailable()
+    {
+        bool hotspotAvailable = !m_ofonoLinks.empty() && !m_hotspotManager->knownBadHardware();
+
+        if (m_hotspotAvailable == hotspotAvailable)
+        {
+            return;
+        }
+
+        m_hotspotAvailable = hotspotAvailable;
+        Q_EMIT p.hotspotAvailableChanged(m_hotspotAvailable);
+    }
+
     void setFlightMode(bool newStatus)
     {
         if (m_flightMode == newStatus)
@@ -211,6 +240,9 @@ public Q_SLOTS:
 
         Q_EMIT p.linksUpdated();
         m_unlockDialog->setShowSimIdentifiers(m_ofonoLinks.size() > 1);
+
+        updateModemAvailable();
+        updateHotspotAvailable();
     }
 };
 
@@ -250,6 +282,16 @@ ManagerImpl::ManagerImpl(notify::NotificationManager::SPtr notificationManager, 
     d->m_unlockDialog = make_shared<SimUnlockDialog>(notificationManager);
     connect(d->m_unlockDialog.get(), &SimUnlockDialog::ready, d.get(), &Private::sim_unlock_ready);
 
+    d->m_hotspotManager = make_shared<HotspotManager>(systemConnection);
+    connect(d->m_hotspotManager.get(), &HotspotManager::enabledChanged, this, &Manager::hotspotEnabledChanged);
+    connect(d->m_hotspotManager.get(), &HotspotManager::ssidChanged, this, &Manager::hotspotSsidChanged);
+    connect(d->m_hotspotManager.get(), &HotspotManager::passwordChanged, this, &Manager::hotspotPasswordChanged);
+    connect(d->m_hotspotManager.get(), &HotspotManager::modeChanged, this, &Manager::hotspotModeChanged);
+    connect(d->m_hotspotManager.get(), &HotspotManager::storedChanged, this, &Manager::hotspotStoredChanged);
+    connect(d->m_hotspotManager.get(), &HotspotManager::knownBadHardwareChanged, d.get(), &Private::updateHotspotAvailable);
+
+    connect(d->m_hotspotManager.get(), &HotspotManager::reportError, this, &Manager::reportError);
+
     d->m_ofono = make_shared<QOfonoManager>();
     connect(d->m_ofono.get(), &QOfonoManager::modemsChanged, d.get(), &Private::modems_changed);
     d->modems_changed(d->m_ofono->modems());
@@ -261,15 +303,6 @@ ManagerImpl::ManagerImpl(notify::NotificationManager::SPtr notificationManager, 
 
     d->m_killSwitch = make_shared<KillSwitch>(systemConnection);
     connect(d->m_killSwitch.get(), &KillSwitch::stateChanged, d.get(), &Private::updateHasWifi);
-
-    d->m_hotspotManager = make_shared<HotspotManager>(systemConnection);
-    connect(d->m_hotspotManager.get(), &HotspotManager::enabledChanged, this, &Manager::hotspotEnabledChanged);
-    connect(d->m_hotspotManager.get(), &HotspotManager::ssidChanged, this, &Manager::hotspotSsidChanged);
-    connect(d->m_hotspotManager.get(), &HotspotManager::passwordChanged, this, &Manager::hotspotPasswordChanged);
-    connect(d->m_hotspotManager.get(), &HotspotManager::modeChanged, this, &Manager::hotspotModeChanged);
-    connect(d->m_hotspotManager.get(), &HotspotManager::storedChanged, this, &Manager::hotspotStoredChanged);
-
-    connect(d->m_hotspotManager.get(), &HotspotManager::reportError, this, &Manager::reportError);
 
     connect(d->nm.get(), &OrgFreedesktopNetworkManagerInterface::DeviceAdded, this, &ManagerImpl::device_added);
     QList<QDBusObjectPath> devices(d->nm->GetDevices());
@@ -321,6 +354,18 @@ ManagerImpl::setWifiEnabled(bool enabled)
     d->m_killSwitch->setBlock(!enabled);
     d->nm->setWirelessEnabled(enabled);
     d->setUnstoppableOperationHappening(false);
+}
+
+bool
+ManagerImpl::modemAvailable() const
+{
+    return !d->m_ofonoLinks.empty();
+}
+
+bool
+ManagerImpl::hotspotAvailable() const
+{
+    return !d->m_hotspotManager->knownBadHardware();
 }
 
 bool

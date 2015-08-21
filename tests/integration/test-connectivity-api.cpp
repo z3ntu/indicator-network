@@ -630,4 +630,19 @@ TEST_F(TestConnectivityApi, HotspotConfig)
     }
 }
 
+TEST_F(TestConnectivityApi, HotspotModemAvailable)
+{
+    setGlobalConnectedState(NM_STATE_DISCONNECTED);
+    auto device = createWiFiDevice(NM_DEVICE_STATE_DISCONNECTED);
+
+    // Start the indicator
+    ASSERT_NO_THROW(startIndicator());
+
+    // Connect the the service
+    auto connectivity(newConnectivity());
+
+    EXPECT_TRUE(connectivity->hotspotAvailable());
+    EXPECT_TRUE(connectivity->modemAvailable());
+}
+
 }

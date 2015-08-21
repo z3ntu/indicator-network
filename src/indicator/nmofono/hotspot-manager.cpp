@@ -216,6 +216,27 @@ public:
         return index >= 0;
     }
 
+    bool isKnownBadHardware()
+    {
+        const static QSet<QString> KNOWN_BAD_HARDWARE {"mako", "flo"};
+
+        QString program("getprop");
+        QStringList arguments;
+        arguments << "ro.hardware";
+
+        QProcess getprop;
+        getprop.start(program, arguments);
+
+        if (!getprop.waitForFinished())
+        {
+            qCritical() << "getprop process failed:" << getprop.errorString();
+            return false;
+        }
+
+        QString hardware = QString::fromUtf8(getprop.readAllStandardOutput()).trimmed();
+        return KNOWN_BAD_HARDWARE.contains(hardware);
+    }
+
     /**
      * True if changed successfully, or there was no need. Otherwise false.
      * Supported modes are 'p2p', 'sta' and 'ap'.
@@ -636,6 +657,7 @@ public:
     QPowerd::RequestSPtr m_wakelock;
 
     bool m_isHybrisWlan = false;
+    bool m_isKnownBadHardware = false;
     bool m_disconnectWifi = false;
 
     /**
@@ -661,6 +683,7 @@ HotspotManager::HotspotManager(const QDBusConnection& connection, QObject *paren
         QObject(parent), d(new Priv(*this))
 {
     d->m_isHybrisWlan = d->isHybrisWlan();
+    d->m_isKnownBadHardware = d->isKnownBadHardware();
 
     d->m_manager = make_unique<OrgFreedesktopNetworkManagerInterface>(
             NM_DBUS_SERVICE, NM_DBUS_PATH, connection);
@@ -778,6 +801,10 @@ void HotspotManager::setEnabled(bool value)
         }
     }
 
+}
+
+bool HotspotManager::knownBadHardware() const {
+    return d->m_isKnownBadHardware;
 }
 
 bool HotspotManager::enabled() const {

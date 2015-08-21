@@ -122,6 +122,12 @@ public:
 
     virtual void unlockModemByName(const QString &name) = 0;
 
+    Q_PROPERTY(bool modemAvailable READ modemAvailable NOTIFY modemAvailableChanged)
+    virtual bool modemAvailable() const = 0;
+
+    Q_PROPERTY(bool hotspotAvailable READ hotspotAvailable NOTIFY hotspotAvailableChanged)
+    virtual bool hotspotAvailable() const = 0;
+
     Q_PROPERTY(bool hotspotEnabled READ hotspotEnabled WRITE setHotspotEnabled NOTIFY hotspotEnabledChanged)
     virtual bool hotspotEnabled() const = 0;
 
@@ -149,6 +155,10 @@ Q_SIGNALS:
     void hasWifiUpdated(bool);
 
     void wifiEnabledUpdated(bool);
+
+    void modemAvailableChanged(bool);
+
+    void hotspotAvailableChanged(bool);
 
     void hotspotEnabledChanged(bool enabled);
 

@@ -1,3 +1,10 @@
+indicator-network (0.5.4-0ubuntu0) UNRELEASED; urgency=medium
+
+  * Add properties to determine if modems and hotspot functionality are
+    available. (LP: #1487158) (LP: #1487157)
+
+ -- Pete Woods <pete.woods@canonical.com>  Fri, 21 Aug 2015 16:51:14 +0100
+
 indicator-network (0.5.3+15.10.20150818-0ubuntu1) wily; urgency=medium
 
   [ Pete Woods ]

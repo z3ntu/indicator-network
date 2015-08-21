@@ -146,6 +146,10 @@ public Q_SLOTS:
         {
             Q_EMIT p.hotspotModeUpdated(value.toString());
         }
+        else if (name == "HotspotAuth")
+        {
+            Q_EMIT p.hotspotAuthUpdated(value.toString());
+        }
         else if (name == "HotspotStored")
         {
             Q_EMIT p.hotspotStoredUpdated(value.toBool());
@@ -295,6 +299,11 @@ QString Connectivity::hotspotMode() const
     return d->m_propertyCache->get("HotspotMode").toString();
 }
 
+QString Connectivity::hotspotAuth() const
+{
+    return d->m_propertyCache->get("HotspotAuth").toString();
+}
+
 bool Connectivity::hotspotStored() const
 {
     return d->m_propertyCache->get("HotspotStored").toBool();
@@ -321,6 +330,11 @@ void Connectivity::setHotspotEnabled(bool enabled)
 void Connectivity::setHotspotMode(const QString& mode)
 {
     d->m_writeInterface->SetHotspotMode(mode);
+}
+
+void Connectivity::setHotspotAuth(const QString& auth)
+{
+    d->m_writeInterface->SetHotspotAuth(auth);
 }
 
 }

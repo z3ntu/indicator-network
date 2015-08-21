@@ -120,6 +120,9 @@ public:
     Q_PROPERTY(QString hotspotMode READ hotspotMode WRITE setHotspotMode NOTIFY hotspotModeUpdated)
     QString hotspotMode() const;
 
+    Q_PROPERTY(QString hotspotAuth READ hotspotAuth WRITE setHotspotAuth NOTIFY hotspotAuthUpdated)
+    QString hotspotAuth() const;
+
     Q_PROPERTY(bool hotspotStored READ hotspotStored NOTIFY hotspotStoredUpdated)
     bool hotspotStored() const;
 
@@ -138,6 +141,8 @@ public Q_SLOTS:
     void setHotspotPassword(const QString& password);
 
     void setHotspotMode(const QString& mode);
+
+    void setHotspotAuth(const QString& auth);
 
 Q_SIGNALS:
     void flightModeUpdated(bool);
@@ -167,6 +172,8 @@ Q_SIGNALS:
     void hotspotEnabledUpdated(bool);
 
     void hotspotModeUpdated(const QString& mode);
+
+    void hotspotAuthUpdated(const QString& auth);
 
     void hotspotStoredUpdated(bool);
 

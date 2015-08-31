@@ -70,9 +70,10 @@
  *   QString auth [readwrite]
  *     The current authentication of the hotspot. The default for this property
  *     is "wpa-psk" and is currently the only supported scheme. WEP is unsupported
- *     by design, as is no scheme at all.
+ *     by design.
  *
- *     TODO: Check/add support for wpa-eap
+ *     Possible authentication schemes: wpa-psk, none
+ *
  *
  *   QString password [readwrite]
  *     The current Pre-Shared-Key for the hotspot. If the key is 64-characters

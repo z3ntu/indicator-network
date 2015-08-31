@@ -137,9 +137,10 @@ public Q_SLOTS:
                               { "HotspotMode" });
     }
 
+    // Note that this is on the private object
     void hotspotAuthUpdated()
     {
-        notifyPropertyChanged(p,
+        notifyPropertyChanged(*m_privateService,
                               DBusTypes::SERVICE_PATH,
                               DBusTypes::SERVICE_INTERFACE,
                               { "HotspotAuth" });
@@ -361,9 +362,9 @@ QString PrivateService::hotspotPassword() const
     return p.d->m_manager->hotspotPassword();
 }
 
-QString ConnectivityService::hotspotAuth() const
+QString PrivateService::hotspotAuth() const
 {
-    return d->m_manager->hotspotAuth();
+    return p.d->m_manager->hotspotAuth();
 }
 
 }

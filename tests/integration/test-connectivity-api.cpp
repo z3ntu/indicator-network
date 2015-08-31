@@ -502,8 +502,10 @@ TEST_F(TestConnectivityApi, HotspotConfig)
     QSignalSpy storedSpy(connectivity.get(), SIGNAL(hotspotStoredUpdated(bool)));
     QSignalSpy enabledSpy(connectivity.get(), SIGNAL(hotspotEnabledUpdated(bool)));
     QSignalSpy passwordSpy(connectivity.get(), SIGNAL(hotspotPasswordUpdated(const QString&)));
+    QSignalSpy authSpy(connectivity.get(), SIGNAL(hotspotAuthUpdated(const QString&)));
 
     EXPECT_EQ("Ubuntu", connectivity->hotspotSsid().toStdString());
+    EXPECT_EQ("wpa-psk", connectivity->hotspotAuth().toStdString());
     EXPECT_FALSE(connectivity->hotspotStored());
     EXPECT_FALSE(connectivity->hotspotEnabled());
 
@@ -589,6 +591,7 @@ TEST_F(TestConnectivityApi, HotspotConfig)
     storedSpy.clear();
     enabledSpy.clear();
     passwordSpy.clear();
+    authSpy.clear();
     powerdMockCallSpy.clear();
     nmSettingsMockCallSpy.clear();
 

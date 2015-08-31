@@ -190,6 +190,8 @@ public:
             {
                 p.setPassword(pwd);
             }
+        } else {
+            p.setAuth("none");
         }
     }
 

@@ -9,7 +9,6 @@
         <method name="UnlockModem">
             <arg type="s" direction="in" name="modem"/>
         </method>
-
         <method name="SetFlightMode">
             <arg type="b" direction="in" name="enabled"/>
         </method>

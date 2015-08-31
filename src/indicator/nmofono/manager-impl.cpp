@@ -267,6 +267,7 @@ ManagerImpl::ManagerImpl(notify::NotificationManager::SPtr notificationManager, 
     connect(d->m_hotspotManager.get(), &HotspotManager::ssidChanged, this, &Manager::hotspotSsidChanged);
     connect(d->m_hotspotManager.get(), &HotspotManager::passwordChanged, this, &Manager::hotspotPasswordChanged);
     connect(d->m_hotspotManager.get(), &HotspotManager::modeChanged, this, &Manager::hotspotModeChanged);
+    connect(d->m_hotspotManager.get(), &HotspotManager::authChanged, this, &Manager::hotspotAuthChanged);
     connect(d->m_hotspotManager.get(), &HotspotManager::storedChanged, this, &Manager::hotspotStoredChanged);
 
     connect(d->m_hotspotManager.get(), &HotspotManager::reportError, this, &Manager::reportError);
@@ -627,6 +628,12 @@ ManagerImpl::hotspotMode() const
     return d->m_hotspotManager->mode();
 }
 
+QString
+ManagerImpl::hotspotAuth() const
+{
+    return d->m_hotspotManager->auth();
+}
+
 void
 ManagerImpl::setHotspotSsid(const QByteArray& ssid)
 {
@@ -643,6 +650,12 @@ void
 ManagerImpl::setHotspotMode(const QString& mode)
 {
     d->m_hotspotManager->setMode(mode);
+}
+
+void
+ManagerImpl::setHotspotAuth(const QString& auth)
+{
+    d->m_hotspotManager->setAuth(auth);
 }
 
 }

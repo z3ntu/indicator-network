@@ -219,7 +219,7 @@ ConnectivityService::ConnectivityService(nmofono::Manager::Ptr manager, const QD
     connect(d->m_manager.get(), &Manager::hotspotSsidChanged, d.get(), &Private::hotspotSsidUpdated);
     connect(d->m_manager.get(), &Manager::hotspotPasswordChanged, d.get(), &Private::hotspotPasswordUpdated);
     connect(d->m_manager.get(), &Manager::hotspotModeChanged, d.get(), &Private::hotspotModeUpdated);
-    connect(d->m_manager.get(), &Manager::hotspotAuthChanged, d.get(), &Private::hotspotAuthChanged);
+    connect(d->m_manager.get(), &Manager::hotspotAuthChanged, d.get(), &Private::hotspotAuthUpdated);
     connect(d->m_manager.get(), &Manager::hotspotStoredChanged, d.get(), &Private::hotspotStoredUpdated);
 
     connect(d->m_manager.get(), &Manager::reportError, d->m_privateService.get(), &PrivateService::ReportError);
@@ -299,11 +299,6 @@ QString ConnectivityService::hotspotMode() const
     return d->m_manager->hotspotMode();
 }
 
-QString ConnectivityService::hotspotAuth() const
-{
-    return d->m_manager->hotspotAuth();
-}
-
 bool ConnectivityService::hotspotStored() const
 {
     return d->m_manager->hotspotStored();
@@ -364,6 +359,11 @@ void PrivateService::SetHotspotAuth(const QString &auth)
 QString PrivateService::hotspotPassword() const
 {
     return p.d->m_manager->hotspotPassword();
+}
+
+QString ConnectivityService::hotspotAuth() const
+{
+    return d->m_manager->hotspotAuth();
 }
 
 }

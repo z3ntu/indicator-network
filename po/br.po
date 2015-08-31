@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-21 14:47+0200\n"
+"POT-Creation-Date: 2015-05-19 14:07+0300\n"
 "PO-Revision-Date: 2014-10-13 06:43+0000\n"
 "Last-Translator: Fohanno Thierry <thierry.fohanno@ofis-bzh.org>\n"
 "Language-Team: Breton <br@li.org>\n"
@@ -19,62 +19,56 @@ msgstr ""
 "X-Launchpad-Export-Date: 2014-10-16 05:51+0000\n"
 "X-Generator: Launchpad (build 17196)\n"
 
-#: ../src/indicator/sim-unlock-dialog.cpp:315
+#: ../src/indicator/sim-unlock-dialog.cpp:317
 #, c-format
 msgid "1 attempt remaining"
 msgid_plural "%d attempts remaining"
 msgstr[0] "Chom a ra 1 taol-esae"
 msgstr[1] "Chom a ra %d a daolioù-esae"
 
-#: ../src/indicator/agent/SecretRequest.cpp:75
+#: ../src/indicator/agent/SecretRequest.cpp:81
 msgid "Cancel"
 msgstr "Nullañ"
 
-#: ../src/indicator/sections/wwan-section.cpp:99
+#: ../src/indicator/sections/wwan-section.cpp:96
 msgid "Cellular settings…"
 msgstr "Arventennoù an hezougell..."
 
-#: ../src/indicator/sim-unlock-dialog.cpp:334
+#: ../src/indicator/sim-unlock-dialog.cpp:336
 msgid "Confirm new %{1} PIN"
 msgstr "Kadarnait ar c'hod PIN %{1} nevez"
 
-#: ../src/indicator/agent/SecretRequest.cpp:74
+#: ../src/indicator/agent/SecretRequest.cpp:80
 msgid "Connect"
 msgstr "Kevreañ"
 
-#: ../src/indicator/agent/SecretRequest.cpp:61
+#: ../src/indicator/agent/SecretRequest.cpp:67
 msgid "Connect to “%1”"
 msgstr "Kevreañ ouzh “%1”"
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:128
+#: ../src/indicator/menuitems/wwan-link-item.cpp:125
 msgid "Denied"
 msgstr "Nac'het"
 
-#: ../src/indicator/sim-unlock-dialog.cpp:292
+#: ../src/indicator/sim-unlock-dialog.cpp:295
 msgid "Enter %{1} PIN"
 msgstr "Merkit ar c'hod PIN %{1}"
 
-#: ../src/indicator/sim-unlock-dialog.cpp:300
+#: ../src/indicator/sim-unlock-dialog.cpp:303
 msgid "Enter PUK code"
 msgstr "Ebarzhit ar c'hod PUK"
 
-#: ../src/indicator/sim-unlock-dialog.cpp:304
+#: ../src/indicator/sim-unlock-dialog.cpp:307
 msgid "Enter PUK code for %{1}"
 msgstr "Merkit ar c'hod PUK evit %{1}"
 
-#: ../src/indicator/sim-unlock-dialog.cpp:326
+#: ../src/indicator/sim-unlock-dialog.cpp:328
 msgid "Enter new %{1} PIN"
 msgstr "Merkit ur c'hod PIN %{1} nevez"
 
-#. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:141
+#: ../src/indicator/sections/quick-access-section.cpp:83
 msgid "Flight Mode"
 msgstr "Mod nijerez"
-
-#. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:152
-msgid "Hotspot"
-msgstr ""
 
 #: ../src/indicator/sim-unlock-dialog.cpp:151
 msgid ""
@@ -92,20 +86,20 @@ msgstr ""
 "hag ezhomm ho po da lakaat unan all."
 
 #. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
-#: ../src/indicator/root-state.cpp:306
+#: ../src/indicator/root-state.cpp:349
 msgid "Network"
 msgstr "Rouedad"
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:90
+#: ../src/indicator/menuitems/wwan-link-item.cpp:92
 msgid "No SIM"
 msgstr "Kartenn SIM ebet"
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:145
+#: ../src/indicator/menuitems/wwan-link-item.cpp:140
 msgid "No Signal"
 msgstr "Sinal ebet"
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:157
-#: ../src/indicator/menuitems/wwan-link-item.cpp:164
+#: ../src/indicator/menuitems/wwan-link-item.cpp:146
+#: ../src/indicator/menuitems/wwan-link-item.cpp:152
 msgid "Offline"
 msgstr "Ezlinenn"
 
@@ -113,7 +107,7 @@ msgstr "Ezlinenn"
 msgid "Other network…"
 msgstr "Rouedad all..."
 
-#: ../src/indicator/sim-unlock-dialog.cpp:373
+#: ../src/indicator/sim-unlock-dialog.cpp:375
 msgid "PIN codes did not match."
 msgstr "Ar c'hodoù PIN ne glotont ket an eil gant egile."
 
@@ -129,7 +123,7 @@ msgstr "Kit e darempred gant ho pourchaser servij, mar plij."
 msgid "Please enter your PUK code to unblock SIM card."
 msgstr "Merkit ho kod PUK evit dibrennañ ho kartenn SIM, mar plij."
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:97
+#: ../src/indicator/menuitems/wwan-link-item.cpp:98
 msgid "SIM Error"
 msgstr "Fazi kartenn SIM"
 
@@ -137,7 +131,7 @@ msgstr "Fazi kartenn SIM"
 msgid "SIM Locked"
 msgstr "Kartenn SIM prennet"
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:133
+#: ../src/indicator/menuitems/wwan-link-item.cpp:129
 msgid "Searching"
 msgstr "O klask"
 
@@ -145,11 +139,11 @@ msgstr "O klask"
 msgid "Sorry, incorrect %{1} PIN."
 msgstr "Siwazh, kod PIN %{1} direizh."
 
-#: ../src/indicator/sim-unlock-dialog.cpp:218
+#: ../src/indicator/sim-unlock-dialog.cpp:220
 msgid "Sorry, incorrect PIN"
 msgstr "Siwazh, kod PIN direizh"
 
-#: ../src/indicator/sim-unlock-dialog.cpp:230
+#: ../src/indicator/sim-unlock-dialog.cpp:232
 msgid "Sorry, incorrect PUK"
 msgstr "Siwazh, kod PUK direizh"
 
@@ -167,28 +161,27 @@ msgstr "Siwazh, prennet eo ho %{1} bremañ."
 msgid "This will be your last attempt."
 msgstr "Ho taol-esae diwezhañ e vo."
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:123
+#: ../src/indicator/menuitems/wwan-link-item.cpp:121
 msgid "Unknown"
 msgstr "Dianav"
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:118
+#: ../src/indicator/menuitems/wwan-link-item.cpp:117
 msgid "Unregistered"
 msgstr "N'eo ket enrollet"
 
-#: ../src/indicator/agent/SecretRequest.cpp:68
+#: ../src/indicator/agent/SecretRequest.cpp:74
 msgid "WEP"
 msgstr "WEP"
 
-#: ../src/indicator/agent/SecretRequest.cpp:66
+#: ../src/indicator/agent/SecretRequest.cpp:72
 msgid "WPA"
 msgstr "WPA"
 
-#. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:130
+#: ../src/indicator/sections/wifi-section.cpp:58
 msgid "Wi-Fi"
 msgstr "Wi-Fi"
 
-#: ../src/indicator/sections/wifi-section.cpp:65
+#: ../src/indicator/sections/wifi-section.cpp:72
 msgid "Wi-Fi settings…"
 msgstr "Arventennoù Wi-Fi..."
 

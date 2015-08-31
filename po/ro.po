@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-21 14:47+0200\n"
+"POT-Creation-Date: 2015-05-19 14:07+0300\n"
 "PO-Revision-Date: 2014-10-10 09:02+0000\n"
 "Last-Translator: Marian Vasile <marianvasile1972@gmail.com>\n"
 "Language-Team: Romanian <ro@li.org>\n"
@@ -20,7 +20,7 @@ msgstr ""
 "X-Launchpad-Export-Date: 2014-10-11 05:15+0000\n"
 "X-Generator: Launchpad (build 17196)\n"
 
-#: ../src/indicator/sim-unlock-dialog.cpp:315
+#: ../src/indicator/sim-unlock-dialog.cpp:317
 #, c-format
 msgid "1 attempt remaining"
 msgid_plural "%d attempts remaining"
@@ -28,55 +28,49 @@ msgstr[0] "1 încercare disponibilă"
 msgstr[1] "%d încercări disponibile"
 msgstr[2] "%d de încercări disponibile"
 
-#: ../src/indicator/agent/SecretRequest.cpp:75
+#: ../src/indicator/agent/SecretRequest.cpp:81
 msgid "Cancel"
 msgstr "Renunță"
 
-#: ../src/indicator/sections/wwan-section.cpp:99
+#: ../src/indicator/sections/wwan-section.cpp:96
 msgid "Cellular settings…"
 msgstr "Configurări gsm..."
 
-#: ../src/indicator/sim-unlock-dialog.cpp:334
+#: ../src/indicator/sim-unlock-dialog.cpp:336
 msgid "Confirm new %{1} PIN"
 msgstr "Confirmați noul PIN %{1}"
 
-#: ../src/indicator/agent/SecretRequest.cpp:74
+#: ../src/indicator/agent/SecretRequest.cpp:80
 msgid "Connect"
 msgstr "Conectare"
 
-#: ../src/indicator/agent/SecretRequest.cpp:61
+#: ../src/indicator/agent/SecretRequest.cpp:67
 msgid "Connect to “%1”"
 msgstr "Conectare la “%1”"
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:128
+#: ../src/indicator/menuitems/wwan-link-item.cpp:125
 msgid "Denied"
 msgstr "Refuzat"
 
-#: ../src/indicator/sim-unlock-dialog.cpp:292
+#: ../src/indicator/sim-unlock-dialog.cpp:295
 msgid "Enter %{1} PIN"
 msgstr "Introduceți PIN %{1}"
 
-#: ../src/indicator/sim-unlock-dialog.cpp:300
+#: ../src/indicator/sim-unlock-dialog.cpp:303
 msgid "Enter PUK code"
 msgstr "Introduceți codul PUK"
 
-#: ../src/indicator/sim-unlock-dialog.cpp:304
+#: ../src/indicator/sim-unlock-dialog.cpp:307
 msgid "Enter PUK code for %{1}"
 msgstr "Introduceți codul PUK pentru %{1}"
 
-#: ../src/indicator/sim-unlock-dialog.cpp:326
+#: ../src/indicator/sim-unlock-dialog.cpp:328
 msgid "Enter new %{1} PIN"
 msgstr "Introduceți noul PIN %{1}"
 
-#. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:141
+#: ../src/indicator/sections/quick-access-section.cpp:83
 msgid "Flight Mode"
 msgstr "Mod avion"
-
-#. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:152
-msgid "Hotspot"
-msgstr ""
 
 #: ../src/indicator/sim-unlock-dialog.cpp:151
 msgid ""
@@ -94,20 +88,20 @@ msgstr ""
 "și va trebui să-l înlocuiți."
 
 #. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
-#: ../src/indicator/root-state.cpp:306
+#: ../src/indicator/root-state.cpp:349
 msgid "Network"
 msgstr "Rețea"
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:90
+#: ../src/indicator/menuitems/wwan-link-item.cpp:92
 msgid "No SIM"
 msgstr "Niciun SIM"
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:145
+#: ../src/indicator/menuitems/wwan-link-item.cpp:140
 msgid "No Signal"
 msgstr "Niciun semnal"
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:157
-#: ../src/indicator/menuitems/wwan-link-item.cpp:164
+#: ../src/indicator/menuitems/wwan-link-item.cpp:146
+#: ../src/indicator/menuitems/wwan-link-item.cpp:152
 msgid "Offline"
 msgstr "Deconectat"
 
@@ -115,7 +109,7 @@ msgstr "Deconectat"
 msgid "Other network…"
 msgstr "Alte rețele..."
 
-#: ../src/indicator/sim-unlock-dialog.cpp:373
+#: ../src/indicator/sim-unlock-dialog.cpp:375
 msgid "PIN codes did not match."
 msgstr "Codurile PIN nu se potrivesc."
 
@@ -131,7 +125,7 @@ msgstr "Contactați furnizorul de servicii."
 msgid "Please enter your PUK code to unblock SIM card."
 msgstr "Pentru deblocarea cardului SIM introduceți codul PUK ."
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:97
+#: ../src/indicator/menuitems/wwan-link-item.cpp:98
 msgid "SIM Error"
 msgstr "Eroare SIM"
 
@@ -139,7 +133,7 @@ msgstr "Eroare SIM"
 msgid "SIM Locked"
 msgstr "SIM blocat"
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:133
+#: ../src/indicator/menuitems/wwan-link-item.cpp:129
 msgid "Searching"
 msgstr "Se caută"
 
@@ -147,11 +141,11 @@ msgstr "Se caută"
 msgid "Sorry, incorrect %{1} PIN."
 msgstr "Cod PIN %{1} incorect."
 
-#: ../src/indicator/sim-unlock-dialog.cpp:218
+#: ../src/indicator/sim-unlock-dialog.cpp:220
 msgid "Sorry, incorrect PIN"
 msgstr "Cod PIN incorect"
 
-#: ../src/indicator/sim-unlock-dialog.cpp:230
+#: ../src/indicator/sim-unlock-dialog.cpp:232
 msgid "Sorry, incorrect PUK"
 msgstr "Cod PUK incorect"
 
@@ -169,28 +163,27 @@ msgstr "Dispozitivul dumneavoastră %{1} a fost blocat."
 msgid "This will be your last attempt."
 msgstr "Aceasta va fi ultima încercare"
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:123
+#: ../src/indicator/menuitems/wwan-link-item.cpp:121
 msgid "Unknown"
 msgstr "Necunoscut"
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:118
+#: ../src/indicator/menuitems/wwan-link-item.cpp:117
 msgid "Unregistered"
 msgstr "Neînregistrat"
 
-#: ../src/indicator/agent/SecretRequest.cpp:68
+#: ../src/indicator/agent/SecretRequest.cpp:74
 msgid "WEP"
 msgstr "WEP"
 
-#: ../src/indicator/agent/SecretRequest.cpp:66
+#: ../src/indicator/agent/SecretRequest.cpp:72
 msgid "WPA"
 msgstr "WPA"
 
-#. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:130
+#: ../src/indicator/sections/wifi-section.cpp:58
 msgid "Wi-Fi"
 msgstr "Rețea fără fir"
 
-#: ../src/indicator/sections/wifi-section.cpp:65
+#: ../src/indicator/sections/wifi-section.cpp:72
 msgid "Wi-Fi settings…"
 msgstr "Configurări rețea fără fir..."
 

@@ -77,9 +77,6 @@ public:
     Q_PROPERTY(QString HotspotMode READ hotspotMode)
     QString hotspotMode() const;
 
-    Q_PROPERTY(QString HotspotAuth READ hotspotAuth)
-    QString hotspotAuth() const;
-
 private:
     class Private;
     std::shared_ptr<Private> d;
@@ -98,6 +95,9 @@ public:
 
     Q_PROPERTY(QString HotspotPassword READ hotspotPassword)
     QString hotspotPassword() const;
+
+    Q_PROPERTY(QString HotspotAuth READ hotspotAuth)
+    QString hotspotAuth() const;
 
 protected Q_SLOTS:
     void UnlockAllModems();

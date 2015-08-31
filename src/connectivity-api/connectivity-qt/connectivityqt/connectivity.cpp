@@ -301,7 +301,7 @@ QString Connectivity::hotspotMode() const
 
 QString Connectivity::hotspotAuth() const
 {
-    return d->m_propertyCache->get("HotspotAuth").toString();
+    return d->m_writePropertyCache->get("HotspotAuth").toString();
 }
 
 bool Connectivity::hotspotStored() const

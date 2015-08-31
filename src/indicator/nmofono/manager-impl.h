@@ -81,6 +81,8 @@ public:
 
     QString hotspotMode() const override;
 
+    QString hotspotAuth() const override;
+
     void setHotspotEnabled(bool) override;
 
     void setHotspotSsid(const QByteArray&) override;
@@ -88,6 +90,8 @@ public:
     void setHotspotPassword(const QString&) override;
 
     void setHotspotMode(const QString&) override;
+
+    void setHotspotAuth(const QString&) override;
 
 private Q_SLOTS:
     void device_added(const QDBusObjectPath &path);

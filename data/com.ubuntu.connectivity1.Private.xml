@@ -9,7 +9,7 @@
         <method name="UnlockModem">
             <arg type="s" direction="in" name="modem"/>
         </method>
-        
+
         <method name="SetFlightMode">
             <arg type="b" direction="in" name="enabled"/>
         </method>
@@ -34,7 +34,13 @@
             <arg type="s" direction="in" name="mode"/>
         </method>
 
+        <method name="SetHotspotAuth">
+            <arg type="s" direction="in" name="auth"/>
+        </method>
+
         <property name="HotspotPassword" type="s" access="read"/>
+
+        <property name="HotspotAuth" type="s" access="read"/>
 
         <signal name="ReportError">
             <arg type="i" direction="out" name="reason"/>

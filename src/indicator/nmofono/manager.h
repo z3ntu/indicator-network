@@ -137,6 +137,9 @@ public:
     Q_PROPERTY(QString hotspotMode READ hotspotMode WRITE setHotspotMode NOTIFY hotspotModeChanged)
     virtual QString hotspotMode() const = 0;
 
+    Q_PROPERTY(QString hotspotAuth READ hotspotAuth WRITE setHotspotAuth NOTIFY hotspotAuthChanged)
+    virtual QString hotspotAuth() const = 0;
+
 Q_SIGNALS:
     void flightModeUpdated(bool);
 
@@ -160,6 +163,8 @@ Q_SIGNALS:
 
     void hotspotModeChanged(const QString& mode);
 
+    void hotspotAuthChanged(const QString& auth);
+
     void reportError(int reason);
 
     void unstoppableOperationHappeningUpdated(bool);
@@ -176,6 +181,8 @@ public Q_SLOTS:
     virtual void setHotspotPassword(const QString&) = 0;
 
     virtual void setHotspotMode(const QString&) = 0;
+
+    virtual void setHotspotAuth(const QString&) = 0;
 
 protected:
     /**

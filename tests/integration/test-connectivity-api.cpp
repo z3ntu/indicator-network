@@ -633,7 +633,6 @@ TEST_F(TestConnectivityApi, HotspotConfig)
 
 TEST_F(TestConnectivityApi, InsecureHotspotConfig)
 {
-    auto device = createWiFiDevice(NM_DEVICE_STATE_DISCONNECTED);
     // Start the indicator
     ASSERT_NO_THROW(startIndicator());
     auto& nmSettingsMock = dbusMock.mockInterface(NM_DBUS_SERVICE,

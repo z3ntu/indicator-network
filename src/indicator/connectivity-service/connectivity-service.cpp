@@ -141,8 +141,8 @@ public Q_SLOTS:
     void hotspotAuthUpdated()
     {
         notifyPropertyChanged(*m_privateService,
-                              DBusTypes::SERVICE_PATH,
-                              DBusTypes::SERVICE_INTERFACE,
+                              DBusTypes::PRIVATE_PATH,
+                              DBusTypes::PRIVATE_INTERFACE,
                               { "HotspotAuth" });
     }
 

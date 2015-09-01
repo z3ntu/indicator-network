@@ -631,4 +631,96 @@ TEST_F(TestConnectivityApi, HotspotConfig)
     }
 }
 
+TEST_F(TestConnectivityApi, InsecureHotspotConfig)
+{
+    auto device = createWiFiDevice(NM_DEVICE_STATE_DISCONNECTED);
+    // Start the indicator
+    ASSERT_NO_THROW(startIndicator());
+    auto& nmSettingsMock = dbusMock.mockInterface(NM_DBUS_SERVICE,
+                           NM_DBUS_PATH_SETTINGS,
+                           NM_DBUS_IFACE_SETTINGS,
+                           QDBusConnection::SystemBus);
+    QSignalSpy nmSettingsMockCallSpy(
+                           &nmSettingsMock,
+                           SIGNAL(MethodCalled(const QString &, const QVariantList &)));
+
+    OrgFreedesktopNetworkManagerSettingsInterface settings(
+            NM_DBUS_SERVICE, NM_DBUS_PATH_SETTINGS, dbusTestRunner.systemConnection());
+    QSignalSpy settingsNewConnectionSpy(
+                           &settings,
+                           SIGNAL(NewConnection(const QDBusObjectPath &)));
+
+    // Connect the the service
+    auto connectivity(newConnectivity());
+
+    QSignalSpy storedSpy(connectivity.get(), SIGNAL(hotspotStoredUpdated(bool)));
+    QSignalSpy enabledSpy(connectivity.get(), SIGNAL(hotspotEnabledUpdated(bool)));
+    QSignalSpy authSpy(connectivity.get(), SIGNAL(hotspotAuthUpdated(const QString&)));
+
+    EXPECT_EQ("Ubuntu", connectivity->hotspotSsid().toStdString());
+    EXPECT_EQ("wpa-psk", connectivity->hotspotAuth().toStdString());
+    EXPECT_FALSE(connectivity->hotspotStored());
+    EXPECT_FALSE(connectivity->hotspotEnabled());
+
+    connectivity->setHotspotAuth("none");
+
+    if (authSpy.empty())
+    {
+        ASSERT_TRUE(authSpy.wait());
+    }
+    EXPECT_FALSE(authSpy.empty());
+    EXPECT_EQ("none", connectivity->hotspotAuth().toStdString());
+
+    connectivity->setHotspotEnabled(true);
+
+    if (enabledSpy.empty())
+    {
+        ASSERT_TRUE(enabledSpy.wait());
+    }
+    EXPECT_FALSE(enabledSpy.empty());
+
+    if (storedSpy.empty())
+    {
+        ASSERT_TRUE(storedSpy.wait());
+    }
+    EXPECT_FALSE(storedSpy.empty());
+
+    if (nmSettingsMockCallSpy.empty())
+    {
+        ASSERT_TRUE(nmSettingsMockCallSpy.wait());
+    }
+    EXPECT_FALSE(nmSettingsMockCallSpy.empty());
+
+    if (settingsNewConnectionSpy.empty())
+    {
+        ASSERT_TRUE(settingsNewConnectionSpy.wait());
+    }
+    EXPECT_FALSE(settingsNewConnectionSpy.empty());
+
+    EXPECT_TRUE(connectivity->hotspotEnabled());
+    EXPECT_TRUE(connectivity->hotspotStored());
+
+    // Connect to method calls on the newly added connection
+    auto connectionPath = qvariant_cast<QDBusObjectPath>(settingsNewConnectionSpy.first().first());
+    auto& connectionSettingsMock = dbusMock.mockInterface(NM_DBUS_SERVICE, connectionPath.path(),
+                           NM_DBUS_IFACE_SETTINGS_CONNECTION,
+                           QDBusConnection::SystemBus);
+    QSignalSpy connectionSettingsMockCallSpy(
+                           &connectionSettingsMock,
+                           SIGNAL(MethodCalled(const QString &, const QVariantList &)));
+
+    {
+        auto call = getMethodCall(nmSettingsMockCallSpy, "AddConnection");
+        // Decode the QDBusArgument
+        QVariantDictMap connection;
+        qvariant_cast<QDBusArgument>(call.first()) >> connection;
+        EXPECT_EQ(QVariantMap({
+            {"mode", "ap"},
+            {"ssid", "Ubuntu"}
+        }), connection["802-11-wireless"]);
+        EXPECT_EQ(QVariantMap(), connection["802-11-wireless-security"]);
+        EXPECT_TRUE(connection["connection"]["autoconnect"].toBool());
+    }
+}
+
 }

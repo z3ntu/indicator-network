@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-05-19 14:07+0300\n"
-"PO-Revision-Date: 2014-05-26 16:10+0000\n"
+"POT-Creation-Date: 2015-05-19 14:11+0300\n"
+"PO-Revision-Date: 2015-04-29 13:55+0000\n"
 "Last-Translator: GTriderXC <gtriderxc@yahoo.com>\n"
 "Language-Team: Polish <pl@li.org>\n"
 "Language: pl\n"
@@ -17,108 +17,12 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2;\n"
-"X-Launchpad-Export-Date: 2014-10-09 06:40+0000\n"
-"X-Generator: Launchpad (build 17196)\n"
-
-#: ../src/indicator/sim-unlock-dialog.cpp:317
-#, c-format
-msgid "1 attempt remaining"
-msgid_plural "%d attempts remaining"
-msgstr[0] ""
-msgstr[1] ""
-
-#: ../src/indicator/agent/SecretRequest.cpp:81
-msgid "Cancel"
-msgstr "Anuluj"
-
-#: ../src/indicator/sections/wwan-section.cpp:96
-msgid "Cellular settings…"
-msgstr "Ustawienia komórkowe…"
-
-#: ../src/indicator/sim-unlock-dialog.cpp:336
-msgid "Confirm new %{1} PIN"
-msgstr ""
-
-#: ../src/indicator/agent/SecretRequest.cpp:80
-msgid "Connect"
-msgstr "Połącz"
-
-#: ../src/indicator/agent/SecretRequest.cpp:67
-msgid "Connect to “%1”"
-msgstr "Połącz z “%1”"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:125
-msgid "Denied"
-msgstr ""
-
-#: ../src/indicator/sim-unlock-dialog.cpp:295
-msgid "Enter %{1} PIN"
-msgstr ""
-
-#: ../src/indicator/sim-unlock-dialog.cpp:303
-msgid "Enter PUK code"
-msgstr "Wprowadź kod PUK"
-
-#: ../src/indicator/sim-unlock-dialog.cpp:307
-msgid "Enter PUK code for %{1}"
-msgstr ""
-
-#: ../src/indicator/sim-unlock-dialog.cpp:328
-msgid "Enter new %{1} PIN"
-msgstr ""
-
-#: ../src/indicator/sections/quick-access-section.cpp:83
-msgid "Flight Mode"
-msgstr "Tryb samolotu"
-
-#: ../src/indicator/sim-unlock-dialog.cpp:151
-msgid ""
-"If %{1} PIN is entered incorrectly you will require your PUK code to unlock."
-msgstr ""
-
-#: ../src/indicator/sim-unlock-dialog.cpp:180
-msgid ""
-"If PUK code is entered incorrectly, your SIM card will be blocked and needs "
-"replacement."
-msgstr ""
-
-#. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
-#: ../src/indicator/root-state.cpp:349
-msgid "Network"
-msgstr "Sieć"
+"X-Launchpad-Export-Date: 2015-04-30 05:32+0000\n"
+"X-Generator: Launchpad (build 17453)\n"
 
 #: ../src/indicator/menuitems/wwan-link-item.cpp:92
 msgid "No SIM"
 msgstr "Brak karty SIM"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:140
-msgid "No Signal"
-msgstr "Brak zasięgu"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:146
-#: ../src/indicator/menuitems/wwan-link-item.cpp:152
-msgid "Offline"
-msgstr ""
-
-#: ../src/indicator/menuitems/wifi-link-item.cpp:117
-msgid "Other network…"
-msgstr "Inne sieci..."
-
-#: ../src/indicator/sim-unlock-dialog.cpp:375
-msgid "PIN codes did not match."
-msgstr "Wprowadzono różne kody PIN"
-
-#: ../src/indicator/sim-unlock-dialog.cpp:182
-msgid "Please contact your network provider."
-msgstr ""
-
-#: ../src/indicator/sim-unlock-dialog.cpp:194
-msgid "Please contact your service provider."
-msgstr ""
-
-#: ../src/indicator/sim-unlock-dialog.cpp:166
-msgid "Please enter your PUK code to unblock SIM card."
-msgstr ""
 
 #: ../src/indicator/menuitems/wwan-link-item.cpp:98
 msgid "SIM Error"
@@ -128,51 +32,137 @@ msgstr "Błąd SIM"
 msgid "SIM Locked"
 msgstr "Karta SIM zablokowana"
 
+#: ../src/indicator/menuitems/wwan-link-item.cpp:117
+msgid "Unregistered"
+msgstr "Niezarejestrowany"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:121
+msgid "Unknown"
+msgstr "Nieznany"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:125
+msgid "Denied"
+msgstr "Odrzucono"
+
 #: ../src/indicator/menuitems/wwan-link-item.cpp:129
 msgid "Searching"
-msgstr ""
+msgstr "Wyszukiwanie"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:140
+msgid "No Signal"
+msgstr "Brak zasięgu"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:146
+#: ../src/indicator/menuitems/wwan-link-item.cpp:152
+msgid "Offline"
+msgstr "Offline"
+
+#: ../src/indicator/menuitems/wifi-link-item.cpp:117
+msgid "Other network…"
+msgstr "Inne sieci..."
+
+#. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
+#: ../src/indicator/root-state.cpp:349
+msgid "Network"
+msgstr "Sieć"
 
 #: ../src/indicator/sim-unlock-dialog.cpp:144
 msgid "Sorry, incorrect %{1} PIN."
-msgstr ""
-
-#: ../src/indicator/sim-unlock-dialog.cpp:220
-msgid "Sorry, incorrect PIN"
-msgstr ""
-
-#: ../src/indicator/sim-unlock-dialog.cpp:232
-msgid "Sorry, incorrect PUK"
-msgstr ""
-
-#: ../src/indicator/sim-unlock-dialog.cpp:176
-#: ../src/indicator/sim-unlock-dialog.cpp:190
-msgid "Sorry, incorrect PUK."
-msgstr ""
-
-#: ../src/indicator/sim-unlock-dialog.cpp:161
-msgid "Sorry, your %{1} is now blocked."
-msgstr ""
+msgstr "Niepoprawny PIN %{1}."
 
 #: ../src/indicator/sim-unlock-dialog.cpp:149
 #: ../src/indicator/sim-unlock-dialog.cpp:178
 msgid "This will be your last attempt."
+msgstr "To jest już ostatnia próba."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:151
+msgid ""
+"If %{1} PIN is entered incorrectly you will require your PUK code to unlock."
 msgstr ""
+"Jeśli PIN %{1} zostanie podany niepoprawnie, do odblokowania karty niezbędny "
+"będzie kod PUK."
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:121
-msgid "Unknown"
+#: ../src/indicator/sim-unlock-dialog.cpp:161
+msgid "Sorry, your %{1} is now blocked."
+msgstr "Karta %{1} została zablokowana."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:166
+msgid "Please enter your PUK code to unblock SIM card."
+msgstr "Aby odblokować kartę SIM, proszę podać kod PUK."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:168
+msgid "You may need to contact your network provider for PUK code."
+msgstr "Jeśli nie znasz kodu PUK, skontaktuj się z operatorem sieci GSM."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:176
+#: ../src/indicator/sim-unlock-dialog.cpp:190
+msgid "Sorry, incorrect PUK."
+msgstr "Niepoprawny PUK"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:180
+msgid ""
+"If PUK code is entered incorrectly, your SIM card will be blocked and needs "
+"replacement."
 msgstr ""
+"Jeśli kod PUK zostanie wprowadzony niepoprawnie, karta SIM zostanie "
+"nieodwracalnie zablokowana i będzie wymagała wymiany."
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:117
-msgid "Unregistered"
+#: ../src/indicator/sim-unlock-dialog.cpp:182
+msgid "Please contact your network provider."
+msgstr "Skontaktuj się ze swoim operatorem GSM."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:192
+msgid "Your SIM card is now permanently blocked and needs replacement."
 msgstr ""
+"Karta SIM została nieodwracalnie zablokowana. Konieczna jest jej wymiana."
 
-#: ../src/indicator/agent/SecretRequest.cpp:74
-msgid "WEP"
-msgstr "WEP"
+#: ../src/indicator/sim-unlock-dialog.cpp:194
+msgid "Please contact your service provider."
+msgstr "Pomocy udzielić może tylko operator sieci GSM."
 
-#: ../src/indicator/agent/SecretRequest.cpp:72
-msgid "WPA"
-msgstr "WPA"
+#: ../src/indicator/sim-unlock-dialog.cpp:220
+msgid "Sorry, incorrect PIN"
+msgstr "Niepoprawny PIN"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:232
+msgid "Sorry, incorrect PUK"
+msgstr "Niepoprawny PUK"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:295
+msgid "Enter %{1} PIN"
+msgstr "Wprowadz PIN %{1}"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:303
+msgid "Enter PUK code"
+msgstr "Wprowadź kod PUK"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:307
+msgid "Enter PUK code for %{1}"
+msgstr "Wprowadz kod PUK dla %{1}"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:317
+#, c-format
+msgid "1 attempt remaining"
+msgid_plural "%d attempts remaining"
+msgstr[0] "Pozostała %d próba."
+msgstr[1] "Pozostały %d próby."
+msgstr[2] "Pozostało %d prób."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:328
+msgid "Enter new %{1} PIN"
+msgstr "Podaj nowy PIN %{1}"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:336
+msgid "Confirm new %{1} PIN"
+msgstr "Potwierdz nowy PIN karty %{1}"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:375
+msgid "PIN codes did not match."
+msgstr "Wprowadzono różne kody PIN"
+
+#: ../src/indicator/sections/quick-access-section.cpp:83
+msgid "Flight Mode"
+msgstr "Tryb samolotu"
 
 #: ../src/indicator/sections/wifi-section.cpp:58
 msgid "Wi-Fi"
@@ -182,19 +172,29 @@ msgstr "Wi-Fi"
 msgid "Wi-Fi settings…"
 msgstr "Ustawienia Wi-Fi"
 
-#: ../src/indicator/sim-unlock-dialog.cpp:168
-msgid "You may need to contact your network provider for PUK code."
-msgstr ""
+#: ../src/indicator/sections/wwan-section.cpp:96
+msgid "Cellular settings…"
+msgstr "Ustawienia komórkowe…"
 
-#: ../src/indicator/sim-unlock-dialog.cpp:192
-msgid "Your SIM card is now permanently blocked and needs replacement."
-msgstr ""
+#: ../src/indicator/agent/SecretRequest.cpp:67
+msgid "Connect to “%1”"
+msgstr "Połącz z “%1”"
 
-#~ msgid "Attempt %d of %d"
-#~ msgstr "Próba %d z %d możliwych"
+#: ../src/indicator/agent/SecretRequest.cpp:72
+msgid "WPA"
+msgstr "WPA"
 
-#~ msgid "Confirm new PIN code"
-#~ msgstr "Potwierdź nowy kod PIN"
+#: ../src/indicator/agent/SecretRequest.cpp:74
+msgid "WEP"
+msgstr "WEP"
+
+#: ../src/indicator/agent/SecretRequest.cpp:80
+msgid "Connect"
+msgstr "Połącz"
+
+#: ../src/indicator/agent/SecretRequest.cpp:81
+msgid "Cancel"
+msgstr "Anuluj"
 
 #~ msgid "Enter SIM PIN"
 #~ msgstr "Wprowadź PIN karty SIM"
@@ -202,45 +202,11 @@ msgstr ""
 #~ msgid "Enter new PIN code"
 #~ msgstr "Wprowadź nowy kod PIN"
 
+#~ msgid "Confirm new PIN code"
+#~ msgstr "Potwierdź nowy kod PIN"
+
 #~ msgid "Failed to change PIN."
 #~ msgstr "Nie udało się zmienić kodu PIN."
 
-#~ msgid "Oops!<br>Incorrect PIN entered."
-#~ msgstr "Oops!<br>Wprowadzono niepoprawny PIN."
-
-#~ msgid "Oops!<br>Incorrect PUK entered."
-#~ msgstr "Oops!<br>Wprowadzono niepoprawny PUK."
-
-#~ msgid ""
-#~ "This will be the last attempt.<br><br>If the PUK code is entered "
-#~ "incorrectly, your SIM will need to be replaced.<br><br>Please contact "
-#~ "your network provider."
-#~ msgstr ""
-#~ "TO JEST OSTATNIA PRÓBA!!!<br><br>Jeśli wprowadzisz kod PUK niepoprawnie, "
-#~ "karta SIM będzie wymagała wymiany!!!<br><br>Skontaktuj się z operatorem "
-#~ "Twojej sieci!"
-
-#~ msgid ""
-#~ "This will be the last attempt.<br><br>If the SIM PIN is entered "
-#~ "incorrectly, your SIM will be blocked and would require the PUK Code to "
-#~ "unlock."
-#~ msgstr ""
-#~ "To jest ostatnia próba!!!<br><br>Jeśli kod PIN karty SIM zostanie "
-#~ "wprowadzony błędnie, wymagany będzie kod PUK."
-
 #~ msgid "Unlock SIM…"
 #~ msgstr "Odblokuj kartę SIM…"
-
-#~ msgid ""
-#~ "Your SIM is now blocked.<br><br>Enter the PUK Code to unlock.<br><br>You "
-#~ "may contact your network provider for PUK Code."
-#~ msgstr ""
-#~ "Karta SIM została zablokowana.<br><br>Wymagany jest kod PUK.<br><br>W "
-#~ "przypadku trudności operator sieci GSM może pomóc go odzyskać."
-
-#~ msgid ""
-#~ "Your SIM is now permanently blocked and needs to be replaced."
-#~ "<br><br>Please contact your network provider."
-#~ msgstr ""
-#~ "Ta karta SIM została trwale zablokowana i wymaga wymiany na nową."
-#~ "<br><br>Skontaktuj się z operatorem Twojej sieci."

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-05-19 14:11+0300\n"
+"POT-Creation-Date: 2015-09-03 10:50+0100\n"
 "PO-Revision-Date: 2015-03-14 09:12+0000\n"
 "Last-Translator: Aggelos Arnaoutis <angelosarn@hotmail.com>\n"
 "Language-Team: Greek <el@li.org>\n"
@@ -19,60 +19,62 @@ msgstr ""
 "X-Launchpad-Export-Date: 2015-03-15 05:33+0000\n"
 "X-Generator: Launchpad (build 17389)\n"
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:92
-msgid "No SIM"
-msgstr "Χωρίς SIM"
+#: ../src/indicator/sim-unlock-dialog.cpp:315
+#, c-format
+msgid "1 attempt remaining"
+msgid_plural "%d attempts remaining"
+msgstr[0] "απομένει 1 προσπάθεια"
+msgstr[1] "απομένουν %d προσπάθειες"
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:98
-msgid "SIM Error"
-msgstr "Σφάλμα SIM"
+#: ../src/indicator/agent/SecretRequest.cpp:75
+msgid "Cancel"
+msgstr "Άκυρο"
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:105
-msgid "SIM Locked"
-msgstr "Κλειδωμένη SIM"
+#: ../src/indicator/sections/wwan-section.cpp:99
+msgid "Cellular settings…"
+msgstr "Ρυθμίσεις ασύρματης τηλεφωνίας…"
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:117
-msgid "Unregistered"
-msgstr "Μη καταχωρημένος"
+#: ../src/indicator/sim-unlock-dialog.cpp:334
+msgid "Confirm new %{1} PIN"
+msgstr "Επιβεβαιώστε νέο %{1} κωδικό PIN"
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:121
-msgid "Unknown"
-msgstr "Άγνωστο"
+#: ../src/indicator/agent/SecretRequest.cpp:74
+msgid "Connect"
+msgstr "Σύνδεση"
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:125
+#: ../src/indicator/agent/SecretRequest.cpp:61
+msgid "Connect to “%1”"
+msgstr "Σύνδεση σε «%1»"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:128
 msgid "Denied"
 msgstr "Απαγορεύτηκε"
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:129
-msgid "Searching"
-msgstr "Αναζήτηση…"
+#: ../src/indicator/sim-unlock-dialog.cpp:292
+msgid "Enter %{1} PIN"
+msgstr "Πληκτρολογήστε τον %{1} κωδικό PIN"
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:140
-msgid "No Signal"
-msgstr "Χωρίς σήμα"
+#: ../src/indicator/sim-unlock-dialog.cpp:300
+msgid "Enter PUK code"
+msgstr "Εισάγετε τον κωδικό PUK"
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:146
-#: ../src/indicator/menuitems/wwan-link-item.cpp:152
-msgid "Offline"
-msgstr "Εκτός σύνδεσης"
+#: ../src/indicator/sim-unlock-dialog.cpp:304
+msgid "Enter PUK code for %{1}"
+msgstr "Εισάγετε τον κωδικό PUK για ${1}"
 
-#: ../src/indicator/menuitems/wifi-link-item.cpp:117
-msgid "Other network…"
-msgstr "Άλλο δίκτυο..."
+#: ../src/indicator/sim-unlock-dialog.cpp:326
+msgid "Enter new %{1} PIN"
+msgstr "Πληκτρολογήστε νέο %{1} κωδικό PIN"
 
-#. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
-#: ../src/indicator/root-state.cpp:349
-msgid "Network"
-msgstr "Δίκτυο"
+#. TODO Move this into a new class
+#: ../src/indicator/factory.cpp:141
+msgid "Flight Mode"
+msgstr "Λειτουργία πτήσης"
 
-#: ../src/indicator/sim-unlock-dialog.cpp:144
-msgid "Sorry, incorrect %{1} PIN."
-msgstr "Συγγνώμη, λάθος %{1} PIN."
-
-#: ../src/indicator/sim-unlock-dialog.cpp:149
-#: ../src/indicator/sim-unlock-dialog.cpp:178
-msgid "This will be your last attempt."
-msgstr "Αυτή θα είναι η τελευταία σας προσπάθεια"
+#. TODO Move this into a new class
+#: ../src/indicator/factory.cpp:152
+msgid "Hotspot"
+msgstr ""
 
 #: ../src/indicator/sim-unlock-dialog.cpp:151
 msgid ""
@@ -80,26 +82,6 @@ msgid ""
 msgstr ""
 "Εάν το %{1} PIN έχει πληκτρολογηθεί λάθος απαιτείται πια ο κωδικός PUK για "
 "ξεκλείδωμα."
-
-#: ../src/indicator/sim-unlock-dialog.cpp:161
-msgid "Sorry, your %{1} is now blocked."
-msgstr "Συγγνώμη, η %1 κάρτα σας είναι τώρα μπλοκαρισμένη."
-
-#: ../src/indicator/sim-unlock-dialog.cpp:166
-msgid "Please enter your PUK code to unblock SIM card."
-msgstr ""
-"Παρακαλώ πληκτρολογήστε τον κωδικό PUK σας για να ξεμπλοκάρετε την κάρτα SIM "
-"σας."
-
-#: ../src/indicator/sim-unlock-dialog.cpp:168
-msgid "You may need to contact your network provider for PUK code."
-msgstr ""
-"Μπορεί να χρειαστεί να επικοινωνήσετε με τον πάροχό σας για τον κωδικό PUK."
-
-#: ../src/indicator/sim-unlock-dialog.cpp:176
-#: ../src/indicator/sim-unlock-dialog.cpp:190
-msgid "Sorry, incorrect PUK."
-msgstr "Συγγνώμη, λάθος κωδικός PUK."
 
 #: ../src/indicator/sim-unlock-dialog.cpp:180
 msgid ""
@@ -109,9 +91,113 @@ msgstr ""
 "Εάν ο κωδικός PUK πληκτρολογηθεί λάθος, η κάρτα SIM σας θα μπλοκάρει και θα "
 "χρειαστεί αντικατάσταση."
 
+#. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
+#: ../src/indicator/root-state.cpp:306
+msgid "Network"
+msgstr "Δίκτυο"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:90
+msgid "No SIM"
+msgstr "Χωρίς SIM"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:145
+msgid "No Signal"
+msgstr "Χωρίς σήμα"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:157
+#: ../src/indicator/menuitems/wwan-link-item.cpp:164
+msgid "Offline"
+msgstr "Εκτός σύνδεσης"
+
+#: ../src/indicator/menuitems/wifi-link-item.cpp:117
+msgid "Other network…"
+msgstr "Άλλο δίκτυο..."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:373
+msgid "PIN codes did not match."
+msgstr "Οι κωδικοί PIN ήταν διαφορετικοί."
+
 #: ../src/indicator/sim-unlock-dialog.cpp:182
 msgid "Please contact your network provider."
 msgstr "Παρακαλώ επικοινωνήστε με τον πάροχό σας."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:194
+msgid "Please contact your service provider."
+msgstr "Παρακαλώ επικοινωνήστε με τον πάροχο της υπηρεσίας σας."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:166
+msgid "Please enter your PUK code to unblock SIM card."
+msgstr ""
+"Παρακαλώ πληκτρολογήστε τον κωδικό PUK σας για να ξεμπλοκάρετε την κάρτα SIM "
+"σας."
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:97
+msgid "SIM Error"
+msgstr "Σφάλμα SIM"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:105
+msgid "SIM Locked"
+msgstr "Κλειδωμένη SIM"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:133
+msgid "Searching"
+msgstr "Αναζήτηση…"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:144
+msgid "Sorry, incorrect %{1} PIN."
+msgstr "Συγγνώμη, λάθος %{1} PIN."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:218
+msgid "Sorry, incorrect PIN"
+msgstr "Συγγνώμη, λάθος PIN"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:230
+msgid "Sorry, incorrect PUK"
+msgstr "Συγγνώμη, λάθος PUK"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:176
+#: ../src/indicator/sim-unlock-dialog.cpp:190
+msgid "Sorry, incorrect PUK."
+msgstr "Συγγνώμη, λάθος κωδικός PUK."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:161
+msgid "Sorry, your %{1} is now blocked."
+msgstr "Συγγνώμη, η %1 κάρτα σας είναι τώρα μπλοκαρισμένη."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:149
+#: ../src/indicator/sim-unlock-dialog.cpp:178
+msgid "This will be your last attempt."
+msgstr "Αυτή θα είναι η τελευταία σας προσπάθεια"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:123
+msgid "Unknown"
+msgstr "Άγνωστο"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:118
+msgid "Unregistered"
+msgstr "Μη καταχωρημένος"
+
+#: ../src/indicator/agent/SecretRequest.cpp:68
+msgid "WEP"
+msgstr "WEP"
+
+#: ../src/indicator/agent/SecretRequest.cpp:66
+msgid "WPA"
+msgstr "WPA"
+
+#. TODO Move this into a new class
+#: ../src/indicator/factory.cpp:130
+msgid "Wi-Fi"
+msgstr "Wi-Fi"
+
+#: ../src/indicator/sections/wifi-section.cpp:65
+msgid "Wi-Fi settings…"
+msgstr "Ρυθμίσεις Wi-Fi…"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:168
+msgid "You may need to contact your network provider for PUK code."
+msgstr ""
+"Μπορεί να χρειαστεί να επικοινωνήσετε με τον πάροχό σας για τον κωδικό PUK."
 
 #: ../src/indicator/sim-unlock-dialog.cpp:192
 msgid "Your SIM card is now permanently blocked and needs replacement."
@@ -119,93 +205,14 @@ msgstr ""
 "Η κάρτα SIM σας  είναι τώρα μόνιμα μπλοκαρισμένη και χρειάζεται "
 "αντικατάσταση."
 
-#: ../src/indicator/sim-unlock-dialog.cpp:194
-msgid "Please contact your service provider."
-msgstr "Παρακαλώ επικοινωνήστε με τον πάροχο της υπηρεσίας σας."
-
-#: ../src/indicator/sim-unlock-dialog.cpp:220
-msgid "Sorry, incorrect PIN"
-msgstr "Συγγνώμη, λάθος PIN"
-
-#: ../src/indicator/sim-unlock-dialog.cpp:232
-msgid "Sorry, incorrect PUK"
-msgstr "Συγγνώμη, λάθος PUK"
-
-#: ../src/indicator/sim-unlock-dialog.cpp:295
-msgid "Enter %{1} PIN"
-msgstr "Πληκτρολογήστε τον %{1} κωδικό PIN"
-
-#: ../src/indicator/sim-unlock-dialog.cpp:303
-msgid "Enter PUK code"
-msgstr "Εισάγετε τον κωδικό PUK"
-
-#: ../src/indicator/sim-unlock-dialog.cpp:307
-msgid "Enter PUK code for %{1}"
-msgstr "Εισάγετε τον κωδικό PUK για ${1}"
-
-#: ../src/indicator/sim-unlock-dialog.cpp:317
-#, c-format
-msgid "1 attempt remaining"
-msgid_plural "%d attempts remaining"
-msgstr[0] "απομένει 1 προσπάθεια"
-msgstr[1] "απομένουν %d προσπάθειες"
-
-#: ../src/indicator/sim-unlock-dialog.cpp:328
-msgid "Enter new %{1} PIN"
-msgstr "Πληκτρολογήστε νέο %{1} κωδικό PIN"
-
-#: ../src/indicator/sim-unlock-dialog.cpp:336
-msgid "Confirm new %{1} PIN"
-msgstr "Επιβεβαιώστε νέο %{1} κωδικό PIN"
-
-#: ../src/indicator/sim-unlock-dialog.cpp:375
-msgid "PIN codes did not match."
-msgstr "Οι κωδικοί PIN ήταν διαφορετικοί."
-
-#: ../src/indicator/sections/quick-access-section.cpp:83
-msgid "Flight Mode"
-msgstr "Λειτουργία πτήσης"
-
-#: ../src/indicator/sections/wifi-section.cpp:58
-msgid "Wi-Fi"
-msgstr "Wi-Fi"
-
-#: ../src/indicator/sections/wifi-section.cpp:72
-msgid "Wi-Fi settings…"
-msgstr "Ρυθμίσεις Wi-Fi…"
-
-#: ../src/indicator/sections/wwan-section.cpp:96
-msgid "Cellular settings…"
-msgstr "Ρυθμίσεις ασύρματης τηλεφωνίας…"
-
-#: ../src/indicator/agent/SecretRequest.cpp:67
-msgid "Connect to “%1”"
-msgstr "Σύνδεση σε «%1»"
-
-#: ../src/indicator/agent/SecretRequest.cpp:72
-msgid "WPA"
-msgstr "WPA"
-
-#: ../src/indicator/agent/SecretRequest.cpp:74
-msgid "WEP"
-msgstr "WEP"
-
-#: ../src/indicator/agent/SecretRequest.cpp:80
-msgid "Connect"
-msgstr "Σύνδεση"
-
-#: ../src/indicator/agent/SecretRequest.cpp:81
-msgid "Cancel"
-msgstr "Άκυρο"
+#~ msgid "Confirm new PIN code"
+#~ msgstr "Επιβεβαιώστε το νέο PIN"
 
 #~ msgid "Enter SIM PIN"
 #~ msgstr "Εισάγετε το PIN της SIM"
 
 #~ msgid "Enter new PIN code"
 #~ msgstr "Εισάγετε το νέο PIN"
-
-#~ msgid "Confirm new PIN code"
-#~ msgstr "Επιβεβαιώστε το νέο PIN"
 
 #~ msgid "Failed to change PIN."
 #~ msgstr "Η αλλαγή PIN απέτυχε."

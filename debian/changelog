@@ -1,3 +1,11 @@
+indicator-network (0.5.3-0ubuntu1) UNRELEASED; urgency=medium
+
+  [ jonas-drange]
+  * Allow creation and configuration of insecure hotspot via the 
+    connectivity service (LP: #1431876)
+
+ -- Jonas G. Drange <jonas.drange@canonical.com>  Thu, 03 Sep 2015 14:49:46 +0200
+
 indicator-network (0.5.3+15.10.20150818-0ubuntu1) wily; urgency=medium
 
   [ Pete Woods ]
@@ -842,8 +850,8 @@ indicator-network (0.5.0+13.10.20130703.1-0ubuntu1) saucy; urgency=low
 
   [ Jeremy Bicha ]
   * debian/control:
-    - Build with valac (>= 0.18) instead of vala-0.18 for easier transitions 
- 
+    - Build with valac (>= 0.18) instead of vala-0.18 for easier transitions
+
   [ Ted Gould ]
   * Migrating to new libindicator format.
 
@@ -864,7 +872,7 @@ indicator-network (0.5.0-0ubuntu1) saucy; urgency=low
   * debian/changelog: use the right version number for non-native package, name
     to indicator-network properly.
   * debian/control:
-    - Update Vcs-Bzr, Vcs-Browser, add notice to developers. 
+    - Update Vcs-Bzr, Vcs-Browser, add notice to developers.
     - Add python3 to Build-Depends.
     - Add python3-dbusmock to Build-Depends.
     - Add dbus-test-runner to Build-Depends.

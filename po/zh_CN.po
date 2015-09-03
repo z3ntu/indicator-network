@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-05-19 14:11+0300\n"
+"POT-Creation-Date: 2015-09-03 10:50+0100\n"
 "PO-Revision-Date: 2015-06-26 07:47+0000\n"
 "Last-Translator: Ian Li <Unknown>\n"
 "Language-Team: Chinese (Simplified) <zh_CN@li.org>\n"
@@ -19,122 +19,7 @@ msgstr ""
 "X-Launchpad-Export-Date: 2015-06-27 05:39+0000\n"
 "X-Generator: Launchpad (build 17578)\n"
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:92
-msgid "No SIM"
-msgstr "无SIM卡"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:98
-msgid "SIM Error"
-msgstr "SIM卡错误"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:105
-msgid "SIM Locked"
-msgstr "SIM卡被锁定"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:117
-msgid "Unregistered"
-msgstr "未注册"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:121
-msgid "Unknown"
-msgstr "未知"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:125
-msgid "Denied"
-msgstr "已拒绝"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:129
-msgid "Searching"
-msgstr "正在搜索"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:140
-msgid "No Signal"
-msgstr "无信号"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:146
-#: ../src/indicator/menuitems/wwan-link-item.cpp:152
-msgid "Offline"
-msgstr "离线"
-
-#: ../src/indicator/menuitems/wifi-link-item.cpp:117
-msgid "Other network…"
-msgstr "其他网络..."
-
-#. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
-#: ../src/indicator/root-state.cpp:349
-msgid "Network"
-msgstr "网络"
-
-#: ../src/indicator/sim-unlock-dialog.cpp:144
-msgid "Sorry, incorrect %{1} PIN."
-msgstr "抱歉，%{1} 的PIN 码错误."
-
-#: ../src/indicator/sim-unlock-dialog.cpp:149
-#: ../src/indicator/sim-unlock-dialog.cpp:178
-msgid "This will be your last attempt."
-msgstr "这是您最后的尝试机会。"
-
-#: ../src/indicator/sim-unlock-dialog.cpp:151
-msgid ""
-"If %{1} PIN is entered incorrectly you will require your PUK code to unlock."
-msgstr "如果 %{1} 的 PIN 码输入错误，你需要用 PUK 码解锁."
-
-#: ../src/indicator/sim-unlock-dialog.cpp:161
-msgid "Sorry, your %{1} is now blocked."
-msgstr "抱歉，您的 %{1} 被锁定。"
-
-#: ../src/indicator/sim-unlock-dialog.cpp:166
-msgid "Please enter your PUK code to unblock SIM card."
-msgstr "请输入 PUK 码来解锁您的 SIM 卡。"
-
-#: ../src/indicator/sim-unlock-dialog.cpp:168
-msgid "You may need to contact your network provider for PUK code."
-msgstr "你需要联系网络运营商来取得PUK码。"
-
-#: ../src/indicator/sim-unlock-dialog.cpp:176
-#: ../src/indicator/sim-unlock-dialog.cpp:190
-msgid "Sorry, incorrect PUK."
-msgstr "抱歉，PUK 码错误。"
-
-#: ../src/indicator/sim-unlock-dialog.cpp:180
-msgid ""
-"If PUK code is entered incorrectly, your SIM card will be blocked and needs "
-"replacement."
-msgstr "如果您输入的 PUK 码错误，您的 SIM 卡将被锁定并需要更换。"
-
-#: ../src/indicator/sim-unlock-dialog.cpp:182
-msgid "Please contact your network provider."
-msgstr "请联系您的网络运营商。"
-
-#: ../src/indicator/sim-unlock-dialog.cpp:192
-msgid "Your SIM card is now permanently blocked and needs replacement."
-msgstr "您的 SIM 卡已被永久锁定并且需要更换。"
-
-#: ../src/indicator/sim-unlock-dialog.cpp:194
-msgid "Please contact your service provider."
-msgstr "请联系您的服务提供商。"
-
-#: ../src/indicator/sim-unlock-dialog.cpp:220
-msgid "Sorry, incorrect PIN"
-msgstr "抱歉，PIN 码错误"
-
-#: ../src/indicator/sim-unlock-dialog.cpp:232
-msgid "Sorry, incorrect PUK"
-msgstr "抱歉，PUK 码错误"
-
-#: ../src/indicator/sim-unlock-dialog.cpp:295
-msgid "Enter %{1} PIN"
-msgstr "输入 %{1} PIN"
-
-#: ../src/indicator/sim-unlock-dialog.cpp:303
-msgid "Enter PUK code"
-msgstr "输入 PUK 码"
-
-#: ../src/indicator/sim-unlock-dialog.cpp:307
-msgid "Enter PUK code for %{1}"
-msgstr "输入 %{1} 的PUK码"
-
-#: ../src/indicator/sim-unlock-dialog.cpp:317
+#: ../src/indicator/sim-unlock-dialog.cpp:315
 #, c-format
 msgid "1 attempt remaining"
 msgid_plural "%d attempts remaining"
@@ -142,62 +27,184 @@ msgstr[0] ""
 "还有1次机会\r\n"
 "还有 %d 次机会"
 
-#: ../src/indicator/sim-unlock-dialog.cpp:328
-msgid "Enter new %{1} PIN"
-msgstr "输入 %{1} 新的PIN"
+#: ../src/indicator/agent/SecretRequest.cpp:75
+msgid "Cancel"
+msgstr "取消"
 
-#: ../src/indicator/sim-unlock-dialog.cpp:336
-msgid "Confirm new %{1} PIN"
-msgstr "确认 %{1} 新的PIN"
-
-#: ../src/indicator/sim-unlock-dialog.cpp:375
-msgid "PIN codes did not match."
-msgstr "PIN 码不一致。"
-
-#: ../src/indicator/sections/quick-access-section.cpp:83
-msgid "Flight Mode"
-msgstr "飞行模式"
-
-#: ../src/indicator/sections/wifi-section.cpp:58
-msgid "Wi-Fi"
-msgstr "Wi-Fi"
-
-#: ../src/indicator/sections/wifi-section.cpp:72
-msgid "Wi-Fi settings…"
-msgstr "Wi-Fi 设置..."
-
-#: ../src/indicator/sections/wwan-section.cpp:96
+#: ../src/indicator/sections/wwan-section.cpp:99
 msgid "Cellular settings…"
 msgstr "蜂窝移动网络设置..."
 
-#: ../src/indicator/agent/SecretRequest.cpp:67
-msgid "Connect to “%1”"
-msgstr "连接到\"%1\""
-
-#: ../src/indicator/agent/SecretRequest.cpp:72
-msgid "WPA"
-msgstr "WPA"
+#: ../src/indicator/sim-unlock-dialog.cpp:334
+msgid "Confirm new %{1} PIN"
+msgstr "确认 %{1} 新的PIN"
 
 #: ../src/indicator/agent/SecretRequest.cpp:74
-msgid "WEP"
-msgstr "WEP"
-
-#: ../src/indicator/agent/SecretRequest.cpp:80
 msgid "Connect"
 msgstr "连接"
 
-#: ../src/indicator/agent/SecretRequest.cpp:81
-msgid "Cancel"
-msgstr "取消"
+#: ../src/indicator/agent/SecretRequest.cpp:61
+msgid "Connect to “%1”"
+msgstr "连接到\"%1\""
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:128
+msgid "Denied"
+msgstr "已拒绝"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:292
+msgid "Enter %{1} PIN"
+msgstr "输入 %{1} PIN"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:300
+msgid "Enter PUK code"
+msgstr "输入 PUK 码"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:304
+msgid "Enter PUK code for %{1}"
+msgstr "输入 %{1} 的PUK码"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:326
+msgid "Enter new %{1} PIN"
+msgstr "输入 %{1} 新的PIN"
+
+#. TODO Move this into a new class
+#: ../src/indicator/factory.cpp:141
+msgid "Flight Mode"
+msgstr "飞行模式"
+
+#. TODO Move this into a new class
+#: ../src/indicator/factory.cpp:152
+msgid "Hotspot"
+msgstr ""
+
+#: ../src/indicator/sim-unlock-dialog.cpp:151
+msgid ""
+"If %{1} PIN is entered incorrectly you will require your PUK code to unlock."
+msgstr "如果 %{1} 的 PIN 码输入错误，你需要用 PUK 码解锁."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:180
+msgid ""
+"If PUK code is entered incorrectly, your SIM card will be blocked and needs "
+"replacement."
+msgstr "如果您输入的 PUK 码错误，您的 SIM 卡将被锁定并需要更换。"
+
+#. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
+#: ../src/indicator/root-state.cpp:306
+msgid "Network"
+msgstr "网络"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:90
+msgid "No SIM"
+msgstr "无SIM卡"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:145
+msgid "No Signal"
+msgstr "无信号"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:157
+#: ../src/indicator/menuitems/wwan-link-item.cpp:164
+msgid "Offline"
+msgstr "离线"
+
+#: ../src/indicator/menuitems/wifi-link-item.cpp:117
+msgid "Other network…"
+msgstr "其他网络..."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:373
+msgid "PIN codes did not match."
+msgstr "PIN 码不一致。"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:182
+msgid "Please contact your network provider."
+msgstr "请联系您的网络运营商。"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:194
+msgid "Please contact your service provider."
+msgstr "请联系您的服务提供商。"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:166
+msgid "Please enter your PUK code to unblock SIM card."
+msgstr "请输入 PUK 码来解锁您的 SIM 卡。"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:97
+msgid "SIM Error"
+msgstr "SIM卡错误"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:105
+msgid "SIM Locked"
+msgstr "SIM卡被锁定"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:133
+msgid "Searching"
+msgstr "正在搜索"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:144
+msgid "Sorry, incorrect %{1} PIN."
+msgstr "抱歉，%{1} 的PIN 码错误."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:218
+msgid "Sorry, incorrect PIN"
+msgstr "抱歉，PIN 码错误"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:230
+msgid "Sorry, incorrect PUK"
+msgstr "抱歉，PUK 码错误"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:176
+#: ../src/indicator/sim-unlock-dialog.cpp:190
+msgid "Sorry, incorrect PUK."
+msgstr "抱歉，PUK 码错误。"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:161
+msgid "Sorry, your %{1} is now blocked."
+msgstr "抱歉，您的 %{1} 被锁定。"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:149
+#: ../src/indicator/sim-unlock-dialog.cpp:178
+msgid "This will be your last attempt."
+msgstr "这是您最后的尝试机会。"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:123
+msgid "Unknown"
+msgstr "未知"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:118
+msgid "Unregistered"
+msgstr "未注册"
+
+#: ../src/indicator/agent/SecretRequest.cpp:68
+msgid "WEP"
+msgstr "WEP"
+
+#: ../src/indicator/agent/SecretRequest.cpp:66
+msgid "WPA"
+msgstr "WPA"
+
+#. TODO Move this into a new class
+#: ../src/indicator/factory.cpp:130
+msgid "Wi-Fi"
+msgstr "Wi-Fi"
+
+#: ../src/indicator/sections/wifi-section.cpp:65
+msgid "Wi-Fi settings…"
+msgstr "Wi-Fi 设置..."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:168
+msgid "You may need to contact your network provider for PUK code."
+msgstr "你需要联系网络运营商来取得PUK码。"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:192
+msgid "Your SIM card is now permanently blocked and needs replacement."
+msgstr "您的 SIM 卡已被永久锁定并且需要更换。"
+
+#~ msgid "Confirm new PIN code"
+#~ msgstr "确认新的 PIN 码"
 
 #~ msgid "Enter SIM PIN"
 #~ msgstr "输入 SIM 卡 PIN 码"
 
 #~ msgid "Enter new PIN code"
 #~ msgstr "输入新的 PIN 码"
-
-#~ msgid "Confirm new PIN code"
-#~ msgstr "确认新的 PIN 码"
 
 #~ msgid "Failed to change PIN."
 #~ msgstr "修改 PIN 码失败。"

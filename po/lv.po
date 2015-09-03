@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-05-19 14:11+0300\n"
+"POT-Creation-Date: 2015-09-03 10:50+0100\n"
 "PO-Revision-Date: 2015-03-01 15:33+0000\n"
 "Last-Translator: Rūdolfs Mazurs <Unknown>\n"
 "Language-Team: Latvian <lv@li.org>\n"
@@ -19,60 +19,63 @@ msgstr ""
 "X-Launchpad-Export-Date: 2015-03-02 05:46+0000\n"
 "X-Generator: Launchpad (build 17361)\n"
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:92
-msgid "No SIM"
-msgstr "Nav SIM karte"
+#: ../src/indicator/sim-unlock-dialog.cpp:315
+#, c-format
+msgid "1 attempt remaining"
+msgid_plural "%d attempts remaining"
+msgstr[0] "Atlicis %d mēģinājums"
+msgstr[1] "Atlikuši %d mēģinājumi"
+msgstr[2] "Atlikuši %d mēģinājumi"
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:98
-msgid "SIM Error"
-msgstr "SIM kļūda"
+#: ../src/indicator/agent/SecretRequest.cpp:75
+msgid "Cancel"
+msgstr "Atcelt"
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:105
-msgid "SIM Locked"
-msgstr "SIM ir bloķēta"
+#: ../src/indicator/sections/wwan-section.cpp:99
+msgid "Cellular settings…"
+msgstr "Mobilo tiklu iestatījumi…"
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:117
-msgid "Unregistered"
-msgstr "Atreģistrēts"
+#: ../src/indicator/sim-unlock-dialog.cpp:334
+msgid "Confirm new %{1} PIN"
+msgstr "Apstipriniet jauno %{1} PIN"
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:121
-msgid "Unknown"
-msgstr "Nezināms"
+#: ../src/indicator/agent/SecretRequest.cpp:74
+msgid "Connect"
+msgstr "Savienoties"
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:125
+#: ../src/indicator/agent/SecretRequest.cpp:61
+msgid "Connect to “%1”"
+msgstr "Savienoties ar “%1”"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:128
 msgid "Denied"
 msgstr "Liegta"
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:129
-msgid "Searching"
-msgstr "Meklē"
+#: ../src/indicator/sim-unlock-dialog.cpp:292
+msgid "Enter %{1} PIN"
+msgstr "Ievadiet %{1} PIN"
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:140
-msgid "No Signal"
-msgstr "Nav signālu"
+#: ../src/indicator/sim-unlock-dialog.cpp:300
+msgid "Enter PUK code"
+msgstr "Ievadiet PUK kodu"
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:146
-#: ../src/indicator/menuitems/wwan-link-item.cpp:152
-msgid "Offline"
-msgstr "Nesaistē"
+#: ../src/indicator/sim-unlock-dialog.cpp:304
+msgid "Enter PUK code for %{1}"
+msgstr "Ievadiet %{1} PUK kodu"
 
-#: ../src/indicator/menuitems/wifi-link-item.cpp:117
-msgid "Other network…"
-msgstr "Cits tīkls…"
+#: ../src/indicator/sim-unlock-dialog.cpp:326
+msgid "Enter new %{1} PIN"
+msgstr "Ievadiet jaunu %{1} PIN"
 
-#. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
-#: ../src/indicator/root-state.cpp:349
-msgid "Network"
-msgstr "Tīkls"
+#. TODO Move this into a new class
+#: ../src/indicator/factory.cpp:141
+msgid "Flight Mode"
+msgstr "Lidmašīnas režīms"
 
-#: ../src/indicator/sim-unlock-dialog.cpp:144
-msgid "Sorry, incorrect %{1} PIN."
-msgstr "Nepareizs %{1} PIN"
-
-#: ../src/indicator/sim-unlock-dialog.cpp:149
-#: ../src/indicator/sim-unlock-dialog.cpp:178
-msgid "This will be your last attempt."
-msgstr "Šīs būs jūs pēdējais mēģinājums."
+#. TODO Move this into a new class
+#: ../src/indicator/factory.cpp:152
+msgid "Hotspot"
+msgstr ""
 
 #: ../src/indicator/sim-unlock-dialog.cpp:151
 msgid ""
@@ -80,24 +83,6 @@ msgid ""
 msgstr ""
 "Ja %{1} PIN ir nepareizi ievadīts, jums vajadzēs ievadīt PUK kodu, lai "
 "atbloķētu."
-
-#: ../src/indicator/sim-unlock-dialog.cpp:161
-msgid "Sorry, your %{1} is now blocked."
-msgstr "Diemžēl jūsu %{1} tagad ir bloķēta."
-
-#: ../src/indicator/sim-unlock-dialog.cpp:166
-msgid "Please enter your PUK code to unblock SIM card."
-msgstr "Lūdzu, ievadiet savu PUK kodu, lai atbloķētu SIM karti."
-
-#: ../src/indicator/sim-unlock-dialog.cpp:168
-msgid "You may need to contact your network provider for PUK code."
-msgstr ""
-"Iespējams, jums būs jāsazinās ar tīkla operatoru, lai saņemtu PUK kodu."
-
-#: ../src/indicator/sim-unlock-dialog.cpp:176
-#: ../src/indicator/sim-unlock-dialog.cpp:190
-msgid "Sorry, incorrect PUK."
-msgstr "Diemžēl nepareizs PUK."
 
 #: ../src/indicator/sim-unlock-dialog.cpp:180
 msgid ""
@@ -107,102 +92,124 @@ msgstr ""
 "Ja PUK kods tiek ievadīts nepareizi, jūsu SIM karte tiks bloķēta un to "
 "vajadzēs nomainīt."
 
+#. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
+#: ../src/indicator/root-state.cpp:306
+msgid "Network"
+msgstr "Tīkls"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:90
+msgid "No SIM"
+msgstr "Nav SIM karte"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:145
+msgid "No Signal"
+msgstr "Nav signālu"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:157
+#: ../src/indicator/menuitems/wwan-link-item.cpp:164
+msgid "Offline"
+msgstr "Nesaistē"
+
+#: ../src/indicator/menuitems/wifi-link-item.cpp:117
+msgid "Other network…"
+msgstr "Cits tīkls…"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:373
+msgid "PIN codes did not match."
+msgstr "PIN kodi nesakrīt."
+
 #: ../src/indicator/sim-unlock-dialog.cpp:182
 msgid "Please contact your network provider."
 msgstr "Lūdzu, sazinieties ar tīkla operatoru."
-
-#: ../src/indicator/sim-unlock-dialog.cpp:192
-msgid "Your SIM card is now permanently blocked and needs replacement."
-msgstr "Jūsu SIM karte tagad ir pavisam bloķēta un tā ir jānomaina."
 
 #: ../src/indicator/sim-unlock-dialog.cpp:194
 msgid "Please contact your service provider."
 msgstr "Lūdzu, sazinieties ar pakalpojuma sniedzēju."
 
-#: ../src/indicator/sim-unlock-dialog.cpp:220
+#: ../src/indicator/sim-unlock-dialog.cpp:166
+msgid "Please enter your PUK code to unblock SIM card."
+msgstr "Lūdzu, ievadiet savu PUK kodu, lai atbloķētu SIM karti."
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:97
+msgid "SIM Error"
+msgstr "SIM kļūda"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:105
+msgid "SIM Locked"
+msgstr "SIM ir bloķēta"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:133
+msgid "Searching"
+msgstr "Meklē"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:144
+msgid "Sorry, incorrect %{1} PIN."
+msgstr "Nepareizs %{1} PIN"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:218
 msgid "Sorry, incorrect PIN"
 msgstr "Nepareizs PIN"
 
-#: ../src/indicator/sim-unlock-dialog.cpp:232
+#: ../src/indicator/sim-unlock-dialog.cpp:230
 msgid "Sorry, incorrect PUK"
 msgstr "Nepareizs PUK"
 
-#: ../src/indicator/sim-unlock-dialog.cpp:295
-msgid "Enter %{1} PIN"
-msgstr "Ievadiet %{1} PIN"
+#: ../src/indicator/sim-unlock-dialog.cpp:176
+#: ../src/indicator/sim-unlock-dialog.cpp:190
+msgid "Sorry, incorrect PUK."
+msgstr "Diemžēl nepareizs PUK."
 
-#: ../src/indicator/sim-unlock-dialog.cpp:303
-msgid "Enter PUK code"
-msgstr "Ievadiet PUK kodu"
+#: ../src/indicator/sim-unlock-dialog.cpp:161
+msgid "Sorry, your %{1} is now blocked."
+msgstr "Diemžēl jūsu %{1} tagad ir bloķēta."
 
-#: ../src/indicator/sim-unlock-dialog.cpp:307
-msgid "Enter PUK code for %{1}"
-msgstr "Ievadiet %{1} PUK kodu"
+#: ../src/indicator/sim-unlock-dialog.cpp:149
+#: ../src/indicator/sim-unlock-dialog.cpp:178
+msgid "This will be your last attempt."
+msgstr "Šīs būs jūs pēdējais mēģinājums."
 
-#: ../src/indicator/sim-unlock-dialog.cpp:317
-#, c-format
-msgid "1 attempt remaining"
-msgid_plural "%d attempts remaining"
-msgstr[0] "Atlicis %d mēģinājums"
-msgstr[1] "Atlikuši %d mēģinājumi"
-msgstr[2] "Atlikuši %d mēģinājumi"
+#: ../src/indicator/menuitems/wwan-link-item.cpp:123
+msgid "Unknown"
+msgstr "Nezināms"
 
-#: ../src/indicator/sim-unlock-dialog.cpp:328
-msgid "Enter new %{1} PIN"
-msgstr "Ievadiet jaunu %{1} PIN"
+#: ../src/indicator/menuitems/wwan-link-item.cpp:118
+msgid "Unregistered"
+msgstr "Atreģistrēts"
 
-#: ../src/indicator/sim-unlock-dialog.cpp:336
-msgid "Confirm new %{1} PIN"
-msgstr "Apstipriniet jauno %{1} PIN"
-
-#: ../src/indicator/sim-unlock-dialog.cpp:375
-msgid "PIN codes did not match."
-msgstr "PIN kodi nesakrīt."
-
-#: ../src/indicator/sections/quick-access-section.cpp:83
-msgid "Flight Mode"
-msgstr "Lidmašīnas režīms"
-
-#: ../src/indicator/sections/wifi-section.cpp:58
-msgid "Wi-Fi"
-msgstr "Wi-Fi"
-
-#: ../src/indicator/sections/wifi-section.cpp:72
-msgid "Wi-Fi settings…"
-msgstr "Wi-Fi iestatījumi…"
-
-#: ../src/indicator/sections/wwan-section.cpp:96
-msgid "Cellular settings…"
-msgstr "Mobilo tiklu iestatījumi…"
-
-#: ../src/indicator/agent/SecretRequest.cpp:67
-msgid "Connect to “%1”"
-msgstr "Savienoties ar “%1”"
-
-#: ../src/indicator/agent/SecretRequest.cpp:72
-msgid "WPA"
-msgstr "WPA"
-
-#: ../src/indicator/agent/SecretRequest.cpp:74
+#: ../src/indicator/agent/SecretRequest.cpp:68
 msgid "WEP"
 msgstr "WEP"
 
-#: ../src/indicator/agent/SecretRequest.cpp:80
-msgid "Connect"
-msgstr "Savienoties"
+#: ../src/indicator/agent/SecretRequest.cpp:66
+msgid "WPA"
+msgstr "WPA"
 
-#: ../src/indicator/agent/SecretRequest.cpp:81
-msgid "Cancel"
-msgstr "Atcelt"
+#. TODO Move this into a new class
+#: ../src/indicator/factory.cpp:130
+msgid "Wi-Fi"
+msgstr "Wi-Fi"
+
+#: ../src/indicator/sections/wifi-section.cpp:65
+msgid "Wi-Fi settings…"
+msgstr "Wi-Fi iestatījumi…"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:168
+msgid "You may need to contact your network provider for PUK code."
+msgstr ""
+"Iespējams, jums būs jāsazinās ar tīkla operatoru, lai saņemtu PUK kodu."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:192
+msgid "Your SIM card is now permanently blocked and needs replacement."
+msgstr "Jūsu SIM karte tagad ir pavisam bloķēta un tā ir jānomaina."
+
+#~ msgid "Confirm new PIN code"
+#~ msgstr "Apstipriniet jauno PIN kodu."
 
 #~ msgid "Enter SIM PIN"
 #~ msgstr "Ievadiet SIM PIN"
 
 #~ msgid "Enter new PIN code"
 #~ msgstr "Ievadiet jaunu PIN kodu"
-
-#~ msgid "Confirm new PIN code"
-#~ msgstr "Apstipriniet jauno PIN kodu."
 
 #~ msgid "Failed to change PIN."
 #~ msgstr "Neizdevās mainīt PIN."

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-05-19 14:07+0300\n"
+"POT-Creation-Date: 2015-09-03 10:50+0100\n"
 "PO-Revision-Date: 2014-10-16 01:30+0000\n"
 "Last-Translator: samson <Unknown>\n"
 "Language-Team: Amharic <am@li.org>\n"
@@ -19,56 +19,62 @@ msgstr ""
 "X-Launchpad-Export-Date: 2014-10-17 06:26+0000\n"
 "X-Generator: Launchpad (build 17196)\n"
 
-#: ../src/indicator/sim-unlock-dialog.cpp:317
+#: ../src/indicator/sim-unlock-dialog.cpp:315
 #, c-format
 msgid "1 attempt remaining"
 msgid_plural "%d attempts remaining"
 msgstr[0] "1 ሙከራ ቀርቷል"
 msgstr[1] "%d ሙከራዎች ቀርተዋል"
 
-#: ../src/indicator/agent/SecretRequest.cpp:81
+#: ../src/indicator/agent/SecretRequest.cpp:75
 msgid "Cancel"
 msgstr "መሰረዣ"
 
-#: ../src/indicator/sections/wwan-section.cpp:96
+#: ../src/indicator/sections/wwan-section.cpp:99
 msgid "Cellular settings…"
 msgstr "ሴሉላር ማሰናጃዎች…"
 
-#: ../src/indicator/sim-unlock-dialog.cpp:336
+#: ../src/indicator/sim-unlock-dialog.cpp:334
 msgid "Confirm new %{1} PIN"
 msgstr "ማረጋገጫ አዲስ %{1} ፒን"
 
-#: ../src/indicator/agent/SecretRequest.cpp:80
+#: ../src/indicator/agent/SecretRequest.cpp:74
 msgid "Connect"
 msgstr "መገናኛ"
 
-#: ../src/indicator/agent/SecretRequest.cpp:67
+#: ../src/indicator/agent/SecretRequest.cpp:61
 msgid "Connect to “%1”"
 msgstr "መገናኛ ወደ “%1”"
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:125
+#: ../src/indicator/menuitems/wwan-link-item.cpp:128
 msgid "Denied"
 msgstr "ተከልክሏል"
 
-#: ../src/indicator/sim-unlock-dialog.cpp:295
+#: ../src/indicator/sim-unlock-dialog.cpp:292
 msgid "Enter %{1} PIN"
 msgstr "ያስገቡ %{1} ፒን"
 
-#: ../src/indicator/sim-unlock-dialog.cpp:303
+#: ../src/indicator/sim-unlock-dialog.cpp:300
 msgid "Enter PUK code"
 msgstr "ፑክ ኮድ ያስገቡ"
 
-#: ../src/indicator/sim-unlock-dialog.cpp:307
+#: ../src/indicator/sim-unlock-dialog.cpp:304
 msgid "Enter PUK code for %{1}"
 msgstr "ያስገቡ የ ፑክ ኮድ ለ %{1}"
 
-#: ../src/indicator/sim-unlock-dialog.cpp:328
+#: ../src/indicator/sim-unlock-dialog.cpp:326
 msgid "Enter new %{1} PIN"
 msgstr "ያስገቡ አዲስ %{1} ፒን"
 
-#: ../src/indicator/sections/quick-access-section.cpp:83
+#. TODO Move this into a new class
+#: ../src/indicator/factory.cpp:141
 msgid "Flight Mode"
 msgstr "በ በረራ ዘዴ"
+
+#. TODO Move this into a new class
+#: ../src/indicator/factory.cpp:152
+msgid "Hotspot"
+msgstr ""
 
 #: ../src/indicator/sim-unlock-dialog.cpp:151
 msgid ""
@@ -82,20 +88,20 @@ msgid ""
 msgstr "የተሳሳተ የ ፑክ ኮድ ካስገቡ የ እርስዎ ሲም ካርድ ይቆለፋል እና አዲስ መቀየር ያስፈልጋል"
 
 #. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
-#: ../src/indicator/root-state.cpp:349
+#: ../src/indicator/root-state.cpp:306
 msgid "Network"
 msgstr "ኔትዎርክ"
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:92
+#: ../src/indicator/menuitems/wwan-link-item.cpp:90
 msgid "No SIM"
 msgstr "ሲም አልተገኘም"
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:140
+#: ../src/indicator/menuitems/wwan-link-item.cpp:145
 msgid "No Signal"
 msgstr "ምልክት የለም"
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:146
-#: ../src/indicator/menuitems/wwan-link-item.cpp:152
+#: ../src/indicator/menuitems/wwan-link-item.cpp:157
+#: ../src/indicator/menuitems/wwan-link-item.cpp:164
 msgid "Offline"
 msgstr "ከመስመር ውጪ"
 
@@ -103,7 +109,7 @@ msgstr "ከመስመር ውጪ"
 msgid "Other network…"
 msgstr "ሌሎች ኔትዎርኮች..."
 
-#: ../src/indicator/sim-unlock-dialog.cpp:375
+#: ../src/indicator/sim-unlock-dialog.cpp:373
 msgid "PIN codes did not match."
 msgstr "የ ፒን ኮዶቹ አይመሳሰሉም"
 
@@ -119,7 +125,7 @@ msgstr "እባክዎን የ እርስዎን ግልጋሎት አቅራቢ ይገ�
 msgid "Please enter your PUK code to unblock SIM card."
 msgstr "እባክዎን የ እርስዎን ፑክ ኮድ ያስገቡ የ ሲም ካርዱን ለመክፈት"
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:98
+#: ../src/indicator/menuitems/wwan-link-item.cpp:97
 msgid "SIM Error"
 msgstr "የ ሲም ስህተት"
 
@@ -127,7 +133,7 @@ msgstr "የ ሲም ስህተት"
 msgid "SIM Locked"
 msgstr "ሲም ተቆልፏል"
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:129
+#: ../src/indicator/menuitems/wwan-link-item.cpp:133
 msgid "Searching"
 msgstr "በ መፈለግ ላይ"
 
@@ -135,11 +141,11 @@ msgstr "በ መፈለግ ላይ"
 msgid "Sorry, incorrect %{1} PIN."
 msgstr "አዝናለሁ የተሳሳተ %{1} ፒን"
 
-#: ../src/indicator/sim-unlock-dialog.cpp:220
+#: ../src/indicator/sim-unlock-dialog.cpp:218
 msgid "Sorry, incorrect PIN"
 msgstr "አዝናለሁ የተሳሳተ ፒን"
 
-#: ../src/indicator/sim-unlock-dialog.cpp:232
+#: ../src/indicator/sim-unlock-dialog.cpp:230
 msgid "Sorry, incorrect PUK"
 msgstr "አዝናለሁ የተሳሳተ ፑክ"
 
@@ -157,27 +163,28 @@ msgstr "አዝናለሁ: የ እርስዎ %{1} አሁን ተቆልፏል"
 msgid "This will be your last attempt."
 msgstr "ይህ የመጨረሻ ሙከራዎ ነው"
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:121
+#: ../src/indicator/menuitems/wwan-link-item.cpp:123
 msgid "Unknown"
 msgstr "ያልታወቀ"
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:117
+#: ../src/indicator/menuitems/wwan-link-item.cpp:118
 msgid "Unregistered"
 msgstr "ያልተመዘገበ"
 
-#: ../src/indicator/agent/SecretRequest.cpp:74
+#: ../src/indicator/agent/SecretRequest.cpp:68
 msgid "WEP"
 msgstr "WEP"
 
-#: ../src/indicator/agent/SecretRequest.cpp:72
+#: ../src/indicator/agent/SecretRequest.cpp:66
 msgid "WPA"
 msgstr "WPA"
 
-#: ../src/indicator/sections/wifi-section.cpp:58
+#. TODO Move this into a new class
+#: ../src/indicator/factory.cpp:130
 msgid "Wi-Fi"
 msgstr "ዋይ-ፋይ"
 
-#: ../src/indicator/sections/wifi-section.cpp:72
+#: ../src/indicator/sections/wifi-section.cpp:65
 msgid "Wi-Fi settings…"
 msgstr "ዋይ-ፋይ ማሰናጃዎች…"
 

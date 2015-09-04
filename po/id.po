@@ -8,51 +8,81 @@ msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-09-03 10:50+0100\n"
-"PO-Revision-Date: 2014-05-26 09:30+0000\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"PO-Revision-Date: 2015-09-03 15:46+0000\n"
+"Last-Translator: Pete Woods <Unknown>\n"
 "Language-Team: Indonesian <id@li.org>\n"
-"Language: id\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Launchpad-Export-Date: 2014-10-09 06:40+0000\n"
-"X-Generator: Launchpad (build 17196)\n"
+"X-Launchpad-Export-Date: 2015-09-04 05:40+0000\n"
+"X-Generator: Launchpad (build 17706)\n"
+"Language: id\n"
 
-#: ../src/indicator/sim-unlock-dialog.cpp:315
-#, c-format
-msgid "1 attempt remaining"
-msgid_plural "%d attempts remaining"
-msgstr[0] ""
-msgstr[1] ""
+#: ../src/indicator/sim-unlock-dialog.cpp:144
+msgid "Sorry, incorrect %{1} PIN."
+msgstr "Maaf, PIN %{1} salah."
 
-#: ../src/indicator/agent/SecretRequest.cpp:75
-msgid "Cancel"
-msgstr "Batal"
+#: ../src/indicator/sim-unlock-dialog.cpp:149
+#: ../src/indicator/sim-unlock-dialog.cpp:178
+msgid "This will be your last attempt."
+msgstr "Ini akan menjadi upaya terakhir Anda."
 
-#: ../src/indicator/sections/wwan-section.cpp:99
-msgid "Cellular settings…"
-msgstr "Pengaturan seluler..."
-
-#: ../src/indicator/sim-unlock-dialog.cpp:334
-msgid "Confirm new %{1} PIN"
+#: ../src/indicator/sim-unlock-dialog.cpp:151
+msgid ""
+"If %{1} PIN is entered incorrectly you will require your PUK code to unlock."
 msgstr ""
+"Bila PIN %{1} salah dimasukkan Anda akan memerlukan kode PUK untuk membuka "
+"kunci."
 
-#: ../src/indicator/agent/SecretRequest.cpp:74
-msgid "Connect"
-msgstr "Sambung"
+#: ../src/indicator/sim-unlock-dialog.cpp:161
+msgid "Sorry, your %{1} is now blocked."
+msgstr "Maaf, %{1} Anda kini terblokir."
 
-#: ../src/indicator/agent/SecretRequest.cpp:61
-msgid "Connect to “%1”"
-msgstr "Menyambung ke \"%1\""
+#: ../src/indicator/sim-unlock-dialog.cpp:166
+msgid "Please enter your PUK code to unblock SIM card."
+msgstr "Harap masukkan kode PUK Anda untuk membuka blokir kartu SIM."
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:128
-msgid "Denied"
-msgstr "Ditolak"
+#: ../src/indicator/sim-unlock-dialog.cpp:168
+msgid "You may need to contact your network provider for PUK code."
+msgstr "Anda mungkin perlu menghubungi operator seluler Anda untuk kode PUK."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:176
+#: ../src/indicator/sim-unlock-dialog.cpp:190
+msgid "Sorry, incorrect PUK."
+msgstr "Maaf, PUK salah."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:180
+msgid ""
+"If PUK code is entered incorrectly, your SIM card will be blocked and needs "
+"replacement."
+msgstr ""
+"Bila kode PUK salah dimasukkan, kartu SIM Anda akan terblokir dan perlu "
+"penggantian."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:182
+msgid "Please contact your network provider."
+msgstr "Harap hubungi operator seluler Anda."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:192
+msgid "Your SIM card is now permanently blocked and needs replacement."
+msgstr "Kartu SIM Anda kini terblokir permanen dan perlu penggantian."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:194
+msgid "Please contact your service provider."
+msgstr "Harap hubungi operator seluler Anda."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:218
+msgid "Sorry, incorrect PIN"
+msgstr "Maaf, PIN salah"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:230
+msgid "Sorry, incorrect PUK"
+msgstr "Maaf, PUK salah"
 
 #: ../src/indicator/sim-unlock-dialog.cpp:292
 msgid "Enter %{1} PIN"
-msgstr ""
+msgstr "Masukkan PIN %{1}"
 
 #: ../src/indicator/sim-unlock-dialog.cpp:300
 msgid "Enter PUK code"
@@ -60,32 +90,45 @@ msgstr "Masukkan kode PUK"
 
 #: ../src/indicator/sim-unlock-dialog.cpp:304
 msgid "Enter PUK code for %{1}"
-msgstr ""
+msgstr "Masukkan kode PUK bagi %{1}"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:315
+#, c-format
+msgid "1 attempt remaining"
+msgid_plural "%d attempts remaining"
+msgstr[0] "%d percobaan tersisa"
 
 #: ../src/indicator/sim-unlock-dialog.cpp:326
 msgid "Enter new %{1} PIN"
-msgstr ""
+msgstr "Masukkan PIN baru %{1}"
 
-#. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:141
-msgid "Flight Mode"
-msgstr "Mode Penerbangan"
+#: ../src/indicator/sim-unlock-dialog.cpp:334
+msgid "Confirm new %{1} PIN"
+msgstr "Konfirmasikan PIN baru %{1}"
 
-#. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:152
-msgid "Hotspot"
-msgstr ""
+#: ../src/indicator/sim-unlock-dialog.cpp:373
+msgid "PIN codes did not match."
+msgstr "Kode PIN tak cocok."
 
-#: ../src/indicator/sim-unlock-dialog.cpp:151
-msgid ""
-"If %{1} PIN is entered incorrectly you will require your PUK code to unlock."
-msgstr ""
+#: ../src/indicator/agent/SecretRequest.cpp:61
+msgid "Connect to “%1”"
+msgstr "Menyambung ke \"%1\""
 
-#: ../src/indicator/sim-unlock-dialog.cpp:180
-msgid ""
-"If PUK code is entered incorrectly, your SIM card will be blocked and needs "
-"replacement."
-msgstr ""
+#: ../src/indicator/agent/SecretRequest.cpp:66
+msgid "WPA"
+msgstr "WPA"
+
+#: ../src/indicator/agent/SecretRequest.cpp:68
+msgid "WEP"
+msgstr "WEP"
+
+#: ../src/indicator/agent/SecretRequest.cpp:74
+msgid "Connect"
+msgstr "Sambung"
+
+#: ../src/indicator/agent/SecretRequest.cpp:75
+msgid "Cancel"
+msgstr "Batal"
 
 #. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
 #: ../src/indicator/root-state.cpp:306
@@ -95,6 +138,30 @@ msgstr "Jaringan"
 #: ../src/indicator/menuitems/wwan-link-item.cpp:90
 msgid "No SIM"
 msgstr "Tidak ada SIM"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:97
+msgid "SIM Error"
+msgstr "Galat SIM"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:105
+msgid "SIM Locked"
+msgstr "SIM Terkunci"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:118
+msgid "Unregistered"
+msgstr "Tak terdaftar"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:123
+msgid "Unknown"
+msgstr "Tak diketahui"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:128
+msgid "Denied"
+msgstr "Ditolak"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:133
+msgid "Searching"
+msgstr "Sedang mencari"
 
 #: ../src/indicator/menuitems/wwan-link-item.cpp:145
 msgid "No Signal"
@@ -109,146 +176,25 @@ msgstr "Luring"
 msgid "Other network…"
 msgstr "Jaringan lain..."
 
-#: ../src/indicator/sim-unlock-dialog.cpp:373
-msgid "PIN codes did not match."
-msgstr "Kode PIN tak cocok."
-
-#: ../src/indicator/sim-unlock-dialog.cpp:182
-msgid "Please contact your network provider."
-msgstr ""
-
-#: ../src/indicator/sim-unlock-dialog.cpp:194
-msgid "Please contact your service provider."
-msgstr ""
-
-#: ../src/indicator/sim-unlock-dialog.cpp:166
-msgid "Please enter your PUK code to unblock SIM card."
-msgstr ""
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:97
-msgid "SIM Error"
-msgstr "Galat SIM"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:105
-msgid "SIM Locked"
-msgstr "SIM Terkunci"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:133
-msgid "Searching"
-msgstr "Sedang mencari"
-
-#: ../src/indicator/sim-unlock-dialog.cpp:144
-msgid "Sorry, incorrect %{1} PIN."
-msgstr ""
-
-#: ../src/indicator/sim-unlock-dialog.cpp:218
-msgid "Sorry, incorrect PIN"
-msgstr ""
-
-#: ../src/indicator/sim-unlock-dialog.cpp:230
-msgid "Sorry, incorrect PUK"
-msgstr ""
-
-#: ../src/indicator/sim-unlock-dialog.cpp:176
-#: ../src/indicator/sim-unlock-dialog.cpp:190
-msgid "Sorry, incorrect PUK."
-msgstr ""
-
-#: ../src/indicator/sim-unlock-dialog.cpp:161
-msgid "Sorry, your %{1} is now blocked."
-msgstr ""
-
-#: ../src/indicator/sim-unlock-dialog.cpp:149
-#: ../src/indicator/sim-unlock-dialog.cpp:178
-msgid "This will be your last attempt."
-msgstr ""
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:123
-msgid "Unknown"
-msgstr "Tak diketahui"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:118
-msgid "Unregistered"
-msgstr "Tak terdaftar"
-
-#: ../src/indicator/agent/SecretRequest.cpp:68
-msgid "WEP"
-msgstr "WEP"
-
-#: ../src/indicator/agent/SecretRequest.cpp:66
-msgid "WPA"
-msgstr "WPA"
-
 #. TODO Move this into a new class
 #: ../src/indicator/factory.cpp:130
 msgid "Wi-Fi"
 msgstr "Wi-Fi"
 
+#. TODO Move this into a new class
+#: ../src/indicator/factory.cpp:141
+msgid "Flight Mode"
+msgstr "Mode Penerbangan"
+
+#. TODO Move this into a new class
+#: ../src/indicator/factory.cpp:152
+msgid "Hotspot"
+msgstr ""
+
 #: ../src/indicator/sections/wifi-section.cpp:65
 msgid "Wi-Fi settings…"
 msgstr "Pengaturan Wi-Fi..."
 
-#: ../src/indicator/sim-unlock-dialog.cpp:168
-msgid "You may need to contact your network provider for PUK code."
-msgstr ""
-
-#: ../src/indicator/sim-unlock-dialog.cpp:192
-msgid "Your SIM card is now permanently blocked and needs replacement."
-msgstr ""
-
-#~ msgid "Attempt %d of %d"
-#~ msgstr "Percobaan %d dari %d"
-
-#~ msgid "Confirm new PIN code"
-#~ msgstr "Konfirmasikan kode PIN baru"
-
-#~ msgid "Enter SIM PIN"
-#~ msgstr "Masukkan PIN SIM"
-
-#~ msgid "Enter new PIN code"
-#~ msgstr "Masukkan kode PIN baru"
-
-#~ msgid "Failed to change PIN."
-#~ msgstr "Gagal mengubah PIN."
-
-#~ msgid "Oops!<br>Incorrect PIN entered."
-#~ msgstr "Ups!<br>PIN yang salah dimasukkan."
-
-#~ msgid "Oops!<br>Incorrect PUK entered."
-#~ msgstr "Ups!<br>PUK yang salah dimasukkan."
-
-#~ msgid ""
-#~ "This will be the last attempt.<br><br>If the PUK code is entered "
-#~ "incorrectly, your SIM will need to be replaced.<br><br>Please contact "
-#~ "your network provider."
-#~ msgstr ""
-#~ "Ini akan menjadi percobaan terakhir.<br><br>Bila kode PUK salah "
-#~ "dimasukkan, SIM Anda akan perlu diganti.<br><br>Harap hubungi operator "
-#~ "seluler Anda."
-
-#~ msgid ""
-#~ "This will be the last attempt.<br><br>If the SIM PIN is entered "
-#~ "incorrectly, your SIM will be blocked and would require the PUK Code to "
-#~ "unlock."
-#~ msgstr ""
-#~ "Ini akan menjadi percobaan terakhir.<br><br>Bila PIN SIM salah "
-#~ "dimasukkan, SIM Anda akan diblokir dan akan memerlukan Kode PUK untuk "
-#~ "membukanya."
-
-#~ msgid "Unlock SIM…"
-#~ msgstr "Buka kunci SIM..."
-
-#~ msgid ""
-#~ "Your SIM is now blocked.<br><br>Enter the PUK Code to unlock.<br><br>You "
-#~ "may contact your network provider for PUK Code."
-#~ msgstr ""
-#~ "Kartu SIM Anda kini terblokir.<br><br>Masukkan Kode PUK untuk membuka."
-#~ "<br><br>Anda dapat menghubungi operator seluler Anda untuk mendapatkan "
-#~ "Kode PUK."
-
-#~ msgid ""
-#~ "Your SIM is now permanently blocked and needs to be replaced."
-#~ "<br><br>Please contact your network provider."
-#~ msgstr ""
-#~ "Kartu SIM Anda kini terblokir permanen dan perlu diganti.<br><br>Harap "
-#~ "hubungi operator seluler Anda."
+#: ../src/indicator/sections/wwan-section.cpp:99
+msgid "Cellular settings…"
+msgstr "Pengaturan seluler..."

@@ -8,47 +8,78 @@ msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-09-03 10:50+0100\n"
-"PO-Revision-Date: 2014-10-09 18:28+0000\n"
-"Last-Translator: Ibai Oihanguren Sala <Unknown>\n"
+"PO-Revision-Date: 2015-09-03 15:46+0000\n"
+"Last-Translator: Pete Woods <Unknown>\n"
 "Language-Team: Basque <eu@li.org>\n"
-"Language: eu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2014-10-10 05:45+0000\n"
-"X-Generator: Launchpad (build 17196)\n"
+"X-Launchpad-Export-Date: 2015-09-04 05:40+0000\n"
+"X-Generator: Launchpad (build 17706)\n"
+"Language: eu\n"
 
-#: ../src/indicator/sim-unlock-dialog.cpp:315
-#, c-format
-msgid "1 attempt remaining"
-msgid_plural "%d attempts remaining"
-msgstr[0] "Saiakera 1 gehiago duzu"
-msgstr[1] "%d saiakera gehiago dituzu"
+#: ../src/indicator/sim-unlock-dialog.cpp:144
+msgid "Sorry, incorrect %{1} PIN."
+msgstr "Sentitzen dugu, %{1} PINa okerra da."
 
-#: ../src/indicator/agent/SecretRequest.cpp:75
-msgid "Cancel"
-msgstr "Utzi"
+#: ../src/indicator/sim-unlock-dialog.cpp:149
+#: ../src/indicator/sim-unlock-dialog.cpp:178
+msgid "This will be your last attempt."
+msgstr "Hau duzu azken saiakera."
 
-#: ../src/indicator/sections/wwan-section.cpp:99
-msgid "Cellular settings…"
-msgstr "Datu mugikorren ezarpenak..."
+#: ../src/indicator/sim-unlock-dialog.cpp:151
+msgid ""
+"If %{1} PIN is entered incorrectly you will require your PUK code to unlock."
+msgstr "%{1} PINa oker sartuz gero, PUK kodea beharko da desblokeatzeko."
 
-#: ../src/indicator/sim-unlock-dialog.cpp:334
-msgid "Confirm new %{1} PIN"
-msgstr "Berretsi %{1} PIN berria"
+#: ../src/indicator/sim-unlock-dialog.cpp:161
+msgid "Sorry, your %{1} is now blocked."
+msgstr "Sentitzen dugu, zure %{1} orain blokeatuta dago."
 
-#: ../src/indicator/agent/SecretRequest.cpp:74
-msgid "Connect"
-msgstr "Konektatu"
+#: ../src/indicator/sim-unlock-dialog.cpp:166
+msgid "Please enter your PUK code to unblock SIM card."
+msgstr "Sartu zure PUK kodea SIM txartela desblokeatzeko."
 
-#: ../src/indicator/agent/SecretRequest.cpp:61
-msgid "Connect to “%1”"
-msgstr "Konektatu \"%1\"(e)ra"
+#: ../src/indicator/sim-unlock-dialog.cpp:168
+msgid "You may need to contact your network provider for PUK code."
+msgstr ""
+"Agian zure sare-hornitzailearekin harremanetan jarri beharko zara PUK kodea "
+"lortzeko."
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:128
-msgid "Denied"
-msgstr "Ukatua"
+#: ../src/indicator/sim-unlock-dialog.cpp:176
+#: ../src/indicator/sim-unlock-dialog.cpp:190
+msgid "Sorry, incorrect PUK."
+msgstr "Sentitzen dugu, PUKa okerra da."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:180
+msgid ""
+"If PUK code is entered incorrectly, your SIM card will be blocked and needs "
+"replacement."
+msgstr ""
+"PUK kodea oker sartuz gero, SIM txartela blokeatuko da eta ordeztu beharra "
+"izango duzu."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:182
+msgid "Please contact your network provider."
+msgstr "Jarri zure sare-hornitzailearekin harremanetan."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:192
+msgid "Your SIM card is now permanently blocked and needs replacement."
+msgstr ""
+"SIM txartela orain behin betiko blokeatuta dago, eta ordeztu beharra duzu."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:194
+msgid "Please contact your service provider."
+msgstr "Jarri zure zerbitzu-hornitzailearekin harremanetan."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:218
+msgid "Sorry, incorrect PIN"
+msgstr "Sentitzen dugu, PINa okerra da"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:230
+msgid "Sorry, incorrect PUK"
+msgstr "Sentitzen dugu, PUKa okerra da"
 
 #: ../src/indicator/sim-unlock-dialog.cpp:292
 msgid "Enter %{1} PIN"
@@ -62,32 +93,44 @@ msgstr "Sartu PUK kodea"
 msgid "Enter PUK code for %{1}"
 msgstr "Sartu %{1}(r)entzako PUK kodea"
 
+#: ../src/indicator/sim-unlock-dialog.cpp:315
+#, c-format
+msgid "1 attempt remaining"
+msgid_plural "%d attempts remaining"
+msgstr[0] "Saiakera 1 gehiago duzu"
+msgstr[1] "%d saiakera gehiago dituzu"
+
 #: ../src/indicator/sim-unlock-dialog.cpp:326
 msgid "Enter new %{1} PIN"
 msgstr "Sartu %{1} PIN berria"
 
-#. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:141
-msgid "Flight Mode"
-msgstr "Hegaldi modua"
+#: ../src/indicator/sim-unlock-dialog.cpp:334
+msgid "Confirm new %{1} PIN"
+msgstr "Berretsi %{1} PIN berria"
 
-#. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:152
-msgid "Hotspot"
-msgstr ""
+#: ../src/indicator/sim-unlock-dialog.cpp:373
+msgid "PIN codes did not match."
+msgstr "PIN kodeak ez datoz bat."
 
-#: ../src/indicator/sim-unlock-dialog.cpp:151
-msgid ""
-"If %{1} PIN is entered incorrectly you will require your PUK code to unlock."
-msgstr "%{1} PINa oker sartuz gero, PUK kodea beharko da desblokeatzeko."
+#: ../src/indicator/agent/SecretRequest.cpp:61
+msgid "Connect to “%1”"
+msgstr "Konektatu \"%1\"(e)ra"
 
-#: ../src/indicator/sim-unlock-dialog.cpp:180
-msgid ""
-"If PUK code is entered incorrectly, your SIM card will be blocked and needs "
-"replacement."
-msgstr ""
-"PUK kodea oker sartuz gero, SIM txartela blokeatuko da eta ordeztu beharra "
-"izango duzu."
+#: ../src/indicator/agent/SecretRequest.cpp:66
+msgid "WPA"
+msgstr "WPA"
+
+#: ../src/indicator/agent/SecretRequest.cpp:68
+msgid "WEP"
+msgstr "WEP"
+
+#: ../src/indicator/agent/SecretRequest.cpp:74
+msgid "Connect"
+msgstr "Konektatu"
+
+#: ../src/indicator/agent/SecretRequest.cpp:75
+msgid "Cancel"
+msgstr "Utzi"
 
 #. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
 #: ../src/indicator/root-state.cpp:306
@@ -97,6 +140,30 @@ msgstr "Sarea"
 #: ../src/indicator/menuitems/wwan-link-item.cpp:90
 msgid "No SIM"
 msgstr "SIMik ez"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:97
+msgid "SIM Error"
+msgstr "SIM errorea"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:105
+msgid "SIM Locked"
+msgstr "SIMa blokeatuta"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:118
+msgid "Unregistered"
+msgstr "Erregistratu gabea"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:123
+msgid "Unknown"
+msgstr "Ezezaguna"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:128
+msgid "Denied"
+msgstr "Ukatua"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:133
+msgid "Searching"
+msgstr "Bilatzen"
 
 #: ../src/indicator/menuitems/wwan-link-item.cpp:145
 msgid "No Signal"
@@ -111,148 +178,25 @@ msgstr "Lineaz kanpo"
 msgid "Other network…"
 msgstr "Beste sare bat..."
 
-#: ../src/indicator/sim-unlock-dialog.cpp:373
-msgid "PIN codes did not match."
-msgstr "PIN kodeak ez datoz bat."
-
-#: ../src/indicator/sim-unlock-dialog.cpp:182
-msgid "Please contact your network provider."
-msgstr "Jarri zure sare-hornitzailearekin harremanetan."
-
-#: ../src/indicator/sim-unlock-dialog.cpp:194
-msgid "Please contact your service provider."
-msgstr "Jarri zure zerbitzu-hornitzailearekin harremanetan."
-
-#: ../src/indicator/sim-unlock-dialog.cpp:166
-msgid "Please enter your PUK code to unblock SIM card."
-msgstr "Sartu zure PUK kodea SIM txartela desblokeatzeko."
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:97
-msgid "SIM Error"
-msgstr "SIM errorea"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:105
-msgid "SIM Locked"
-msgstr "SIMa blokeatuta"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:133
-msgid "Searching"
-msgstr "Bilatzen"
-
-#: ../src/indicator/sim-unlock-dialog.cpp:144
-msgid "Sorry, incorrect %{1} PIN."
-msgstr "Sentitzen dugu, %{1} PINa okerra da."
-
-#: ../src/indicator/sim-unlock-dialog.cpp:218
-msgid "Sorry, incorrect PIN"
-msgstr "Sentitzen dugu, PINa okerra da"
-
-#: ../src/indicator/sim-unlock-dialog.cpp:230
-msgid "Sorry, incorrect PUK"
-msgstr "Sentitzen dugu, PUKa okerra da"
-
-#: ../src/indicator/sim-unlock-dialog.cpp:176
-#: ../src/indicator/sim-unlock-dialog.cpp:190
-msgid "Sorry, incorrect PUK."
-msgstr "Sentitzen dugu, PUKa okerra da."
-
-#: ../src/indicator/sim-unlock-dialog.cpp:161
-msgid "Sorry, your %{1} is now blocked."
-msgstr "Sentitzen dugu, zure %{1} orain blokeatuta dago."
-
-#: ../src/indicator/sim-unlock-dialog.cpp:149
-#: ../src/indicator/sim-unlock-dialog.cpp:178
-msgid "This will be your last attempt."
-msgstr "Hau duzu azken saiakera."
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:123
-msgid "Unknown"
-msgstr "Ezezaguna"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:118
-msgid "Unregistered"
-msgstr "Erregistratu gabea"
-
-#: ../src/indicator/agent/SecretRequest.cpp:68
-msgid "WEP"
-msgstr "WEP"
-
-#: ../src/indicator/agent/SecretRequest.cpp:66
-msgid "WPA"
-msgstr "WPA"
-
 #. TODO Move this into a new class
 #: ../src/indicator/factory.cpp:130
 msgid "Wi-Fi"
 msgstr "Wifia"
 
+#. TODO Move this into a new class
+#: ../src/indicator/factory.cpp:141
+msgid "Flight Mode"
+msgstr "Hegaldi modua"
+
+#. TODO Move this into a new class
+#: ../src/indicator/factory.cpp:152
+msgid "Hotspot"
+msgstr ""
+
 #: ../src/indicator/sections/wifi-section.cpp:65
 msgid "Wi-Fi settings…"
 msgstr "Wifiaren ezarpenak..."
 
-#: ../src/indicator/sim-unlock-dialog.cpp:168
-msgid "You may need to contact your network provider for PUK code."
-msgstr ""
-"Agian zure sare-hornitzailearekin harremanetan jarri beharko zara PUK kodea "
-"lortzeko."
-
-#: ../src/indicator/sim-unlock-dialog.cpp:192
-msgid "Your SIM card is now permanently blocked and needs replacement."
-msgstr ""
-"SIM txartela orain behin betiko blokeatuta dago, eta ordeztu beharra duzu."
-
-#~ msgid "Attempt %d of %d"
-#~ msgstr "%d. saiakera %d(e)tik"
-
-#~ msgid "Confirm new PIN code"
-#~ msgstr "Berretsi PIN kode berria"
-
-#~ msgid "Enter SIM PIN"
-#~ msgstr "Sartu SIMaren PINa"
-
-#~ msgid "Enter new PIN code"
-#~ msgstr "Sartu PIN kode berria"
-
-#~ msgid "Failed to change PIN."
-#~ msgstr "Huts egin du PINa aldatzean."
-
-#~ msgid "Oops!<br>Incorrect PIN entered."
-#~ msgstr "Hara!<br>Okerreko PIN kodea sartu duzu."
-
-#~ msgid "Oops!<br>Incorrect PUK entered."
-#~ msgstr "Hara!<br>Okerreko PUK kodea sartu duzu."
-
-#~ msgid ""
-#~ "This will be the last attempt.<br><br>If the PUK code is entered "
-#~ "incorrectly, your SIM will need to be replaced.<br><br>Please contact "
-#~ "your network provider."
-#~ msgstr ""
-#~ "Honako hau izango da azken saiakera.<br><br>PUK kodea oker sartzen "
-#~ "baduzu, zure SIMa ordezkatu beharko duzu.<br><br>Jarri harremanetan zure "
-#~ "sare-hornitzailearekin."
-
-#~ msgid ""
-#~ "This will be the last attempt.<br><br>If the SIM PIN is entered "
-#~ "incorrectly, your SIM will be blocked and would require the PUK Code to "
-#~ "unlock."
-#~ msgstr ""
-#~ "Honako hau izango da azken saiakera.<br><br>SIMaren PINa oker sartzen "
-#~ "baduzu, zure SIMa blokeatuko da eta PUK kodea beharko duzu desblokeatzeko."
-
-#~ msgid "Unlock SIM…"
-#~ msgstr "Desblokeatu SIMa..."
-
-#~ msgid ""
-#~ "Your SIM is now blocked.<br><br>Enter the PUK Code to unlock.<br><br>You "
-#~ "may contact your network provider for PUK Code."
-#~ msgstr ""
-#~ "Zure SIMa blokeatuta dago.<br><br>Sartu PUK kodea desblokeatzeko."
-#~ "<br><br>Zure sare-hornitzailearekin harremanetan jar zaitezke PUK kodea "
-#~ "eskuratzeko."
-
-#~ msgid ""
-#~ "Your SIM is now permanently blocked and needs to be replaced."
-#~ "<br><br>Please contact your network provider."
-#~ msgstr ""
-#~ "Zure SIMa behin betiko blokeatu da, eta ordezkatu egin beharko duzu."
-#~ "<br><br>Jarri harremanetan zure sare-hornitzailearekin."
+#: ../src/indicator/sections/wwan-section.cpp:99
+msgid "Cellular settings…"
+msgstr "Datu mugikorren ezarpenak..."

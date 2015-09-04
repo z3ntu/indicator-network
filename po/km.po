@@ -8,77 +8,46 @@ msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-09-03 10:50+0100\n"
-"PO-Revision-Date: 2014-08-18 04:01+0000\n"
+"PO-Revision-Date: 2015-09-03 15:47+0000\n"
 "Last-Translator: Sophea Sok <sksophea@gmail.com>\n"
 "Language-Team: Khmer <km@li.org>\n"
-"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Launchpad-Export-Date: 2014-10-09 06:40+0000\n"
-"X-Generator: Launchpad (build 17196)\n"
+"X-Launchpad-Export-Date: 2015-09-04 05:40+0000\n"
+"X-Generator: Launchpad (build 17706)\n"
+"Language: \n"
 
-#: ../src/indicator/sim-unlock-dialog.cpp:315
-#, c-format
-msgid "1 attempt remaining"
-msgid_plural "%d attempts remaining"
-msgstr[0] ""
-msgstr[1] ""
-
-#: ../src/indicator/agent/SecretRequest.cpp:75
-msgid "Cancel"
-msgstr "បោះបង់"
-
-#: ../src/indicator/sections/wwan-section.cpp:99
-msgid "Cellular settings…"
-msgstr "ការ​កំណត់​ទូរស័ព្ទ​ដៃ"
-
-#: ../src/indicator/sim-unlock-dialog.cpp:334
-msgid "Confirm new %{1} PIN"
+#: ../src/indicator/sim-unlock-dialog.cpp:144
+msgid "Sorry, incorrect %{1} PIN."
 msgstr ""
 
-#: ../src/indicator/agent/SecretRequest.cpp:74
-msgid "Connect"
-msgstr "តភ្ជាប់"
-
-#: ../src/indicator/agent/SecretRequest.cpp:61
-msgid "Connect to “%1”"
-msgstr "តភ្ជាប់​ទៅ “%1”"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:128
-msgid "Denied"
-msgstr "បាន​បដិសេធ"
-
-#: ../src/indicator/sim-unlock-dialog.cpp:292
-msgid "Enter %{1} PIN"
-msgstr ""
-
-#: ../src/indicator/sim-unlock-dialog.cpp:300
-msgid "Enter PUK code"
-msgstr "បញ្ចូល​លេខ​កូដ PUK"
-
-#: ../src/indicator/sim-unlock-dialog.cpp:304
-msgid "Enter PUK code for %{1}"
-msgstr ""
-
-#: ../src/indicator/sim-unlock-dialog.cpp:326
-msgid "Enter new %{1} PIN"
-msgstr ""
-
-#. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:141
-msgid "Flight Mode"
-msgstr "របៀប​ជិះ​យន្តហោះ"
-
-#. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:152
-msgid "Hotspot"
-msgstr ""
+#: ../src/indicator/sim-unlock-dialog.cpp:149
+#: ../src/indicator/sim-unlock-dialog.cpp:178
+msgid "This will be your last attempt."
+msgstr "នេះ​គឺ​ការ​ព្យាយាម​លើក​ចុងក្រោយ។"
 
 #: ../src/indicator/sim-unlock-dialog.cpp:151
 msgid ""
 "If %{1} PIN is entered incorrectly you will require your PUK code to unlock."
+msgstr ""
+
+#: ../src/indicator/sim-unlock-dialog.cpp:161
+msgid "Sorry, your %{1} is now blocked."
+msgstr ""
+
+#: ../src/indicator/sim-unlock-dialog.cpp:166
+msgid "Please enter your PUK code to unblock SIM card."
+msgstr ""
+
+#: ../src/indicator/sim-unlock-dialog.cpp:168
+msgid "You may need to contact your network provider for PUK code."
+msgstr ""
+
+#: ../src/indicator/sim-unlock-dialog.cpp:176
+#: ../src/indicator/sim-unlock-dialog.cpp:190
+msgid "Sorry, incorrect PUK."
 msgstr ""
 
 #: ../src/indicator/sim-unlock-dialog.cpp:180
@@ -86,6 +55,76 @@ msgid ""
 "If PUK code is entered incorrectly, your SIM card will be blocked and needs "
 "replacement."
 msgstr ""
+
+#: ../src/indicator/sim-unlock-dialog.cpp:182
+msgid "Please contact your network provider."
+msgstr "សូម​ទាក់ទង​អ្នក​ផ្តល់​សេវា​ប​ណ្តា​ញ​របស់​អ្នក​។"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:192
+msgid "Your SIM card is now permanently blocked and needs replacement."
+msgstr ""
+
+#: ../src/indicator/sim-unlock-dialog.cpp:194
+msgid "Please contact your service provider."
+msgstr "សូម​ទាក់ទង​អ្នក​ផ្ដល់​សេវាកម្ម​របស់​អ្នក​។"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:218
+msgid "Sorry, incorrect PIN"
+msgstr ""
+
+#: ../src/indicator/sim-unlock-dialog.cpp:230
+msgid "Sorry, incorrect PUK"
+msgstr ""
+
+#: ../src/indicator/sim-unlock-dialog.cpp:292
+msgid "Enter %{1} PIN"
+msgstr "បញ្ចូល​លេខ​កូដ​សម្ងាត់ %{1}"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:300
+msgid "Enter PUK code"
+msgstr "បញ្ចូល​លេខ​កូដ PUK"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:304
+msgid "Enter PUK code for %{1}"
+msgstr "បញ្ចូល​កូដ PUK សម្រាប់ %{1}"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:315
+#, c-format
+msgid "1 attempt remaining"
+msgid_plural "%d attempts remaining"
+msgstr[0] "%d ការ​ប៉ុន​ប៉ង​ដែល​នៅ​សេសសល់"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:326
+msgid "Enter new %{1} PIN"
+msgstr "បញ្ចូល​ថ្មី %{1} លេខ​កូដ​សម្ងាត់"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:334
+msgid "Confirm new %{1} PIN"
+msgstr "បញ្ជាក់​ការ​ថ្មី %{1} លេខ​កូដ​សម្ងាត់"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:373
+msgid "PIN codes did not match."
+msgstr "លេខ​កូដ PIN មិន​ផ្គូផ្គង។"
+
+#: ../src/indicator/agent/SecretRequest.cpp:61
+msgid "Connect to “%1”"
+msgstr "តភ្ជាប់​ទៅ “%1”"
+
+#: ../src/indicator/agent/SecretRequest.cpp:66
+msgid "WPA"
+msgstr "WPA"
+
+#: ../src/indicator/agent/SecretRequest.cpp:68
+msgid "WEP"
+msgstr "WEP"
+
+#: ../src/indicator/agent/SecretRequest.cpp:74
+msgid "Connect"
+msgstr "តភ្ជាប់"
+
+#: ../src/indicator/agent/SecretRequest.cpp:75
+msgid "Cancel"
+msgstr "បោះបង់"
 
 #. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
 #: ../src/indicator/root-state.cpp:306
@@ -95,6 +134,30 @@ msgstr "បណ្តាញ"
 #: ../src/indicator/menuitems/wwan-link-item.cpp:90
 msgid "No SIM"
 msgstr "គ្មាន​ស៊ីម"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:97
+msgid "SIM Error"
+msgstr "បញ្ហា​ស៊ីម"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:105
+msgid "SIM Locked"
+msgstr "ស៊ីម​បាន​ចាក់សោ"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:118
+msgid "Unregistered"
+msgstr "មិន​បាន​ចុះឈ្មោះ"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:123
+msgid "Unknown"
+msgstr "មិន​ស្គាល់"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:128
+msgid "Denied"
+msgstr "បាន​បដិសេធ"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:133
+msgid "Searching"
+msgstr "ស្វែងរក"
 
 #: ../src/indicator/menuitems/wwan-link-item.cpp:145
 msgid "No Signal"
@@ -109,140 +172,25 @@ msgstr "ក្រៅ​បណ្តាញ"
 msgid "Other network…"
 msgstr "បណ្ដាញ​ផ្សេងទៀត..."
 
-#: ../src/indicator/sim-unlock-dialog.cpp:373
-msgid "PIN codes did not match."
-msgstr "លេខ​កូដ PIN មិន​ផ្គូផ្គង។"
-
-#: ../src/indicator/sim-unlock-dialog.cpp:182
-msgid "Please contact your network provider."
-msgstr ""
-
-#: ../src/indicator/sim-unlock-dialog.cpp:194
-msgid "Please contact your service provider."
-msgstr ""
-
-#: ../src/indicator/sim-unlock-dialog.cpp:166
-msgid "Please enter your PUK code to unblock SIM card."
-msgstr ""
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:97
-msgid "SIM Error"
-msgstr "បញ្ហា​ស៊ីម"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:105
-msgid "SIM Locked"
-msgstr "ស៊ីម​បាន​ចាក់សោ"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:133
-msgid "Searching"
-msgstr "ស្វែងរក"
-
-#: ../src/indicator/sim-unlock-dialog.cpp:144
-msgid "Sorry, incorrect %{1} PIN."
-msgstr ""
-
-#: ../src/indicator/sim-unlock-dialog.cpp:218
-msgid "Sorry, incorrect PIN"
-msgstr ""
-
-#: ../src/indicator/sim-unlock-dialog.cpp:230
-msgid "Sorry, incorrect PUK"
-msgstr ""
-
-#: ../src/indicator/sim-unlock-dialog.cpp:176
-#: ../src/indicator/sim-unlock-dialog.cpp:190
-msgid "Sorry, incorrect PUK."
-msgstr ""
-
-#: ../src/indicator/sim-unlock-dialog.cpp:161
-msgid "Sorry, your %{1} is now blocked."
-msgstr ""
-
-#: ../src/indicator/sim-unlock-dialog.cpp:149
-#: ../src/indicator/sim-unlock-dialog.cpp:178
-msgid "This will be your last attempt."
-msgstr ""
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:123
-msgid "Unknown"
-msgstr "មិន​ស្គាល់"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:118
-msgid "Unregistered"
-msgstr "មិន​បាន​ចុះឈ្មោះ"
-
-#: ../src/indicator/agent/SecretRequest.cpp:68
-msgid "WEP"
-msgstr "WEP"
-
-#: ../src/indicator/agent/SecretRequest.cpp:66
-msgid "WPA"
-msgstr "WPA"
-
 #. TODO Move this into a new class
 #: ../src/indicator/factory.cpp:130
 msgid "Wi-Fi"
 msgstr "វ៉ាយហ្វាយ"
 
+#. TODO Move this into a new class
+#: ../src/indicator/factory.cpp:141
+msgid "Flight Mode"
+msgstr "របៀប​ជិះ​យន្តហោះ"
+
+#. TODO Move this into a new class
+#: ../src/indicator/factory.cpp:152
+msgid "Hotspot"
+msgstr ""
+
 #: ../src/indicator/sections/wifi-section.cpp:65
 msgid "Wi-Fi settings…"
 msgstr "ការ​កំណត់​វ៉ាយហ្វាយ..."
 
-#: ../src/indicator/sim-unlock-dialog.cpp:168
-msgid "You may need to contact your network provider for PUK code."
-msgstr ""
-
-#: ../src/indicator/sim-unlock-dialog.cpp:192
-msgid "Your SIM card is now permanently blocked and needs replacement."
-msgstr ""
-
-#~ msgid "Attempt %d of %d"
-#~ msgstr "បាន​ព្យាយាម %d នៃ %d"
-
-#~ msgid "Confirm new PIN code"
-#~ msgstr "បញ្ជាក់​លេខ​កូដ PIN"
-
-#~ msgid "Enter SIM PIN"
-#~ msgstr "បញ្ចូល​លេខ​កូដ PIN ស៊ីម"
-
-#~ msgid "Enter new PIN code"
-#~ msgstr "បញ្ចូល​លេខកូដ PIN ថ្មី"
-
-#~ msgid "Failed to change PIN."
-#~ msgstr "ការ​ប្ដូរ​លេខ​កូដ PIN បាន​បរាជ័យ។"
-
-#~ msgid "Oops!<br>Incorrect PIN entered."
-#~ msgstr "អ្ហូ!<br>បាន​បញ្ចូល​លេខ​កូដ PIN ខុស។"
-
-#~ msgid "Oops!<br>Incorrect PUK entered."
-#~ msgstr "អ្ហូ!<br>បាន​បញ្ចូល​លេខ​កូដ PUK ខុស។"
-
-#~ msgid ""
-#~ "This will be the last attempt.<br><br>If the PUK code is entered "
-#~ "incorrectly, your SIM will need to be replaced.<br><br>Please contact "
-#~ "your network provider."
-#~ msgstr ""
-#~ "នេះ​ជា​ការ​ព្យាយាម​លើក​ចុងក្រោយ។<br><br>បើ​អ្នក​បញ្ចូល​លេខ​កូដ PUK ខុស, ស៊ីម​របស់​អ្នក​នឹង​ចាំបាច់​"
-#~ "ត្រូវតែ​ប្ដូរ។<br><br>សូម​ទាក់ទង​ក្រុមហ៊ុន​ផ្ដល់​សេវា​របស់​អ្នក​។"
-
-#~ msgid ""
-#~ "This will be the last attempt.<br><br>If the SIM PIN is entered "
-#~ "incorrectly, your SIM will be blocked and would require the PUK Code to "
-#~ "unlock."
-#~ msgstr ""
-#~ "នេះ​ជា​ការ​ព្យាយាម​លើក​ចុងក្រោយ។<br><br>បើ​អ្នក​បញ្ចូល​លេខ​កូដ PIN ស៊ីម​ខុស, ស៊ីម​របស់​អ្នក​នឹង​ត្រូវ​បាន​"
-#~ "បិទ ហើយ​វា​នឹង​ត្រូវ​ទាមទារ​លេខ​កូដ PUK ដើម្បី​បើក​ឡើងវិញ។"
-
-#~ msgid ""
-#~ "Your SIM is now blocked.<br><br>Enter the PUK Code to unlock.<br><br>You "
-#~ "may contact your network provider for PUK Code."
-#~ msgstr ""
-#~ "ឥឡូវនេះ​ស៊ីម​របស់​អ្នក​ត្រូវ​បាន​បិទ។<br><br>បញ្ចូល​លេខ​កូដ PUK ដើម្បី​បើក។<br><br>អ្នក​អាច​ទាក់ទង​"
-#~ "ក្រុមហ៊ុន​ផ្ដល់​សេវា​របស់​អ្នក​សម្រាប់​លេខ​កូដ PUK ។"
-
-#~ msgid ""
-#~ "Your SIM is now permanently blocked and needs to be replaced."
-#~ "<br><br>Please contact your network provider."
-#~ msgstr ""
-#~ "ឥឡូវនេះ​ស៊ីម​របស់​អ្នក​ត្រូវ​បាន​បិទ​ជា​អចិន្ត្រៃយ៍ ហើយ​ចាំបាច់​ត្រូវតែ​ប្ដូរ។<br><br>សូម​ទាក់ទង​ក្រុមហ៊ុន​ផ្ដល់​"
-#~ "សេវា​របស់​អ្នក​។"
+#: ../src/indicator/sections/wwan-section.cpp:99
+msgid "Cellular settings…"
+msgstr "ការ​កំណត់​ទូរស័ព្ទ​ដៃ"

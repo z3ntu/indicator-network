@@ -850,7 +850,7 @@ indicator-network (0.5.0+13.10.20130703.1-0ubuntu1) saucy; urgency=low
 
   [ Jeremy Bicha ]
   * debian/control:
-    - Build with valac (>= 0.18) instead of vala-0.18 for easier transitions
+    - Build with valac (>= 0.18) instead of vala-0.18 for easier transitions 
 
   [ Ted Gould ]
   * Migrating to new libindicator format.
@@ -872,7 +872,7 @@ indicator-network (0.5.0-0ubuntu1) saucy; urgency=low
   * debian/changelog: use the right version number for non-native package, name
     to indicator-network properly.
   * debian/control:
-    - Update Vcs-Bzr, Vcs-Browser, add notice to developers.
+    - Update Vcs-Bzr, Vcs-Browser, add notice to developers. 
     - Add python3 to Build-Depends.
     - Add python3-dbusmock to Build-Depends.
     - Add dbus-test-runner to Build-Depends.

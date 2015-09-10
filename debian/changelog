@@ -1,10 +1,19 @@
-indicator-network (0.5.4-0ubuntu1) UNRELEASED; urgency=medium
+indicator-network (0.5.4+15.10.20150910-0ubuntu1) wily; urgency=medium
 
+  [ Jonas G. Drange ]
   [ jonas-drange]
   * Allow creation and configuration of insecure hotspot via the
     connectivity service (LP: #1431876)
 
- -- Jonas G. Drange <jonas.drange@canonical.com>  Thu, 03 Sep 2015 14:49:46 +0200
+  [ CI Train Bot ]
+  * New rebuild forced.
+
+  [ Pete Woods ]
+  * Merge translations from 14.10 added: po/cy.po po/fr_CA.po po/hr.po
+    po/ia.po
+  * Sync line numbers in translation files
+
+ -- CI Train Bot <ci-train-bot@canonical.com>  Thu, 10 Sep 2015 11:16:48 +0000
 
 indicator-network (0.5.3+15.10.20150818-0ubuntu1) wily; urgency=medium
 

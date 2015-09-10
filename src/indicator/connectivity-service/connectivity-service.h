@@ -96,6 +96,9 @@ public:
     Q_PROPERTY(QString HotspotPassword READ hotspotPassword)
     QString hotspotPassword() const;
 
+    Q_PROPERTY(QString HotspotAuth READ hotspotAuth)
+    QString hotspotAuth() const;
+
 protected Q_SLOTS:
     void UnlockAllModems();
 
@@ -112,6 +115,8 @@ protected Q_SLOTS:
     void SetHotspotPassword(const QString &password);
 
     void SetHotspotMode(const QString &mode);
+
+    void SetHotspotAuth(const QString &auth);
 
 Q_SIGNALS:
     void ReportError(int reason);

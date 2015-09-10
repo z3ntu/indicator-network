@@ -70,9 +70,10 @@
  *   QString auth [readwrite]
  *     The current authentication of the hotspot. The default for this property
  *     is "wpa-psk" and is currently the only supported scheme. WEP is unsupported
- *     by design, as is no scheme at all.
+ *     by design.
  *
- *     TODO: Check/add support for wpa-eap
+ *     Possible authentication schemes: wpa-psk, none
+ *
  *
  *   QString password [readwrite]
  *     The current Pre-Shared-Key for the hotspot. If the key is 64-characters
@@ -110,6 +111,11 @@ class HotspotManager : public QObject
         WRITE setMode
         NOTIFY modeChanged)
 
+    Q_PROPERTY( QString auth
+        READ auth
+        WRITE setAuth
+        NOTIFY authChanged)
+
     Q_PROPERTY( bool stored
         READ stored
         NOTIFY storedChanged)
@@ -135,6 +141,8 @@ public:
 
     QString mode() const;
 
+    QString auth() const;
+
     bool disconnectWifi() const;
 
 Q_SIGNALS:
@@ -147,6 +155,8 @@ Q_SIGNALS:
     void passwordChanged(const QString& password);
 
     void modeChanged(const QString& mode);
+
+    void authChanged(const QString& auth);
 
     void disconnectWifiChanged(bool disconnect);
 
@@ -168,6 +178,8 @@ public Q_SLOTS:
     void setPassword(const QString&);
 
     void setMode(const QString&);
+
+    void setAuth(const QString&);
 
 private:
     class Priv;

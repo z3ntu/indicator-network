@@ -1,3 +1,11 @@
+indicator-network (0.5.4-0ubuntu1) UNRELEASED; urgency=medium
+
+  [ jonas-drange]
+  * Allow creation and configuration of insecure hotspot via the
+    connectivity service (LP: #1431876)
+
+ -- Jonas G. Drange <jonas.drange@canonical.com>  Thu, 03 Sep 2015 14:49:46 +0200
+
 indicator-network (0.5.3+15.10.20150818-0ubuntu1) wily; urgency=medium
 
   [ Pete Woods ]

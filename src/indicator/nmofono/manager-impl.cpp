@@ -70,7 +70,6 @@ public:
     KillSwitch::Ptr m_killSwitch;
 
     bool m_modemAvailable = false;
-    bool m_hotspotAvailable = false;
 
     QSet<Link::Ptr> m_nmLinks;
     QMap<QString, wwan::Modem::Ptr> m_ofonoLinks;

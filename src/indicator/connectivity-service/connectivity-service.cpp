@@ -112,6 +112,14 @@ public Q_SLOTS:
                               { "HotspotSsid" });
     }
 
+    void modemAvailableUpdated()
+    {
+        notifyPropertyChanged(p,
+                              DBusTypes::SERVICE_PATH,
+                              DBusTypes::SERVICE_INTERFACE,
+                              { "ModemAvailable" });
+    }
+
     void hotspotEnabledUpdated()
     {
         notifyPropertyChanged(p,
@@ -216,6 +224,8 @@ ConnectivityService::ConnectivityService(nmofono::Manager::Ptr manager, const QD
     connect(d->m_manager.get(), &Manager::wifiEnabledUpdated, d.get(), &Private::wifiEnabledUpdated);
     connect(d->m_manager.get(), &Manager::unstoppableOperationHappeningUpdated, d.get(), &Private::unstoppableOperationHappeningUpdated);
 
+    connect(d->m_manager.get(), &Manager::modemAvailableChanged, d.get(), &Private::modemAvailableUpdated);
+
     connect(d->m_manager.get(), &Manager::hotspotEnabledChanged, d.get(), &Private::hotspotEnabledUpdated);
     connect(d->m_manager.get(), &Manager::hotspotSsidChanged, d.get(), &Private::hotspotSsidUpdated);
     connect(d->m_manager.get(), &Manager::hotspotPasswordChanged, d.get(), &Private::hotspotPasswordUpdated);
@@ -283,6 +293,11 @@ bool ConnectivityService::hotspotSwitchEnabled() const
 {
     return !d->m_manager->unstoppableOperationHappening()
             && !d->m_manager->flightMode();
+}
+
+bool ConnectivityService::modemAvailable() const
+{
+    return d->m_manager->modemAvailable();
 }
 
 bool ConnectivityService::hotspotEnabled() const

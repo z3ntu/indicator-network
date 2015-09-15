@@ -130,6 +130,10 @@ public Q_SLOTS:
             Q_EMIT p.statusUpdated(status);
             Q_EMIT p.onlineUpdated(status == Status::Online);
         }
+        else if (name == "ModemAvailable")
+        {
+            Q_EMIT p.modemAvailableUpdated(value.toBool());
+        }
         else if (name == "HotspotEnabled")
         {
             Q_EMIT p.hotspotEnabledUpdated(value.toBool());
@@ -287,6 +291,11 @@ QByteArray Connectivity::hotspotSsid() const
 QString Connectivity::hotspotPassword() const
 {
     return d->m_writePropertyCache->get("HotspotPassword").toString();
+}
+
+bool Connectivity::modemAvailable() const
+{
+    return d->m_propertyCache->get("ModemAvailable").toBool();
 }
 
 bool Connectivity::hotspotEnabled() const

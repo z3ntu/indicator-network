@@ -9,6 +9,8 @@
         <property name="FlightMode" type="b" access="read"/>
         <property name="WifiEnabled" type="b" access="read"/>
 
+        <property name="ModemAvailable" type="b" access="read"/>
+
         <property name="HotspotSsid" type="ay" access="read"/>
         <property name="HotspotEnabled" type="b" access="read"/>
         <property name="HotspotMode" type="s" access="read"/>

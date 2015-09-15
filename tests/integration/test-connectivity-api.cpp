@@ -635,7 +635,6 @@ TEST_F(TestConnectivityApi, InsecureHotspotConfig)
 {
     // Start the indicator
     ASSERT_NO_THROW(startIndicator());
-
     auto& nmSettingsMock = dbusMock.mockInterface(NM_DBUS_SERVICE,
                            NM_DBUS_PATH_SETTINGS,
                            NM_DBUS_IFACE_SETTINGS,
@@ -750,5 +749,4 @@ TEST_F(TestConnectivityApi, HotspotModemAvailable)
 
     EXPECT_TRUE(connectivity->modemAvailable());
 }
-
 }

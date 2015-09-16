@@ -69,6 +69,8 @@ public:
     bool m_wifiEnabled = false;
     KillSwitch::Ptr m_killSwitch;
 
+    bool m_modemAvailable = false;
+
     QSet<Link::Ptr> m_nmLinks;
     QMap<QString, wwan::Modem::Ptr> m_ofonoLinks;
 
@@ -144,6 +146,19 @@ public Q_SLOTS:
         Q_EMIT p.wifiEnabledUpdated(m_wifiEnabled);
     }
 
+    void updateModemAvailable()
+    {
+        bool modemAvailable = !m_ofonoLinks.empty();
+
+        if (m_modemAvailable == modemAvailable)
+        {
+            return;
+        }
+
+        m_modemAvailable = modemAvailable;
+        Q_EMIT p.modemAvailableChanged(m_modemAvailable);
+    }
+
     void setFlightMode(bool newStatus)
     {
         if (m_flightMode == newStatus)
@@ -211,6 +226,8 @@ public Q_SLOTS:
 
         Q_EMIT p.linksUpdated();
         m_unlockDialog->setShowSimIdentifiers(m_ofonoLinks.size() > 1);
+
+        updateModemAvailable();
     }
 };
 
@@ -322,6 +339,12 @@ ManagerImpl::setWifiEnabled(bool enabled)
     d->m_killSwitch->setBlock(!enabled);
     d->nm->setWirelessEnabled(enabled);
     d->setUnstoppableOperationHappening(false);
+}
+
+bool
+ManagerImpl::modemAvailable() const
+{
+    return !d->m_ofonoLinks.empty();
 }
 
 bool

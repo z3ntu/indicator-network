@@ -65,6 +65,9 @@ public:
     Q_PROPERTY(bool HotspotSwitchEnabled READ hotspotSwitchEnabled)
     bool hotspotSwitchEnabled() const;
 
+    Q_PROPERTY(bool ModemAvailable READ modemAvailable)
+    bool modemAvailable() const;
+
     Q_PROPERTY(bool HotspotEnabled READ hotspotEnabled)
     bool hotspotEnabled() const;
 

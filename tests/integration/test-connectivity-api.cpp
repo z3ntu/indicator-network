@@ -722,4 +722,31 @@ TEST_F(TestConnectivityApi, InsecureHotspotConfig)
     }
 }
 
+TEST_F(TestConnectivityApi, HotspotModemAvailable)
+{
+    setGlobalConnectedState(NM_STATE_DISCONNECTED);
+    auto device = createWiFiDevice(NM_DEVICE_STATE_DISCONNECTED);
+
+    // Start the indicator
+    ASSERT_NO_THROW(startIndicator());
+
+    auto& nmSettingsMock = dbusMock.mockInterface(NM_DBUS_SERVICE,
+                           NM_DBUS_PATH_SETTINGS,
+                           NM_DBUS_IFACE_SETTINGS,
+                           QDBusConnection::SystemBus);
+    QSignalSpy nmSettingsMockCallSpy(
+                           &nmSettingsMock,
+                           SIGNAL(MethodCalled(const QString &, const QVariantList &)));
+
+    OrgFreedesktopNetworkManagerSettingsInterface settings(
+            NM_DBUS_SERVICE, NM_DBUS_PATH_SETTINGS, dbusTestRunner.systemConnection());
+    QSignalSpy settingsNewConnectionSpy(
+                           &settings,
+                           SIGNAL(NewConnection(const QDBusObjectPath &)));
+
+    // Connect the the service
+    auto connectivity(newConnectivity());
+
+    EXPECT_TRUE(connectivity->modemAvailable());
+}
 }

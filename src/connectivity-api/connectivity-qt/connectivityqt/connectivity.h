@@ -108,6 +108,9 @@ public:
     Q_PROPERTY(bool hotspotSwitchEnabled READ hotspotSwitchEnabled NOTIFY hotspotSwitchEnabledUpdated)
     bool hotspotSwitchEnabled() const;
 
+    Q_PROPERTY(bool modemAvailable READ modemAvailable NOTIFY modemAvailableUpdated)
+    bool modemAvailable() const;
+
     Q_PROPERTY(QByteArray hotspotSsid READ hotspotSsid WRITE setHotspotSsid NOTIFY hotspotSsidUpdated)
     QByteArray hotspotSsid() const;
 
@@ -168,6 +171,8 @@ Q_SIGNALS:
     void hotspotSsidUpdated(const QByteArray& name);
 
     void hotspotPasswordUpdated(const QString& password);
+
+    void modemAvailableUpdated(bool);
 
     void hotspotEnabledUpdated(bool);
 

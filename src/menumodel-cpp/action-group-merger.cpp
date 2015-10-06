@@ -18,6 +18,7 @@
  */
 
 #include "action-group-merger.h"
+#include <QDebug>
 
 void ActionGroupMerger::addAction(Action::Ptr action)
 {
@@ -29,7 +30,7 @@ void ActionGroupMerger::addAction(Action::Ptr action)
         // then they will override each other in GActionGroup so let's catch that
         // early on.
         if (name_iter->second != action) {
-            std::cerr << __PRETTY_FUNCTION__ << ": Conflicting action names. \"" << action->name() << "\"" << std::endl;
+            qWarning() << __PRETTY_FUNCTION__ << ": Conflicting action names. \"" << action->name() << "\"";
             /// @todo thow something.
             return;
         }

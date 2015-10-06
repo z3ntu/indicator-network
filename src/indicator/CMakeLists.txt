@@ -30,12 +30,16 @@ set(NETWORK_SERVICE_SOURCES
     nmofono/kill-switch.cpp
     nmofono/manager.cpp
     nmofono/manager-impl.cpp
+    nmofono/connection/active-connection.cpp
+    nmofono/connection/active-connection-manager.cpp
     nmofono/wifi/access-point.cpp
     nmofono/wifi/access-point-impl.cpp
     nmofono/wifi/grouped-access-point.cpp
     nmofono/wifi/wifi-link-impl.cpp
     nmofono/wwan/modem.cpp
-    
+    nmofono/vpn/vpn-connection.cpp
+    nmofono/vpn/vpn-manager.cpp
+
     agent/SecretAgent.cpp
     agent/SecretRequest.cpp
     agent/PasswordMenu.cpp
@@ -48,6 +52,7 @@ set(NETWORK_SERVICE_SOURCES
     root-state.cpp
     sections/quick-access-section.cpp
     sections/wifi-section.cpp
+    sections/vpn-section.cpp
     sections/wwan-section.cpp
 
     connectivity-service/connectivity-service.cpp
@@ -55,6 +60,7 @@ set(NETWORK_SERVICE_SOURCES
     menuitems/access-point-item.cpp
     menuitems/switch-item.cpp
     menuitems/text-item.cpp
+    menuitems/vpn-item.cpp
     menuitems/wifi-link-item.cpp
     menuitems/wwan-link-item.cpp
     menuitems/modem-info-item.cpp

@@ -11,6 +11,7 @@ set(
     INTEGRATION_TESTS_SRC
     indicator-network-test-base.cpp
     test-indicator.cpp
+    test-indicator-vpn.cpp
     test-connectivity-api.cpp
 )
 

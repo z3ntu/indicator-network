@@ -47,7 +47,7 @@ TEST_F(TestSwitchItem, ExportBasicActionsAndMenu)
     auto menuItem = switchItem->menuItem();
     EXPECT_EQ("label", menuItem->label());
 
-    string name = menuItem->action();
+    QString name = menuItem->action();
     EXPECT_EQ("indicator.prefix.name", name);
 
     auto actionGroup = switchItem->actionGroup();

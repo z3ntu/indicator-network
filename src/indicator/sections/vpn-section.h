@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Canonical, Ltd.
+ * Copyright (C) 2015 Canonical, Ltd.
  *
  * This program is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 3, as published
@@ -13,37 +13,28 @@
  * You should have received a copy of the GNU General Public License along
  * with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Authors:
- *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
+ * Author: Pete Woods <pete.woods@canonical.com>
  */
 
 #pragma once
 
-#include <menumodel-cpp/action-group.h>
-#include <menumodel-cpp/menu.h>
+#include <menuitems/switch-item.h>
 #include <menuitems/section.h>
-#include <root-state.h>
+#include <nmofono/vpn/vpn-manager.h>
 
-#include <vector>
+#include <unity/util/DefinesPtrs.h>
 
-class IndicatorMenu
+class VpnSection : public Section
 {
-public:
-    typedef std::shared_ptr<IndicatorMenu> Ptr;
-
-    IndicatorMenu() = delete;
-
-    virtual ~IndicatorMenu() = default;
-
-    IndicatorMenu(RootState::Ptr rootState, const QString &prefix);
-
-    virtual void addSection(Section::Ptr section);
-
-    Menu::Ptr menu() const;
-
-    ActionGroup::Ptr actionGroup() const;
-
-private:
-    struct Private;
+    class Private;
     std::shared_ptr<Private> d;
+
+public:
+    UNITY_DEFINES_PTRS(VpnSection);
+
+    explicit VpnSection(nmofono::vpn::VpnManager::SPtr vpnManager);
+    virtual ~VpnSection() = default;
+
+    virtual ActionGroup::Ptr actionGroup();
+    virtual MenuModel::Ptr menuModel();
 };

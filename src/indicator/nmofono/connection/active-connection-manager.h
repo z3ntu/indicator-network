@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Canonical, Ltd.
+ * Copyright (C) 2015 Canonical, Ltd.
  *
  * This program is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 3, as published
@@ -13,37 +13,41 @@
  * You should have received a copy of the GNU General Public License along
  * with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Authors:
- *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
+ * Author: Pete Woods <pete.woods@canonical.com>
  */
 
 #pragma once
 
-#include <menumodel-cpp/action-group.h>
-#include <menumodel-cpp/menu.h>
-#include <menuitems/section.h>
-#include <root-state.h>
+#include <QObject>
+#include <QSet>
 
-#include <vector>
+#include <nmofono/connection/active-connection.h>
 
-class IndicatorMenu
+namespace nmofono
 {
+namespace connection
+{
+
+class ActiveConnectionManager: public QObject
+{
+    Q_OBJECT
+
 public:
-    typedef std::shared_ptr<IndicatorMenu> Ptr;
+    UNITY_DEFINES_PTRS(ActiveConnectionManager);
 
-    IndicatorMenu() = delete;
+    ActiveConnectionManager(const QDBusConnection& systemConnection);
 
-    virtual ~IndicatorMenu() = default;
+    ~ActiveConnectionManager() = default;
 
-    IndicatorMenu(RootState::Ptr rootState, const QString &prefix);
+    QSet<ActiveConnection::SPtr> connections() const;
 
-    virtual void addSection(Section::Ptr section);
+Q_SIGNALS:
+    void connectionsChanged(const QSet<ActiveConnection::SPtr>& connections);
 
-    Menu::Ptr menu() const;
-
-    ActionGroup::Ptr actionGroup() const;
-
-private:
-    struct Private;
-    std::shared_ptr<Private> d;
+protected:
+    class Priv;
+    std::shared_ptr<Priv> d;
 };
+
+}
+}

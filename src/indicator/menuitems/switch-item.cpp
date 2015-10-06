@@ -19,16 +19,17 @@
 
 #include <menuitems/switch-item.h>
 
-SwitchItem::SwitchItem(const std::string &label, const std::string &prefix, const std::string &name)
+using namespace std;
+
+SwitchItem::SwitchItem(const QString &label, const QString &prefix, const QString &name)
 {
-    std::string action_name = prefix + "." + name;
+    QString action_name = prefix + "." + name;
     m_action = std::make_shared<Action>(action_name, nullptr, TypedVariant<bool>(false));
     m_actionGroup->add(m_action);
     connect(m_action.get(), &Action::activated, this, &SwitchItem::actionActivated);
     connect(m_action.get(), &Action::stateUpdated, this, &SwitchItem::actionStateChanged);
 
-    m_item = std::make_shared<MenuItem>(label,
-                                        std::string("indicator.") + action_name);
+    m_item = make_shared<MenuItem>(label, "indicator." + action_name);
     m_item->setAttribute("x-canonical-type", TypedVariant<std::string>("com.canonical.indicator.switch"));
 }
 

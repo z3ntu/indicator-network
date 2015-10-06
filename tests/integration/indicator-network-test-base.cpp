@@ -19,6 +19,9 @@
 #include <indicator-network-test-base.h>
 #include <dbus-types.h>
 
+#include <NetworkManager.h>
+#include <NetworkManagerSettingsInterface.h>
+
 using namespace QtDBusTest;
 using namespace QtDBusMock;
 using namespace std;
@@ -28,6 +31,7 @@ namespace mh = menuharness;
 IndicatorNetworkTestBase::IndicatorNetworkTestBase() :
     dbusMock(dbusTestRunner)
 {
+    DBusTypes::registerMetaTypes();
 }
 
 IndicatorNetworkTestBase::~IndicatorNetworkTestBase()
@@ -163,11 +167,27 @@ void IndicatorNetworkTestBase::startIndicator()
     }
 }
 
+QString IndicatorNetworkTestBase::createEthernetDevice(int state, const QString& id)
+{
+    auto& networkManager(dbusMock.networkManagerInterface());
+    auto reply = networkManager.AddEthernetDevice(id, "eth" + id, state);
+    reply.waitForFinished();
+    if (reply.isError())
+    {
+        EXPECT_FALSE(reply.isError()) << reply.error().message().toStdString();
+    }
+    return reply;
+}
+
 QString IndicatorNetworkTestBase::createWiFiDevice(int state, const QString& id)
 {
     auto& networkManager(dbusMock.networkManagerInterface());
-    auto reply = networkManager.AddWiFiDevice(id, "eth1", state);
+    auto reply = networkManager.AddWiFiDevice(id, "wlan" + id, state);
     reply.waitForFinished();
+    if (reply.isError())
+    {
+        EXPECT_FALSE(reply.isError()) << reply.error().message().toStdString();
+    }
     return reply;
 }
 
@@ -195,13 +215,23 @@ QString IndicatorNetworkTestBase::randomMac()
 void IndicatorNetworkTestBase::enableWiFi()
 {
     auto& urfkillInterface = dbusMock.urfkillInterface();
-    urfkillInterface.Block(1, false).waitForFinished();
+    auto reply = urfkillInterface.Block(1, false);
+    reply.waitForFinished();
+    if (reply.isError())
+    {
+        EXPECT_FALSE(reply.isError()) << reply.error().message().toStdString();
+    }
 }
 
 void IndicatorNetworkTestBase::disableWiFi()
 {
     auto& urfkillInterface = dbusMock.urfkillInterface();
-    urfkillInterface.Block(1, true).waitForFinished();
+    auto reply = urfkillInterface.Block(1, true);
+    reply.waitForFinished();
+    if (reply.isError())
+    {
+        EXPECT_FALSE(reply.isError()) << reply.error().message().toStdString();
+    }
 }
 
 QString IndicatorNetworkTestBase::createAccessPoint(const QString& id, const QString& ssid, const QString& device, uchar strength,
@@ -229,13 +259,22 @@ QString IndicatorNetworkTestBase::createAccessPoint(const QString& id, const QSt
                         0, 0, strength,
                         secflags);
     reply.waitForFinished();
+    if (reply.isError())
+    {
+        EXPECT_FALSE(reply.isError()) << reply.error().message().toStdString();
+    }
     return reply;
 }
 
 void IndicatorNetworkTestBase::removeAccessPoint(const QString& device, const QString& ap)
 {
     auto& nm = dbusMock.networkManagerInterface();
-    nm.RemoveAccessPoint(device, ap).waitForFinished();
+    auto reply = nm.RemoveAccessPoint(device, ap);
+    reply.waitForFinished();
+    if (reply.isError())
+    {
+        EXPECT_FALSE(reply.isError()) << reply.error().message().toStdString();
+    }
 }
 
 QString IndicatorNetworkTestBase::createAccessPointConnection(const QString& id, const QString& ssid, const QString& device)
@@ -244,43 +283,71 @@ QString IndicatorNetworkTestBase::createAccessPointConnection(const QString& id,
     auto reply = networkManager.AddWiFiConnection(device, id, ssid,
                                                   "");
     reply.waitForFinished();
+    if (reply.isError())
+    {
+        EXPECT_FALSE(reply.isError()) << reply.error().message().toStdString();
+    }
     return reply;
 }
 
 void IndicatorNetworkTestBase::removeWifiConnection(const QString& device, const QString& connection)
 {
     auto& nm = dbusMock.networkManagerInterface();
-    nm.RemoveWifiConnection(device, connection).waitForFinished();
+    auto reply = nm.RemoveWifiConnection(device, connection);
+    reply.waitForFinished();
+    if (reply.isError())
+    {
+        EXPECT_FALSE(reply.isError()) << reply.error().message().toStdString();
+    }
 }
 
-QString IndicatorNetworkTestBase::createActiveConnection(const QString& id, const QString& device, const QString& connection, const QString& ap)
+QString IndicatorNetworkTestBase::createActiveConnection(const QString& id, const QString& device, const QString& connection, const QString& specificObject)
 {
     auto& nm = dbusMock.networkManagerInterface();
     auto reply = nm.AddActiveConnection(QStringList() << device,
                            connection,
-                           ap,
+                           specificObject,
                            id,
                            NM_ACTIVE_CONNECTION_STATE_ACTIVATED);
     reply.waitForFinished();
+    if (reply.isError())
+    {
+        EXPECT_FALSE(reply.isError()) << reply.error().message().toStdString();
+    }
     return reply;
 }
 
 void IndicatorNetworkTestBase::removeActiveConnection(const QString& device, const QString& active_connection)
 {
     auto& nm = dbusMock.networkManagerInterface();
-    nm.RemoveActiveConnection(device, active_connection).waitForFinished();
+    auto reply = nm.RemoveActiveConnection(device, active_connection);
+    reply.waitForFinished();
+    if (reply.isError())
+    {
+        EXPECT_FALSE(reply.isError()) << reply.error().message().toStdString();
+    }
 }
 
 void IndicatorNetworkTestBase::setGlobalConnectedState(int state)
 {
     auto& nm = dbusMock.networkManagerInterface();
-    nm.SetGlobalConnectionState(state).waitForFinished();
+    auto reply = nm.SetGlobalConnectionState(state);
+    reply.waitForFinished();
+    if (reply.isError())
+    {
+        EXPECT_FALSE(reply.isError()) << reply.error().message().toStdString();
+    }
 }
 
 void IndicatorNetworkTestBase::setNmProperty(const QString& path, const QString& iface, const QString& name, const QVariant& value)
 {
     auto& nm = dbusMock.networkManagerInterface();
-    nm.SetProperty(path, iface, name, QDBusVariant(value)).waitForFinished();
+    auto reply = nm.SetProperty(path, iface, name, QDBusVariant(value));
+    reply.waitForFinished();
+    if (reply.isError())
+    {
+        EXPECT_FALSE(reply.isError()) << reply.error().message().toStdString();
+    }
 }
 
 QString IndicatorNetworkTestBase::createModem(const QString& id)
@@ -357,6 +424,14 @@ OrgFreedesktopDBusMockInterface& IndicatorNetworkTestBase::modemMockInterface(co
                                    path,
                                    "",
                                    QDBusConnection::SystemBus);
+}
+
+OrgFreedesktopDBusMockInterface& IndicatorNetworkTestBase::networkManagerMockInterface()
+{
+    return dbusMock.mockInterface(NM_DBUS_SERVICE,
+                                  NM_DBUS_PATH,
+                                  NM_DBUS_INTERFACE,
+                                  QDBusConnection::SystemBus);
 }
 
 bool IndicatorNetworkTestBase::qDBusArgumentToMap(QVariant const& variant, QVariantMap& map)
@@ -439,3 +514,57 @@ mh::MenuItemMatcher IndicatorNetworkTestBase::cellularSettings()
         .action("indicator.cellular.settings");
 }
 
+QString IndicatorNetworkTestBase::createVpnConnection(const QString& id)
+{
+    OrgFreedesktopNetworkManagerSettingsInterface settingsInterface(
+            NM_DBUS_SERVICE, NM_DBUS_PATH_SETTINGS,
+            dbusTestRunner.systemConnection());
+    QVariantDictMap connection;
+    connection["connection"] = QVariantMap {
+        {"timestamp", 1441979296},
+        {"type", "vpn"},
+        {"id", id},
+        {"uuid", "769a9e3a-9fa3-43e7-86d7-a19f2b3d5e3f"}
+    };
+    connection["vpn"] = QVariantMap {
+        {"service-type", "org.freedesktop.NetworkManager.openvpn"},
+        {"data", QVariantMap()}
+    };
+    connection["ipv4"] = QVariantMap {
+        {"routes", QStringList()},
+        {"never-default", true},
+        {"addresses", QStringList()},
+        {"dns", QStringList()},
+        {"method", "auto"}
+    };
+    connection["ipv6"] = QVariantMap {
+        {"addresses", QStringList()},
+        {"ip6-privacy", 0},
+        {"dns", QStringList()},
+        {"never-default", true},
+        {"routes", QStringList()},
+        {"method", "auto"}
+    };
+    auto reply = settingsInterface.AddConnection(connection);
+    reply.waitForFinished();
+    if (reply.isError())
+    {
+        EXPECT_FALSE(reply.isError()) << reply.error().message().toStdString();
+    }
+    return QDBusObjectPath(reply).path();
+}
+
+mh::MenuItemMatcher IndicatorNetworkTestBase::vpnSettings()
+{
+    return mh::MenuItemMatcher()
+        .label("VPN settings…")
+        .action("indicator.vpn.settings");
+}
+
+mh::MenuItemMatcher IndicatorNetworkTestBase::vpnConnection(const string& name, ConnectionStatus connected)
+{
+    return mh::MenuItemMatcher::checkbox()
+        .label(name)
+        .icon("network-vpn")
+        .toggled(connected == ConnectionStatus::connected);
+}

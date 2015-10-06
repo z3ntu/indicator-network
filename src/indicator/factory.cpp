@@ -30,6 +30,10 @@ struct Factory::Private
 {
     shared_ptr<nmofono::Manager> m_nmofono;
 
+    nmofono::vpn::VpnManager::SPtr m_vpnManager;
+
+    nmofono::connection::ActiveConnectionManager::SPtr m_activeConnectionManager;
+
     SessionBus::Ptr m_sessionBus;
 
     notify::NotificationManager::SPtr m_notificationManager;
@@ -62,6 +66,26 @@ struct Factory::Private
         }
         return m_nmofono;
     }
+
+    shared_ptr<nmofono::connection::ActiveConnectionManager> singletonActiveConnectionManager()
+    {
+        if (!m_activeConnectionManager)
+        {
+            m_activeConnectionManager = make_shared<nmofono::connection::ActiveConnectionManager>(
+                    QDBusConnection::systemBus());
+        }
+        return m_activeConnectionManager;
+    }
+
+    shared_ptr<nmofono::vpn::VpnManager> singletonVpnManager()
+    {
+        if (!m_vpnManager)
+        {
+            m_vpnManager = make_shared<nmofono::vpn::VpnManager>(
+                    singletonActiveConnectionManager(), QDBusConnection::systemBus());
+        }
+        return m_vpnManager;
+    }
 };
 
 Factory::Factory() :
@@ -88,7 +112,7 @@ unique_ptr<RootState> Factory::newRootState()
     return make_unique<RootState>(d->singletonNmofono());
 }
 
-unique_ptr<IndicatorMenu> Factory::newIndicatorMenu(RootState::Ptr rootState, const string &prefix)
+unique_ptr<IndicatorMenu> Factory::newIndicatorMenu(RootState::Ptr rootState, const QString &prefix)
 {
     return make_unique<IndicatorMenu>(rootState, prefix);
 }
@@ -106,6 +130,11 @@ unique_ptr<QuickAccessSection> Factory::newQuickAccessSection(SwitchItem::Ptr fl
 unique_ptr<WwanSection> Factory::newWwanSection(SwitchItem::Ptr hotspotSwitch)
 {
     return make_unique<WwanSection>(d->singletonNmofono(), hotspotSwitch);
+}
+
+unique_ptr<VpnSection> Factory::newVpnSection()
+{
+    return make_unique<VpnSection>(d->singletonVpnManager());
 }
 
 unique_ptr<WifiSection> Factory::newWiFiSection(SwitchItem::Ptr wifiSwitch)

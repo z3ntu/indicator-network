@@ -26,6 +26,7 @@
 #include <menumodel-cpp/menu-exporter.h>
 #include <menumodel-cpp/action-group-merger.h>
 #include <sections/quick-access-section.h>
+#include <sections/vpn-section.h>
 #include <sections/wifi-section.h>
 #include <sections/wwan-section.h>
 #include <menuitems/switch-item.h>
@@ -49,7 +50,7 @@ public:
 
     virtual std::unique_ptr<RootState> newRootState();
 
-    virtual std::unique_ptr<IndicatorMenu> newIndicatorMenu(RootState::Ptr rootState, const std::string &prefix);
+    virtual std::unique_ptr<IndicatorMenu> newIndicatorMenu(RootState::Ptr rootState, const QString &prefix);
 
     virtual std::unique_ptr<MenuExporter> newMenuExporter(const std::string &path, MenuModel::Ptr menuModel);
 
@@ -58,6 +59,8 @@ public:
     virtual std::unique_ptr<WwanSection> newWwanSection(SwitchItem::Ptr hotspotSwitch);
 
     virtual std::unique_ptr<WifiSection> newWiFiSection(SwitchItem::Ptr wifiSwitch);
+
+    virtual std::unique_ptr<VpnSection> newVpnSection();
 
     virtual ActionGroupMerger::UPtr newActionGroupMerger();
 

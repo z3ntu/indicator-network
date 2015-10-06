@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Canonical, Ltd.
+ * Copyright (C) 2015 Canonical, Ltd.
  *
  * This program is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 3, as published
@@ -13,39 +13,26 @@
  * You should have received a copy of the GNU General Public License along
  * with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Authors:
- *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
+ * Author: Pete Woods <pete.woods@canonical.com>
  */
 
 #pragma once
 
-#include "item.h"
+#include <menuitems/item.h>
+#include <nmofono/vpn/vpn-connection.h>
 
-#include "menumodel-cpp/menu-item.h"
-#include "menumodel-cpp/action.h"
+#include <unity/util/DefinesPtrs.h>
 
-class TextItem : public Item
+class VpnItem : public Item
 {
-    Q_OBJECT
+    class Private;
+    std::shared_ptr<Private> d;
 
 public:
-    typedef std::shared_ptr<TextItem> Ptr;
+    UNITY_DEFINES_PTRS(VpnItem);
 
-    TextItem() = delete;
-    virtual ~TextItem() = default;
-    TextItem(const QString &label, const QString &prefix, const QString &name);
+    VpnItem(nmofono::vpn::VpnConnection::SPtr connection);
+    ~VpnItem() = default;
 
-    virtual MenuItem::Ptr
-    menuItem();
-
-public Q_SLOTS:
-    void setLabel(const QString &label);
-
-
-Q_SIGNALS:
-    void activated();
-
-private:
-    Action::Ptr m_action;
-    MenuItem::Ptr m_item;
+    MenuItem::Ptr menuItem() override;
 };

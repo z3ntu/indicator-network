@@ -19,18 +19,20 @@
 
 #include <menuitems/text-item.h>
 
-TextItem::TextItem(const std::string &label, const std::string &prefix, const std::string &name)
-{
-    std::string action_name = prefix + "." + name;
+using namespace std;
 
-    m_action = std::make_shared<Action>(action_name, nullptr);
+TextItem::TextItem(const QString &label, const QString &prefix, const QString &name)
+{
+    QString action_name = prefix + "." + name;
+
+    m_action = make_shared<Action>(action_name, nullptr);
     m_actionGroup->add(m_action);
     connect(m_action.get(), &Action::activated, this, &TextItem::activated);
-    m_item = std::make_shared<MenuItem>(label, std::string("indicator.") + action_name);
+    m_item = make_shared<MenuItem>(label, "indicator." + action_name);
 }
 
 void
-TextItem::setLabel(const std::string &label)
+TextItem::setLabel(const QString &label)
 {
     m_item->setLabel(label);
 }

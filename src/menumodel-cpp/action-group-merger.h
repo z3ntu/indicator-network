@@ -38,7 +38,7 @@ class ActionGroupMerger: public QObject
     std::map<ActionGroup::Ptr, std::pair<QMetaObject::Connection, QMetaObject::Connection>> m_groups;
 
     std::map<Action::Ptr, int> m_count;
-    std::map<std::string, Action::Ptr> m_names;
+    std::map<QString, Action::Ptr> m_names;
 
 private Q_SLOTS:
     void addAction(Action::Ptr action);

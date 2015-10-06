@@ -29,6 +29,13 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+inline QString qVariantToString(const QVariant& variant) {
+    QString output;
+    QDebug dbg(&output);
+    dbg << variant;
+    return output;
+}
+
 inline void PrintTo(const QVariant& variant, std::ostream* os) {
     QString output;
     QDebug dbg(&output);
@@ -97,6 +104,8 @@ protected:
 
     void startIndicator();
 
+    QString createEthernetDevice(int state, const QString& id = "0");
+
     QString createWiFiDevice(int state, const QString& id = "0");
 
     static QString randomMac();
@@ -114,7 +123,7 @@ protected:
 
     void removeWifiConnection(const QString& device, const QString& connection);
 
-    QString createActiveConnection(const QString& id, const QString& device, const QString& connection, const QString& ap);
+    QString createActiveConnection(const QString& id, const QString& device, const QString& connection, const QString& specificObject);
 
     void removeActiveConnection(const QString& device, const QString& active_connection);
 
@@ -136,6 +145,10 @@ protected:
 
     OrgFreedesktopDBusMockInterface& modemMockInterface(const QString& path);
 
+    OrgFreedesktopDBusMockInterface& networkManagerMockInterface();
+
+    QString createVpnConnection(const QString& id);
+
     static bool qDBusArgumentToMap(QVariant const& variant, QVariantMap& map);
 
     static QString firstModem();
@@ -156,6 +169,10 @@ protected:
                 const std::string& connectivityIcon = "");
 
     static menuharness::MenuItemMatcher cellularSettings();
+
+    static menuharness::MenuItemMatcher vpnSettings();
+
+    static menuharness::MenuItemMatcher vpnConnection(const std::string& name, ConnectionStatus connected = ConnectionStatus::disconnected);
 
     QtDBusTest::DBusTestRunner dbusTestRunner;
 

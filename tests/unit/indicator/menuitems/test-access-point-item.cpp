@@ -78,7 +78,7 @@ TEST_F(TestAccessPointItem, ExportBasicActionsAndMenu)
     EXPECT_FALSE(bool_value(menuItem, "x-canonical-wifi-ap-is-adhoc"));
     EXPECT_TRUE(bool_value(menuItem, "x-canonical-wifi-ap-is-secure"));
 
-    string strengthActionName = string_value(
+    QString strengthActionName = string_value(
             menuItem, "x-canonical-wifi-ap-strength-action");
 
     auto strengthAction = findAction(accessPointItem->actionGroup(),

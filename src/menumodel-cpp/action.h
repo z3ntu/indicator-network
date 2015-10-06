@@ -36,7 +36,7 @@ class Action: public QObject
     GActionPtr make_gaction_ptr(GSimpleAction *action) { return std::shared_ptr<GAction>(G_ACTION(action), GObjectDeleter()); }
 
     GActionPtr m_gaction;
-    std::string m_name;
+    QString m_name;
     gulong m_activateHandlerId;
     gulong m_changeStateHandlerId;
 
@@ -50,13 +50,13 @@ class Action: public QObject
 public:
     typedef std::shared_ptr<Action> Ptr;
 
-    Action(const std::string &name, const
+    Action(const QString &name, const
            GVariantType *parameterType = nullptr,
            const Variant &state = Variant());
 
     ~Action();
 
-    std::string name();
+    QString name();
 
     Q_PROPERTY(Variant state READ state WRITE setState NOTIFY stateUpdated)
     Variant state();

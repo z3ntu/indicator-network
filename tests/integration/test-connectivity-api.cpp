@@ -1,3 +1,4 @@
+
 /*
  * Copyright (C) 2015 Canonical, Ltd.
  *
@@ -482,6 +483,14 @@ TEST_F(TestConnectivityApi, HotspotConfig)
                            &powerdMock,
                            SIGNAL(MethodCalled(const QString &, const QVariantList &)));
 
+    auto& nmMock = dbusMock.mockInterface(NM_DBUS_SERVICE,
+                           NM_DBUS_PATH,
+                           NM_DBUS_INTERFACE,
+                           QDBusConnection::SystemBus);
+    QSignalSpy nmMockCallSpy(
+                           &nmMock,
+                           SIGNAL(MethodCalled(const QString &, const QVariantList &)));
+
     auto& nmSettingsMock = dbusMock.mockInterface(NM_DBUS_SERVICE,
                            NM_DBUS_PATH_SETTINGS,
                            NM_DBUS_IFACE_SETTINGS,
@@ -583,7 +592,7 @@ TEST_F(TestConnectivityApi, HotspotConfig)
             {"proto" ,  QStringList{"rsn"}},
             {"psk", "the password"}
         }), connection["802-11-wireless-security"]);
-        EXPECT_TRUE(connection["connection"]["autoconnect"].toBool());
+        EXPECT_FALSE(connection["connection"]["autoconnect"].toBool());
     }
 
     // Next we'll disable the hotspot
@@ -591,6 +600,7 @@ TEST_F(TestConnectivityApi, HotspotConfig)
     enabledSpy.clear();
     passwordSpy.clear();
     powerdMockCallSpy.clear();
+    nmMockCallSpy.clear();
     nmSettingsMockCallSpy.clear();
 
     connectivity->setHotspotEnabled(false);
@@ -601,11 +611,11 @@ TEST_F(TestConnectivityApi, HotspotConfig)
     }
     EXPECT_FALSE(powerdMockCallSpy.empty());
 
-    if (connectionSettingsMockCallSpy.empty())
+    if (nmMockCallSpy.empty())
     {
-        ASSERT_TRUE(connectionSettingsMockCallSpy.wait());
+        ASSERT_TRUE(nmMockCallSpy.wait());
     }
-    EXPECT_FALSE(connectionSettingsMockCallSpy.empty());
+    EXPECT_FALSE(nmMockCallSpy.empty());
 
     if (enabledSpy.empty())
     {
@@ -621,20 +631,21 @@ TEST_F(TestConnectivityApi, HotspotConfig)
         QVariantList{"dummy_cookie"},
         getMethodCall(powerdMockCallSpy, "clearSysState"));
 
-    // The connection should no-longer auto-connect
+    // We should expect a disconnect call
     {
-        auto call = getMethodCall(connectionSettingsMockCallSpy, "Update");
-        // Decode the QDBusArgument
-        QVariantDictMap connection;
-        qvariant_cast<QDBusArgument>(call.first()) >> connection;
-        EXPECT_FALSE(connection["connection"]["autoconnect"].toBool());
+        auto call = getMethodCall(nmMockCallSpy, "DeactivateConnection");
+        EXPECT_EQ("/org/freedesktop/NetworkManager/ActiveConnection/0", qvariant_cast<QDBusObjectPath>(call.first()).path());
     }
 }
 
 TEST_F(TestConnectivityApi, InsecureHotspotConfig)
 {
+    setGlobalConnectedState(NM_STATE_DISCONNECTED);
+    auto device = createWiFiDevice(NM_DEVICE_STATE_DISCONNECTED);
+
     // Start the indicator
     ASSERT_NO_THROW(startIndicator());
+
     auto& nmSettingsMock = dbusMock.mockInterface(NM_DBUS_SERVICE,
                            NM_DBUS_PATH_SETTINGS,
                            NM_DBUS_IFACE_SETTINGS,
@@ -718,7 +729,7 @@ TEST_F(TestConnectivityApi, InsecureHotspotConfig)
             {"ssid", "Ubuntu"}
         }), connection["802-11-wireless"]);
         EXPECT_EQ(QVariantMap(), connection["802-11-wireless-security"]);
-        EXPECT_TRUE(connection["connection"]["autoconnect"].toBool());
+        EXPECT_FALSE(connection["connection"]["autoconnect"].toBool());
     }
 }
 

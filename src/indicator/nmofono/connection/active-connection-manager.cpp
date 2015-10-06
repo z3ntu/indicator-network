@@ -63,6 +63,7 @@ public:
         if (!toRemove.isEmpty() || !toAdd.isEmpty())
         {
             Q_EMIT p.connectionsChanged(m_connections.values().toSet());
+            Q_EMIT p.connectionsUpdated();
         }
     }
 
@@ -106,6 +107,18 @@ ActiveConnectionManager::ActiveConnectionManager(const QDBusConnection& systemCo
 QSet<ActiveConnection::SPtr> ActiveConnectionManager::connections() const
 {
     return d->m_connections.values().toSet();
+}
+
+bool ActiveConnectionManager::deactivate(ActiveConnection::SPtr activeConnection)
+{
+    auto reply = d->m_manager->DeactivateConnection(activeConnection->path());
+    reply.waitForFinished();
+    if (reply.isError())
+    {
+        qWarning() << __PRETTY_FUNCTION__ << reply.error().message();
+        return false;
+    }
+    return true;
 }
 
 }

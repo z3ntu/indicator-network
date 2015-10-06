@@ -41,8 +41,12 @@ public:
 
     QSet<ActiveConnection::SPtr> connections() const;
 
+    bool deactivate(ActiveConnection::SPtr activeConnection);
+
 Q_SIGNALS:
     void connectionsChanged(const QSet<ActiveConnection::SPtr>& connections);
+
+    void connectionsUpdated();
 
 protected:
     class Priv;

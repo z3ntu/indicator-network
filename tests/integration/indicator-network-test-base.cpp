@@ -75,6 +75,12 @@ void IndicatorNetworkTestBase::SetUp()
                         QDBusConnection::SystemBus);
 
     dbusMock.registerCustomMock(
+                        DBusTypes::WPASUPPLICANT_DBUS_NAME,
+                        DBusTypes::WPASUPPLICANT_DBUS_PATH,
+                        DBusTypes::WPASUPPLICANT_DBUS_INTERFACE,
+                        QDBusConnection::SystemBus);
+
+    dbusMock.registerCustomMock(
                         "com.canonical.URLDispatcher",
                         "/com/canonical/URLDispatcher",
                         "com.canonical.URLDispatcher",
@@ -97,6 +103,20 @@ void IndicatorNetworkTestBase::SetUp()
                         "com.canonical.URLDispatcher",
                         "TestURL", "as", "as",
                         "ret = args[0]"
+                     ).waitForFinished();
+
+    // Set up a basic WPA supplicant mock
+    auto& wpaSupplicant = dbusMock.mockInterface(
+                        DBusTypes::WPASUPPLICANT_DBUS_NAME,
+                        DBusTypes::WPASUPPLICANT_DBUS_PATH,
+                        DBusTypes::WPASUPPLICANT_DBUS_INTERFACE,
+                        QDBusConnection::SystemBus);
+    wpaSupplicant.AddMethod(
+                        DBusTypes::WPASUPPLICANT_DBUS_INTERFACE,
+                        "SetInterfaceFirmware",
+                        "os",
+                        "",
+                        ""
                      ).waitForFinished();
 
     // Set up a basic powerd mock - only supports power states

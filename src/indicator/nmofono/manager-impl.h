@@ -20,6 +20,8 @@
 #pragma once
 
 #include <nmofono/manager.h>
+#include <nmofono/kill-switch.h>
+#include <nmofono/hotspot-manager.h>
 
 #include <QDBusConnection>
 #include <QDBusObjectPath>
@@ -45,7 +47,11 @@ Q_OBJECT
 public:
     typedef std::shared_ptr<ManagerImpl> Ptr;
 
-    ManagerImpl(std::shared_ptr<notify::NotificationManager> notificationManager, const QDBusConnection& systemBus);
+    ManagerImpl(
+            std::shared_ptr<notify::NotificationManager> notificationManager,
+            KillSwitch::Ptr killSwitch,
+            HotspotManager::SPtr hotspotManager,
+            const QDBusConnection& systemBus);
 
     // Public API
     void setFlightMode(bool) override;

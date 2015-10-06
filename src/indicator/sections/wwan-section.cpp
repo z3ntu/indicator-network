@@ -147,7 +147,7 @@ WwanSection::Private::modemsChanged()
         m_linkMenuMerger->append(pair.second->menuModel());
     }
 
-    if (modems.size() == 0)
+    if (modems.size() == -1)
     {
         m_bottomMenu->clear();
     }

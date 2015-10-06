@@ -65,7 +65,6 @@ public:
     uint32_t m_characteristics = 0;
 
     bool m_hasWifi = false;
-    bool m_ignoreWifiUpdates = false;
     bool m_wifiEnabled = false;
     KillSwitch::Ptr m_killSwitch;
 
@@ -84,18 +83,6 @@ public:
     {
     }
 
-    void waitForHotspotEnabledChanged()
-    {
-        m_ignoreWifiUpdates = true;
-
-        QEventLoop loop;
-        connect(m_hotspotManager.get(), &HotspotManager::enabledChanged, &loop, &QEventLoop::quit);
-        QTimer::singleShot(3000, &loop, &QEventLoop::quit);
-        loop.exec();
-
-        m_ignoreWifiUpdates = false;
-    }
-
     void setUnstoppableOperationHappening(bool happening)
     {
         if (m_unstoppableOperationHappening == happening)
@@ -110,11 +97,6 @@ public:
 public Q_SLOTS:
     void updateHasWifi()
     {
-        if (m_ignoreWifiUpdates)
-        {
-            return;
-        }
-
         if (m_killSwitch->state() != KillSwitch::State::not_available)
         {
             m_hasWifi = true;
@@ -260,7 +242,11 @@ ManagerImpl::updateNetworkingStatus(uint status)
     Q_EMIT statusUpdated(d->m_status);
 }
 
-ManagerImpl::ManagerImpl(notify::NotificationManager::SPtr notificationManager, const QDBusConnection& systemConnection) : d(new ManagerImpl::Private(*this))
+ManagerImpl::ManagerImpl(notify::NotificationManager::SPtr notificationManager,
+                         KillSwitch::Ptr killSwitch,
+                         HotspotManager::SPtr hotspotManager,
+                         const QDBusConnection& systemConnection) :
+        d(new ManagerImpl::Private(*this))
 {
     d->nm = make_shared<OrgFreedesktopNetworkManagerInterface>(NM_DBUS_SERVICE, NM_DBUS_PATH, systemConnection);
 
@@ -271,15 +257,10 @@ ManagerImpl::ManagerImpl(notify::NotificationManager::SPtr notificationManager, 
     connect(d->m_ofono.get(), &QOfonoManager::modemsChanged, d.get(), &Private::modems_changed);
     d->modems_changed(d->m_ofono->modems());
 
-    /// @todo add a watcher for the service
-    /// @todo exceptions
-    /// @todo offload the initialization to a thread or something
-    /// @todo those Id() thingies
-
-    d->m_killSwitch = make_shared<KillSwitch>(systemConnection);
+    d->m_killSwitch = killSwitch;
     connect(d->m_killSwitch.get(), &KillSwitch::stateChanged, d.get(), &Private::updateHasWifi);
 
-    d->m_hotspotManager = make_shared<HotspotManager>(systemConnection);
+    d->m_hotspotManager = hotspotManager;
     connect(d->m_hotspotManager.get(), &HotspotManager::enabledChanged, this, &Manager::hotspotEnabledChanged);
     connect(d->m_hotspotManager.get(), &HotspotManager::ssidChanged, this, &Manager::hotspotSsidChanged);
     connect(d->m_hotspotManager.get(), &HotspotManager::passwordChanged, this, &Manager::hotspotPasswordChanged);
@@ -333,7 +314,6 @@ ManagerImpl::setWifiEnabled(bool enabled)
     if (!enabled && d->m_hotspotManager->enabled())
     {
         d->m_hotspotManager->setEnabled(false);
-        d->waitForHotspotEnabledChanged();
     }
 
     d->m_killSwitch->setBlock(!enabled);
@@ -392,7 +372,6 @@ ManagerImpl::setFlightMode(bool enabled)
     if (enabled && d->m_hotspotManager->enabled())
     {
         d->m_hotspotManager->setEnabled(false);
-        d->waitForHotspotEnabledChanged();
     }
     if (!d->m_killSwitch->flightMode(enabled))
     {
@@ -468,12 +447,6 @@ ManagerImpl::device_added(const QDBusObjectPath &path)
             // We're not interested in showing access points
             if (!ACCESS_POINT_EXPRESSION.match(tmp->name()).hasMatch())
             {
-                // Wire up enabling / disabling AP visibility to the hotspot enabled state
-                tmp->setHideAccessPoints(d->m_hotspotManager->enabled());
-                QObject::connect(d->m_hotspotManager.get(), &HotspotManager::enabledChanged,
-                        tmp.get(), &wifi::WifiLink::setHideAccessPoints);
-
-                // Disconnect wifi if we're on hybris
                 tmp->setDisconnectWifi(d->m_hotspotManager->disconnectWifi());
                 QObject::connect(d->m_hotspotManager.get(), &HotspotManager::disconnectWifiChanged,
                         tmp.get(), &wifi::WifiLink::setDisconnectWifi);

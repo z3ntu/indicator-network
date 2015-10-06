@@ -38,6 +38,10 @@ struct Factory::Private
 
     notify::NotificationManager::SPtr m_notificationManager;
 
+    nmofono::KillSwitch::Ptr m_killSwitch;
+
+    nmofono::HotspotManager::SPtr m_hotspotManager;
+
     notify::NotificationManager::SPtr singletonNotificationManager()
     {
         if (!m_notificationManager)
@@ -45,6 +49,26 @@ struct Factory::Private
             m_notificationManager = make_shared<notify::NotificationManager>(GETTEXT_PACKAGE);
         }
         return m_notificationManager;
+    }
+
+    nmofono::KillSwitch::Ptr singletonKillSwitch()
+    {
+        if (!m_killSwitch)
+        {
+            m_killSwitch = make_shared<nmofono::KillSwitch>(QDBusConnection::systemBus());
+        }
+        return m_killSwitch;
+    }
+
+    nmofono::HotspotManager::SPtr singletonHotspotManager()
+    {
+        if (!m_hotspotManager)
+        {
+            m_hotspotManager = make_shared<nmofono::HotspotManager>(
+                    singletonActiveConnectionManager(),
+                    QDBusConnection::systemBus());
+        }
+        return m_hotspotManager;
     }
 
     SessionBus::Ptr singletonSessionBus()
@@ -62,6 +86,8 @@ struct Factory::Private
         {
             m_nmofono = make_shared<nmofono::ManagerImpl>(
                     singletonNotificationManager(),
+                    singletonKillSwitch(),
+                    singletonHotspotManager(),
                     QDBusConnection::systemBus());
         }
         return m_nmofono;

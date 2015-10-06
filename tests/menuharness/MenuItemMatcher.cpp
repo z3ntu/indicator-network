@@ -451,12 +451,36 @@ void MenuItemMatcher::match(
                         + "'");
     }
 
-    string icon = get_string_attribute(menuItem, G_MENU_ATTRIBUTE_ICON);
-    if (p->m_icon && (*p->m_icon) != icon)
+    if (p->m_icon)
     {
-        matchResult.failure(
-                location,
-                "Expected icon '" + *p->m_icon + "', but found '" + icon + "'");
+        GError *error = nullptr;
+        auto gicon = shared_ptr<GIcon>(g_icon_new_for_string(p->m_icon->c_str(), &error), &g_object_unref);
+        if (error)
+        {
+            string message(error->message);
+            g_error_free(error);
+            matchResult.failure(location, "Could not create expected GIcon: " + message);
+        }
+        else
+        {
+            auto expectedIcon = shared_ptr<GVariant>(g_icon_serialize(gicon.get()), &g_variant_unref);
+            auto actualIcon = get_attribute(menuItem, G_MENU_ATTRIBUTE_ICON);
+
+            gchar *lhs = g_variant_print(expectedIcon.get(), TRUE);
+            string expectedIconString(lhs);
+            g_free(lhs);
+
+            gchar *rhs = g_variant_print(actualIcon.get(), TRUE);
+            string actualIconString(rhs);
+            g_free(rhs);
+
+            if (expectedIconString != actualIconString)
+            {
+                matchResult.failure(
+                        location,
+                        "Expected icon '" + expectedIconString + "', but found '" + actualIconString + "'");
+            }
+        }
     }
 
     if (p->m_action && (*p->m_action) != action)

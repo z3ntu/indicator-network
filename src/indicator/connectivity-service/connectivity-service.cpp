@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Canonical, Ltd.
+ * Copyright (C) 2015 Canonical, Ltd.
  *
  * This program is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 3, as published
@@ -15,14 +15,18 @@
  *
  * Authors:
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
+ *     Pete Woods <pete.woods@canonical.com>
  */
 
 #include <connectivity-service/connectivity-service.h>
+#include <connectivity-service/dbus-vpn-connection.h>
+#include <connectivity-service/dbus-openvpn-connection.h>
 #include <NetworkingStatusAdaptor.h>
 #include <NetworkingStatusPrivateAdaptor.h>
 #include <dbus-types.h>
 
 using namespace nmofono;
+using namespace nmofono::vpn;
 using namespace std;
 
 namespace connectivity_service
@@ -38,6 +42,10 @@ public:
 
     Manager::Ptr m_manager;
 
+    vpn::VpnManager::SPtr m_vpnManager;
+
+    QMap<QDBusObjectPath, DBusVpnConnection::SPtr> m_vpnConnections;
+
     shared_ptr<PrivateService> m_privateService;
 
     QStringList m_limitations;
@@ -49,117 +57,103 @@ public:
     {
     }
 
-    void notifyPropertyChanged( const QObject& o,
-                                const QString& path,
-                                const QString& interface,
-                                const QStringList& propertyNames )
+    void notifyProperties(const QStringList& propertyNames)
     {
-        QDBusMessage signal = QDBusMessage::createSignal(
-            path,
-            "org.freedesktop.DBus.Properties",
-            "PropertiesChanged");
-        signal << interface;
-        QVariantMap changedProps;
-        for(const auto& propertyName: propertyNames)
-        {
-            changedProps.insert(propertyName, o.property(qPrintable(propertyName)));
-        }
-        signal << changedProps;
-        signal << QStringList();
-        m_connection.send(signal);
+        DBusTypes::notifyPropertyChanged(
+            m_connection,
+            p,
+            DBusTypes::SERVICE_PATH,
+            DBusTypes::SERVICE_INTERFACE,
+            propertyNames
+        );
+    }
+
+    void notifyPrivateProperties(const QStringList& propertyNames)
+    {
+        DBusTypes::notifyPropertyChanged(
+            m_connection,
+            *m_privateService,
+            DBusTypes::PRIVATE_PATH,
+            DBusTypes::PRIVATE_INTERFACE,
+            propertyNames
+        );
     }
 
 public Q_SLOTS:
     void flightModeUpdated()
     {
-        notifyPropertyChanged(p,
-                              DBusTypes::SERVICE_PATH,
-                              DBusTypes::SERVICE_INTERFACE,
-                              {
-                                  "FlightMode",
-                                  "HotspotSwitchEnabled",
-                              });
+        notifyProperties({
+            "FlightMode",
+            "HotspotSwitchEnabled"
+        });
     }
 
     void wifiEnabledUpdated()
     {
-        notifyPropertyChanged(p,
-                              DBusTypes::SERVICE_PATH,
-                              DBusTypes::SERVICE_INTERFACE,
-                              {
-                                  "WifiEnabled",
-                                  "HotspotSwitchEnabled"
-                              });
+        notifyProperties({
+            "WifiEnabled",
+            "HotspotSwitchEnabled"
+        });
     }
 
     void unstoppableOperationHappeningUpdated()
     {
-        notifyPropertyChanged(p,
-                              DBusTypes::SERVICE_PATH,
-                              DBusTypes::SERVICE_INTERFACE,
-                              {
-                                   "FlightModeSwitchEnabled",
-                                   "WifiSwitchEnabled",
-                                   "HotspotSwitchEnabled"
-                              });
+        notifyProperties({
+            "FlightModeSwitchEnabled",
+            "WifiSwitchEnabled",
+            "HotspotSwitchEnabled"
+        });
     }
 
     void hotspotSsidUpdated()
     {
-        notifyPropertyChanged(p,
-                              DBusTypes::SERVICE_PATH,
-                              DBusTypes::SERVICE_INTERFACE,
-                              { "HotspotSsid" });
+        notifyProperties({
+            "HotspotSsid"
+        });
     }
 
     void modemAvailableUpdated()
     {
-        notifyPropertyChanged(p,
-                              DBusTypes::SERVICE_PATH,
-                              DBusTypes::SERVICE_INTERFACE,
-                              { "ModemAvailable" });
+        notifyProperties({
+            "ModemAvailable"
+        });
     }
 
     void hotspotEnabledUpdated()
     {
-        notifyPropertyChanged(p,
-                              DBusTypes::SERVICE_PATH,
-                              DBusTypes::SERVICE_INTERFACE,
-                              { "HotspotEnabled" });
+        notifyProperties({
+            "HotspotEnabled"
+        });
     }
 
     void hotspotPasswordUpdated()
     {
         // Note that this is on the private object
-        notifyPropertyChanged(*m_privateService,
-                              DBusTypes::PRIVATE_PATH,
-                              DBusTypes::PRIVATE_INTERFACE,
-                              { "HotspotPassword" });
+        notifyPrivateProperties({
+            "HotspotPassword"
+        });
     }
 
     void hotspotModeUpdated()
     {
-        notifyPropertyChanged(p,
-                              DBusTypes::SERVICE_PATH,
-                              DBusTypes::SERVICE_INTERFACE,
-                              { "HotspotMode" });
+        notifyProperties({
+            "HotspotMode"
+        });
     }
 
-    // Note that this is on the private object
     void hotspotAuthUpdated()
     {
-        notifyPropertyChanged(*m_privateService,
-                              DBusTypes::PRIVATE_PATH,
-                              DBusTypes::PRIVATE_INTERFACE,
-                              { "HotspotAuth" });
+        // Note that this is on the private object
+        notifyPrivateProperties({
+            "HotspotAuth"
+        });
     }
 
     void hotspotStoredUpdated()
     {
-        notifyPropertyChanged(p,
-                              DBusTypes::SERVICE_PATH,
-                              DBusTypes::SERVICE_INTERFACE,
-                              { "HotspotStored" });
+        notifyProperties({
+            "HotspotStored"
+        });
     }
 
     void updateNetworkingStatus()
@@ -201,18 +195,59 @@ public Q_SLOTS:
 
         if (!changed.empty())
         {
-            notifyPropertyChanged(p,
-                                  DBusTypes::SERVICE_PATH,
-                                  DBusTypes::SERVICE_INTERFACE,
-                                  changed);
+            notifyProperties(changed);
+        }
+    }
+
+    void updateVpnList()
+    {
+        auto current = m_vpnConnections.keys().toSet();
+        auto connections = m_vpnManager->connectionPaths();
+
+        auto toAdd(connections);
+        toAdd.subtract(current);
+
+        auto toRemove(current);
+        toRemove.subtract(connections);
+
+        for (const auto& con: toRemove)
+        {
+            m_vpnConnections.remove(con);
+        }
+
+        for (const auto& path: toAdd)
+        {
+            auto vpn = m_vpnManager->connection(path);
+            DBusVpnConnection::SPtr vpnConnection;
+            switch(vpn->type())
+            {
+                case VpnConnection::Type::openvpn:
+                    vpnConnection = make_shared<DBusOpenvpnConnection>(vpn, m_connection);
+                    break;
+                case VpnConnection::Type::pptp:
+                    vpnConnection = make_shared<DBusOpenvpnConnection>(vpn, m_connection);
+                    break;
+            }
+            if (vpnConnection)
+            {
+                m_vpnConnections[path] = vpnConnection;
+            }
+        }
+
+        if (!toRemove.isEmpty() || !toAdd.isEmpty())
+        {
+            notifyPrivateProperties({"VpnConnections"});
         }
     }
 };
 
-ConnectivityService::ConnectivityService(nmofono::Manager::Ptr manager, const QDBusConnection& connection)
+ConnectivityService::ConnectivityService(Manager::Ptr manager,
+                                         vpn::VpnManager::SPtr vpnManager,
+                                         const QDBusConnection& connection)
     : d{new Private(*this, connection)}
 {
     d->m_manager = manager;
+    d->m_vpnManager = vpnManager;
     d->m_privateService = make_shared<PrivateService>(*this);
 
     // Memory is managed by Qt parent ownership
@@ -235,7 +270,10 @@ ConnectivityService::ConnectivityService(nmofono::Manager::Ptr manager, const QD
 
     connect(d->m_manager.get(), &Manager::reportError, d->m_privateService.get(), &PrivateService::ReportError);
 
+    connect(d->m_vpnManager.get(), &vpn::VpnManager::connectionsChanged, d.get(), &Private::updateVpnList);
+
     d->updateNetworkingStatus();
+    d->updateVpnList();
 
     if (!d->m_connection.registerObject(DBusTypes::SERVICE_PATH, this))
     {
@@ -372,6 +410,20 @@ void PrivateService::SetHotspotAuth(const QString &auth)
     p.d->m_manager->setHotspotAuth(auth);
 }
 
+QDBusObjectPath PrivateService::AddOpenvpnConnection(const QString &auth)
+{
+    return QDBusObjectPath();
+}
+
+QDBusObjectPath PrivateService::AddPptpConnection(const QString &auth)
+{
+    return QDBusObjectPath();
+}
+
+void PrivateService::RemoveVpnConnection(const QDBusObjectPath &path)
+{
+}
+
 QString PrivateService::hotspotPassword() const
 {
     return p.d->m_manager->hotspotPassword();
@@ -380,6 +432,16 @@ QString PrivateService::hotspotPassword() const
 QString PrivateService::hotspotAuth() const
 {
     return p.d->m_manager->hotspotAuth();
+}
+
+QList<QDBusObjectPath> PrivateService::vpnConnections() const
+{
+    QList<QDBusObjectPath> paths;
+    for (const auto& vpnConnection: p.d->m_vpnConnections)
+    {
+        paths << vpnConnection->path();
+    }
+    return paths;
 }
 
 }

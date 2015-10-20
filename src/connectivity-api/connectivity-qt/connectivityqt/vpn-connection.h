@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014 Canonical Ltd.
+ * Copyright © 2015 Canonical Ltd.
  *
  * This program is free software: you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License version 3,
@@ -20,44 +20,42 @@
 #pragma once
 
 #include <QDBusConnection>
+#include <QDBusObjectPath>
 #include <QObject>
-#include <QString>
-#include <memory>
 
 #include <unity/util/DefinesPtrs.h>
 
 namespace connectivityqt
 {
-namespace internal
-{
 
-class DBusPropertyCache: public QObject
+class VpnConnection : public QObject
 {
     Q_OBJECT
 
 public:
-    UNITY_DEFINES_PTRS(DBusPropertyCache);
+    UNITY_DEFINES_PTRS(VpnConnection);
 
-    DBusPropertyCache(const QString &service, const QString& interface,
-                      const QString &path, const QDBusConnection &connection);
+    VpnConnection(const QDBusObjectPath& path, const QDBusConnection& connection);
 
-    ~DBusPropertyCache();
+    ~VpnConnection();
 
-    QVariant get(const QString& name);
+    Q_PROPERTY(QDBusObjectPath path READ path)
+    QDBusObjectPath path() const;
 
-    bool isInitialized() const;
+    Q_PROPERTY(QString id READ id NOTIFY idChanged)
+    QString id() const;
 
-    QDBusConnection connection() const;
+    Q_PROPERTY(bool active READ active NOTIFY activeChanged)
+    bool active() const;
 
 Q_SIGNALS:
-    void propertyChanged(const QString& name, const QVariant& value);
+    void idChanged(const QString& id);
 
-    void initialized();
+    void activeChanged(bool active);
 
 protected:
     class Priv;
     std::shared_ptr<Priv> d;
 };
 
-}
 }

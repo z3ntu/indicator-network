@@ -42,14 +42,14 @@ VpnItem::VpnItem(VpnConnection::SPtr vpnConnection)
     static int id = 0;
     ++id;
 
-    d->m_item = make_shared<SwitchItem>(d->m_vpnConnection->name(), "vpn", QString::number(id));
+    d->m_item = make_shared<SwitchItem>(d->m_vpnConnection->id(), "vpn", QString::number(id));
     d->m_item->menuItem()->setIcon("network-vpn");
     d->m_item->setState(d->m_vpnConnection->isActive());
     d->m_item->setEnabled(d->m_vpnConnection->isActivatable());
 
     m_actionGroupMerger->add(d->m_item->actionGroup());
 
-    connect(d->m_vpnConnection.get(), &VpnConnection::nameChanged, d->m_item->menuItem().get(), &MenuItem::setLabel);
+    connect(d->m_vpnConnection.get(), &VpnConnection::idChanged, d->m_item->menuItem().get(), &MenuItem::setLabel);
     connect(d->m_vpnConnection.get(), &VpnConnection::activatableChanged, d->m_item.get(), &SwitchItem::setEnabled);
     connect(d->m_vpnConnection.get(), &VpnConnection::activeChanged, d->m_item.get(), &SwitchItem::setState);
     connect(d->m_item.get(), &SwitchItem::stateUpdated, d->m_vpnConnection.get(), &VpnConnection::setActive);

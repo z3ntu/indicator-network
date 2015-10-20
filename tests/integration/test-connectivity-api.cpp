@@ -18,13 +18,11 @@
  */
 
 #include <indicator-network-test-base.h>
-#include <connectivityqt/connectivity.h>
 #include <dbus-types.h>
 #include <NetworkManagerSettingsInterface.h>
 
 #include <QDebug>
 #include <QTestEventLoop>
-#include <QSignalSpy>
 
 using namespace std;
 using namespace testing;
@@ -35,32 +33,6 @@ namespace
 
 class TestConnectivityApi: public IndicatorNetworkTestBase
 {
-protected:
-    Connectivity::UPtr newConnectivity()
-    {
-        Connectivity::registerMetaTypes();
-        auto connectivity = make_unique<Connectivity>(dbusTestRunner.sessionConnection());
-
-        if (!connectivity->isInitialized())
-        {
-            QSignalSpy initSpy(connectivity.get(), SIGNAL(initialized()));
-            initSpy.wait();
-        }
-
-        return connectivity;
-    }
-
-    QVariantList getMethodCall(const QSignalSpy& spy, const QString& method)
-    {
-        for(const auto& call: spy)
-        {
-            if (call.first().toString() == method)
-            {
-                return call.at(1).toList();
-            }
-        }
-        throw domain_error(qPrintable("No method call [" + method + "] could be found"));
-    }
 };
 
 TEST_F(TestConnectivityApi, FollowsFlightMode)

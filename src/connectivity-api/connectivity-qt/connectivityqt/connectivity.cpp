@@ -1,23 +1,24 @@
 /*
- * Copyright (C) 2015 Canonical, Ltd.
+ * Copyright © 2014 Canonical Ltd.
  *
  * This program is free software: you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 3, as published
- * by the Free Software Foundation.
+ * under the terms of the GNU Lesser General Public License version 3,
+ * as published by the Free Software Foundation.
  *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranties of
- * MERCHANTABILITY, SATISFACTORY QUALITY, or FITNESS FOR A PARTICULAR
- * PURPOSE.  See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along
- * with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  * Authors:
  *     Pete Woods <pete.woods@canonical.com>
  */
 
 #include <connectivityqt/connectivity.h>
+#include <connectivityqt/internal/connections-list-model.h>
 #include <connectivityqt/internal/dbus-property-cache.h>
 #include <dbus-types.h>
 #include <NetworkingStatusInterface.h>
@@ -43,13 +44,15 @@ public:
 
     QDBusConnection m_sessionConnection;
 
-    shared_ptr<internal::DBusPropertyCache> m_propertyCache;
+    internal::DBusPropertyCache::SPtr m_propertyCache;
 
-    shared_ptr<internal::DBusPropertyCache> m_writePropertyCache;
+    internal::DBusPropertyCache::SPtr m_writePropertyCache;
 
     shared_ptr<ComUbuntuConnectivity1NetworkingStatusInterface> m_readInterface;
 
     shared_ptr<ComUbuntuConnectivity1PrivateInterface> m_writeInterface;
+
+    internal::ConnectionsListModel::SPtr m_connectionsModel;
 
     static QVector<Limitations> toLimitations(const QVariant& value)
     {
@@ -205,6 +208,8 @@ Connectivity::Connectivity(const QDBusConnection& sessionConnection, QObject* pa
     connect(d->m_writeInterface.get(),
             &ComUbuntuConnectivity1PrivateInterface::ReportError, this,
             &Connectivity::reportError);
+
+    d->m_connectionsModel = make_shared<internal::ConnectionsListModel>(d->m_writePropertyCache);
 }
 
 Connectivity::~Connectivity()
@@ -344,6 +349,11 @@ void Connectivity::setHotspotMode(const QString& mode)
 void Connectivity::setHotspotAuth(const QString& auth)
 {
     d->m_writeInterface->SetHotspotAuth(auth);
+}
+
+QAbstractListModel* Connectivity::vpnConnections() const
+{
+    return d->m_connectionsModel.get();
 }
 
 }

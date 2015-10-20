@@ -19,39 +19,25 @@
 
 #pragma once
 
-#include <nmofono/connection/active-connection-manager.h>
-#include <nmofono/vpn/vpn-connection.h>
-#include <QDBusConnection>
+#include <connectivity-service/dbus-vpn-connection.h>
 
-namespace nmofono
-{
-namespace vpn
+class OpenVpnAdaptor;
+
+namespace connectivity_service
 {
 
-class VpnManager: public QObject
+class DBusOpenvpnConnection : public DBusVpnConnection
 {
+    friend OpenVpnAdaptor;
+
     Q_OBJECT
 
 public:
-    UNITY_DEFINES_PTRS(VpnManager);
+    DBusOpenvpnConnection(nmofono::vpn::VpnConnection::SPtr vpnConnection, const QDBusConnection& connection);
 
-    VpnManager(connection::ActiveConnectionManager::SPtr activeConnectionManager, const QDBusConnection& systemConnection);
+    ~DBusOpenvpnConnection();
 
-    ~VpnManager() = default;
-
-    QList<VpnConnection::SPtr> connections() const;
-
-    QSet<QDBusObjectPath> connectionPaths() const;
-
-    VpnConnection::SPtr connection(const QDBusObjectPath& path) const;
-
-Q_SIGNALS:
-    void connectionsChanged();
-
-protected:
-    class Priv;
-    std::shared_ptr<Priv> d;
+    nmofono::vpn::VpnConnection::Type type() const override;
 };
 
-}
 }

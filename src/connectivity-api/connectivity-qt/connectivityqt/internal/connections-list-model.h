@@ -19,11 +19,9 @@
 
 #pragma once
 
-#include <QDBusConnection>
-#include <QObject>
-#include <QString>
-#include <memory>
+#include <connectivityqt/internal/dbus-property-cache.h>
 
+#include <QAbstractItemModel>
 #include <unity/util/DefinesPtrs.h>
 
 namespace connectivityqt
@@ -31,28 +29,34 @@ namespace connectivityqt
 namespace internal
 {
 
-class DBusPropertyCache: public QObject
+class ConnectionsListModel : public QAbstractListModel
 {
-    Q_OBJECT
+    Q_ENUMS(Roles)
 
 public:
-    UNITY_DEFINES_PTRS(DBusPropertyCache);
+    UNITY_DEFINES_PTRS(ConnectionsListModel);
 
-    DBusPropertyCache(const QString &service, const QString& interface,
-                      const QString &path, const QDBusConnection &connection);
+    enum Roles
+    {
+        RoleId,
+        RoleActive
+    };
 
-    ~DBusPropertyCache();
+    ConnectionsListModel(DBusPropertyCache::SPtr propertyCache);
 
-    QVariant get(const QString& name);
+    ~ConnectionsListModel();
 
-    bool isInitialized() const;
+    int rowCount(const QModelIndex &parent) const override;
 
-    QDBusConnection connection() const;
+    QVariant data(const QModelIndex &index, int role) const override;
 
-Q_SIGNALS:
-    void propertyChanged(const QString& name, const QVariant& value);
-
-    void initialized();
+    QHash<int, QByteArray> roleNames() const override
+    {
+        QHash<int, QByteArray> roles;
+        roles[RoleId] = "id";
+        roles[RoleActive] = "active";
+        return roles;
+    }
 
 protected:
     class Priv;

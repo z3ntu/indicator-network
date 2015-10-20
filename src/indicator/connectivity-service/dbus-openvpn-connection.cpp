@@ -17,41 +17,30 @@
  *     Pete Woods <pete.woods@canonical.com>
  */
 
-#pragma once
+#include <connectivity-service/dbus-openvpn-connection.h>
+#include <OpenVpnAdaptor.h>
 
-#include <nmofono/connection/active-connection-manager.h>
-#include <nmofono/vpn/vpn-connection.h>
-#include <QDBusConnection>
+using namespace std;
+using namespace nmofono::vpn;
 
-namespace nmofono
-{
-namespace vpn
+namespace connectivity_service
 {
 
-class VpnManager: public QObject
+DBusOpenvpnConnection::DBusOpenvpnConnection(VpnConnection::SPtr vpnConnection,
+                                             const QDBusConnection& connection) :
+        DBusVpnConnection(vpnConnection, connection)
 {
-    Q_OBJECT
-
-public:
-    UNITY_DEFINES_PTRS(VpnManager);
-
-    VpnManager(connection::ActiveConnectionManager::SPtr activeConnectionManager, const QDBusConnection& systemConnection);
-
-    ~VpnManager() = default;
-
-    QList<VpnConnection::SPtr> connections() const;
-
-    QSet<QDBusObjectPath> connectionPaths() const;
-
-    VpnConnection::SPtr connection(const QDBusObjectPath& path) const;
-
-Q_SIGNALS:
-    void connectionsChanged();
-
-protected:
-    class Priv;
-    std::shared_ptr<Priv> d;
-};
-
+    new OpenVpnAdaptor(this);
+    registerDBusObject();
 }
+
+DBusOpenvpnConnection::~DBusOpenvpnConnection()
+{
+}
+
+nmofono::vpn::VpnConnection::Type DBusOpenvpnConnection::type() const
+{
+    return nmofono::vpn::VpnConnection::Type::openvpn;
+}
+
 }

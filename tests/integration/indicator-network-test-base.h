@@ -18,6 +18,8 @@
 
 #pragma once
 
+#include <connectivityqt/connectivity.h>
+
 #include <libqtdbustest/DBusTestRunner.h>
 #include <libqtdbustest/QProcessDBusService.h>
 #include <libqtdbusmock/DBusMock.h>
@@ -28,6 +30,9 @@
 #include <NetworkManager.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
+
+#include <QSignalSpy>
+#include <QTest>
 
 inline QString qVariantToString(const QVariant& variant) {
     QString output;
@@ -42,6 +47,14 @@ inline void PrintTo(const QVariant& variant, std::ostream* os) {
     dbg << variant;
 
     *os << "QVariant(" << output.toStdString() << ")";
+}
+
+inline void PrintTo(const QStringList& list, std::ostream* os) {
+    QString output;
+    QDebug dbg(&output);
+    dbg << list;
+
+    *os << "QStringList(" << output.toStdString() << ")";
 }
 
 #define WAIT_FOR_SIGNALS(signalSpy, signalsExpected)\
@@ -148,6 +161,12 @@ protected:
     OrgFreedesktopDBusMockInterface& networkManagerMockInterface();
 
     QString createVpnConnection(const QString& id);
+
+    void deleteSettings(const QString& path);
+
+    connectivityqt::Connectivity::UPtr newConnectivity();
+
+    QVariantList getMethodCall(const QSignalSpy& spy, const QString& method);
 
     static bool qDBusArgumentToMap(QVariant const& variant, QVariantMap& map);
 

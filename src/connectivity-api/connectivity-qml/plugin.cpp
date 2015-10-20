@@ -29,7 +29,9 @@ connectivitySingletonProvider(QQmlEngine *engine, QJSEngine *scriptEngine)
 {
     Q_UNUSED(scriptEngine)
 
-    return new connectivityqt::Connectivity(QDBusConnection::sessionBus(), engine);
+    auto connectivity = new connectivityqt::Connectivity(QDBusConnection::sessionBus(), engine);
+    QQmlEngine::setObjectOwnership(connectivity->vpnConnections(), QQmlEngine::CppOwnership);
+    return connectivity;
 }
 }
 

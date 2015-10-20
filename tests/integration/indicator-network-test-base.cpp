@@ -20,12 +20,14 @@
 #include <dbus-types.h>
 
 #include <NetworkManager.h>
+#include <NetworkManagerSettingsConnectionInterface.h>
 #include <NetworkManagerSettingsInterface.h>
 
 using namespace QtDBusTest;
 using namespace QtDBusMock;
 using namespace std;
 using namespace testing;
+using namespace connectivityqt;
 namespace mh = unity::gmenuharness;
 
 IndicatorNetworkTestBase::IndicatorNetworkTestBase() :
@@ -572,6 +574,44 @@ QString IndicatorNetworkTestBase::createVpnConnection(const QString& id)
         EXPECT_FALSE(reply.isError()) << reply.error().message().toStdString();
     }
     return QDBusObjectPath(reply).path();
+}
+
+void IndicatorNetworkTestBase::deleteSettings(const QString& path)
+{
+    OrgFreedesktopNetworkManagerSettingsConnectionInterface iface(NM_DBUS_SERVICE, path,
+                                                                  dbusTestRunner.systemConnection());
+    auto reply = iface.Delete();
+    reply.waitForFinished();
+    if (reply.isError())
+    {
+        EXPECT_FALSE(reply.isError()) << reply.error().message().toStdString();
+    }
+}
+
+Connectivity::UPtr IndicatorNetworkTestBase::newConnectivity()
+{
+    Connectivity::registerMetaTypes();
+    auto connectivity = make_unique<Connectivity>(dbusTestRunner.sessionConnection());
+
+    if (!connectivity->isInitialized())
+    {
+        QSignalSpy initSpy(connectivity.get(), SIGNAL(initialized()));
+        initSpy.wait();
+    }
+
+    return connectivity;
+}
+
+QVariantList IndicatorNetworkTestBase::getMethodCall(const QSignalSpy& spy, const QString& method)
+{
+    for(const auto& call: spy)
+    {
+        if (call.first().toString() == method)
+        {
+            return call.at(1).toList();
+        }
+    }
+    throw domain_error(qPrintable("No method call [" + method + "] could be found"));
 }
 
 mh::MenuItemMatcher IndicatorNetworkTestBase::vpnSettings()

@@ -56,6 +56,8 @@ set(NETWORK_SERVICE_SOURCES
     sections/wwan-section.cpp
 
     connectivity-service/connectivity-service.cpp
+    connectivity-service/dbus-openvpn-connection.cpp
+    connectivity-service/dbus-vpn-connection.cpp
 
     menuitems/access-point-item.cpp
     menuitems/switch-item.cpp
@@ -82,6 +84,22 @@ qt5_add_dbus_adaptor(
     connectivity-service/connectivity-service.h
     connectivity_service::PrivateService
     NetworkingStatusPrivateAdaptor
+)
+
+qt5_add_dbus_adaptor(
+    NETWORK_SERVICE_SOURCES
+    "${DATA_DIR}/com.ubuntu.connectivity1.vpn.VpnConnection.xml"
+    connectivity-service/dbus-vpn-connection.h
+    connectivity_service::DBusVpnConnection
+    VpnConnectionAdaptor
+)
+
+qt5_add_dbus_adaptor(
+    NETWORK_SERVICE_SOURCES
+    "${DATA_DIR}/com.ubuntu.connectivity1.vpn.VpnConnection.OpenVpn.xml"
+    connectivity-service/dbus-openvpn-connection.h
+    connectivity_service::DBusOpenvpnConnection
+    OpenVpnAdaptor
 )
 
 qt5_add_dbus_adaptor(

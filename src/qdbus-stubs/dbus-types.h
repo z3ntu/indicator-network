@@ -18,7 +18,9 @@
 
 #pragma once
 
+#include <QDBusConnection>
 #include <QDBusMetaType>
+#include <QDBusMessage>
 #include <QtCore>
 #include <QString>
 #include <QVariantMap>
@@ -33,6 +35,35 @@ namespace DBusTypes
         qRegisterMetaType<QVariantDictMap>("QVariantDictMap");
 
         qDBusRegisterMetaType<QVariantDictMap>();
+    }
+
+    inline QString vpnConnectionPath()
+    {
+        static int counter {0};
+        static QString path{"/com/ubuntu/connectivity1/vpn/VpnConnection%1"};
+        return path.arg(counter++);
+    }
+
+    inline void notifyPropertyChanged(
+        const QDBusConnection& connection,
+        const QObject& o,
+        const QString& path,
+        const QString& interface,
+        const QStringList& propertyNames)
+    {
+        QDBusMessage signal = QDBusMessage::createSignal(
+          path,
+          "org.freedesktop.DBus.Properties",
+          "PropertiesChanged");
+        signal << interface;
+        QVariantMap changedProps;
+        for(const auto& propertyName: propertyNames)
+        {
+            changedProps.insert(propertyName, o.property(qPrintable(propertyName)));
+        }
+        signal << changedProps;
+        signal << QStringList();
+        connection.send(signal);
     }
 
     static constexpr char const* WPASUPPLICANT_DBUS_NAME = "fi.w1.wpa_supplicant1";
@@ -67,5 +98,4 @@ namespace DBusTypes
     static constexpr char const* NOTIFY_DBUS_INTERFACE = "org.freedesktop.Notifications";
 
     static constexpr char const* NOTIFY_DBUS_PATH = "/org/freedesktop/Notifications";
-
 }

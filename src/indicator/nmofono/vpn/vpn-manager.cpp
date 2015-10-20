@@ -46,7 +46,7 @@ public:
         auto connection = make_shared<VpnConnection>(path, m_activeConnectionManager, m_settingsInterface->connection());
         if (connection->isValid())
         {
-            m_connections[path.path()] = connection;
+            m_connections[path] = connection;
             connection->setOtherConnectionIsBusy(m_busy);
             connection->setActiveConnectionPath(m_activeConnectionPath);
             connect(connection.get(), &VpnConnection::activateConnection, this, &Priv::activateConnection);
@@ -71,7 +71,7 @@ Q_SIGNALS:
 public Q_SLOTS:
     void connectionRemoved(const QDBusObjectPath &path)
     {
-        auto connection = m_connections.take(path.path());
+        auto connection = m_connections.take(path);
         if (connection)
         {
             Q_EMIT p.connectionsChanged();
@@ -145,7 +145,7 @@ public:
 
     shared_ptr<OrgFreedesktopNetworkManagerSettingsInterface> m_settingsInterface;
 
-    QMap<QString, VpnConnection::SPtr> m_connections;
+    QMap<QDBusObjectPath, VpnConnection::SPtr> m_connections;
 
     bool m_busy = false;
 
@@ -173,6 +173,16 @@ VpnManager::VpnManager(connection::ActiveConnectionManager::SPtr activeConnectio
 QList<VpnConnection::SPtr> VpnManager::connections() const
 {
     return d->m_connections.values();
+}
+
+QSet<QDBusObjectPath> VpnManager::connectionPaths() const
+{
+    return d->m_connections.keys().toSet();
+}
+
+VpnConnection::SPtr VpnManager::connection(const QDBusObjectPath& path) const
+{
+    return d->m_connections.value(path);
 }
 
 }

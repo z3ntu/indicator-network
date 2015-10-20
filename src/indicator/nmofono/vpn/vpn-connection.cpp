@@ -38,7 +38,7 @@ class VpnConnection::Priv: public QObject
 
 public:
     Priv(VpnConnection& parent) :
-        p(parent)
+        p(parent), m_type(Type::openvpn)
     {
     }
 
@@ -101,17 +101,17 @@ public:
         Q_EMIT p.busyChanged(m_busy);
     }
 
-    void updateName()
+    void updateId()
     {
-        QString name = m_settings["connection"]["id"].toString();
+        QString id = m_settings["connection"]["id"].toString();
 
-        if (name == m_name)
+        if (id == m_id)
         {
             return;
         }
 
-        m_name = name;
-        Q_EMIT p.nameChanged(m_name);
+        m_id = id;
+        Q_EMIT p.idChanged(m_id);
     }
 
     void updateValid()
@@ -126,6 +126,20 @@ public:
 
         m_valid = valid;
         Q_EMIT p.validChanged(m_valid);
+    }
+
+    void updateType()
+    {
+        QString serviceType = m_settings["vpn"]["service-type"].toString();
+
+        if (serviceType == "org.freedesktop.NetworkManager.openvpn")
+        {
+            m_type = Type::openvpn;
+        }
+        else if (serviceType == "org.freedesktop.NetworkManager.pptp")
+        {
+            m_type = Type::pptp;
+        }
     }
 
     void updateActivatable()
@@ -151,8 +165,9 @@ public Q_SLOTS:
     void settingsUpdated()
     {
         m_settings = m_connection->GetSettings();
-        updateName();
+        updateId();
         updateValid();
+        updateType();
     }
 
     void activeConnectionsUpdated(const QSet<connection::ActiveConnection::SPtr>& activeConnections)
@@ -203,9 +218,11 @@ public:
 
     QVariantDictMap m_settings;
 
-    QString m_name;
+    QString m_id;
 
     bool m_valid = false;
+
+    Type m_type;
 
     bool m_active = false;
 
@@ -242,9 +259,9 @@ VpnConnection::VpnConnection(
     connect(d->m_activeConnectionManager.get(), &connection::ActiveConnectionManager::connectionsChanged, d.get(), &Priv::activeConnectionsUpdated);
 }
 
-QString VpnConnection::name() const
+QString VpnConnection::id() const
 {
-    return d->m_name;
+    return d->m_id;
 }
 
 QDBusObjectPath VpnConnection::path() const
@@ -266,6 +283,24 @@ void VpnConnection::setActive(bool active)
     else
     {
         Q_EMIT deactivateConnection(d->m_activeConnectionPath);
+    }
+}
+
+void VpnConnection::setId(const QString& id)
+{
+    if (d->m_id == id)
+    {
+        return;
+    }
+
+    auto settings = d->m_settings;
+    settings["connection"]["id"] = id;
+
+    auto reply = d->m_connection->Update(settings);
+    reply.waitForFinished();
+    if (reply.isError())
+    {
+        qWarning() << __PRETTY_FUNCTION__ << reply.error().message();
     }
 }
 
@@ -299,6 +334,11 @@ bool VpnConnection::isBusy() const
 bool VpnConnection::isActivatable() const
 {
     return d->m_activatable;
+}
+
+VpnConnection::Type VpnConnection::type() const
+{
+    return d->m_type;
 }
 
 }

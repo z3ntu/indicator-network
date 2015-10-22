@@ -17,8 +17,8 @@
  * Author: Pete Woods <pete.woods@canonical.com>
  */
 
+#include <connectivityqt/vpn-connections-list-model.h>
 #include <indicator-network-test-base.h>
-#include <connectivityqt/connections-list-model.h>
 #include <dbus-types.h>
 #include <NetworkManagerInterface.h>
 #include <NetworkManagerSettingsInterface.h>
@@ -67,8 +67,8 @@ protected:
         {
             auto idx = model.index(i, 0);
             CS connectionState;
-            connectionState.first = model.data(idx, ConnectionsListModel::Roles::RoleId).toString();
-            connectionState.second = model.data(idx, ConnectionsListModel::Roles::RoleActive).toBool();
+            connectionState.first = model.data(idx, VpnConnectionsListModel::Roles::RoleId).toString();
+            connectionState.second = model.data(idx, VpnConnectionsListModel::Roles::RoleActive).toBool();
             connectionStates << connectionState;
         }
         return connectionStates;
@@ -79,7 +79,7 @@ protected:
         auto vpnConnections = connectivity.vpnConnections();
 
         auto sortedVpnConnections = make_unique<QSortFilterProxyModel>();
-        sortedVpnConnections->setSortRole(ConnectionsListModel::Roles::RoleId);
+        sortedVpnConnections->setSortRole(VpnConnectionsListModel::Roles::RoleId);
         sortedVpnConnections->sort(0);
 
         sortedVpnConnections->setSourceModel(vpnConnections);
@@ -324,7 +324,7 @@ TEST_F(TestConnectivityApiVpn, UpdatesVpnState)
     // Change the VPN connection's id
     sortedVpnConnections->setData(
             sortedVpnConnections->index(0, 0), "banana",
-            ConnectionsListModel::Roles::RoleId);
+            VpnConnectionsListModel::Roles::RoleId);
 
     WAIT_FOR_SIGNALS(dataChangedSpy, 1);
     EXPECT_TRUE(rowsAboutToBeRemovedSpy.isEmpty());
@@ -349,7 +349,7 @@ TEST_F(TestConnectivityApiVpn, UpdatesVpnState)
     // Activate the VPN connection
     sortedVpnConnections->setData(
             sortedVpnConnections->index(0, 0), true,
-            ConnectionsListModel::Roles::RoleActive);
+            VpnConnectionsListModel::Roles::RoleActive);
 
     WAIT_FOR_SIGNALS(dataChangedSpy, 1);
     EXPECT_TRUE(rowsAboutToBeRemovedSpy.isEmpty());

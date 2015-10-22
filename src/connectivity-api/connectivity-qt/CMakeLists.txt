@@ -18,9 +18,9 @@ include_directories("${CMAKE_SOURCE_DIR}/src/qdbus-stubs")
 set(
     CONNECTIVITY_QT_SRC
     connectivityqt/internal/dbus-property-cache.cpp
-    connectivityqt/connections-list-model.cpp
     connectivityqt/connectivity.cpp
     connectivityqt/vpn-connection.cpp
+    connectivityqt/vpn-connections-list-model.cpp
     ubuntu/connectivity/networking-status.cpp
 )
 

@@ -28,6 +28,8 @@ namespace connectivityqt
 {
 namespace internal
 {
+class DBusPropertyCache;
+}
 
 class ConnectionsListModel : public QAbstractListModel
 {
@@ -42,13 +44,15 @@ public:
         RoleActive
     };
 
-    ConnectionsListModel(DBusPropertyCache::SPtr propertyCache);
+    ConnectionsListModel(std::shared_ptr<internal::DBusPropertyCache> propertyCache);
 
     ~ConnectionsListModel();
 
     int rowCount(const QModelIndex &parent) const override;
 
     QVariant data(const QModelIndex &index, int role) const override;
+
+    bool setData(const QModelIndex &index, const QVariant &value, int role) override;
 
     QHash<int, QByteArray> roleNames() const override
     {
@@ -63,5 +67,4 @@ protected:
     std::shared_ptr<Priv> d;
 };
 
-}
 }

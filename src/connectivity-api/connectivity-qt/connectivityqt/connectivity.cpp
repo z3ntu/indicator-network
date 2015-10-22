@@ -18,7 +18,7 @@
  */
 
 #include <connectivityqt/connectivity.h>
-#include <connectivityqt/internal/connections-list-model.h>
+#include <connectivityqt/connections-list-model.h>
 #include <connectivityqt/internal/dbus-property-cache.h>
 #include <dbus-types.h>
 #include <NetworkingStatusInterface.h>
@@ -52,7 +52,7 @@ public:
 
     shared_ptr<ComUbuntuConnectivity1PrivateInterface> m_writeInterface;
 
-    internal::ConnectionsListModel::SPtr m_connectionsModel;
+    ConnectionsListModel::SPtr m_connectionsModel;
 
     static QVector<Limitations> toLimitations(const QVariant& value)
     {
@@ -209,7 +209,7 @@ Connectivity::Connectivity(const QDBusConnection& sessionConnection, QObject* pa
             &ComUbuntuConnectivity1PrivateInterface::ReportError, this,
             &Connectivity::reportError);
 
-    d->m_connectionsModel = make_shared<internal::ConnectionsListModel>(d->m_writePropertyCache);
+    d->m_connectionsModel = make_shared<ConnectionsListModel>(d->m_writePropertyCache);
 }
 
 Connectivity::~Connectivity()

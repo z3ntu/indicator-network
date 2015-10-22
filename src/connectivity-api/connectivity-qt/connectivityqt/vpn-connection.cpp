@@ -96,6 +96,16 @@ bool VpnConnection::active() const
     return d->m_propertyCache->get("active").toBool();
 }
 
+void VpnConnection::setId(const QString& id)
+{
+    d->m_vpnInterface->setId(id);
+}
+
+void VpnConnection::setActive(bool active)
+{
+    d->m_vpnInterface->setActive(active);
+}
+
 }
 
 #include "vpn-connection.moc"

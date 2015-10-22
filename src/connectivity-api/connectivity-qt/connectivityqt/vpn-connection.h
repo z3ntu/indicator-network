@@ -42,11 +42,16 @@ public:
     Q_PROPERTY(QDBusObjectPath path READ path)
     QDBusObjectPath path() const;
 
-    Q_PROPERTY(QString id READ id NOTIFY idChanged)
+    Q_PROPERTY(QString id READ id WRITE setId NOTIFY idChanged)
     QString id() const;
 
-    Q_PROPERTY(bool active READ active NOTIFY activeChanged)
+    Q_PROPERTY(bool active READ active WRITE setActive NOTIFY activeChanged)
     bool active() const;
+
+public Q_SLOTS:
+    void setId(const QString& id);
+
+    void setActive(bool active);
 
 Q_SIGNALS:
     void idChanged(const QString& id);

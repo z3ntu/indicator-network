@@ -18,9 +18,11 @@
  */
 
 #include <indicator-network-test-base.h>
-#include <connectivityqt/internal/connections-list-model.h>
+#include <connectivityqt/connections-list-model.h>
 #include <dbus-types.h>
+#include <NetworkManagerInterface.h>
 #include <NetworkManagerSettingsInterface.h>
+#include <NetworkManagerSettingsConnectionInterface.h>
 
 #include <QDebug>
 #include <QSortFilterProxyModel>
@@ -41,6 +43,16 @@ inline void PrintTo(const CS& list, std::ostream* os) {
     *os << "CSL(" << output.toStdString() << ")";
 }
 
+inline void PrintTo(const QList<QDBusObjectPath>& list, std::ostream* os) {
+    QString output;
+    for (const auto& path: list)
+    {
+        output.append("\"" + path.path() + "\",");
+    }
+
+    *os << "QList<QDBusObjectPath>(" << output.toStdString() << ")";
+}
+
 namespace
 {
 
@@ -55,15 +67,86 @@ protected:
         {
             auto idx = model.index(i, 0);
             CS connectionState;
-            connectionState.first = model.data(idx, connectivityqt::internal::ConnectionsListModel::Roles::RoleId).toString();
-            connectionState.second = model.data(idx, connectivityqt::internal::ConnectionsListModel::Roles::RoleActive).toBool();
+            connectionState.first = model.data(idx, ConnectionsListModel::Roles::RoleId).toString();
+            connectionState.second = model.data(idx, ConnectionsListModel::Roles::RoleActive).toBool();
             connectionStates << connectionState;
         }
         return connectionStates;
     }
+
+    unique_ptr<QSortFilterProxyModel> getSortedVpnConnections(Connectivity& connectivity)
+    {
+        auto vpnConnections = connectivity.vpnConnections();
+
+        auto sortedVpnConnections = make_unique<QSortFilterProxyModel>();
+        sortedVpnConnections->setSortRole(ConnectionsListModel::Roles::RoleId);
+        sortedVpnConnections->sort(0);
+
+        sortedVpnConnections->setSourceModel(vpnConnections);
+
+        return sortedVpnConnections;
+    }
 };
 
-TEST_F(TestConnectivityApiVpn, ReadsVpn)
+TEST_F(TestConnectivityApiVpn, VpnListStartsEmpty)
+{
+    // Add a physical device to use for the connection
+    setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
+    auto device = createWiFiDevice(NM_DEVICE_STATE_ACTIVATED);
+
+    // Start the indicator
+    ASSERT_NO_THROW(startIndicator());
+
+    // Connect the the service
+    auto connectivity(newConnectivity());
+
+    auto sortedVpnConnections = getSortedVpnConnections(*connectivity);
+
+    QSignalSpy rowsAboutToBeRemovedSpy(sortedVpnConnections.get(), SIGNAL(rowsAboutToBeRemoved(const QModelIndex &, int, int)));
+    QSignalSpy rowsRemovedSpy(sortedVpnConnections.get(), SIGNAL(rowsRemoved(const QModelIndex &, int, int)));
+    QSignalSpy rowsAboutToBeInsertedSpy(sortedVpnConnections.get(), SIGNAL(rowsAboutToBeInserted(const QModelIndex &, int, int)));
+    QSignalSpy rowsInsertedSpy(sortedVpnConnections.get(), SIGNAL(rowsInserted(const QModelIndex &, int, int)));
+    QSignalSpy dataChangedSpy(sortedVpnConnections.get(), SIGNAL(dataChanged(const QModelIndex &, const QModelIndex &, const QVector<int> &)));
+
+    EXPECT_EQ(CSL(), vpnList(*sortedVpnConnections));
+
+    rowsAboutToBeRemovedSpy.clear();
+    rowsRemovedSpy.clear();
+    rowsAboutToBeInsertedSpy.clear();
+    rowsInsertedSpy.clear();
+    dataChangedSpy.clear();
+
+    // Add VPN configuration
+    auto appleConnection = createVpnConnection("apple");
+
+    WAIT_FOR_SIGNALS(rowsAboutToBeInsertedSpy, 1);
+    WAIT_FOR_SIGNALS(rowsInsertedSpy, 1);
+    EXPECT_TRUE(rowsAboutToBeRemovedSpy.isEmpty());
+    EXPECT_TRUE(rowsRemovedSpy.isEmpty());
+    EXPECT_TRUE(dataChangedSpy.isEmpty());
+
+    EXPECT_EQ(CSL({{"apple", false}}), vpnList(*sortedVpnConnections));
+
+    rowsAboutToBeRemovedSpy.clear();
+    rowsRemovedSpy.clear();
+    rowsAboutToBeInsertedSpy.clear();
+    rowsInsertedSpy.clear();
+    dataChangedSpy.clear();
+
+    // Delete the only VPN connection
+    deleteSettings(appleConnection);
+
+    WAIT_FOR_SIGNALS(rowsAboutToBeRemovedSpy, 1);
+    WAIT_FOR_SIGNALS(rowsRemovedSpy, 1);
+    EXPECT_TRUE(rowsAboutToBeInsertedSpy.isEmpty());
+    EXPECT_TRUE(rowsInsertedSpy.isEmpty());
+    EXPECT_TRUE(dataChangedSpy.isEmpty());
+
+    // List should be empty again
+    EXPECT_EQ(CSL(), vpnList(*sortedVpnConnections));
+}
+
+TEST_F(TestConnectivityApiVpn, VpnListStartsPopulated)
 {
     // Add VPN configurations
     auto appleConnection = createVpnConnection("apple");
@@ -80,13 +163,7 @@ TEST_F(TestConnectivityApiVpn, ReadsVpn)
     // Connect the the service
     auto connectivity(newConnectivity());
 
-    auto vpnConnections = connectivity->vpnConnections();
-
-    auto sortedVpnConnections = make_unique<QSortFilterProxyModel>();
-    sortedVpnConnections->setSortRole(Qt::DisplayRole);
-    sortedVpnConnections->sort(0);
-
-    sortedVpnConnections->setSourceModel(vpnConnections);
+    auto sortedVpnConnections = getSortedVpnConnections(*connectivity);
 
     QSignalSpy rowsAboutToBeRemovedSpy(sortedVpnConnections.get(), SIGNAL(rowsAboutToBeRemoved(const QModelIndex &, int, int)));
     QSignalSpy rowsRemovedSpy(sortedVpnConnections.get(), SIGNAL(rowsRemoved(const QModelIndex &, int, int)));
@@ -164,5 +241,131 @@ TEST_F(TestConnectivityApiVpn, ReadsVpn)
 
     EXPECT_EQ(CSL({{"avocado", false}, {"banana", false}, {"coconut", false}}), vpnList(*sortedVpnConnections));
 }
+
+TEST_F(TestConnectivityApiVpn, FollowsVpnState)
+{
+    // Add a single VPN configuration
+    auto appleConnection = createVpnConnection("apple");
+
+    // Add a physical device to use for the connection
+    setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
+    auto device = createWiFiDevice(NM_DEVICE_STATE_ACTIVATED);
+
+    // Start the indicator
+    ASSERT_NO_THROW(startIndicator());
+
+    // Connect the the service
+    auto connectivity(newConnectivity());
+
+    auto sortedVpnConnections = getSortedVpnConnections(*connectivity);
+
+    QSignalSpy rowsAboutToBeRemovedSpy(sortedVpnConnections.get(), SIGNAL(rowsAboutToBeRemoved(const QModelIndex &, int, int)));
+    QSignalSpy rowsRemovedSpy(sortedVpnConnections.get(), SIGNAL(rowsRemoved(const QModelIndex &, int, int)));
+    QSignalSpy rowsAboutToBeInsertedSpy(sortedVpnConnections.get(), SIGNAL(rowsAboutToBeInserted(const QModelIndex &, int, int)));
+    QSignalSpy rowsInsertedSpy(sortedVpnConnections.get(), SIGNAL(rowsInserted(const QModelIndex &, int, int)));
+    QSignalSpy dataChangedSpy(sortedVpnConnections.get(), SIGNAL(dataChanged(const QModelIndex &, const QModelIndex &, const QVector<int> &)));
+
+    EXPECT_EQ(CSL({{"apple", false}}), vpnList(*sortedVpnConnections));
+
+    rowsAboutToBeRemovedSpy.clear();
+    rowsRemovedSpy.clear();
+    rowsAboutToBeInsertedSpy.clear();
+    rowsInsertedSpy.clear();
+    dataChangedSpy.clear();
+
+    OrgFreedesktopNetworkManagerSettingsConnectionInterface appleInterface(
+            NM_DBUS_SERVICE, appleConnection, dbusTestRunner.systemConnection());
+    QVariantDictMap settings = appleInterface.GetSettings();
+    settings["connection"]["id"] = "banana";
+
+    appleInterface.Update(settings).waitForFinished();
+
+    WAIT_FOR_SIGNALS(dataChangedSpy, 1);
+    EXPECT_TRUE(rowsAboutToBeRemovedSpy.isEmpty());
+    EXPECT_TRUE(rowsRemovedSpy.isEmpty());
+    EXPECT_TRUE(rowsAboutToBeInsertedSpy.isEmpty());
+    EXPECT_TRUE(rowsInsertedSpy.isEmpty());
+
+    // Name should have changed
+    EXPECT_EQ(CSL({{"banana", false}}), vpnList(*sortedVpnConnections));
+}
+
+TEST_F(TestConnectivityApiVpn, UpdatesVpnState)
+{
+    // Add a single VPN configuration
+    auto appleConnection = createVpnConnection("apple");
+
+    // Add a physical device to use for the connection
+    setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
+    auto device = createWiFiDevice(NM_DEVICE_STATE_ACTIVATED);
+
+    // Start the indicator
+    ASSERT_NO_THROW(startIndicator());
+
+    // Connect the the service
+    auto connectivity(newConnectivity());
+
+    auto sortedVpnConnections = getSortedVpnConnections(*connectivity);
+
+    QSignalSpy rowsAboutToBeRemovedSpy(sortedVpnConnections.get(), SIGNAL(rowsAboutToBeRemoved(const QModelIndex &, int, int)));
+    QSignalSpy rowsRemovedSpy(sortedVpnConnections.get(), SIGNAL(rowsRemoved(const QModelIndex &, int, int)));
+    QSignalSpy rowsAboutToBeInsertedSpy(sortedVpnConnections.get(), SIGNAL(rowsAboutToBeInserted(const QModelIndex &, int, int)));
+    QSignalSpy rowsInsertedSpy(sortedVpnConnections.get(), SIGNAL(rowsInserted(const QModelIndex &, int, int)));
+    QSignalSpy dataChangedSpy(sortedVpnConnections.get(), SIGNAL(dataChanged(const QModelIndex &, const QModelIndex &, const QVector<int> &)));
+
+    EXPECT_EQ(CSL({{"apple", false}}), vpnList(*sortedVpnConnections));
+
+    rowsAboutToBeRemovedSpy.clear();
+    rowsRemovedSpy.clear();
+    rowsAboutToBeInsertedSpy.clear();
+    rowsInsertedSpy.clear();
+    dataChangedSpy.clear();
+
+    // Change the VPN connection's id
+    sortedVpnConnections->setData(
+            sortedVpnConnections->index(0, 0), "banana",
+            ConnectionsListModel::Roles::RoleId);
+
+    WAIT_FOR_SIGNALS(dataChangedSpy, 1);
+    EXPECT_TRUE(rowsAboutToBeRemovedSpy.isEmpty());
+    EXPECT_TRUE(rowsRemovedSpy.isEmpty());
+    EXPECT_TRUE(rowsAboutToBeInsertedSpy.isEmpty());
+    EXPECT_TRUE(rowsInsertedSpy.isEmpty());
+
+    // Name should have changed
+    EXPECT_EQ(CSL({{"banana", false}}), vpnList(*sortedVpnConnections));
+
+    OrgFreedesktopNetworkManagerSettingsConnectionInterface appleInterface(
+                NM_DBUS_SERVICE, appleConnection, dbusTestRunner.systemConnection());
+    QVariantDictMap settings = appleInterface.GetSettings();
+    EXPECT_EQ("banana", settings["connection"]["id"].toString());
+
+    rowsAboutToBeRemovedSpy.clear();
+    rowsRemovedSpy.clear();
+    rowsAboutToBeInsertedSpy.clear();
+    rowsInsertedSpy.clear();
+    dataChangedSpy.clear();
+
+    // Activate the VPN connection
+    sortedVpnConnections->setData(
+            sortedVpnConnections->index(0, 0), true,
+            ConnectionsListModel::Roles::RoleActive);
+
+    WAIT_FOR_SIGNALS(dataChangedSpy, 1);
+    EXPECT_TRUE(rowsAboutToBeRemovedSpy.isEmpty());
+    EXPECT_TRUE(rowsRemovedSpy.isEmpty());
+    EXPECT_TRUE(rowsAboutToBeInsertedSpy.isEmpty());
+    EXPECT_TRUE(rowsInsertedSpy.isEmpty());
+
+    EXPECT_EQ(CSL({{"banana", true}}), vpnList(*sortedVpnConnections));
+
+    OrgFreedesktopNetworkManagerInterface managerInterface(
+            NM_DBUS_SERVICE, NM_DBUS_PATH,
+            dbusTestRunner.systemConnection());
+    auto activeConnections = managerInterface.activeConnections();
+    EXPECT_EQ(QList<QDBusObjectPath>({QDBusObjectPath("/org/freedesktop/NetworkManager/ActiveConnection/0")}),
+              activeConnections);
+}
+
 
 }

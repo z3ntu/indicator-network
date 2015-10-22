@@ -35,6 +35,7 @@ DBusVpnConnection::DBusVpnConnection(VpnConnection::SPtr vpnConnection,
 
     new VpnConnectionAdaptor(this);
 
+    connect(m_vpnConnection.get(), &VpnConnection::idChanged, this, &DBusVpnConnection::idUpdated);
     connect(m_vpnConnection.get(), &VpnConnection::activeChanged, this, &DBusVpnConnection::activeUpdated);
 }
 
@@ -61,7 +62,7 @@ void DBusVpnConnection::setId(const QString& id)
     m_vpnConnection->setId(id);
 }
 
-void DBusVpnConnection::idUpdated(const QString& id)
+void DBusVpnConnection::idUpdated(const QString&)
 {
     notifyProperties({"id"});
 }

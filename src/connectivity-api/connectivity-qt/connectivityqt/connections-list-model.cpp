@@ -17,7 +17,7 @@
  *     Pete Woods <pete.woods@canonical.com>
  */
 
-#include <connectivityqt/internal/connections-list-model.h>
+#include <connectivityqt/connections-list-model.h>
 #include <connectivityqt/vpn-connection.h>
 
 #include <QDBusArgument>
@@ -29,8 +29,8 @@ using namespace std;
 
 namespace connectivityqt
 {
-namespace internal
-{
+
+using namespace internal;
 
 class ConnectionsListModel::Priv: public QObject
 {
@@ -108,13 +108,13 @@ public Q_SLOTS:
     void connectionIdChanged(const QString&)
     {
         auto idx = findVpnConnection(sender());
-        p.dataChanged(idx, idx, {internal::ConnectionsListModel::Roles::RoleId});
+        p.dataChanged(idx, idx, {ConnectionsListModel::Roles::RoleId});
     }
 
     void connectionActiveChanged(bool)
     {
         auto idx = findVpnConnection(sender());
-        p.dataChanged(idx, idx, {internal::ConnectionsListModel::Roles::RoleActive});
+        p.dataChanged(idx, idx, {ConnectionsListModel::Roles::RoleActive});
     }
 
     void propertyChanged(const QString& name, const QVariant& value)
@@ -175,7 +175,32 @@ QVariant ConnectionsListModel::data(const QModelIndex &index, int role) const
     return QVariant();
 }
 
+bool ConnectionsListModel::setData(const QModelIndex &index, const QVariant &value, int role)
+{
+    int row(index.row());
+    if (row < 0 || row >= d->m_vpnConnections.size())
+    {
+        return false;
+    }
+
+    auto vpnConnection = d->m_vpnConnections.value(row);
+
+    switch (role)
+    {
+        case Roles::RoleId:
+            vpnConnection->setId(value.toString());
+            break;
+        case Roles::RoleActive:
+            vpnConnection->setActive(value.toBool());
+            break;
+        default:
+            return false;
+        return true;
+    }
+
+    return false;
 }
+
 }
 
 #include "connections-list-model.moc"

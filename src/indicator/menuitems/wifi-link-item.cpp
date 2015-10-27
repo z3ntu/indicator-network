@@ -91,19 +91,11 @@ public:
         m_accessPointCompare = [](MenuItem::Ptr a, MenuItem::Ptr b){
             // order alphabetically by SSID
 
-            std::locale loc;
+            QString a_label = a->label();
+            QString b_label = b->label();
 
-            std::string a_label = a->label();
-            std::string b_label = b->label();
-
-            std::string a_upper;
-            std::string b_upper;
-
-            for (std::string::size_type i=0; i<a_label.length(); ++i)
-                a_upper += std::toupper(a_label[i], loc);
-
-            for (std::string::size_type i=0; i<b_label.length(); ++i)
-                b_upper += std::toupper(b_label[i], loc);
+            QString a_upper = a_label.toUpper();
+            QString b_upper = b_label.toUpper();
 
             return a_upper < b_upper;
         };

@@ -37,40 +37,45 @@ class MenuItem: public QObject
 
     GMenuItemPtr m_gmenuitem;
 
-    std::string m_label;
-    std::string m_action;
+    QString m_label;
+    QString m_action;
+    QString m_icon;
 
-    std::map<std::string, Variant> m_attributes;
+    std::map<QString, Variant> m_attributes;
 
 public:
     typedef std::shared_ptr<MenuItem> Ptr;
 
     static MenuItem::Ptr newSubmenu(MenuModel::Ptr submenu,
-                                    const std::string &label = "");
+                                    const QString &label = "");
 
     static MenuItem::Ptr newSection(MenuModel::Ptr submenu,
-                                    const std::string &label = "");
+                                    const QString &label = "");
 
-    explicit MenuItem(const std::string &label  = "",
-             const std::string &action = "");
+    explicit MenuItem(const QString &label  = "",
+             const QString &action = "");
 
     ~MenuItem();
 
-    std::string label();
+    QString label();
 
-    void setLabel(const std::string &value);
+    QString icon();
 
-    void setAction(const std::string &value);
-
-    void setAttribute(const std::string &attribute,
-                      Variant value);
-
-    void clearAttribute(const std::string &attribute);
+    void clearAttribute(const QString &attribute);
 
     GMenuItem *gmenuitem();
 
-    const std::string &
-    action () const;
+    const QString& action () const;
+
+public Q_SLOTS:
+    void setLabel(const QString &value);
+
+    void setIcon(const QString &icon);
+
+    void setAction(const QString &value);
+
+    void setAttribute(const QString &attribute,
+                      Variant value);
 
 Q_SIGNALS:
     void changed();

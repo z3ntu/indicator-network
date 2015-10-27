@@ -43,7 +43,7 @@ Action::change_state_cb(GSimpleAction *,
     Q_EMIT that->stateUpdated(new_value);
 }
 
-Action::Action(const std::string &name, const
+Action::Action(const QString &name, const
        GVariantType *parameterType,
        const Variant &state)
     : m_name {name}
@@ -51,11 +51,11 @@ Action::Action(const std::string &name, const
     /// @todo validate that name is valid.
 
     if (state) {
-        m_gaction = make_gaction_ptr(g_simple_action_new_stateful(name.c_str(),
+        m_gaction = make_gaction_ptr(g_simple_action_new_stateful(name.toUtf8().constData(),
                                                                   parameterType,
                                                                   state));
     } else {
-        m_gaction = make_gaction_ptr(g_simple_action_new(name.c_str(),
+        m_gaction = make_gaction_ptr(g_simple_action_new(name.toUtf8().constData(),
                                                          parameterType));
     }
 
@@ -79,7 +79,7 @@ Action::~Action()
     }
 }
 
-std::string
+QString
 Action::name()
 {
     return m_name;

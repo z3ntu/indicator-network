@@ -52,6 +52,9 @@ TEST_F(TestIndicator, BasicMenuContents)
             )
             .item(wifiEnableSwitch())
             .item(wifiSettings())
+            .item(mh::MenuItemMatcher()
+                .section()
+            )
         ).match());
 }
 
@@ -80,6 +83,9 @@ TEST_F(TestIndicator, OneDisconnectedAccessPointAtStartup)
                 )
             )
             .item(wifiSettings())
+            .item(mh::MenuItemMatcher()
+                .section()
+            )
         ).match());
 }
 
@@ -109,6 +115,9 @@ TEST_F(TestIndicator, OneConnectedAccessPointAtStartup)
                 )
             )
             .item(wifiSettings())
+            .item(mh::MenuItemMatcher()
+                .section()
+            )
         ).match());
 }
 
@@ -136,6 +145,9 @@ TEST_F(TestIndicator, AddOneDisconnectedAccessPointAfterStartup)
                 )
             )
             .item(wifiSettings())
+            .item(mh::MenuItemMatcher()
+                .section()
+            )
         ).match());
 }
 
@@ -166,6 +178,9 @@ TEST_F(TestIndicator, AddOneConnectedAccessPointAfterStartup)
                 )
             )
             .item(wifiSettings())
+            .item(mh::MenuItemMatcher()
+                .section()
+            )
         ).match());
 }
 
@@ -186,6 +201,9 @@ TEST_F(TestIndicator, SecondModem)
             )
             .item(wifiEnableSwitch())
             .item(wifiSettings())
+            .item(mh::MenuItemMatcher()
+                .section()
+            )
         ).match());
 }
 

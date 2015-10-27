@@ -35,6 +35,12 @@ namespace DBusTypes
         qDBusRegisterMetaType<QVariantDictMap>();
     }
 
+    static constexpr char const* WPASUPPLICANT_DBUS_NAME = "fi.w1.wpa_supplicant1";
+
+    static constexpr char const* WPASUPPLICANT_DBUS_INTERFACE = "fi.w1.wpa_supplicant1";
+
+    static constexpr char const* WPASUPPLICANT_DBUS_PATH = "/fi/w1/wpa_supplicant1";
+
     static constexpr char const* POWERD_DBUS_NAME = "com.canonical.powerd";
 
     static constexpr char const* POWERD_DBUS_INTERFACE = "com.canonical.powerd";

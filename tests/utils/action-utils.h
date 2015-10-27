@@ -26,13 +26,13 @@
 namespace testutils
 {
 
-std::string
-string_value (MenuItem::Ptr menuItem, const std::string &name);
+QString
+string_value (MenuItem::Ptr menuItem, const QString &name);
 
 bool
-bool_value (MenuItem::Ptr menuItem, const std::string &name);
+bool_value (MenuItem::Ptr menuItem, const QString &name);
 
 Action::Ptr
-findAction (ActionGroup::Ptr actionGroup, const std::string &name);
+findAction (ActionGroup::Ptr actionGroup, const QString &name);
 
 } /* namespace testutils */

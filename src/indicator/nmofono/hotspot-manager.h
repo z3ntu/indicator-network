@@ -24,6 +24,8 @@
 #include <QDBusConnection>
 #include <memory>
 
+#include <nmofono/connection/active-connection-manager.h>
+
  /**
  * HotspotManager API
  * ==============================
@@ -87,6 +89,9 @@
  *
  *     TODO: Complete support for adhoc and p2p modes.
  */
+namespace nmofono
+{
+
 class HotspotManager : public QObject
 {
     Q_OBJECT
@@ -127,7 +132,9 @@ class HotspotManager : public QObject
 public:
     typedef std::shared_ptr<HotspotManager> SPtr;
 
-    explicit HotspotManager(const QDBusConnection& connection, QObject *parent = nullptr);
+    explicit HotspotManager(connection::ActiveConnectionManager::SPtr activeConnectionManager,
+                            const QDBusConnection& connection,
+                            QObject *parent = nullptr);
 
     ~HotspotManager() = default;
 
@@ -185,3 +192,5 @@ private:
     class Priv;
     std::shared_ptr<Priv> d;
 };
+
+}

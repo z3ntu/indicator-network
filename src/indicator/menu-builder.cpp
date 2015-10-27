@@ -49,6 +49,7 @@ public:
     QuickAccessSection::Ptr m_quickAccessSection;
     WifiSection::Ptr m_wifiSection;
     WwanSection::Ptr m_wwanSection;
+    VpnSection::Ptr m_vpnSection;
 
     MenuExporter::UPtr m_desktopMenuExporter;
     MenuExporter::UPtr m_desktopGreeterMenuExporter;
@@ -126,6 +127,7 @@ MenuBuilder::MenuBuilder(nmofono::Manager::Ptr manager, Factory& factory) :
     d->m_quickAccessSection = factory.newQuickAccessSection(d->m_flightModeSwitch);
     d->m_wwanSection = factory.newWwanSection(d->m_hotspotSwitch);
     d->m_wifiSection = factory.newWiFiSection(d->m_wifiSwitch);
+    d->m_vpnSection = factory.newVpnSection();
 
     d->m_desktopMenu->addSection(d->m_quickAccessSection);
     d->m_desktopGreeterMenu->addSection(d->m_quickAccessSection);
@@ -141,6 +143,11 @@ MenuBuilder::MenuBuilder(nmofono::Manager::Ptr manager, Factory& factory) :
     d->m_desktopGreeterMenu->addSection(d->m_wifiSection);
     d->m_phoneMenu->addSection(d->m_wifiSection);
     d->m_phoneGreeterMenu->addSection(d->m_wifiSection);
+
+    d->m_desktopMenu->addSection(d->m_vpnSection);
+    d->m_desktopGreeterMenu->addSection(d->m_vpnSection);
+    d->m_phoneMenu->addSection(d->m_vpnSection);
+    d->m_phoneGreeterMenu->addSection(d->m_vpnSection);
 
     d->m_desktopMenuExporter = factory.newMenuExporter("/com/canonical/indicator/network/desktop", d->m_desktopMenu->menu());
     d->m_desktopGreeterMenuExporter = factory.newMenuExporter("/com/canonical/indicator/network/desktop_greeter", d->m_desktopGreeterMenu->menu());

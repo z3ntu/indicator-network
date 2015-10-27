@@ -21,14 +21,14 @@
 
 using namespace std;
 
-string
-testutils::string_value (MenuItem::Ptr menuItem, const string &name)
+QString
+testutils::string_value (MenuItem::Ptr menuItem, const QString &name)
 {
     char *attribute = NULL;
-    if (g_menu_item_get_attribute(menuItem->gmenuitem(), name.c_str(), "s",
+    if (g_menu_item_get_attribute(menuItem->gmenuitem(), name.toUtf8().constData(), "s",
                                   &attribute))
     {
-        string result = attribute;
+        QString result = QString::fromUtf8(attribute);
         g_free(attribute);
         return result;
     }
@@ -36,10 +36,10 @@ testutils::string_value (MenuItem::Ptr menuItem, const string &name)
 }
 
 bool
-testutils::bool_value (MenuItem::Ptr menuItem, const string &name)
+testutils::bool_value (MenuItem::Ptr menuItem, const QString &name)
 {
     gboolean result;
-    if (!g_menu_item_get_attribute(menuItem->gmenuitem(), name.c_str(), "b",
+    if (!g_menu_item_get_attribute(menuItem->gmenuitem(), name.toUtf8().constData(), "b",
                                    &result))
     {
         throw std::logic_error("could not get boolean attribute");
@@ -48,10 +48,10 @@ testutils::bool_value (MenuItem::Ptr menuItem, const string &name)
 }
 
 Action::Ptr
-testutils::findAction (ActionGroup::Ptr actionGroup, const string &name)
+testutils::findAction (ActionGroup::Ptr actionGroup, const QString &name)
 {
-    auto pos = name.find('.');
-    string shortName = name.substr(pos + 1);
+    auto pos = name.indexOf('.');
+    QString shortName = name.mid(pos + 1);
 
     ::Action::Ptr action;
     std::set< ::Action::Ptr> actions = actionGroup->actions();

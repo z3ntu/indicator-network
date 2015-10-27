@@ -32,7 +32,7 @@ public:
     Private() = default;
 
     RootState::Ptr m_rootState;
-    string m_prefix;
+    QString m_prefix;
 
     Action::Ptr m_rootAction;
     MenuItem::Ptr m_rootItem;
@@ -52,7 +52,7 @@ public Q_SLOTS:
     }
 };
 
-IndicatorMenu::IndicatorMenu(RootState::Ptr rootState, const string &prefix)
+IndicatorMenu::IndicatorMenu(RootState::Ptr rootState, const QString &prefix)
     : d(new Private)
 {
     d->m_rootState = rootState;

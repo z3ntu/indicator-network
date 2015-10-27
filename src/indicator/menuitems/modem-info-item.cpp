@@ -39,24 +39,24 @@ ModemInfoItem::ModemInfoItem()
     static int id = 0;
     ++id; /// @todo guard me.
 
-    std::string actionIdBase = "modem." + std::to_string(id);
+    QString actionIdBase = "modem." + QString::number(id);
 
-    std::string statusLabelActionId = actionIdBase + "::status-label";
-    std::string statusIconActionId = actionIdBase + "::status-icon";
-    std::string connectivityIconActionId = actionIdBase + "::connectivity-icon";
-    std::string simIdentifierActionId = actionIdBase + "::sim-identifier-label";
-    std::string roamingActionId = actionIdBase + "::roaming";
-    std::string lockedActionId = actionIdBase + "::locked";
+    QString statusLabelActionId = actionIdBase + "::status-label";
+    QString statusIconActionId = actionIdBase + "::status-icon";
+    QString connectivityIconActionId = actionIdBase + "::connectivity-icon";
+    QString simIdentifierActionId = actionIdBase + "::sim-identifier-label";
+    QString roamingActionId = actionIdBase + "::roaming";
+    QString lockedActionId = actionIdBase + "::locked";
 
     d->m_item = std::make_shared<MenuItem>();
 
     d->m_item->setAttribute("x-canonical-type", TypedVariant<std::string>("com.canonical.indicator.network.modeminfoitem"));
-    d->m_item->setAttribute("x-canonical-modem-status-label-action", TypedVariant<std::string>("indicator." + statusLabelActionId));
-    d->m_item->setAttribute("x-canonical-modem-status-icon-action", TypedVariant<std::string>("indicator." + statusIconActionId));
-    d->m_item->setAttribute("x-canonical-modem-connectivity-icon-action", TypedVariant<std::string>("indicator." +  connectivityIconActionId));
-    d->m_item->setAttribute("x-canonical-modem-sim-identifier-label-action", TypedVariant<std::string>("indicator." +  simIdentifierActionId));
-    d->m_item->setAttribute("x-canonical-modem-roaming-action", TypedVariant<std::string>("indicator." +  roamingActionId));
-    d->m_item->setAttribute("x-canonical-modem-locked-action", TypedVariant<std::string>("indicator." +  lockedActionId));
+    d->m_item->setAttribute("x-canonical-modem-status-label-action", TypedVariant<std::string>("indicator." + statusLabelActionId.toStdString()));
+    d->m_item->setAttribute("x-canonical-modem-status-icon-action", TypedVariant<std::string>("indicator." + statusIconActionId.toStdString()));
+    d->m_item->setAttribute("x-canonical-modem-connectivity-icon-action", TypedVariant<std::string>("indicator." +  connectivityIconActionId.toStdString()));
+    d->m_item->setAttribute("x-canonical-modem-sim-identifier-label-action", TypedVariant<std::string>("indicator." +  simIdentifierActionId.toStdString()));
+    d->m_item->setAttribute("x-canonical-modem-roaming-action", TypedVariant<std::string>("indicator." +  roamingActionId.toStdString()));
+    d->m_item->setAttribute("x-canonical-modem-locked-action", TypedVariant<std::string>("indicator." +  lockedActionId.toStdString()));
 
 
 

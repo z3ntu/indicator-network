@@ -30,9 +30,17 @@ struct Factory::Private
 {
     shared_ptr<nmofono::Manager> m_nmofono;
 
+    nmofono::vpn::VpnManager::SPtr m_vpnManager;
+
+    nmofono::connection::ActiveConnectionManager::SPtr m_activeConnectionManager;
+
     SessionBus::Ptr m_sessionBus;
 
     notify::NotificationManager::SPtr m_notificationManager;
+
+    nmofono::KillSwitch::Ptr m_killSwitch;
+
+    nmofono::HotspotManager::SPtr m_hotspotManager;
 
     notify::NotificationManager::SPtr singletonNotificationManager()
     {
@@ -41,6 +49,26 @@ struct Factory::Private
             m_notificationManager = make_shared<notify::NotificationManager>(GETTEXT_PACKAGE);
         }
         return m_notificationManager;
+    }
+
+    nmofono::KillSwitch::Ptr singletonKillSwitch()
+    {
+        if (!m_killSwitch)
+        {
+            m_killSwitch = make_shared<nmofono::KillSwitch>(QDBusConnection::systemBus());
+        }
+        return m_killSwitch;
+    }
+
+    nmofono::HotspotManager::SPtr singletonHotspotManager()
+    {
+        if (!m_hotspotManager)
+        {
+            m_hotspotManager = make_shared<nmofono::HotspotManager>(
+                    singletonActiveConnectionManager(),
+                    QDBusConnection::systemBus());
+        }
+        return m_hotspotManager;
     }
 
     SessionBus::Ptr singletonSessionBus()
@@ -58,9 +86,31 @@ struct Factory::Private
         {
             m_nmofono = make_shared<nmofono::ManagerImpl>(
                     singletonNotificationManager(),
+                    singletonKillSwitch(),
+                    singletonHotspotManager(),
                     QDBusConnection::systemBus());
         }
         return m_nmofono;
+    }
+
+    shared_ptr<nmofono::connection::ActiveConnectionManager> singletonActiveConnectionManager()
+    {
+        if (!m_activeConnectionManager)
+        {
+            m_activeConnectionManager = make_shared<nmofono::connection::ActiveConnectionManager>(
+                    QDBusConnection::systemBus());
+        }
+        return m_activeConnectionManager;
+    }
+
+    shared_ptr<nmofono::vpn::VpnManager> singletonVpnManager()
+    {
+        if (!m_vpnManager)
+        {
+            m_vpnManager = make_shared<nmofono::vpn::VpnManager>(
+                    singletonActiveConnectionManager(), QDBusConnection::systemBus());
+        }
+        return m_vpnManager;
     }
 };
 
@@ -88,7 +138,7 @@ unique_ptr<RootState> Factory::newRootState()
     return make_unique<RootState>(d->singletonNmofono());
 }
 
-unique_ptr<IndicatorMenu> Factory::newIndicatorMenu(RootState::Ptr rootState, const string &prefix)
+unique_ptr<IndicatorMenu> Factory::newIndicatorMenu(RootState::Ptr rootState, const QString &prefix)
 {
     return make_unique<IndicatorMenu>(rootState, prefix);
 }
@@ -106,6 +156,11 @@ unique_ptr<QuickAccessSection> Factory::newQuickAccessSection(SwitchItem::Ptr fl
 unique_ptr<WwanSection> Factory::newWwanSection(SwitchItem::Ptr hotspotSwitch)
 {
     return make_unique<WwanSection>(d->singletonNmofono(), hotspotSwitch);
+}
+
+unique_ptr<VpnSection> Factory::newVpnSection()
+{
+    return make_unique<VpnSection>(d->singletonVpnManager());
 }
 
 unique_ptr<WifiSection> Factory::newWiFiSection(SwitchItem::Ptr wifiSwitch)

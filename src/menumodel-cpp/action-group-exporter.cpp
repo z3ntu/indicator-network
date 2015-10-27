@@ -81,7 +81,7 @@ void ActionGroupExporter::actionAdded(Action::Ptr action)
 void ActionGroupExporter::actionRemoved(Action::Ptr action)
 {
     g_action_map_remove_action(G_ACTION_MAP(m_gSimpleActionGroup.get()),
-                                       action->name().c_str());
+                                       action->name().toUtf8().constData());
 }
 
 void ActionGroupExporter::waitForFirstSignalEmission()

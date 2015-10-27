@@ -18,10 +18,12 @@
  */
 
 #include "menu-item.h"
+#include <QDebug>
 
+using namespace std;
 
 MenuItem::Ptr MenuItem::newSubmenu(MenuModel::Ptr submenu,
-                                const std::string &label)
+                                const QString &label)
 {
     auto menu = std::make_shared<MenuItem>(label);
     g_menu_item_set_submenu(menu->m_gmenuitem.get(), *submenu);
@@ -29,25 +31,25 @@ MenuItem::Ptr MenuItem::newSubmenu(MenuModel::Ptr submenu,
 }
 
 MenuItem::Ptr MenuItem::newSection(MenuModel::Ptr submenu,
-                                const std::string &label)
+                                const QString &label)
 {
     auto menu = std::make_shared<MenuItem>(label);
     g_menu_item_set_section(menu->m_gmenuitem.get(), *submenu);
     return menu;
 }
 
-MenuItem::MenuItem(const std::string &label,
-         const std::string &action)
+MenuItem::MenuItem(const QString &label,
+         const QString &action)
     : m_label{label},
       m_action{action}
 {
     /// @todo validate that action is valid
     m_gmenuitem = make_gmenuitem_ptr(g_menu_item_new(nullptr, nullptr));
-    if (!label.empty()) {
-        g_menu_item_set_label(m_gmenuitem.get(), label.c_str());
+    if (!label.isEmpty()) {
+        g_menu_item_set_label(m_gmenuitem.get(), label.toUtf8().constData());
     }
-    if (!action.empty()) {
-        g_menu_item_set_detailed_action(m_gmenuitem.get(), action.c_str());
+    if (!action.isEmpty()) {
+        g_menu_item_set_detailed_action(m_gmenuitem.get(), action.toUtf8().constData());
     }
 }
 
@@ -55,36 +57,57 @@ MenuItem::~MenuItem()
 {
 }
 
-std::string MenuItem::label()
+QString MenuItem::label()
 {
     return m_label;
 }
 
-void MenuItem::setLabel(const std::string &value)
+void MenuItem::setLabel(const QString &value)
 {
     if (m_label == value)
         return;
     m_label = value;
-    g_menu_item_set_label(m_gmenuitem.get(), m_label.c_str());
+    g_menu_item_set_label(m_gmenuitem.get(), m_label.toUtf8().constData());
     Q_EMIT changed();
 }
 
-void MenuItem::setAction(const std::string &value)
+void MenuItem::setIcon(const QString &icon)
+{
+    if (m_icon == icon)
+    {
+        return;
+    }
+    m_icon = icon;
+
+    GError *error = nullptr;
+    auto gicon = shared_ptr<GIcon>(g_icon_new_for_string(m_icon.toUtf8().constData(), &error), GObjectDeleter());
+    if (error)
+    {
+        qWarning() << __PRETTY_FUNCTION__ << error->message;
+        g_error_free(error);
+        return;
+    }
+
+    g_menu_item_set_icon(m_gmenuitem.get(), gicon.get());
+    Q_EMIT changed();
+}
+
+void MenuItem::setAction(const QString &value)
 {
     /// @todo validate that action is valid
     if (m_action == value)
         return;
     m_action = value;
-    g_menu_item_set_detailed_action(m_gmenuitem.get(), m_action.c_str());
+    g_menu_item_set_detailed_action(m_gmenuitem.get(), m_action.toUtf8().constData());
     Q_EMIT changed();
 }
 
-void MenuItem::setAttribute(const std::string &attribute,
+void MenuItem::setAttribute(const QString &attribute,
                   Variant value)
 {
     /// @todo validate that attribute is valid.
     assert(value);
-    assert(!attribute.empty());
+    assert(!attribute.isEmpty());
 
     auto iter = m_attributes.find(attribute);
     if (iter != m_attributes.end()) {
@@ -94,15 +117,15 @@ void MenuItem::setAttribute(const std::string &attribute,
     } else {
         m_attributes[attribute] = value;
     }
-    g_menu_item_set_attribute_value(m_gmenuitem.get(), attribute.c_str(), value);
+    g_menu_item_set_attribute_value(m_gmenuitem.get(), attribute.toUtf8().constData(), value);
     Q_EMIT changed();
 }
 
-void MenuItem::clearAttribute(const std::string &attribute)
+void MenuItem::clearAttribute(const QString &attribute)
 {
-    assert(!attribute.empty());
+    assert(!attribute.isEmpty());
     m_attributes.erase(attribute);
-    g_menu_item_set_attribute(m_gmenuitem.get(), attribute.c_str(), nullptr);
+    g_menu_item_set_attribute(m_gmenuitem.get(), attribute.toUtf8().constData(), nullptr);
     Q_EMIT changed();
 }
 
@@ -112,7 +135,7 @@ MenuItem::gmenuitem()
     return m_gmenuitem.get();
 }
 
-const std::string &
+const QString &
 MenuItem::action () const
 {
     return m_action;

@@ -23,6 +23,7 @@
 #include "menumodel-cpp/menu-item.h"
 #include "menumodel-cpp/gio-helpers/variant.h"
 
+using namespace std;
 using namespace nmofono;
 
 #include <vector>
@@ -47,12 +48,12 @@ public:
           m_isActive{isActive}
     {
         static int id = 0;
-        ++id; /// @todo guard me.
+        ++id;
 
-        std::string actionId = "accesspoint." + std::to_string(id);
-        std::string strengthActionId = actionId + "::strength";
+        QString actionId = "accesspoint." + QString::number(id);
+        QString strengthActionId = actionId + "::strength";
 
-        m_item = std::make_shared<MenuItem>(m_accessPoint->ssid().toStdString(),
+        m_item = make_shared<MenuItem>(m_accessPoint->ssid(),
                                             "indicator." + actionId);
 
 
@@ -61,7 +62,7 @@ public:
         m_item->setAttribute("x-canonical-wifi-ap-is-adhoc", TypedVariant<bool>(m_accessPoint->adhoc()));
         m_item->setAttribute("x-canonical-wifi-ap-is-secure", TypedVariant<bool>(m_accessPoint->secured()));
         m_item->setAttribute("x-canonical-wifi-ap-is-enterprise", TypedVariant<bool>(m_accessPoint->enterprise()));
-        m_item->setAttribute("x-canonical-wifi-ap-strength-action", TypedVariant<std::string>("indicator." + strengthActionId));
+        m_item->setAttribute("x-canonical-wifi-ap-strength-action", TypedVariant<std::string>(("indicator." + strengthActionId).toStdString()));
 
         m_actionStrength = std::make_shared<Action>(strengthActionId,
                                                     nullptr,

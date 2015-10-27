@@ -78,7 +78,6 @@ public:
     shared_ptr<OrgFreedesktopNetworkManagerConnectionActiveInterface> m_activeConnection;
     unique_ptr<QMetaObject::Connection> m_signalStrengthConnection;
     bool m_connecting = false;
-    bool m_hideAccessPoints = false;
     bool m_disconnectWifi = false;
 
     void setStatus(Status status)
@@ -305,7 +304,7 @@ public Q_SLOTS:
             m_groupedAccessPoints.insert(i.second);
         }
 
-        if (m_hideAccessPoints)
+        if (m_disconnectWifi)
         {
             Q_EMIT p.accessPointsUpdated(QSet<AccessPoint::Ptr>());
         }
@@ -329,7 +328,7 @@ public Q_SLOTS:
     {
         Signal signal = Signal::disconnected;
 
-        if (m_activeAccessPoint && !m_hideAccessPoints)
+        if (m_activeAccessPoint && !m_disconnectWifi)
         {
             double strength = m_activeAccessPoint->strength();
             bool secured  = m_activeAccessPoint->secured();
@@ -439,7 +438,7 @@ WifiLink::Signal WifiLinkImpl::signal() const
 
 QSet<AccessPoint::Ptr>
 WifiLinkImpl::accessPoints() const {
-    if (d->m_hideAccessPoints)
+    if (d->m_disconnectWifi)
     {
         return QSet<AccessPoint::Ptr>();
     }
@@ -535,25 +534,14 @@ QDBusObjectPath WifiLinkImpl::device_path() const {
 }
 
 void
-WifiLinkImpl::setHideAccessPoints(bool hide)
-{
-    if (hide == d->m_hideAccessPoints)
-    {
-        return;
-    }
-
-    d->m_hideAccessPoints = hide;
-    d->update_grouped_access_points();
-    d->strengthUpdated();
-}
-
-void
 WifiLinkImpl::setDisconnectWifi(bool disconnect)
 {
     if (disconnect == d->m_disconnectWifi)
     {
         return;
     }
+
+    d->m_disconnectWifi = disconnect;
 
     d->m_dev->setAutoconnect(!disconnect);
     if (disconnect && d->m_activeConnection)
@@ -562,6 +550,9 @@ WifiLinkImpl::setDisconnectWifi(bool disconnect)
         d->m_nm->DeactivateConnection(
                 QDBusObjectPath(d->m_activeConnection->path()));
     }
+
+    d->update_grouped_access_points();
+    d->strengthUpdated();
 }
 
 }

@@ -23,6 +23,7 @@
 #include <menumodel-cpp/menu-item.h>
 
 #include <QObject>
+#include <QString>
 
 class SwitchItem : public Item
 {
@@ -34,7 +35,7 @@ public:
 
     SwitchItem() = delete;
     virtual  ~SwitchItem() = default;
-    SwitchItem(const std::string &label, const std::string &prefix, const std::string &name);
+    SwitchItem(const QString &label, const QString &prefix, const QString &name);
 
     virtual MenuItem::Ptr menuItem();
 

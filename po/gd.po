@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-09-03 10:50+0100\n"
-"PO-Revision-Date: 2015-09-03 15:46+0000\n"
+"PO-Revision-Date: 2015-10-26 09:30+0000\n"
 "Last-Translator: Pete Woods <Unknown>\n"
 "Language-Team: Fòram na Gàidhlig\n"
 "MIME-Version: 1.0\n"
@@ -16,8 +16,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=4; plural=(n==1 || n==11) ? 0 : (n==2 || n==12) ? 1 : "
 "(n > 2 && n < 20) ? 2 : 3;\n"
-"X-Launchpad-Export-Date: 2015-09-19 05:42+0000\n"
-"X-Generator: Launchpad (build 17746)\n"
+"X-Launchpad-Export-Date: 2015-10-28 06:11+0000\n"
+"X-Generator: Launchpad (build 17833)\n"
 "Language: gd\n"
 
 #: ../src/indicator/sim-unlock-dialog.cpp:144
@@ -197,7 +197,7 @@ msgstr "Am modh itealain"
 #. TODO Move this into a new class
 #: ../src/indicator/factory.cpp:152
 msgid "Hotspot"
-msgstr ""
+msgstr "Spot-teth"
 
 #: ../src/indicator/sections/wifi-section.cpp:65
 msgid "Wi-Fi settings…"

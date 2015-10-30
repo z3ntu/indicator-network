@@ -1,208 +1,196 @@
-# Gaelic; Scottish translation for indicator-network
-# Copyright (c) 2014 Rosetta Contributors and Canonical Ltd 2014
+# Wolof translation for indicator-network
+# Copyright (c) 2015 Rosetta Contributors and Canonical Ltd 2015
 # This file is distributed under the same license as the indicator-network package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2014.
-# GunChleoc <fios@foramnagaidhlig.net>, 2014.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2015.
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: indicator-network\n"
-"Report-Msgid-Bugs-To: \n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2015-09-03 10:50+0100\n"
-"PO-Revision-Date: 2015-10-26 09:30+0000\n"
-"Last-Translator: Pete Woods <Unknown>\n"
-"Language-Team: Fòram na Gàidhlig\n"
+"PO-Revision-Date: 2015-10-29 16:32+0000\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Wolof <wo@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=4; plural=(n==1 || n==11) ? 0 : (n==2 || n==12) ? 1 : "
-"(n > 2 && n < 20) ? 2 : 3;\n"
-"X-Launchpad-Export-Date: 2015-10-28 06:11+0000\n"
-"X-Generator: Launchpad (build 17833)\n"
-"Language: gd\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Launchpad-Export-Date: 2015-10-30 05:37+0000\n"
+"X-Generator: Launchpad (build 17838)\n"
 
 #: ../src/indicator/sim-unlock-dialog.cpp:144
 msgid "Sorry, incorrect %{1} PIN."
-msgstr "Duilich ach tha a' PIN airson %{1} cearr."
+msgstr ""
 
 #: ../src/indicator/sim-unlock-dialog.cpp:149
 #: ../src/indicator/sim-unlock-dialog.cpp:178
 msgid "This will be your last attempt."
-msgstr "Seo an oidhirp mu dheireadh agad."
+msgstr ""
 
 #: ../src/indicator/sim-unlock-dialog.cpp:151
 msgid ""
 "If %{1} PIN is entered incorrectly you will require your PUK code to unlock."
 msgstr ""
-"Mur cuir thu a' PIN airson %{1} a-steach mar bu chòir, bidh feum agad air a' "
-"PUK agad gus a' ghlas a thoirt dheth."
 
 #: ../src/indicator/sim-unlock-dialog.cpp:161
 msgid "Sorry, your %{1} is now blocked."
-msgstr "Duilich ach tha a' %{1} agad glaiste a-nis."
+msgstr ""
 
 #: ../src/indicator/sim-unlock-dialog.cpp:166
 msgid "Please enter your PUK code to unblock SIM card."
 msgstr ""
-"Cuir a-steach an còd PUK agad gus a' ghlas a thoirt far na cairt SIM."
 
 #: ../src/indicator/sim-unlock-dialog.cpp:168
 msgid "You may need to contact your network provider for PUK code."
 msgstr ""
-"Dh'fhaoidte gum feum thu fios a chur gu solaraiche an lìonraidh agad airson "
-"a' chòd PUK agad."
 
 #: ../src/indicator/sim-unlock-dialog.cpp:176
 #: ../src/indicator/sim-unlock-dialog.cpp:190
 msgid "Sorry, incorrect PUK."
-msgstr "Duilich ach tha a' PUK cearr."
+msgstr ""
 
 #: ../src/indicator/sim-unlock-dialog.cpp:180
 msgid ""
 "If PUK code is entered incorrectly, your SIM card will be blocked and needs "
 "replacement."
 msgstr ""
-"Mur cuir thu an còd PUK a-steach mar bu chòir, thèid a' chairt SIM agad a "
-"ghlasadh 's feumaidh tu tè ùr fhaighinn."
 
 #: ../src/indicator/sim-unlock-dialog.cpp:182
 msgid "Please contact your network provider."
-msgstr "Cuir fios gu solaraiche an lìonraidh agad."
+msgstr ""
 
 #: ../src/indicator/sim-unlock-dialog.cpp:192
 msgid "Your SIM card is now permanently blocked and needs replacement."
 msgstr ""
-"Tha a' chairt SIM agad glaiste gu buan a-nis 's feumaidh tu tè ùr fhaighinn."
 
 #: ../src/indicator/sim-unlock-dialog.cpp:194
 msgid "Please contact your service provider."
-msgstr "Cuir fios gu solaraiche an t-seirbheis agad."
+msgstr ""
 
 #: ../src/indicator/sim-unlock-dialog.cpp:218
 msgid "Sorry, incorrect PIN"
-msgstr "Duilich ach tha a' PIN cearr"
+msgstr ""
 
 #: ../src/indicator/sim-unlock-dialog.cpp:230
 msgid "Sorry, incorrect PUK"
-msgstr "Duilich ach tha a' PUK cearr"
+msgstr ""
 
 #: ../src/indicator/sim-unlock-dialog.cpp:292
 msgid "Enter %{1} PIN"
-msgstr "Cuir a-steach a' PIN airson %{1}"
+msgstr ""
 
 #: ../src/indicator/sim-unlock-dialog.cpp:300
 msgid "Enter PUK code"
-msgstr "Cuir a-steach an còd PUK"
+msgstr ""
 
 #: ../src/indicator/sim-unlock-dialog.cpp:304
 msgid "Enter PUK code for %{1}"
-msgstr "Cuir a-steach an còd PUK airson %{1}"
+msgstr ""
 
 #: ../src/indicator/sim-unlock-dialog.cpp:315
 #, c-format
 msgid "1 attempt remaining"
 msgid_plural "%d attempts remaining"
-msgstr[0] "%d oidhirp air fhàgail"
-msgstr[1] "%d oidhirp air fhàgail"
-msgstr[2] "%d oidhirpean air fhàgail"
-msgstr[3] "%d oidhirp air fhàgail"
+msgstr[0] ""
+msgstr[1] ""
 
 #: ../src/indicator/sim-unlock-dialog.cpp:326
 msgid "Enter new %{1} PIN"
-msgstr "Cuir a-steach a' PIN ùr airson %{1}"
+msgstr ""
 
 #: ../src/indicator/sim-unlock-dialog.cpp:334
 msgid "Confirm new %{1} PIN"
-msgstr "Dearbhaich a' PIN ùr airson %{1}"
+msgstr ""
 
 #: ../src/indicator/sim-unlock-dialog.cpp:373
 msgid "PIN codes did not match."
-msgstr "Cha robh an dà chòd PIN co-ionnann"
+msgstr ""
 
 #: ../src/indicator/agent/SecretRequest.cpp:61
 msgid "Connect to “%1”"
-msgstr "Ceangail ri \"%1\""
+msgstr ""
 
 #: ../src/indicator/agent/SecretRequest.cpp:66
 msgid "WPA"
-msgstr "WPA"
+msgstr ""
 
 #: ../src/indicator/agent/SecretRequest.cpp:68
 msgid "WEP"
-msgstr "WEP"
+msgstr ""
 
 #: ../src/indicator/agent/SecretRequest.cpp:74
 msgid "Connect"
-msgstr "Ceangail"
+msgstr ""
 
 #: ../src/indicator/agent/SecretRequest.cpp:75
 msgid "Cancel"
-msgstr "Sguir dheth"
+msgstr ""
 
 #. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
 #: ../src/indicator/root-state.cpp:306
 msgid "Network"
-msgstr "Lìonra"
+msgstr ""
 
 #: ../src/indicator/menuitems/wwan-link-item.cpp:90
 msgid "No SIM"
-msgstr "Gun SIM"
+msgstr ""
 
 #: ../src/indicator/menuitems/wwan-link-item.cpp:97
 msgid "SIM Error"
-msgstr "Mearachd SIM"
+msgstr ""
 
 #: ../src/indicator/menuitems/wwan-link-item.cpp:105
 msgid "SIM Locked"
-msgstr "SIM glaiste"
+msgstr ""
 
 #: ../src/indicator/menuitems/wwan-link-item.cpp:118
 msgid "Unregistered"
-msgstr "Gun chlàradh"
+msgstr ""
 
 #: ../src/indicator/menuitems/wwan-link-item.cpp:123
 msgid "Unknown"
-msgstr "Neo-aithnichte"
+msgstr ""
 
 #: ../src/indicator/menuitems/wwan-link-item.cpp:128
 msgid "Denied"
-msgstr "Air a dhiùltadh"
+msgstr ""
 
 #: ../src/indicator/menuitems/wwan-link-item.cpp:133
 msgid "Searching"
-msgstr "'Ga lorg"
+msgstr ""
 
 #: ../src/indicator/menuitems/wwan-link-item.cpp:145
 msgid "No Signal"
-msgstr "Gun siognal"
+msgstr ""
 
 #: ../src/indicator/menuitems/wwan-link-item.cpp:157
 #: ../src/indicator/menuitems/wwan-link-item.cpp:164
 msgid "Offline"
-msgstr "Far loidhne"
+msgstr ""
 
-#: ../src/indicator/menuitems/wifi-link-item.cpp:117
+#: ../src/indicator/menuitems/wifi-link-item.cpp:109
 msgid "Other network…"
-msgstr "Lìonra eile..."
+msgstr ""
 
 #. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:130
+#: ../src/indicator/factory.cpp:185
 msgid "Wi-Fi"
-msgstr "WiFi"
+msgstr ""
 
 #. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:141
+#: ../src/indicator/factory.cpp:196
 msgid "Flight Mode"
-msgstr "Am modh itealain"
+msgstr ""
 
 #. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:152
+#: ../src/indicator/factory.cpp:207
 msgid "Hotspot"
-msgstr "Spot-teth"
+msgstr ""
 
 #: ../src/indicator/sections/wifi-section.cpp:65
 msgid "Wi-Fi settings…"
-msgstr "Roghainnean WiFi…"
+msgstr ""
 
 #: ../src/indicator/sections/wwan-section.cpp:99
 msgid "Cellular settings…"
-msgstr "Roghainnean ceangal fòn-làimhe..."
+msgstr ""

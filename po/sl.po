@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-03 10:50+0100\n"
+"POT-Creation-Date: 2015-09-15 17:40+0100\n"
 "PO-Revision-Date: 2015-09-03 15:48+0000\n"
 "Last-Translator: Pete Woods <Unknown>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -16,8 +16,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=4; plural=(n%100==1 ? 1 : n%100==2 ? 2 : n%100==3 || "
 "n%100==4 ? 3 : 0);\n"
-"X-Launchpad-Export-Date: 2015-09-19 05:42+0000\n"
-"X-Generator: Launchpad (build 17746)\n"
+"X-Launchpad-Export-Date: 2015-10-31 05:37+0000\n"
+"X-Generator: Launchpad (build 17838)\n"
 "Language: sl\n"
 
 #: ../src/indicator/sim-unlock-dialog.cpp:144
@@ -175,22 +175,22 @@ msgstr "Brez signala"
 msgid "Offline"
 msgstr "Nepovezano"
 
-#: ../src/indicator/menuitems/wifi-link-item.cpp:117
+#: ../src/indicator/menuitems/wifi-link-item.cpp:109
 msgid "Other network…"
 msgstr "Druga omrežja ..."
 
 #. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:130
+#: ../src/indicator/factory.cpp:159
 msgid "Wi-Fi"
 msgstr "Wi-Fi"
 
 #. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:141
+#: ../src/indicator/factory.cpp:170
 msgid "Flight Mode"
 msgstr "Način letenja"
 
 #. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:152
+#: ../src/indicator/factory.cpp:181
 msgid "Hotspot"
 msgstr ""
 
@@ -201,3 +201,7 @@ msgstr "Nastavitve Wi-Fi ..."
 #: ../src/indicator/sections/wwan-section.cpp:99
 msgid "Cellular settings…"
 msgstr "Nastavitve mobilnega omrežja ..."
+
+#: ../src/indicator/sections/vpn-section.cpp:124
+msgid "VPN settings…"
+msgstr ""

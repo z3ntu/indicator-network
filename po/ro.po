@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-03 10:50+0100\n"
+"POT-Creation-Date: 2015-09-15 17:40+0100\n"
 "PO-Revision-Date: 2015-09-03 09:50+0000\n"
 "Last-Translator: Marian Vasile <marianvasile1972@gmail.com>\n"
 "Language-Team: Romanian <ro@li.org>\n"
@@ -16,8 +16,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n == 1 ? 0: (((n % 100 > 19) || ((n % 100 "
 "== 0) && (n != 0))) ? 2: 1));\n"
-"X-Launchpad-Export-Date: 2015-09-19 05:42+0000\n"
-"X-Generator: Launchpad (build 17746)\n"
+"X-Launchpad-Export-Date: 2015-10-31 05:37+0000\n"
+"X-Generator: Launchpad (build 17838)\n"
 "Language: ro\n"
 
 #: ../src/indicator/sim-unlock-dialog.cpp:144
@@ -176,22 +176,22 @@ msgstr "Niciun semnal"
 msgid "Offline"
 msgstr "Deconectat"
 
-#: ../src/indicator/menuitems/wifi-link-item.cpp:117
+#: ../src/indicator/menuitems/wifi-link-item.cpp:109
 msgid "Other network…"
 msgstr "Alte rețele..."
 
 #. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:130
+#: ../src/indicator/factory.cpp:159
 msgid "Wi-Fi"
 msgstr "Rețea fără fir"
 
 #. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:141
+#: ../src/indicator/factory.cpp:170
 msgid "Flight Mode"
 msgstr "Mod avion"
 
 #. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:152
+#: ../src/indicator/factory.cpp:181
 msgid "Hotspot"
 msgstr ""
 
@@ -202,3 +202,7 @@ msgstr "Configurări rețea fără fir..."
 #: ../src/indicator/sections/wwan-section.cpp:99
 msgid "Cellular settings…"
 msgstr "Configurări gsm..."
+
+#: ../src/indicator/sections/vpn-section.cpp:124
+msgid "VPN settings…"
+msgstr ""

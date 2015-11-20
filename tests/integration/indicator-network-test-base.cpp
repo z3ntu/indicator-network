@@ -26,7 +26,7 @@ using namespace QtDBusTest;
 using namespace QtDBusMock;
 using namespace std;
 using namespace testing;
-namespace mh = menuharness;
+namespace mh = unity::gmenuharness;
 
 IndicatorNetworkTestBase::IndicatorNetworkTestBase() :
     dbusMock(dbusTestRunner)
@@ -585,6 +585,6 @@ mh::MenuItemMatcher IndicatorNetworkTestBase::vpnConnection(const string& name, 
 {
     return mh::MenuItemMatcher::checkbox()
         .label(name)
-        .icon("network-vpn")
+        .themed_icon("icon", {"network-vpn"})
         .toggled(connected == ConnectionStatus::connected);
 }

@@ -24,7 +24,7 @@
 
 using namespace std;
 using namespace testing;
-namespace mh = menuharness;
+namespace mh = unity::gmenuharness;
 
 namespace
 {

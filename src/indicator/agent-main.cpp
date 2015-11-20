@@ -58,8 +58,7 @@ main(int argc, char **argv)
     }
 
     Factory factory;
-    auto menu = factory.newMenuBuilder();
-    auto connectivityService = factory.newConnectivityService();
+    auto secretAgent = factory.newSecretAgent();
 
     return app.exec();
 }

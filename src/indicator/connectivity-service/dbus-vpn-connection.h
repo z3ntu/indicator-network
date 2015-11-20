@@ -57,11 +57,14 @@ public:
 
     QDBusObjectPath path() const;
 
-protected Q_SLOTS:
+Q_SIGNALS:
     void setActive(bool active);
 
     void setId(const QString& id);
 
+    void UpdateSecrets();
+
+protected Q_SLOTS:
     void activeUpdated(bool active);
 
     void idUpdated(const QString& id);

@@ -24,6 +24,7 @@
 #include <NetworkingStatusAdaptor.h>
 #include <NetworkingStatusPrivateAdaptor.h>
 #include <dbus-types.h>
+#include <util/dbus-utils.h>
 
 using namespace nmofono;
 using namespace nmofono::vpn;
@@ -59,7 +60,7 @@ public:
 
     void notifyProperties(const QStringList& propertyNames)
     {
-        DBusTypes::notifyPropertyChanged(
+        DBusUtils::notifyPropertyChanged(
             m_connection,
             p,
             DBusTypes::SERVICE_PATH,
@@ -68,9 +69,14 @@ public:
         );
     }
 
+    void flushProperties()
+    {
+        DBusUtils::flushPropertyChanges();
+    }
+
     void notifyPrivateProperties(const QStringList& propertyNames)
     {
-        DBusTypes::notifyPropertyChanged(
+        DBusUtils::notifyPropertyChanged(
             m_connection,
             *m_privateService,
             DBusTypes::PRIVATE_PATH,
@@ -103,6 +109,7 @@ public Q_SLOTS:
             "WifiSwitchEnabled",
             "HotspotSwitchEnabled"
         });
+        flushProperties();
     }
 
     void hotspotSsidUpdated()
@@ -225,7 +232,7 @@ public Q_SLOTS:
                     vpnConnection = make_shared<DBusOpenvpnConnection>(vpn, m_connection);
                     break;
                 case VpnConnection::Type::pptp:
-                    vpnConnection = make_shared<DBusOpenvpnConnection>(vpn, m_connection);
+                    // TODO pptp
                     break;
             }
             if (vpnConnection)

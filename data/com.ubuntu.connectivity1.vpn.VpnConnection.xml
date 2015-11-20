@@ -3,6 +3,9 @@
 <node name="/com/ubuntu/connectivity1/Connection" xmlns:tp="http://telepathy.freedesktop.org/wiki/DbusSpec#extensions-v0">
     <interface name="com.ubuntu.connectivity1.vpn.VpnConnection">
 
+        <method name="UpdateSecrets">
+        </method>
+
         <property name="type" type="i" access="read"/>
 
         <property name="id" type="s" access="readwrite"/>

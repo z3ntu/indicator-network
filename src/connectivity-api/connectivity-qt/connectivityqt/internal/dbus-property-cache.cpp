@@ -58,9 +58,10 @@ public:
     {
         for(const QString& name: names)
         {
-            QDBusVariant value = m_propertiesInterface->Get(m_interface, name);
-            m_propertyCache[name] = value.variant();
-            Q_EMIT p.propertyChanged(name, value.variant());
+            QDBusVariant v = m_propertiesInterface->Get(m_interface, name);
+            QVariant variant = v.variant();
+            m_propertyCache[name] = variant;
+            Q_EMIT p.propertyChanged(name, variant);
         }
     }
 
@@ -142,7 +143,12 @@ DBusPropertyCache::~DBusPropertyCache()
 {
 }
 
-QVariant DBusPropertyCache::get(const QString& name)
+void DBusPropertyCache::set(const QString& name, const QVariant& value)
+{
+    d->m_propertiesInterface->Set(d->m_interface, name, QDBusVariant(value));
+}
+
+QVariant DBusPropertyCache::get(const QString& name) const
 {
     return d->m_propertyCache[name];
 }

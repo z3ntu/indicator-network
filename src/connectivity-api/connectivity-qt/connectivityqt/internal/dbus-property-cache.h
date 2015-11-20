@@ -43,7 +43,9 @@ public:
 
     ~DBusPropertyCache();
 
-    QVariant get(const QString& name);
+    void set(const QString& name, const QVariant& value);
+
+    QVariant get(const QString& name) const;
 
     bool isInitialized() const;
 

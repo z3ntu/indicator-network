@@ -35,6 +35,26 @@ install (
 )
 
 ###########################
+# indicator-network-secret-agent upstart job
+###########################
+
+set(
+  AGENT_SERVICE
+  "${CMAKE_INSTALL_FULL_LIBEXECDIR}/indicator-network/indicator-network-secret-agent"
+)
+
+configure_file (
+  indicator-network-secret-agent.conf.in
+  indicator-network-secret-agent.conf
+  @ONLY
+)
+
+install (
+  FILES "${CMAKE_CURRENT_BINARY_DIR}/indicator-network-secret-agent.conf"
+  DESTINATION "${CMAKE_INSTALL_DATADIR}/upstart/sessions/"
+)
+
+###########################
 # GSettings
 ###########################
 

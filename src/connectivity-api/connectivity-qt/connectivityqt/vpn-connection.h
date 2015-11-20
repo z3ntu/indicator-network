@@ -28,16 +28,24 @@
 namespace connectivityqt
 {
 
-class VpnConnection : public QObject
+class Q_DECL_EXPORT VpnConnection : public QObject
 {
     Q_OBJECT
 
 public:
     UNITY_DEFINES_PTRS(VpnConnection);
 
+    Q_ENUMS(Type)
+
+    enum Type
+    {
+        OPENVPN,
+        PPTP
+    };
+
     VpnConnection(const QDBusObjectPath& path, const QDBusConnection& connection);
 
-    ~VpnConnection();
+    virtual ~VpnConnection();
 
     Q_PROPERTY(QDBusObjectPath path READ path)
     QDBusObjectPath path() const;
@@ -48,10 +56,15 @@ public:
     Q_PROPERTY(bool active READ active WRITE setActive NOTIFY activeChanged)
     bool active() const;
 
+    Q_PROPERTY(Type type READ type)
+    virtual Type type() const = 0;
+
 public Q_SLOTS:
     void setId(const QString& id);
 
     void setActive(bool active);
+
+    void updateSecrets();
 
 Q_SIGNALS:
     void idChanged(const QString& id);

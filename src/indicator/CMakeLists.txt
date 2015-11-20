@@ -37,6 +37,7 @@ set(NETWORK_SERVICE_SOURCES
     nmofono/wifi/grouped-access-point.cpp
     nmofono/wifi/wifi-link-impl.cpp
     nmofono/wwan/modem.cpp
+    nmofono/vpn/openvpn-connection.cpp
     nmofono/vpn/vpn-connection.cpp
     nmofono/vpn/vpn-manager.cpp
 
@@ -67,6 +68,7 @@ set(NETWORK_SERVICE_SOURCES
     menuitems/wwan-link-item.cpp
     menuitems/modem-info-item.cpp
     
+    util/dbus-utils.cpp
     util/unix-signal-handler.cpp
 )
 
@@ -126,16 +128,12 @@ target_link_libraries(
     ${DBUSCPP_LIBRARIES}
     ${GLIB_LIBRARIES}
     ${QOFONO_LIBRARIES}
-)
-
-qt5_use_modules(
-    indicator-network-service-static
-    Core
-    DBus
+    Qt5::Core
+    Qt5::DBus
 )
 
 ###########################
-# Executable
+# Executables
 ###########################
 
 add_executable(
@@ -146,12 +144,20 @@ add_executable(
 target_link_libraries(
     indicator-network-service
     indicator-network-service-static
+    Qt5::Core
+    Qt5::DBus
 )
 
-qt5_use_modules(
-    indicator-network-service
-    Core
-    DBus
+add_executable(
+  indicator-network-secret-agent
+  agent-main.cpp
+)
+
+target_link_libraries(
+    indicator-network-secret-agent
+    indicator-network-service-static
+    Qt5::Core
+    Qt5::DBus
 )
 
 ###########################
@@ -159,6 +165,8 @@ qt5_use_modules(
 ###########################
 
 install(
-  TARGETS indicator-network-service
+  TARGETS
+    indicator-network-service
+    indicator-network-secret-agent
   RUNTIME DESTINATION "${CMAKE_INSTALL_LIBEXECDIR}/indicator-network/"
 )

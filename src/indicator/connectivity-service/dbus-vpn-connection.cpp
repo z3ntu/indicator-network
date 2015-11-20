@@ -20,6 +20,7 @@
 #include <connectivity-service/dbus-vpn-connection.h>
 #include <VpnConnectionAdaptor.h>
 #include <dbus-types.h>
+#include <util/dbus-utils.h>
 
 using namespace std;
 using namespace nmofono::vpn;
@@ -37,6 +38,10 @@ DBusVpnConnection::DBusVpnConnection(VpnConnection::SPtr vpnConnection,
 
     connect(m_vpnConnection.get(), &VpnConnection::idChanged, this, &DBusVpnConnection::idUpdated);
     connect(m_vpnConnection.get(), &VpnConnection::activeChanged, this, &DBusVpnConnection::activeUpdated);
+
+    connect(this, &DBusVpnConnection::setActive, m_vpnConnection.get(), &VpnConnection::setActive);
+    connect(this, &DBusVpnConnection::setId, m_vpnConnection.get(), &VpnConnection::setId);
+    connect(this, &DBusVpnConnection::UpdateSecrets, m_vpnConnection.get(), &VpnConnection::updateSecrets);
 }
 
 DBusVpnConnection::~DBusVpnConnection()
@@ -47,19 +52,8 @@ void DBusVpnConnection::registerDBusObject()
 {
     if (!m_connection.registerObject(m_path.path(), this))
     {
-        throw logic_error(
-                "Unable to register VpnConnection object on DBus");
+        qWarning() << "Unable to register VpnConnection object" << m_path.path();
     }
-}
-
-void DBusVpnConnection::setActive(bool active)
-{
-    m_vpnConnection->setActive(active);
-}
-
-void DBusVpnConnection::setId(const QString& id)
-{
-    m_vpnConnection->setId(id);
 }
 
 void DBusVpnConnection::idUpdated(const QString&)
@@ -74,7 +68,7 @@ void DBusVpnConnection::activeUpdated(bool)
 
 void DBusVpnConnection::notifyProperties(const QStringList& propertyNames)
 {
-    DBusTypes::notifyPropertyChanged(
+    DBusUtils::notifyPropertyChanged(
         m_connection,
         *this,
         m_path.path(),

@@ -1,8 +1,4 @@
 
-#///! TODO: The following should be removed once all dependancy on qmenumodel is removed
-pkg_check_modules(QMENUMODEL REQUIRED qmenumodel REQUIRED)
-include_directories(${QMENUMODEL_INCLUDE_DIRS})
-
 include_directories(
     "${CMAKE_SOURCE_DIR}/src"
     "${CMAKE_SOURCE_DIR}/src/indicator"
@@ -78,7 +74,6 @@ target_link_libraries(
     test-utils
     indicator-network-service-static
     ${TEST_DEPENDENCIES_LDFLAGS}
-    ${QMENUMODEL_LDFLAGS}
     ${GLIB_LDFLAGS}
     ${GTEST_LIBRARIES}
     ${GMOCK_LIBRARIES}

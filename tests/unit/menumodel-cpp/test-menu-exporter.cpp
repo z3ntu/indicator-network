@@ -27,13 +27,14 @@
 
 #include <libqtdbustest/DBusTestRunner.h>
 #include <QSignalSpy>
-#include <qmenumodel/unitymenumodel.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
+#include <unity/gmenuharness/MenuMatcher.h>
 
 using namespace std;
 using namespace testing;
 using namespace QtDBusTest;
+namespace mh = unity::gmenuharness;
 
 namespace
 {
@@ -42,7 +43,7 @@ class TestMenuExporter : public Test
 {
 protected:
     void
-    SetUp ()
+    SetUp () override
     {
         Variant::registerMetaTypes();
         sessionBus = make_shared<SessionBus>();
@@ -51,17 +52,10 @@ protected:
         menu = make_shared<Menu>();
     }
 
-    static QStringList
-    toStringList (const QAbstractListModel &model)
+    mh::MenuMatcher::Parameters parameters(const string& prefix)
     {
-        QStringList result;
-        int max(model.rowCount());
-        for (int i(0); i < max; ++i)
-        {
-            result
-                    << model.data(model.index(i), Qt::DisplayRole + 1).toString();
-        }
-        return result;
+        return mh::MenuMatcher::Parameters(sessionBus->address(), {{ prefix, "/actions/path" }},
+                                           "/menus/path");
     }
 
     DBusTestRunner dbus;
@@ -91,20 +85,19 @@ TEST_F(TestMenuExporter, ExportBasicActionsAndMenu)
     menu->append(make_shared<MenuItem>("Coconut", "prefix.coconut"));
     menuExporter.reset(new MenuExporter(sessionBus, "/menus/path", menu));
 
-    UnityMenuModel menuModel;
-    QSignalSpy menuSpy(&menuModel,
-                       SIGNAL(rowsInserted(const QModelIndex&, int, int)));
-
-    menuModel.setBusName(sessionBus->address().c_str());
-    menuModel.setMenuObjectPath("/menus/path");
-    QVariantMap actions;
-    actions["prefix"] = "/actions/path";
-    menuModel.setActions(actions);
-
-    menuSpy.wait();
-    ASSERT_FALSE(menuSpy.isEmpty());
-    EXPECT_EQ(QStringList() << "Apple" << "Banana" << "Coconut",
-              toStringList(menuModel));
+    EXPECT_MATCHRESULT(mh::MenuMatcher(parameters("prefix"))
+        .item(mh::MenuItemMatcher()
+            .label("Apple")
+            .action("prefix.apple")
+        )
+        .item(mh::MenuItemMatcher()
+            .label("Banana")
+            .action("prefix.banana")
+        )
+        .item(mh::MenuItemMatcher()
+            .label("Coconut")
+            .action("prefix.coconut")
+        ).match());
 }
 
 TEST_F(TestMenuExporter, ActionActivation)
@@ -117,25 +110,20 @@ TEST_F(TestMenuExporter, ActionActivation)
     menu->append(make_shared<MenuItem>("Apple", "app.apple"));
     menuExporter.reset(new MenuExporter(sessionBus, "/menus/path", menu));
 
-    UnityMenuModel menuModel;
-    QSignalSpy menuSpy(&menuModel,
-                       SIGNAL(rowsInserted(const QModelIndex&, int, int)));
-
-    menuModel.setBusName(sessionBus->address().c_str());
-    menuModel.setMenuObjectPath("/menus/path");
-    QVariantMap actions;
-    actions["app"] = "/actions/path";
-    menuModel.setActions(actions);
-    menuSpy.wait();
-    ASSERT_FALSE(menuSpy.isEmpty());
-    ASSERT_EQ(1, menuModel.rowCount());
-
     QSignalSpy signalSpy(apple.get(),
                          SIGNAL(activated(const Variant&)));
 
-    menuModel.activate(0);
+    EXPECT_MATCHRESULT(mh::MenuMatcher(parameters("app"))
+        .item(mh::MenuItemMatcher()
+            .label("Apple")
+            .action("app.apple")
+            .activate()
+        ).match());
 
-    ASSERT_TRUE(signalSpy.wait());
+    if (signalSpy.isEmpty())
+    {
+        ASSERT_TRUE(signalSpy.wait());
+    }
     auto v = qvariant_cast<Variant>(signalSpy.first().first());
     EXPECT_EQ("null", v.to_string());
 }
@@ -150,26 +138,20 @@ TEST_F(TestMenuExporter, ParameterizedActionActivation)
     menu->append(make_shared<MenuItem>("Param", "app.param"));
     menuExporter.reset(new MenuExporter(sessionBus, "/menus/path", menu));
 
-    UnityMenuModel menuModel;
-    QSignalSpy menuSpy(&menuModel,
-                       SIGNAL(rowsInserted(const QModelIndex&, int, int)));
-
-    menuModel.setBusName(sessionBus->address().c_str());
-    menuModel.setMenuObjectPath("/menus/path");
-    QVariantMap actions;
-    actions["app"] = "/actions/path";
-    menuModel.setActions(actions);
-    menuSpy.wait();
-    ASSERT_FALSE(menuSpy.isEmpty());
-    ASSERT_EQ(1, menuModel.rowCount());
-
     QSignalSpy signalSpy(parameterized.get(),
                              SIGNAL(activated(const Variant&)));
 
-    menuModel.activate(0, "hello");
+    EXPECT_MATCHRESULT(mh::MenuMatcher(parameters("app"))
+        .item(mh::MenuItemMatcher()
+            .label("Param")
+            .action("app.param")
+            .activate(shared_ptr<GVariant>(g_variant_new_string("hello"), &g_variant_unref))
+        ).match());
 
-    ASSERT_TRUE(signalSpy.wait());
-
+    if (signalSpy.isEmpty())
+    {
+        ASSERT_TRUE(signalSpy.wait());
+    }
     auto v = qvariant_cast<Variant>(signalSpy.first().first());
     EXPECT_EQ("hello", v.as<string>());
 }

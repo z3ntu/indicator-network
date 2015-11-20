@@ -23,16 +23,18 @@
 
 #include <libqtdbustest/DBusTestRunner.h>
 #include <libqtdbusmock/DBusMock.h>
-#include <qmenumodel/unitymenumodel.h>
 #include <QSignalSpy>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
+#include <unity/gmenuharness/MatchUtils.h>
+#include <unity/gmenuharness/MenuMatcher.h>
 
 using namespace std;
 using namespace testing;
 using namespace QtDBusTest;
 using namespace QtDBusMock;
 using namespace agent;
+namespace mh = unity::gmenuharness;
 
 namespace {
 
@@ -189,24 +191,30 @@ TEST_P(TestSecretAgentGetSecrets, ProvidesPasswordForWpaPsk) {
 	QString menuPath(menuInfo["menuPath"].toString());
 	QVariantMap actions(menuInfo["actions"].toMap());
 
+	vector<pair<string, string>> stdActions;
+	QMapIterator<QString, QVariant> it(actions);
+	while (it.hasNext())
 	{
-		UnityMenuModel menuModel;
+		it.next();
+		stdActions.emplace_back(make_pair(it.key().toStdString(), it.value().toString().toStdString()));
+	}
 
-		QSignalSpy menuSpy(&menuModel,
-		SIGNAL(rowsInserted(const QModelIndex&, int, int)));
+	{
+		EXPECT_MATCHRESULT(mh::MenuMatcher(mh::MenuMatcher::Parameters(
+				busName.toStdString(),
+				stdActions,
+				menuPath.toStdString()))
+			.item(mh::MenuItemMatcher()
+				.label("")
+				.action("notifications.password")
+				.set_action_state(shared_ptr<GVariant>(g_variant_new_string(GetParam().password.toUtf8().constData()), &g_variant_unref))
+			).match());
 
-		menuModel.setBusName(busName.toUtf8());
-		menuModel.setMenuObjectPath(menuPath.toUtf8());
-		menuModel.setActions(actions);
+		// The gaction needs an IDLE or it doesn't emit the state change
+		// So we spin the mainloop with some junk here
+		shared_ptr<GSimpleAction> o(g_simple_action_new("a", NULL), &mh::g_object_deleter);
+		mh::waitForCore(G_OBJECT(o.get()), "activate", 100);
 
-		menuSpy.wait();
-
-		menuModel.changeState(0, GetParam().password);
-
-		// It seems like UnityMenuModel or the GLib
-		// DBus connection needs some grace time to
-		// finish dispatching.
-		secretAgent.waitForReadyRead();
 		ASSERT_EQ("Password received", secretAgent.readAll().trimmed());
 	}
 

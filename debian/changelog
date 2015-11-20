@@ -1,3 +1,20 @@
+indicator-network (0.5.5+16.04.20151120-0ubuntu1) xenial; urgency=medium
+
+  [ CI Train Bot ]
+  * Resync trunk. added: po/wo.po
+
+  [ Pete Woods ]
+  * Stop using QMenuModel and drop it as a dependency
+  * Switch to using system-provided gmenuharness library (remove
+    vendored menuharness from tree) removed: tests/menuharness/
+    tests/menuharness/CMakeLists.txt tests/menuharness/MatchResult.cpp
+    tests/menuharness/MatchResult.h tests/menuharness/MatchUtils.cpp
+    tests/menuharness/MatchUtils.h tests/menuharness/MenuItemMatcher.cpp
+    tests/menuharness/MenuItemMatcher.h
+    tests/menuharness/MenuMatcher.cpp tests/menuharness/MenuMatcher.h
+
+ -- Pete Woods <ci-train-bot@canonical.com>  Fri, 20 Nov 2015 11:26:35 +0000
+
 indicator-network (0.5.5+16.04.20151027-0ubuntu1) xenial; urgency=medium
 
   [ CI Train Bot ]

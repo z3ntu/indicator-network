@@ -30,12 +30,11 @@ qt5_use_modules(
 target_link_libraries(
     integration-tests
     test-utils
-    menuharness
     ${CONNECTIVITY_QT_LIB_TARGET}
-    ${QTDBUSMOCK_LDFLAGS}
-    ${QTDBUSTEST_LDFLAGS}
+    ${TEST_DEPENDENCIES_LDFLAGS}
     ${GTEST_LIBRARIES}
     ${GMOCK_LIBRARIES}
+    ${GLIB_LDFLAGS}
 )
 
 add_test(

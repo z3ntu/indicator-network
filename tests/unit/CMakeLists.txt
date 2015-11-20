@@ -77,8 +77,7 @@ target_link_libraries(
     unit-tests
     test-utils
     indicator-network-service-static
-    ${QTDBUSMOCK_LDFLAGS}
-    ${QTDBUSTEST_LDFLAGS}
+    ${TEST_DEPENDENCIES_LDFLAGS}
     ${QMENUMODEL_LDFLAGS}
     ${GLIB_LDFLAGS}
     ${GTEST_LIBRARIES}

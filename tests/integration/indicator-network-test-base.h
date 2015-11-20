@@ -22,8 +22,8 @@
 #include <libqtdbustest/QProcessDBusService.h>
 #include <libqtdbusmock/DBusMock.h>
 
-#include <menuharness/MatchUtils.h>
-#include <menuharness/MenuMatcher.h>
+#include <unity/gmenuharness/MatchUtils.h>
+#include <unity/gmenuharness/MenuMatcher.h>
 
 #include <NetworkManager.h>
 #include <gmock/gmock.h>
@@ -98,9 +98,9 @@ public:
 protected:
     void SetUp() override;
 
-    static menuharness::MenuMatcher::Parameters phoneParameters();
+    static unity::gmenuharness::MenuMatcher::Parameters phoneParameters();
 
-    static menuharness::MenuMatcher::Parameters unlockSimParameters(std::string const& busName, int exportId);
+    static unity::gmenuharness::MenuMatcher::Parameters unlockSimParameters(std::string const& busName, int exportId);
 
     void startIndicator();
 
@@ -153,26 +153,26 @@ protected:
 
     static QString firstModem();
 
-    static menuharness::MenuItemMatcher flightModeSwitch(bool toggled = false);
+    static unity::gmenuharness::MenuItemMatcher flightModeSwitch(bool toggled = false);
 
-    static menuharness::MenuItemMatcher accessPoint(const std::string& ssid, Secure secure,
+    static unity::gmenuharness::MenuItemMatcher accessPoint(const std::string& ssid, Secure secure,
                 ApMode apMode, ConnectionStatus connectionStatus, uchar strength = 100);
 
-    static menuharness::MenuItemMatcher wifiEnableSwitch(bool toggled = true);
+    static unity::gmenuharness::MenuItemMatcher wifiEnableSwitch(bool toggled = true);
 
-    static menuharness::MenuItemMatcher wifiSettings();
+    static unity::gmenuharness::MenuItemMatcher wifiSettings();
 
-    static menuharness::MenuItemMatcher modemInfo(const std::string& simIdentifier,
+    static unity::gmenuharness::MenuItemMatcher modemInfo(const std::string& simIdentifier,
                 const std::string& label,
                 const std::string& statusIcon,
                 bool locked = false,
                 const std::string& connectivityIcon = "");
 
-    static menuharness::MenuItemMatcher cellularSettings();
+    static unity::gmenuharness::MenuItemMatcher cellularSettings();
 
-    static menuharness::MenuItemMatcher vpnSettings();
+    static unity::gmenuharness::MenuItemMatcher vpnSettings();
 
-    static menuharness::MenuItemMatcher vpnConnection(const std::string& name, ConnectionStatus connected = ConnectionStatus::disconnected);
+    static unity::gmenuharness::MenuItemMatcher vpnConnection(const std::string& name, ConnectionStatus connected = ConnectionStatus::disconnected);
 
     QtDBusTest::DBusTestRunner dbusTestRunner;
 

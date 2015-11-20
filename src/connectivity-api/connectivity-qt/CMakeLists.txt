@@ -19,6 +19,7 @@ set(
     CONNECTIVITY_QT_SRC
     connectivityqt/internal/dbus-property-cache.cpp
     connectivityqt/connectivity.cpp
+    connectivityqt/openvpn-connection.cpp
     connectivityqt/vpn-connection.cpp
     connectivityqt/vpn-connections-list-model.cpp
     ubuntu/connectivity/networking-status.cpp

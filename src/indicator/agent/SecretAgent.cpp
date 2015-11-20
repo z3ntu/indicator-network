@@ -51,7 +51,13 @@ public Q_SLOTS:
 		Q_UNUSED(name)
 		Q_UNUSED(oldOwner)
 		if (!newOwner.isEmpty()) {
-			m_agentManager.Register("com.canonical.indicator.SecretAgent").waitForFinished();
+			auto reply = m_agentManager.RegisterWithCapabilities(
+					"com.canonical.indicator.SecretAgent",
+					0 /*NM_SECRET_AGENT_CAPABILITY_NONE*/);
+			reply.waitForFinished();
+			if (reply.isError()) {
+				qCritical() << __PRETTY_FUNCTION__ << reply.error().message();
+			}
 		}
 	}
 
@@ -86,12 +92,21 @@ SecretAgent::SecretAgent(notify::NotificationManager::SPtr notificationManager,
 	connect(&d->m_managerWatcher, &QDBusServiceWatcher::serviceOwnerChanged,
 			d.get(), &Priv::serviceOwnerChanged);
 
-	d->m_agentManager.Register("com.canonical.indicator.SecretAgent").waitForFinished();
+	auto reply = d->m_agentManager.RegisterWithCapabilities(
+						"com.canonical.indicator.SecretAgent",
+						0 /*NM_SECRET_AGENT_CAPABILITY_NONE*/);
+	reply.waitForFinished();
+	if (reply.isError()) {
+		qCritical() << __PRETTY_FUNCTION__ << reply.error().message();
+	}
 }
 
 SecretAgent::~SecretAgent() {
-	d->m_agentManager.Unregister().waitForFinished();
-	d->m_systemConnection.unregisterObject(NM_DBUS_PATH_SECRET_AGENT);
+	auto reply = d->m_agentManager.Unregister();
+	reply.waitForFinished();
+	if (reply.isError()) {
+		qCritical() << __PRETTY_FUNCTION__ << reply.error().message();
+	}
 }
 
 /**
@@ -138,13 +153,13 @@ QVariantDictMap SecretAgent::GetSecrets(const QVariantDictMap &connection,
 
 	setDelayedReply(true);
 
-	if (flags == 0) {
+	if (flags != 0 && settingName == "802-11-wireless-security") {
+		d->m_request.reset(new SecretRequest(*this, connection,
+						connectionPath, settingName, hints, flags, message()));
+	} else {
 		d->m_systemConnection.send(
 				message().createErrorReply(QDBusError::InternalError,
 						"No password found for this connection."));
-	} else {
-		d->m_request.reset(new SecretRequest(*this, connection,
-						connectionPath, settingName, hints, flags, message()));
 	}
 
 	return QVariantDictMap();

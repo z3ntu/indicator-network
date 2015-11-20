@@ -161,13 +161,90 @@ public:
         Q_EMIT p.activatableChanged(m_activatable);
     }
 
+    void setDirty()
+    {
+        if (m_dirty)
+        {
+            return;
+        }
+
+        m_dirty = true;
+        m_pendingSettings = m_settings;
+
+        m_dispatchPendingSettingsTimer.start();
+    }
+
+Q_SIGNALS:
+    void updateData(const QStringMap& data);
+    void updateSecrets(const QStringMap& secrets);
+
 public Q_SLOTS:
+    void dispatchPendingSettings()
+    {
+        auto reply = m_connection->Update(m_pendingSettings);
+        reply.waitForFinished();
+        if (reply.isError())
+        {
+            qWarning() << __PRETTY_FUNCTION__ << reply.error().message();
+        }
+
+        m_dirty = false;
+    }
+
+    void updateVpnData(const QStringMap &vpnData)
+    {
+        setDirty();
+        m_pendingSettings["vpn"]["data"] = QVariant::fromValue(vpnData);
+    }
+
+    void updateVpnSecrets(const QStringMap &secrets)
+    {
+        setDirty();
+        m_pendingSettings["vpn"]["secrets"] = QVariant::fromValue(secrets);
+    }
+
+    void secretsUpdated()
+    {
+        if (!m_valid)
+        {
+            return;
+        }
+
+        QVariantDictMap vpnSecrets = m_connection->GetSecrets("vpn");
+
+        QStringMap secrets;
+        QVariant v = vpnSecrets.value("vpn").value("secrets");
+        if (v.isValid())
+        {
+            auto dbusArgument = qvariant_cast<QDBusArgument>(v);
+            dbusArgument >> secrets;
+        }
+
+        Q_EMIT updateSecrets(secrets);
+    }
+
     void settingsUpdated()
     {
         m_settings = m_connection->GetSettings();
+
+        QStringMap vpnData;
+        // Encourage Qt to decode the nested map
+        auto v = m_settings.value("vpn").value("data");
+        if (v.isValid())
+        {
+            auto dbusArgument = qvariant_cast<QDBusArgument>(v);
+            dbusArgument >> vpnData;
+            m_settings["vpn"]["data"] = QVariant::fromValue(vpnData);
+        }
+
         updateId();
         updateValid();
         updateType();
+
+        if (m_valid)
+        {
+            Q_EMIT updateData(vpnData);
+        }
     }
 
     void activeConnectionsUpdated(const QSet<connection::ActiveConnection::SPtr>& activeConnections)
@@ -218,6 +295,12 @@ public:
 
     QVariantDictMap m_settings;
 
+    bool m_dirty = false;
+
+    QVariantDictMap m_pendingSettings;
+
+    QTimer m_dispatchPendingSettingsTimer;
+
     QString m_id;
 
     bool m_valid = false;
@@ -235,6 +318,8 @@ public:
     bool m_otherConnectionIsBusy = false;
 
     QDBusObjectPath m_otherActiveConnectionPath;
+
+    OpenvpnConnection::SPtr m_openvpnConnection;
 };
 
 VpnConnection::VpnConnection(
@@ -243,6 +328,11 @@ VpnConnection::VpnConnection(
         const QDBusConnection& systemConnection) :
         d(new Priv(*this))
 {
+    d->m_dispatchPendingSettingsTimer.setSingleShot(true);
+    d->m_dispatchPendingSettingsTimer.setInterval(0);
+    d->m_dispatchPendingSettingsTimer.setTimerType(Qt::CoarseTimer);
+    connect(&d->m_dispatchPendingSettingsTimer, &QTimer::timeout, d.get(), &Priv::dispatchPendingSettings);
+
     d->m_connection = make_shared<OrgFreedesktopNetworkManagerSettingsConnectionInterface>(NM_DBUS_SERVICE, path.path(), systemConnection);
 
     d->m_activeConnectionManager = activeConnectionManager;
@@ -257,6 +347,21 @@ VpnConnection::VpnConnection(
 
     d->activeConnectionsUpdated(d->m_activeConnectionManager->connections());
     connect(d->m_activeConnectionManager.get(), &connection::ActiveConnectionManager::connectionsChanged, d.get(), &Priv::activeConnectionsUpdated);
+
+    switch (d->m_type)
+    {
+        case Type::openvpn:
+            d->m_openvpnConnection = make_shared<OpenvpnConnection>();
+            d->m_openvpnConnection->updateData(d->m_settings["vpn"]["data"].value<QStringMap>());
+            connect(d.get(), &Priv::updateData, d->m_openvpnConnection.get(), &OpenvpnConnection::updateData);
+            connect(d.get(), &Priv::updateSecrets, d->m_openvpnConnection.get(), &OpenvpnConnection::updateSecrets);
+            connect(d->m_openvpnConnection.get(), &OpenvpnConnection::updateVpnData, d.get(), &Priv::updateVpnData);
+            connect(d->m_openvpnConnection.get(), &OpenvpnConnection::updateVpnSecrets, d.get(), &Priv::updateVpnSecrets);
+            break;
+        //TODO pptp, etc
+        default:
+            break;
+    }
 }
 
 QString VpnConnection::id() const
@@ -293,15 +398,8 @@ void VpnConnection::setId(const QString& id)
         return;
     }
 
-    auto settings = d->m_settings;
-    settings["connection"]["id"] = id;
-
-    auto reply = d->m_connection->Update(settings);
-    reply.waitForFinished();
-    if (reply.isError())
-    {
-        qWarning() << __PRETTY_FUNCTION__ << reply.error().message();
-    }
+    d->setDirty();
+    d->m_pendingSettings["connection"]["id"] = id;
 }
 
 void VpnConnection::setOtherConnectionIsBusy(bool otherConnectionIsBusy)
@@ -314,6 +412,11 @@ void VpnConnection::setActiveConnectionPath(const QDBusObjectPath& path)
 {
     d->m_otherActiveConnectionPath = path;
     d->updateActivatable();
+}
+
+void VpnConnection::updateSecrets()
+{
+    d->secretsUpdated();
 }
 
 bool VpnConnection::isActive() const
@@ -339,6 +442,11 @@ bool VpnConnection::isActivatable() const
 VpnConnection::Type VpnConnection::type() const
 {
     return d->m_type;
+}
+
+OpenvpnConnection::SPtr VpnConnection::openvpnConnection() const
+{
+    return d->m_openvpnConnection;
 }
 
 }

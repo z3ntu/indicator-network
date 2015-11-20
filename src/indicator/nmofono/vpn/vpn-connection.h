@@ -26,6 +26,7 @@
 #include <memory>
 
 #include <nmofono/connection/active-connection-manager.h>
+#include <nmofono/vpn/openvpn-connection.h>
 
 #include <unity/util/DefinesPtrs.h>
 
@@ -65,6 +66,8 @@ public:
 
     Type type() const;
 
+    OpenvpnConnection::SPtr openvpnConnection() const;
+
 public Q_SLOTS:
     void setActive(bool active);
 
@@ -73,6 +76,8 @@ public Q_SLOTS:
     void setOtherConnectionIsBusy(bool otherConnectionIsBusy);
 
     void setActiveConnectionPath(const QDBusObjectPath& path);
+
+    void updateSecrets();
 
 Q_SIGNALS:
     void idChanged(const QString& id);

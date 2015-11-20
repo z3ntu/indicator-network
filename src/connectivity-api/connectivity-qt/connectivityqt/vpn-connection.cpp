@@ -98,12 +98,17 @@ bool VpnConnection::active() const
 
 void VpnConnection::setId(const QString& id)
 {
-    d->m_vpnInterface->setId(id);
+    d->m_propertyCache->set("id", id);
 }
 
 void VpnConnection::setActive(bool active)
 {
-    d->m_vpnInterface->setActive(active);
+    d->m_propertyCache->set("active", active);
+}
+
+void VpnConnection::updateSecrets()
+{
+    d->m_vpnInterface->UpdateSecrets();
 }
 
 }

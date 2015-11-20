@@ -17,6 +17,7 @@
  * Author: Pete Woods <pete.woods@canonical.com>
  */
 
+#include <connectivityqt/openvpn-connection.h>
 #include <connectivityqt/vpn-connections-list-model.h>
 #include <indicator-network-test-base.h>
 #include <dbus-types.h>
@@ -41,16 +42,6 @@ inline void PrintTo(const CS& list, std::ostream* os) {
     dbg << list;
 
     *os << "CSL(" << output.toStdString() << ")";
-}
-
-inline void PrintTo(const QList<QDBusObjectPath>& list, std::ostream* os) {
-    QString output;
-    for (const auto& path: list)
-    {
-        output.append("\"" + path.path() + "\",");
-    }
-
-    *os << "QList<QDBusObjectPath>(" << output.toStdString() << ")";
 }
 
 namespace
@@ -85,6 +76,15 @@ protected:
         sortedVpnConnections->setSourceModel(vpnConnections);
 
         return sortedVpnConnections;
+    }
+
+    OpenvpnConnection* getOpenvpnConnection(QAbstractItemModel* vpnConnections, int i)
+    {
+        return qobject_cast<OpenvpnConnection*>(
+                vpnConnections->data(
+                        vpnConnections->index(i, 0),
+                        VpnConnectionsListModel::Roles::RoleConnection).value<
+                        QObject*>());
     }
 };
 
@@ -365,6 +365,155 @@ TEST_F(TestConnectivityApiVpn, UpdatesVpnState)
     auto activeConnections = managerInterface.activeConnections();
     EXPECT_EQ(QList<QDBusObjectPath>({QDBusObjectPath("/org/freedesktop/NetworkManager/ActiveConnection/0")}),
               activeConnections);
+}
+
+TEST_F(TestConnectivityApiVpn, ReadsOpenvpnProperties)
+{
+    // Add a single VPN configuration
+    auto appleConnection = createVpnConnection("apple", "org.freedesktop.NetworkManager.openvpn",
+    {
+        {"connection-type", "password-tls"},
+        {"remote", "remotey"},
+        {"ca", "/my/ca.crt"},
+        {"cert", "/my/cert.crt"},
+        {"cert-pass-flags", "1"},
+        {"key", "/my/key.key"},
+        {"password-flags", "1"}
+    },
+    {
+        {"cert-pass", "certificate password"},
+        {"password", "the password"}
+    });
+
+    // Add a physical device to use for the connection
+    setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
+    auto device = createWiFiDevice(NM_DEVICE_STATE_ACTIVATED);
+
+    // Start the indicator
+    ASSERT_NO_THROW(startIndicator());
+
+    // Connect the the service
+    auto connectivity(newConnectivity());
+
+    auto vpnConnections = connectivity->vpnConnections();
+
+    ASSERT_EQ(CSL({{"apple", false}}), vpnList(*vpnConnections));
+    auto connection = getOpenvpnConnection(vpnConnections, 0);
+    ASSERT_TRUE(connection);
+
+    EXPECT_EQ("apple", connection->id());
+    EXPECT_FALSE(connection->active());
+    EXPECT_EQ(VpnConnection::Type::OPENVPN, connection->type());
+
+    EXPECT_EQ(OpenvpnConnection::ConnectionType::PASSWORD_TLS, connection->connectionType());
+    EXPECT_EQ("remotey", connection->remote());
+    EXPECT_EQ("/my/ca.crt", connection->ca());
+    EXPECT_EQ("/my/cert.crt", connection->cert());
+    EXPECT_EQ("/my/key.key", connection->key());
+
+    QSignalSpy caChangedSpy(connection, SIGNAL(caChanged(const QString &)));
+    QSignalSpy certChangedSpy(connection, SIGNAL(certChanged(const QString &)));
+    QSignalSpy keyChangedSpy(connection, SIGNAL(keyChanged(const QString &)));
+    QSignalSpy remoteChangedSpy(connection, SIGNAL(remoteChanged(const QString &)));
+
+    OrgFreedesktopNetworkManagerSettingsConnectionInterface appleInterface(
+                    NM_DBUS_SERVICE, appleConnection, dbusTestRunner.systemConnection());
+    QVariantDictMap settings = appleInterface.GetSettings();
+    settings["vpn"]["data"] = QVariant::fromValue(QStringMap(
+    {
+        {"connection-type", "password-tls"},
+        {"remote", "remote2"},
+        {"ca", "/my/ca2.crt"},
+        {"cert", "/my/cert2.crt"},
+        {"cert-pass-flags", "1"},
+        {"key", "/my/key2.key"},
+        {"password-flags", "1"},
+    }));
+    auto reply = appleInterface.Update(settings);
+    reply.waitForFinished();
+    if (reply.isError())
+    {
+        EXPECT_FALSE(reply.isError()) << reply.error().message().toStdString();
+    }
+
+    WAIT_FOR_SIGNALS(caChangedSpy, 1);
+    WAIT_FOR_SIGNALS(certChangedSpy, 1);
+    WAIT_FOR_SIGNALS(keyChangedSpy, 1);
+    WAIT_FOR_SIGNALS(remoteChangedSpy, 1);
+
+    EXPECT_EQ("remote2", connection->remote());
+    EXPECT_EQ("/my/ca2.crt", connection->ca());
+    EXPECT_EQ("/my/cert2.crt", connection->cert());
+    EXPECT_EQ("/my/key2.key", connection->key());
+
+    QSignalSpy certPassChangedSpy(connection, SIGNAL(certPassChanged(const QString&)));
+    QSignalSpy passwordChangedSpy(connection, SIGNAL(passwordChanged(const QString&)));
+
+    connection->updateSecrets();
+    WAIT_FOR_SIGNALS(certPassChangedSpy, 1);
+    WAIT_FOR_SIGNALS(passwordChangedSpy, 1);
+    EXPECT_EQ("certificate password", connection->certPass());
+    EXPECT_EQ("the password", connection->password());
+}
+
+TEST_F(TestConnectivityApiVpn, WritesOpenvpnProperties)
+{
+    // Add a single VPN configuration
+    auto appleConnection = createVpnConnection("apple", "org.freedesktop.NetworkManager.openvpn",
+    {
+        {"connection-type", "tls"},
+        {"remote", "remotey"},
+        {"ca", "/my/ca.crt"},
+        {"cert", "/my/cert.crt"},
+        {"cert-pass-flags", "1"},
+        {"key", "/my/key.key"}
+    });
+
+    // Add a physical device to use for the connection
+    setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
+    auto device = createWiFiDevice(NM_DEVICE_STATE_ACTIVATED);
+
+    // Start the indicator
+    ASSERT_NO_THROW(startIndicator());
+
+    // Connect the the service
+    auto connectivity(newConnectivity());
+
+    auto vpnConnections = connectivity->vpnConnections();
+
+    ASSERT_EQ(CSL({{"apple", false}}), vpnList(*vpnConnections));
+    auto connection = getOpenvpnConnection(vpnConnections, 0);
+    ASSERT_TRUE(connection);
+
+    QSignalSpy remoteChangedSpy(connection, SIGNAL(remoteChanged(const QString &)));
+
+    auto& appleMockInterface = dbusMock.mockInterface(
+            NM_DBUS_SERVICE, appleConnection,
+            NM_DBUS_IFACE_SETTINGS_CONNECTION,
+            QDBusConnection::SystemBus);
+    QSignalSpy appleMockCallSpy(
+            &appleMockInterface,
+            SIGNAL(MethodCalled(const QString &, const QVariantList &)));
+
+    OrgFreedesktopNetworkManagerSettingsConnectionInterface appleInterface(
+            NM_DBUS_SERVICE, appleConnection,
+            dbusTestRunner.systemConnection());
+
+    EXPECT_EQ("apple", connection->id());
+    EXPECT_FALSE(connection->active());
+    EXPECT_EQ(VpnConnection::Type::OPENVPN, connection->type());
+
+    EXPECT_EQ(OpenvpnConnection::ConnectionType::TLS, connection->connectionType());
+    connection->setRemote("remote2");
+
+    WAIT_FOR_SIGNALS(appleMockCallSpy, 1);
+    WAIT_FOR_SIGNALS(remoteChangedSpy, 1);
+
+    QStringMap vpnData;
+    QVariantDictMap settings = appleInterface.GetSettings();
+    settings["vpn"]["data"].value<QDBusArgument>() >> vpnData;
+
+    EXPECT_EQ("remote2", vpnData["remote"]);
 }
 
 

@@ -92,8 +92,7 @@ TEST_F(TestConnectivityApi, FlightModeTalksToURfkill)
     connectivity->setFlightMode(true);
 
     // We should first get the switch disabled change
-    ASSERT_TRUE(flightModeSwitchSpy.wait());
-    ASSERT_EQ(1, flightModeSwitchSpy.size());
+    WAIT_FOR_SIGNALS(flightModeSwitchSpy, 1);
     EXPECT_EQ(flightModeSwitchSpy.first(), QVariantList() << QVariant(false));
     if (wifiSwitchSpy.size() != 1)
     {

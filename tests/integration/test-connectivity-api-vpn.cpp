@@ -516,5 +516,69 @@ TEST_F(TestConnectivityApiVpn, WritesOpenvpnProperties)
     EXPECT_EQ("remote2", vpnData["remote"]);
 }
 
+TEST_F(TestConnectivityApiVpn, CreatesOpenvpnConnection)
+{
+    setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
+    auto device = createWiFiDevice(NM_DEVICE_STATE_ACTIVATED);
+
+    // Start the indicator
+    ASSERT_NO_THROW(startIndicator());
+
+    // Connect the the service
+    auto connectivity(newConnectivity());
+
+    auto vpnConnections = qobject_cast<VpnConnectionsListModel*>(connectivity->vpnConnections());
+    ASSERT_TRUE(vpnConnections);
+
+    QSignalSpy addConnectionSpy(vpnConnections, SIGNAL(addFinished(VpnConnection *)));
+
+    vpnConnections->add(VpnConnection::Type::OPENVPN);
+    WAIT_FOR_SIGNALS(addConnectionSpy, 1);
+
+    ASSERT_EQ(CSL({{"VPN connection 1", false}}), vpnList(*vpnConnections));
+    auto connection = getOpenvpnConnection(vpnConnections, 0);
+    ASSERT_TRUE(connection);
+
+    // These should be the same object instance
+    EXPECT_EQ(addConnectionSpy.first().first().value<VpnConnection*>(), connection);
+}
+
+TEST_F(TestConnectivityApiVpn, DeletesVpnConnection)
+{
+    // Add a single VPN configuration
+    auto appleConnection = createVpnConnection("apple", "org.freedesktop.NetworkManager.openvpn",
+    {
+        {"connection-type", "tls"},
+        {"remote", "remotey"},
+        {"ca", "/my/ca.crt"},
+        {"cert", "/my/cert.crt"},
+        {"cert-pass-flags", "1"},
+        {"key", "/my/key.key"}
+    });
+
+    setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
+    auto device = createWiFiDevice(NM_DEVICE_STATE_ACTIVATED);
+
+    // Start the indicator
+    ASSERT_NO_THROW(startIndicator());
+
+    // Connect the the service
+    auto connectivity(newConnectivity());
+
+    auto vpnConnections = qobject_cast<VpnConnectionsListModel*>(connectivity->vpnConnections());
+    ASSERT_TRUE(vpnConnections);
+
+    ASSERT_EQ(CSL({{"apple", false}}), vpnList(*vpnConnections));
+    auto connection = getOpenvpnConnection(vpnConnections, 0);
+    ASSERT_TRUE(connection);
+
+    QSignalSpy rowsRemovedSpy(vpnConnections, SIGNAL(rowsRemoved(const QModelIndex &, int, int)));
+
+    vpnConnections->remove(connection);
+
+    WAIT_FOR_SIGNALS(rowsRemovedSpy, 1);
+    EXPECT_EQ(0, vpnConnections->rowCount(QModelIndex()));
+}
+
 
 }

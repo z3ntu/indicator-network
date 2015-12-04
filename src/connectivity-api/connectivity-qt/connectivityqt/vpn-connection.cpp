@@ -59,8 +59,8 @@ public:
     internal::DBusPropertyCache::UPtr m_propertyCache;
 };
 
-VpnConnection::VpnConnection(const QDBusObjectPath& path, const QDBusConnection& connection) :
-        d(new Priv(*this))
+VpnConnection::VpnConnection(const QDBusObjectPath& path, const QDBusConnection& connection, QObject* parent) :
+        QObject(parent), d(new Priv(*this))
 {
     d->m_vpnInterface = make_unique<
             ComUbuntuConnectivity1VpnVpnConnectionInterface>(
@@ -96,17 +96,17 @@ bool VpnConnection::active() const
     return d->m_propertyCache->get("active").toBool();
 }
 
-void VpnConnection::setId(const QString& id)
+void VpnConnection::setId(const QString& id) const
 {
     d->m_propertyCache->set("id", id);
 }
 
-void VpnConnection::setActive(bool active)
+void VpnConnection::setActive(bool active) const
 {
     d->m_propertyCache->set("active", active);
 }
 
-void VpnConnection::updateSecrets()
+void VpnConnection::updateSecrets() const
 {
     d->m_vpnInterface->UpdateSecrets();
 }

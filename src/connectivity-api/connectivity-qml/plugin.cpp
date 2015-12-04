@@ -19,6 +19,7 @@
 
 #include <plugin.h>
 #include <connectivityqt/connectivity.h>
+#include <connectivityqt/openvpn-connection.h>
 
 #include <QtQml>
 
@@ -28,10 +29,13 @@ static QObject *
 connectivitySingletonProvider(QQmlEngine *engine, QJSEngine *scriptEngine)
 {
     Q_UNUSED(scriptEngine)
-
-    auto connectivity = new connectivityqt::Connectivity(QDBusConnection::sessionBus(), engine);
-    QQmlEngine::setObjectOwnership(connectivity->vpnConnections(), QQmlEngine::CppOwnership);
-    return connectivity;
+    return new connectivityqt::Connectivity(
+            [](QObject *o)
+            {
+                QQmlEngine::setObjectOwnership(o, QQmlEngine::CppOwnership);
+            },
+            QDBusConnection::sessionBus(),
+            engine);
 }
 }
 
@@ -41,6 +45,9 @@ QmlConnectivityNetworkingPlugin::registerTypes(const char *uri)
     connectivityqt::Connectivity::registerMetaTypes();
     qmlRegisterSingletonType<connectivityqt::Connectivity>(uri, 1, 0, "NetworkingStatus", connectivitySingletonProvider);
     qmlRegisterSingletonType<connectivityqt::Connectivity>(uri, 1, 0, "Connectivity", connectivitySingletonProvider);
+    qmlRegisterUncreatableType<connectivityqt::VpnConnectionsListModel>(uri, 1, 0, "VpnConnectionsListModel", "Access VpnConnectionsListModel via Connectivity object");
+    qmlRegisterUncreatableType<connectivityqt::VpnConnection>(uri, 1, 0, "VpnConnection", "Access VpnConnection via VpnConnectionsListModel object");
+    qmlRegisterUncreatableType<connectivityqt::OpenvpnConnection>(uri, 1, 0, "OpenvpnConnection", "Access OpenvpnConnection via VpnConnectionsListModel object");
 }
 
 void

@@ -75,6 +75,10 @@ type OpenvpnConnection::name() const\
 #define DEFINE_PROPERTY_SETTER(varname, uppername, type) \
 void OpenvpnConnection::set##uppername(type value)\
 {\
+    if (d->m_data.m_##varname == value)\
+    {\
+        return;\
+    }\
     Priv::Data data(d->m_data);\
     data.m_##varname = value;\
     Q_EMIT updateVpnData(data.buildData());\
@@ -83,6 +87,10 @@ void OpenvpnConnection::set##uppername(type value)\
 #define DEFINE_SECRET_PROPERTY_SETTER(varname, uppername, type) \
 void OpenvpnConnection::set##uppername(type value)\
 {\
+    if (d->m_data.m_##varname == value)\
+    {\
+        return;\
+    }\
     Priv::Data data(d->m_data);\
     data.m_##varname = value;\
     Q_EMIT updateVpnSecrets(data.buildSecrets());\
@@ -115,6 +123,7 @@ public:
             m_remote(other.m_remote),
             m_remoteIp(other.m_remoteIp),
             m_staticKey(other.m_staticKey),
+            m_staticKeyDirection(other.m_staticKeyDirection),
             m_username(other.m_username),
 
             // Advanced general properties
@@ -206,6 +215,12 @@ public:
         {
             QStringMap data;
 
+            static const QMap<KeyDir, QString> keyDirMap
+            {
+                {ZERO, "0"},
+                {ONE, "1"}
+            };
+
             // Basic properties
 
             static const QMap<ConnectionType, QString> connectionTypeMap
@@ -228,7 +243,7 @@ public:
                     break;
                 case ConnectionType::PASSWORD:
                     data["ca"] = m_ca;
-                    data["username"] = m_remote;
+                    data["username"] = m_username;
                     data["password-flags"] = "1";
                     data["remote"] = m_remote;
                     break;
@@ -237,7 +252,7 @@ public:
                     data["cert"] = m_cert;
                     data["cert-pass-flags"] = "1";
                     data["key"] = m_key;
-                    data["username"] = m_remote;
+                    data["username"] = m_username;
                     data["password-flags"] = "1";
                     data["remote"] = m_remote;
                     break;
@@ -247,6 +262,10 @@ public:
                     data["remote"] = m_remote;
                     data["remote-ip"] = m_remoteIp;
                     data["static-key"] = m_staticKey;
+                    if (m_staticKeyDirection != KeyDir::KEY_NONE)
+                    {
+                        data["static-key-direction"] = keyDirMap[m_staticKeyDirection];
+                    }
                     break;
             }
 
@@ -254,11 +273,11 @@ public:
 
             if (m_portSet)
             {
-                data["port"] = m_port;
+                data["port"] = QString::number(m_port);
             }
             if (m_renegSecondsSet)
             {
-                data["reneg-seconds"] = m_renegSeconds;
+                data["reneg-seconds"] = QString::number(m_renegSeconds);
             }
             if (m_compLzo)
             {
@@ -283,11 +302,11 @@ public:
             }
             if (m_tunnelMtuSet)
             {
-                data["tunnel-mtu"] = m_tunnelMtu;
+                data["tunnel-mtu"] = QString::number(m_tunnelMtu);
             }
             if (m_fragmentSizeSet)
             {
-                data["fragment-size"] = m_fragmentSize;
+                data["fragment-size"] = QString::number(m_fragmentSize);
             }
             if (m_mssFix)
             {
@@ -324,7 +343,7 @@ public:
             }
             if (m_keysizeSet)
             {
-                data["keysize"] = m_keysize;
+                data["keysize"] = QString::number(m_keysize);
             }
             static const QMap<Auth, QString> authMap
             {
@@ -345,33 +364,32 @@ public:
 
             // Advanced TLS auth properties
 
-            if (!m_tlsRemote.isEmpty())
+            if (m_connectionType != ConnectionType::STATIC_KEY)
             {
-                data["tls-remote"] = m_tlsRemote;
-            }
-            static const QMap<TlsType, QString> remoteCertTlsMap
-            {
-                {SERVER, "server"},
-                {CLIENT, "client"}
-            };
-            if (m_remoteCertTlsSet)
-            {
-                data["remote-cert-tls"] = remoteCertTlsMap[m_remoteCertTls];
-            }
-            static const QMap<TaDir, QString> taDirMap
-            {
-                {ZERO, "0"},
-                {ONE, "1"}
-            };
-            if (m_taSet)
-            {
-                if (m_taDir != TaDir::NONE_TA)
+                if (!m_tlsRemote.isEmpty())
                 {
-                    data["ta-dir"] = taDirMap[m_taDir];
+                    data["tls-remote"] = m_tlsRemote;
                 }
-                if (!m_ta.isEmpty())
+                static const QMap<TlsType, QString> remoteCertTlsMap
                 {
-                    data["ta"] = m_ta;
+                    {SERVER, "server"},
+                    {CLIENT, "client"}
+                };
+                if (m_remoteCertTlsSet)
+                {
+                    data["remote-cert-tls"] = remoteCertTlsMap[m_remoteCertTls];
+                }
+
+                if (m_taSet)
+                {
+                    if (m_taDir != KeyDir::KEY_NONE)
+                    {
+                        data["ta-dir"] = keyDirMap[m_taDir];
+                    }
+                    if (!m_ta.isEmpty())
+                    {
+                        data["ta"] = m_ta;
+                    }
                 }
             }
 
@@ -386,7 +404,7 @@ public:
             {
                 data["proxy-type"] = proxyTypeMap[m_proxyType];
                 data["proxy-server"] = m_proxyServer;
-                data["proxy-port"] = m_proxyPort;
+                data["proxy-port"] = QString::number(m_proxyPort);
                 if (m_proxyRetry)
                 {
                     data["proxy-retry"] = "yes";
@@ -422,11 +440,12 @@ public:
         QString m_remote;
         QString m_remoteIp;
         QString m_staticKey;
+        KeyDir m_staticKeyDirection = KeyDir::KEY_NONE;
         QString m_username;
 
         // Advanced general properties
 
-        int m_port = 0;
+        int m_port = 1194;
         bool m_portSet = false;
         int m_renegSeconds = 0;
         bool m_renegSecondsSet = false;
@@ -435,9 +454,9 @@ public:
         QString m_dev;
         DevType m_devType = DevType::TUN;
         bool m_devTypeSet = false;
-        int m_tunnelMtu = 0;
+        int m_tunnelMtu = 1500;
         bool m_tunnelMtuSet = false;
-        int m_fragmentSize = 0;
+        int m_fragmentSize = 1300;
         bool m_fragmentSizeSet = false;
         bool m_mssFix = false;
         bool m_remoteRandom = false;
@@ -445,7 +464,7 @@ public:
         // Advanced security properties
 
         Cipher m_cipher = Cipher::DEFAULT_CIPHER;
-        int m_keysize = 0;
+        int m_keysize = 128;
         bool m_keysizeSet = false;
         Auth m_auth = Auth::DEFAULT_AUTH;
 
@@ -455,14 +474,14 @@ public:
         TlsType m_remoteCertTls = TlsType::SERVER;
         bool m_remoteCertTlsSet = false;
         QString m_ta;
-        TaDir m_taDir = TaDir::NONE_TA;
+        KeyDir m_taDir = KeyDir::KEY_NONE;
         bool m_taSet = false;
 
         // Advanced proxy settings
 
         ProxyType m_proxyType = ProxyType::NOT_REQUIRED;
         QString m_proxyServer;
-        int m_proxyPort = 0;
+        int m_proxyPort = 80;
         bool m_proxyRetry = false;
         QString m_proxyUsername;
         QString m_proxyPassword;
@@ -499,6 +518,27 @@ public:
     DEFINE_UPDATE_PROPERTY_STRING(remote, Remote, "remote")
     DEFINE_UPDATE_PROPERTY_STRING(remoteIp, RemoteIp, "remote-ip")
     DEFINE_UPDATE_PROPERTY_STRING(staticKey, StaticKey, "static-key")
+
+    void updateStaticKeyDirection(const QStringMap& data)
+    {
+        static const QMap<QString, KeyDir> typeMap
+        {
+            {"0", KeyDir::ZERO},
+            {"1", KeyDir::ONE}
+        };
+
+        auto it = data.constFind("static-key-direction");
+        if (it != data.constEnd())
+        {
+            setStaticKeyDirection(typeMap.value(*it, KeyDir::KEY_NONE));
+        }
+        else
+        {
+            setStaticKeyDirection(KeyDir::KEY_NONE);
+        }
+    }
+    DEFINE_UPDATE_SETTER(staticKeyDirection, StaticKeyDirection, OpenvpnConnection::KeyDir)
+
     DEFINE_UPDATE_PROPERTY_STRING(username, Username, "username")
 
     // Advanced general properties
@@ -625,10 +665,10 @@ public:
 
     void updateTa(const QStringMap& data)
     {
-        static const QMap<QString, TaDir> typeMap
+        static const QMap<QString, KeyDir> typeMap
         {
-            {"0", TaDir::ZERO},
-            {"1", TaDir::ONE}
+            {"0", KeyDir::ZERO},
+            {"1", KeyDir::ONE}
         };
 
         auto it = data.constFind("ta");
@@ -637,11 +677,11 @@ public:
         if (found)
         {
             setTa(*it);
-            setTaDir(typeMap.value(data.value("ta-dir"), TaDir::NONE_TA));
+            setTaDir(typeMap.value(data.value("ta-dir"), KeyDir::KEY_NONE));
         }
     }
     DEFINE_UPDATE_SETTER(ta, Ta, const QString &)
-    DEFINE_UPDATE_SETTER(taDir, TaDir, OpenvpnConnection::TaDir)
+    DEFINE_UPDATE_SETTER(taDir, TaDir, OpenvpnConnection::KeyDir)
     DEFINE_UPDATE_SETTER(taSet, TaSet, bool)
 
     // Advanced proxy settings
@@ -736,6 +776,7 @@ void OpenvpnConnection::updateData(const QStringMap& data)
     d->updateRemote(data);
     d->updateRemoteIp(data);
     d->updateStaticKey(data);
+    d->updateStaticKeyDirection(data);
     d->updateUsername(data);
 
     // Advanced general properties
@@ -786,6 +827,7 @@ DEFINE_PROPERTY_GETTER(certPass, QString)
 DEFINE_PROPERTY_GETTER(remote, QString)
 DEFINE_PROPERTY_GETTER(remoteIp, QString)
 DEFINE_PROPERTY_GETTER(staticKey, QString)
+DEFINE_PROPERTY_GETTER(staticKeyDirection, OpenvpnConnection::KeyDir)
 DEFINE_PROPERTY_GETTER(username, QString)
 
 // Advanced general properties
@@ -819,7 +861,7 @@ DEFINE_PROPERTY_GETTER(tlsRemote, QString)
 DEFINE_PROPERTY_GETTER(remoteCertTls, OpenvpnConnection::TlsType)
 DEFINE_PROPERTY_GETTER(remoteCertTlsSet, bool)
 DEFINE_PROPERTY_GETTER(ta, QString)
-DEFINE_PROPERTY_GETTER(taDir, OpenvpnConnection::TaDir)
+DEFINE_PROPERTY_GETTER(taDir, OpenvpnConnection::KeyDir)
 DEFINE_PROPERTY_GETTER(taSet, bool)
 
 // Advanced proxy settings
@@ -846,6 +888,7 @@ DEFINE_SECRET_PROPERTY_SETTER(password, Password, const QString &)
 DEFINE_PROPERTY_SETTER(remote, Remote, const QString &)
 DEFINE_PROPERTY_SETTER(remoteIp, RemoteIp, const QString &)
 DEFINE_PROPERTY_SETTER(staticKey, StaticKey, const QString &)
+DEFINE_PROPERTY_SETTER(staticKeyDirection, StaticKeyDirection, KeyDir)
 DEFINE_PROPERTY_SETTER(username, Username, const QString &)
 
 // Advanced general properties
@@ -879,7 +922,7 @@ DEFINE_PROPERTY_SETTER(tlsRemote, TlsRemote, const QString &)
 DEFINE_PROPERTY_SETTER(remoteCertTls, RemoteCertTls, OpenvpnConnection::TlsType)
 DEFINE_PROPERTY_SETTER(remoteCertTlsSet, RemoteCertTlsSet, bool)
 DEFINE_PROPERTY_SETTER(ta, Ta, const QString &)
-DEFINE_PROPERTY_SETTER(taDir, TaDir, OpenvpnConnection::TaDir)
+DEFINE_PROPERTY_SETTER(taDir, TaDir, OpenvpnConnection::KeyDir)
 DEFINE_PROPERTY_SETTER(taSet, TaSet, bool)
 
 // Advanced proxy settings

@@ -17,6 +17,7 @@
  *     Pete Woods <pete.woods@canonical.com>
  */
 
+#include <connectivityqt/internal/vpn-connection-list-model-parameters.h>
 #include <connectivityqt/openvpn-connection.h>
 #include <connectivityqt/vpn-connections-list-model.h>
 
@@ -92,7 +93,8 @@ public:
                 switch(vpnInterface.type())
                 {
                     case VpnConnection::Type::OPENVPN:
-                        vpnConnection = make_shared<OpenvpnConnection>(path, m_propertyCache->connection());
+                        vpnConnection.reset(new OpenvpnConnection(path, m_propertyCache->connection()),
+                                [](QObject* self){self->deleteLater();});
                         break;
                     default:
                         // TODO pptp, etc
@@ -100,9 +102,11 @@ public:
                 }
                 if (vpnConnection)
                 {
+                    m_objectOwner(vpnConnection.get());
                     m_vpnConnections << vpnConnection;
                     connect(vpnConnection.get(), &VpnConnection::idChanged, this, &Priv::connectionIdChanged);
                     connect(vpnConnection.get(), &VpnConnection::activeChanged, this, &Priv::connectionActiveChanged);
+                    connect(vpnConnection.get(), &VpnConnection::remove, this, &Priv::removeRequested);
                 }
             }
             p.endInsertRows();
@@ -120,6 +124,13 @@ public:
             }
         }
         return QModelIndex();
+    }
+
+    void remove(const VpnConnection& connection)
+    {
+        auto reply = m_writeInterface->RemoveVpnConnection(connection.path());
+        auto watcher(new QDBusPendingCallWatcher(reply, this));
+        connect(watcher, &QDBusPendingCallWatcher::finished, this, &Priv::removeConnectionFinished);
     }
 
 public Q_SLOTS:
@@ -143,24 +154,85 @@ public Q_SLOTS:
         }
     }
 
+    void addConnectionFinished(QDBusPendingCallWatcher *call)
+    {
+        QDBusPendingReply<QDBusObjectPath> reply = *call;
+        if (reply.isError())
+        {
+            qWarning() << __PRETTY_FUNCTION__ << reply.error().message();
+        }
+        else
+        {
+            QDBusObjectPath path(reply);
+            VpnConnection::SPtr connection;
+            for (const auto& tmp : m_vpnConnections)
+            {
+                if (tmp->path() == path)
+                {
+                    connection = tmp;
+                    break;
+                }
+            }
+            if (connection)
+            {
+                Q_EMIT p.addFinished(connection.get());
+            }
+            else
+            {
+                qWarning() << __PRETTY_FUNCTION__ << "New connection with path:" << path.path() << " could not be found";
+            }
+        }
+        call->deleteLater();
+    }
+
+    void removeConnectionFinished(QDBusPendingCallWatcher *call)
+    {
+        QDBusPendingReply<> reply = *call;
+        if (reply.isError())
+        {
+            qWarning() << __PRETTY_FUNCTION__ << reply.error().message();
+        }
+        call->deleteLater();
+    }
+
+    void removeRequested()
+    {
+        auto connection = qobject_cast<VpnConnection*>(sender());
+        if (connection)
+        {
+            remove(*connection);
+        }
+    }
+
 public:
     VpnConnectionsListModel& p;
+
+    function<void(QObject*)> m_objectOwner;
+
+    shared_ptr<ComUbuntuConnectivity1PrivateInterface> m_writeInterface;
 
     DBusPropertyCache::SPtr m_propertyCache;
 
     QList<VpnConnection::SPtr> m_vpnConnections;
 };
 
-VpnConnectionsListModel::VpnConnectionsListModel(DBusPropertyCache::SPtr propertyCache) :
+VpnConnectionsListModel::VpnConnectionsListModel(const internal::VpnConnectionsListModelParameters& parameters) :
         d(new Priv(*this))
 {
-    d->m_propertyCache = propertyCache;
+    d->m_objectOwner = parameters.objectOwner;
+    d->m_writeInterface = parameters.writeInterface;
+    d->m_propertyCache = parameters.propertyCache;
     d->updatePaths(d->m_propertyCache->get("VpnConnections"));
     connect(d->m_propertyCache.get(), &DBusPropertyCache::propertyChanged, d.get(), &Priv::propertyChanged);
 }
 
 VpnConnectionsListModel::~VpnConnectionsListModel()
 {
+}
+
+int VpnConnectionsListModel::columnCount(const QModelIndex &) const
+{
+    return 1;
 }
 
 int VpnConnectionsListModel::rowCount(const QModelIndex &) const
@@ -185,6 +257,9 @@ QVariant VpnConnectionsListModel::data(const QModelIndex &index, int role) const
             break;
         case Roles::RoleActive:
             return vpnConnection->active();
+            break;
+        case Roles::RoleType:
+            return static_cast<int>(vpnConnection->type());
             break;
         case Roles::RoleConnection:
             return QVariant::fromValue(qobject_cast<QObject*>(vpnConnection.get()));
@@ -220,6 +295,29 @@ bool VpnConnectionsListModel::setData(const QModelIndex &index, const QVariant &
     }
 
     return false;
+}
+
+Qt::ItemFlags VpnConnectionsListModel::flags(const QModelIndex & index) const
+{
+    int row(index.row());
+    if (row < 0 || row >= d->m_vpnConnections.size())
+    {
+        return Qt::NoItemFlags;
+    }
+
+    return QAbstractItemModel::flags(index) | Qt::ItemIsEditable;
+}
+
+void VpnConnectionsListModel::add(VpnConnection::Type type)
+{
+    auto reply = d->m_writeInterface->AddVpnConnection(static_cast<int>(type));
+    auto watcher(new QDBusPendingCallWatcher(reply, this));
+    connect(watcher, &QDBusPendingCallWatcher::finished, d.get(), &Priv::addConnectionFinished);
+}
+
+void VpnConnectionsListModel::remove(VpnConnection* connection)
+{
+    d->remove(*connection);
 }
 
 }

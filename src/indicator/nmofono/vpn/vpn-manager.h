@@ -45,6 +45,8 @@ public:
 
     VpnConnection::SPtr connection(const QDBusObjectPath& path) const;
 
+    QString addConnection(VpnConnection::Type type);
+
 Q_SIGNALS:
     void connectionsChanged();
 

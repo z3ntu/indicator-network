@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-15 17:40+0100\n"
+"POT-Creation-Date: 2015-12-04 13:16+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -172,18 +172,22 @@ msgstr ""
 msgid "Other network…"
 msgstr ""
 
+#: ../src/indicator/nmofono/vpn/vpn-manager.cpp:81
+msgid "VPN connection %1"
+msgstr ""
+
 #. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:159
+#: ../src/indicator/factory.cpp:187
 msgid "Wi-Fi"
 msgstr ""
 
 #. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:170
+#: ../src/indicator/factory.cpp:198
 msgid "Flight Mode"
 msgstr ""
 
 #. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:181
+#: ../src/indicator/factory.cpp:209
 msgid "Hotspot"
 msgstr ""
 
@@ -195,6 +199,6 @@ msgstr ""
 msgid "Cellular settings…"
 msgstr ""
 
-#: ../src/indicator/sections/vpn-section.cpp:124
+#: ../src/indicator/sections/vpn-section.cpp:140
 msgid "VPN settings…"
 msgstr ""

@@ -90,10 +90,10 @@ public:
         CLIENT
     };
 
-    Q_ENUMS(TaDir)
-    enum TaDir
+    Q_ENUMS(KeyDir)
+    enum KeyDir
     {
-        NONE_TA,
+        KEY_NONE,
         ZERO,
         ONE
     };
@@ -143,6 +143,9 @@ public:
 
     Q_PROPERTY(QString staticKey READ staticKey WRITE setStaticKey NOTIFY staticKeyChanged)
     QString staticKey() const;
+
+    Q_PROPERTY(KeyDir staticKeyDirection READ staticKeyDirection WRITE setStaticKeyDirection NOTIFY staticKeyDirectionChanged)
+    KeyDir staticKeyDirection() const;
 
     Q_PROPERTY(QString username READ username WRITE setUsername NOTIFY usernameChanged)
     QString username() const;
@@ -222,8 +225,8 @@ public:
     Q_PROPERTY(QString ta READ ta WRITE setTa NOTIFY taChanged)
     QString ta() const;
 
-    Q_PROPERTY(TaDir taDir READ taDir WRITE setTaDir NOTIFY taDirChanged)
-    TaDir taDir() const;
+    Q_PROPERTY(KeyDir taDir READ taDir WRITE setTaDir NOTIFY taDirChanged)
+    KeyDir taDir() const;
 
     Q_PROPERTY(bool taSet READ taSet WRITE setTaSet NOTIFY taSetChanged)
     bool taSet() const;
@@ -270,6 +273,8 @@ public Q_SLOTS:
     void setRemoteIp(const QString &value);
 
     void setStaticKey(const QString &value);
+
+    void setStaticKeyDirection(KeyDir value);
 
     void setUsername(const QString &value);
 
@@ -325,7 +330,7 @@ public Q_SLOTS:
 
     void setTa(const QString &value);
 
-    void setTaDir(TaDir value);
+    void setTaDir(KeyDir value);
 
     void setTaSet(bool value);
 
@@ -365,6 +370,8 @@ Q_SIGNALS:
     void remoteIpChanged(const QString &value);
 
     void staticKeyChanged(const QString &value);
+
+    void staticKeyDirectionChanged(KeyDir value);
 
     void usernameChanged(const QString &value);
 
@@ -420,7 +427,7 @@ Q_SIGNALS:
 
     void taChanged(const QString &value);
 
-    void taDirChanged(TaDir value);
+    void taDirChanged(KeyDir value);
 
     void taSetChanged(bool value);
 

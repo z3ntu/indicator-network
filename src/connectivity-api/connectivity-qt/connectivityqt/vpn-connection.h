@@ -43,7 +43,7 @@ public:
         PPTP
     };
 
-    VpnConnection(const QDBusObjectPath& path, const QDBusConnection& connection);
+    VpnConnection(const QDBusObjectPath& path, const QDBusConnection& connection, QObject* parent = 0);
 
     virtual ~VpnConnection();
 
@@ -60,16 +60,18 @@ public:
     virtual Type type() const = 0;
 
 public Q_SLOTS:
-    void setId(const QString& id);
+    void setId(const QString& id) const;
 
-    void setActive(bool active);
+    void setActive(bool active) const;
 
-    void updateSecrets();
+    void updateSecrets() const;
 
 Q_SIGNALS:
     void idChanged(const QString& id);
 
     void activeChanged(bool active);
+
+    void remove() const;
 
 protected:
     class Priv;
@@ -77,3 +79,5 @@ protected:
 };
 
 }
+
+Q_DECLARE_METATYPE(connectivityqt::VpnConnection::Type)

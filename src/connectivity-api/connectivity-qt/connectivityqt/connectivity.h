@@ -23,9 +23,12 @@
 #include <QDBusConnection>
 #include <QObject>
 #include <QStringList>
+#include <functional>
 #include <memory>
 
 #include <unity/util/DefinesPtrs.h>
+
+#include <connectivityqt/vpn-connections-list-model.h>
 
 namespace connectivityqt
 {
@@ -71,6 +74,10 @@ public:
     };
 
     Connectivity(const QDBusConnection& sessionConnection = QDBusConnection::sessionBus(), QObject* parent = 0);
+
+    Connectivity(const std::function<void(QObject*)>& objectOwner,
+                 const QDBusConnection& sessionConnection = QDBusConnection::sessionBus(),
+                 QObject* parent = 0);
 
     ~Connectivity();
 
@@ -133,8 +140,8 @@ public:
     Q_PROPERTY(bool Initialized READ isInitialized NOTIFY initialized)
     bool isInitialized() const;
 
-    Q_PROPERTY(QAbstractListModel* vpnConnections READ vpnConnections)
-    QAbstractListModel* vpnConnections() const;
+    Q_PROPERTY(QAbstractItemModel* vpnConnections READ vpnConnections NOTIFY vpnConnectionsUpdated)
+    QAbstractItemModel* vpnConnections() const;
 
 public Q_SLOTS:
     void setFlightMode(bool enabled);
@@ -189,6 +196,8 @@ Q_SIGNALS:
     void reportError(int reason);
 
     void initialized();
+
+    void vpnConnectionsUpdated(QAbstractItemModel*);
 
 protected:
     class Priv;

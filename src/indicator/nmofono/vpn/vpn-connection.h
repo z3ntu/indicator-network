@@ -52,6 +52,8 @@ public:
 
     ~VpnConnection() = default;
 
+    QString uuid() const;
+
     QString id() const;
 
     QDBusObjectPath path() const;
@@ -78,6 +80,8 @@ public Q_SLOTS:
     void setActiveConnectionPath(const QDBusObjectPath& path);
 
     void updateSecrets();
+
+    void remove();
 
 Q_SIGNALS:
     void idChanged(const QString& id);

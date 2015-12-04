@@ -18,13 +18,14 @@
  */
 
 #include <connectivityqt/connectivity.h>
-#include <connectivityqt/internal/dbus-property-cache.h>
+#include <connectivityqt/internal/vpn-connection-list-model-parameters.h>
 #include <connectivityqt/vpn-connections-list-model.h>
 #include <dbus-types.h>
 #include <NetworkingStatusInterface.h>
 #include <NetworkingStatusPrivateInterface.h>
 
 #include <QDebug>
+#include <QDBusPendingCallWatcher>
 
 using namespace std;
 
@@ -42,6 +43,8 @@ public:
 
     Connectivity& p;
 
+    function<void(QObject*)> m_objectOwner;
+
     QDBusConnection m_sessionConnection;
 
     internal::DBusPropertyCache::SPtr m_propertyCache;
@@ -52,7 +55,7 @@ public:
 
     shared_ptr<ComUbuntuConnectivity1PrivateInterface> m_writeInterface;
 
-    VpnConnectionsListModel::SPtr m_connectionsModel;
+    VpnConnectionsListModel::SPtr m_vpnConnectionsModel;
 
     static QVector<Limitations> toLimitations(const QVariant& value)
     {
@@ -162,6 +165,7 @@ public Q_SLOTS:
             Q_EMIT p.hotspotStoredUpdated(value.toBool());
         }
     }
+
 };
 
 void Connectivity::registerMetaTypes()
@@ -171,11 +175,27 @@ void Connectivity::registerMetaTypes()
     qRegisterMetaType<connectivityqt::Connectivity::Limitations>("connectivityqt::Connectivity::Limitations");
     qRegisterMetaType<QVector<connectivityqt::Connectivity::Limitations>>("QVector<connectivityqt::Connectivity::Limitations>");
     qRegisterMetaType<connectivityqt::Connectivity::Status>("connectivityqt::Connectivity::Status");
+
+    qRegisterMetaType<connectivityqt::VpnConnection*>("VpnConnection*");
+    qRegisterMetaType<connectivityqt::VpnConnection::Type>("VpnConnection::Type");
 }
 
 Connectivity::Connectivity(const QDBusConnection& sessionConnection, QObject* parent) :
+        Connectivity(
+                [](QObject*){},
+                sessionConnection,
+                parent
+        )
+{
+}
+
+Connectivity::Connectivity(const std::function<void(QObject*)>& objectOwner,
+                           const QDBusConnection& sessionConnection,
+                           QObject* parent) :
         QObject(parent), d(new Priv(*this, sessionConnection))
 {
+    d->m_objectOwner = objectOwner;
+
     d->m_readInterface = make_shared<
             ComUbuntuConnectivity1NetworkingStatusInterface>(
             DBusTypes::DBUS_NAME, DBusTypes::SERVICE_PATH,
@@ -208,8 +228,6 @@ Connectivity::Connectivity(const QDBusConnection& sessionConnection, QObject* pa
     connect(d->m_writeInterface.get(),
             &ComUbuntuConnectivity1PrivateInterface::ReportError, this,
             &Connectivity::reportError);
-
-    d->m_connectionsModel = make_shared<VpnConnectionsListModel>(d->m_writePropertyCache);
 }
 
 Connectivity::~Connectivity()
@@ -351,9 +369,19 @@ void Connectivity::setHotspotAuth(const QString& auth)
     d->m_writeInterface->SetHotspotAuth(auth);
 }
 
-QAbstractListModel* Connectivity::vpnConnections() const
+QAbstractItemModel* Connectivity::vpnConnections() const
 {
-    return d->m_connectionsModel.get();
+    // Lazy initialisation
+    if (!d->m_vpnConnectionsModel)
+    {
+        d->m_vpnConnectionsModel = make_shared<VpnConnectionsListModel>(
+                    internal::VpnConnectionsListModelParameters{
+                            d->m_objectOwner,
+                            d->m_writeInterface,
+                            d->m_writePropertyCache});
+        d->m_objectOwner(d->m_vpnConnectionsModel.get());
+    }
+    return d->m_vpnConnectionsModel.get();
 }
 
 }

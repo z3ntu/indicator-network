@@ -101,6 +101,11 @@ public:
         Q_EMIT p.busyChanged(m_busy);
     }
 
+    void updateUuid()
+    {
+        m_uuid = m_settings["connection"]["uuid"].toString();
+    }
+
     void updateId()
     {
         QString id = m_settings["connection"]["id"].toString();
@@ -130,16 +135,14 @@ public:
 
     void updateType()
     {
-        QString serviceType = m_settings["vpn"]["service-type"].toString();
+        static const QMap<QString, Type> typeMap
+        {
+            {"org.freedesktop.NetworkManager.openvpn", Type::openvpn},
+            {"org.freedesktop.NetworkManager.pptp", Type::pptp}
+        };
 
-        if (serviceType == "org.freedesktop.NetworkManager.openvpn")
-        {
-            m_type = Type::openvpn;
-        }
-        else if (serviceType == "org.freedesktop.NetworkManager.pptp")
-        {
-            m_type = Type::pptp;
-        }
+        QString serviceType = m_settings["vpn"]["service-type"].toString();
+        m_type = typeMap.value(serviceType, Type::openvpn);
     }
 
     void updateActivatable()
@@ -210,7 +213,15 @@ public Q_SLOTS:
             return;
         }
 
-        QVariantDictMap vpnSecrets = m_connection->GetSecrets("vpn");
+        auto reply = m_connection->GetSecrets("vpn");
+        reply.waitForFinished();
+        if (reply.isError())
+        {
+            qWarning() << __PRETTY_FUNCTION__ << reply.error().message();
+            return;
+        }
+
+        QVariantDictMap vpnSecrets = reply;
 
         QStringMap secrets;
         QVariant v = vpnSecrets.value("vpn").value("secrets");
@@ -225,7 +236,16 @@ public Q_SLOTS:
 
     void settingsUpdated()
     {
-        m_settings = m_connection->GetSettings();
+        auto reply = m_connection->GetSettings();
+
+        reply.waitForFinished();
+        if (reply.isError())
+        {
+            qWarning() << __PRETTY_FUNCTION__ << reply.error().message();
+            return;
+        }
+
+        m_settings = reply;
 
         QStringMap vpnData;
         // Encourage Qt to decode the nested map
@@ -301,6 +321,8 @@ public:
 
     QTimer m_dispatchPendingSettingsTimer;
 
+    QString m_uuid;
+
     QString m_id;
 
     bool m_valid = false;
@@ -329,7 +351,7 @@ VpnConnection::VpnConnection(
         d(new Priv(*this))
 {
     d->m_dispatchPendingSettingsTimer.setSingleShot(true);
-    d->m_dispatchPendingSettingsTimer.setInterval(0);
+    d->m_dispatchPendingSettingsTimer.setInterval(200);
     d->m_dispatchPendingSettingsTimer.setTimerType(Qt::CoarseTimer);
     connect(&d->m_dispatchPendingSettingsTimer, &QTimer::timeout, d.get(), &Priv::dispatchPendingSettings);
 
@@ -338,6 +360,7 @@ VpnConnection::VpnConnection(
     d->m_activeConnectionManager = activeConnectionManager;
 
     d->settingsUpdated();
+    d->updateUuid();
     connect(d->m_connection.get(), &OrgFreedesktopNetworkManagerSettingsConnectionInterface::Updated, d.get(), &Priv::settingsUpdated);
 
     if (!isValid())
@@ -362,6 +385,11 @@ VpnConnection::VpnConnection(
         default:
             break;
     }
+}
+
+QString VpnConnection::uuid() const
+{
+    return d->m_uuid;
 }
 
 QString VpnConnection::id() const
@@ -417,6 +445,11 @@ void VpnConnection::setActiveConnectionPath(const QDBusObjectPath& path)
 void VpnConnection::updateSecrets()
 {
     d->secretsUpdated();
+}
+
+void VpnConnection::remove()
+{
+    d->m_connection->Delete();
 }
 
 bool VpnConnection::isActive() const

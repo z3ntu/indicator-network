@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include <connectivityqt/internal/dbus-property-cache.h>
+#include <connectivityqt/vpn-connection.h>
 
 #include <QAbstractItemModel>
 #include <unity/util/DefinesPtrs.h>
@@ -28,11 +28,13 @@ namespace connectivityqt
 {
 namespace internal
 {
-class DBusPropertyCache;
+struct VpnConnectionsListModelParameters;
 }
 
 class Q_DECL_EXPORT VpnConnectionsListModel : public QAbstractListModel
 {
+    Q_OBJECT
+
     Q_ENUMS(Roles)
 
 public:
@@ -42,12 +44,15 @@ public:
     {
         RoleId,
         RoleActive,
+        RoleType,
         RoleConnection
     };
 
-    VpnConnectionsListModel(std::shared_ptr<internal::DBusPropertyCache> propertyCache);
+    VpnConnectionsListModel(const internal::VpnConnectionsListModelParameters& parameters);
 
     ~VpnConnectionsListModel();
+
+    int columnCount(const QModelIndex &parent) const override;
 
     int rowCount(const QModelIndex &parent) const override;
 
@@ -55,14 +60,25 @@ public:
 
     bool setData(const QModelIndex &index, const QVariant &value, int role) override;
 
+    Qt::ItemFlags flags(const QModelIndex & index) const override;
+
     QHash<int, QByteArray> roleNames() const override
     {
         QHash<int, QByteArray> roles;
         roles[RoleId] = "id";
         roles[RoleActive] = "active";
+        roles[RoleType] = "type";
         roles[RoleConnection] = "connection";
         return roles;
     }
+
+public Q_SLOTS:
+    void add(VpnConnection::Type type);
+
+    void remove(VpnConnection* connection);
+
+Q_SIGNALS:
+    void addFinished(VpnConnection * connection);
 
 protected:
     class Priv;
@@ -70,3 +86,5 @@ protected:
 };
 
 }
+
+Q_DECLARE_METATYPE(connectivityqt::VpnConnection*)

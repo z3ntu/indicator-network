@@ -113,6 +113,16 @@ public Q_SLOTS:
 
         refreshProperties(invalidatedProperties);
     }
+
+    void dbusCallFinished(QDBusPendingCallWatcher *call)
+    {
+        QDBusPendingReply<> reply = *call;
+        if (reply.isError())
+        {
+            qCritical() << __PRETTY_FUNCTION__ << reply.error().message();
+        }
+        call->deleteLater();
+    }
 };
 
 DBusPropertyCache::DBusPropertyCache(const QString &service,
@@ -145,7 +155,12 @@ DBusPropertyCache::~DBusPropertyCache()
 
 void DBusPropertyCache::set(const QString& name, const QVariant& value)
 {
-    d->m_propertiesInterface->Set(d->m_interface, name, QDBusVariant(value));
+    if (d->m_propertyCache.value(name) != value)
+    {
+        auto reply = d->m_propertiesInterface->Set(d->m_interface, name, QDBusVariant(value));
+        auto watcher(new QDBusPendingCallWatcher(reply, this));
+        connect(watcher, &QDBusPendingCallWatcher::finished, d.get(), &Priv::dbusCallFinished);
+    }
 }
 
 QVariant DBusPropertyCache::get(const QString& name) const

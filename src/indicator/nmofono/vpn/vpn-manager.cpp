@@ -18,6 +18,7 @@
  */
 
 #include <nmofono/vpn/vpn-manager.h>
+#include <util/localisation.h>
 #include <NetworkManager.h>
 #include <QMap>
 
@@ -61,6 +62,31 @@ public:
                 updateActiveAndBusy();
             }
         }
+    }
+
+    QSet<QString> connectionIds()
+    {
+        QSet<QString> ids;
+        QMapIterator<QDBusObjectPath, VpnConnection::SPtr> it(m_connections);
+        while (it.hasNext())
+        {
+            it.next();
+            ids << it.value()->id();
+        }
+        return ids;
+    }
+
+    QString newConnectionName()
+    {
+        static const QString NAME_FORMAT(_("VPN connection %1"));
+        auto ids = connectionIds();
+        int i = 1;
+        QString name = NAME_FORMAT.arg(i);
+        while (ids.contains(name))
+        {
+            name = NAME_FORMAT.arg(++i);
+        }
+        return name;
     }
 
 Q_SIGNALS:
@@ -183,6 +209,52 @@ QSet<QDBusObjectPath> VpnManager::connectionPaths() const
 VpnConnection::SPtr VpnManager::connection(const QDBusObjectPath& path) const
 {
     return d->m_connections.value(path);
+}
+
+QString VpnManager::addConnection(VpnConnection::Type type)
+{
+    static const QMap<VpnConnection::Type, QString> typeMap
+    {
+        {VpnConnection::Type::openvpn, "org.freedesktop.NetworkManager.openvpn"},
+        {VpnConnection::Type::pptp, "org.freedesktop.NetworkManager.pptp"}
+    };
+
+    QString uuid = QUuid::createUuid().toString().mid(1,36);
+
+
+    QStringMap vpnData;
+    switch (type)
+    {
+        case VpnConnection::Type::openvpn:
+            vpnData["connection-type"] = "tls";
+            break;
+        case VpnConnection::Type::pptp:
+            // TODO PPTP
+            break;
+    };
+
+
+    QVariantDictMap connection;
+    connection["connection"] = QVariantMap
+    {
+        {"type", "vpn"},
+        {"id", d->newConnectionName()},
+        {"uuid", uuid}
+    };
+    connection["vpn"] = QVariantMap
+    {
+        {"service-type", typeMap[type]},
+        {"data", QVariant::fromValue(vpnData)}
+    };
+
+    auto reply = d->m_settingsInterface->AddConnection(connection);
+    reply.waitForFinished();
+    if (reply.isError())
+    {
+        throw domain_error(reply.error().message().toStdString());
+    }
+
+    return uuid;
 }
 
 }

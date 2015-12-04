@@ -37,13 +37,8 @@
             <arg type="s" direction="in" name="auth"/>
         </method>
 
-        <method name="AddOpenvpnConnection">
-            <arg type="s" direction="in" name="auth"/>
-            <arg type="o" direction="out" name="path"/>
-        </method>
-
-        <method name="AddPptpConnection">
-            <arg type="s" direction="in" name="auth"/>
+        <method name="AddVpnConnection">
+            <arg type="i" direction="in" name="type"/>
             <arg type="o" direction="out" name="path"/>
         </method>
 

@@ -72,6 +72,9 @@ public:
     Q_PROPERTY(QString staticKey READ staticKey WRITE setStaticKey)
     QString staticKey() const;
 
+    Q_PROPERTY(int staticKeyDirection READ staticKeyDirection WRITE setStaticKeyDirection)
+    int staticKeyDirection() const;
+
     Q_PROPERTY(QString username READ username WRITE setUsername)
     QString username() const;
 
@@ -183,6 +186,8 @@ protected Q_SLOTS:
     // Enum properties
     void setConnectionType(int value);
 
+    void setStaticKeyDirection(int value);
+
     void setDevType(int value);
 
     void setCipher(int value);
@@ -190,6 +195,8 @@ protected Q_SLOTS:
     void setAuth(int value);
 
     void setRemoteCertTls(int value);
+
+    void setTaDir(int value);
 
     void setProxyType(int value);
 
@@ -214,6 +221,8 @@ protected Q_SLOTS:
     void remoteIpUpdated(const QString &value);
 
     void staticKeyUpdated(const QString &value);
+
+    void staticKeyDirectionUpdated(nmofono::vpn::OpenvpnConnection::KeyDir value);
 
     void usernameUpdated(const QString& value);
 
@@ -269,7 +278,7 @@ protected Q_SLOTS:
 
     void taUpdated(const QString &value);
 
-    void taDirUpdated(nmofono::vpn::OpenvpnConnection::TaDir value);
+    void taDirUpdated(nmofono::vpn::OpenvpnConnection::KeyDir value);
 
     void taSetUpdated(bool value);
 
@@ -354,8 +363,6 @@ Q_SIGNALS:
     void setRemoteCertTlsSet(bool value);
 
     void setTa(const QString &value);
-
-    void setTaDir(int value);
 
     void setTaSet(bool value);
 

@@ -97,4 +97,9 @@ int DBusVpnConnection::intType() const
     return static_cast<int>(type());
 }
 
+void DBusVpnConnection::remove()
+{
+    m_vpnConnection->remove();
+}
+
 }

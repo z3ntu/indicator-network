@@ -128,9 +128,7 @@ protected Q_SLOTS:
 
     void SetHotspotAuth(const QString &auth);
 
-    QDBusObjectPath AddOpenvpnConnection(const QString &auth);
-
-    QDBusObjectPath AddPptpConnection(const QString &auth);
+    QDBusObjectPath AddVpnConnection(int type);
 
     void RemoveVpnConnection(const QDBusObjectPath &path);
 

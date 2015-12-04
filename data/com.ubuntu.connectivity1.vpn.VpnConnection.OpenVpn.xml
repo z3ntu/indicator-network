@@ -21,6 +21,7 @@
         <property name="localIp" type="s" access="readwrite"/>
         <property name="remoteIp" type="s" access="readwrite"/>
         <property name="staticKey" type="s" access="readwrite"/>
+        <property name="staticKeyDirection" type="i" access="readwrite"/>
         
         <!--advanced->general -->
 
@@ -237,6 +238,7 @@ static-key:
 
         'local-ip': '10.1.1.1',
         'static-key': '/home/pete/.sesame/canonical_ta.key',
+        'static-key-direction': '0',
         'remote-ip': '123.1.1.1'
     }
 },

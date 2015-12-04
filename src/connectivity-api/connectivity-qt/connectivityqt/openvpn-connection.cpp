@@ -91,6 +91,7 @@ public Q_SLOTS:
         DEFINE_PROPERTY_UPDATE(remote, "remote", toString)
         DEFINE_PROPERTY_UPDATE(remoteIp, "remoteIp", toString)
         DEFINE_PROPERTY_UPDATE(staticKey, "staticKey", toString)
+        DEFINE_PROPERTY_UPDATE_ENUM(staticKeyDirection, "staticKeyDirection", KeyDir)
         DEFINE_PROPERTY_UPDATE(username, "username", toString)
 
         // Advanced general properties
@@ -123,7 +124,7 @@ public Q_SLOTS:
         DEFINE_PROPERTY_UPDATE_ENUM(remoteCertTls, "remoteCertTls", TlsType)
         DEFINE_PROPERTY_UPDATE(remoteCertTlsSet, "remoteCertTlsSet", toBool)
         DEFINE_PROPERTY_UPDATE(ta, "ta", toString)
-        DEFINE_PROPERTY_UPDATE_ENUM(taDir, "taDir", TaDir)
+        DEFINE_PROPERTY_UPDATE_ENUM(taDir, "taDir", KeyDir)
         DEFINE_PROPERTY_UPDATE(taSet, "taSet", toBool)
 
         // Advanced proxy settings
@@ -184,6 +185,7 @@ DEFINE_PROPERTY_GETTER(password, "password", QString, toString)
 DEFINE_PROPERTY_GETTER(remote, "remote", QString, toString)
 DEFINE_PROPERTY_GETTER(remoteIp, "remoteIp", QString, toString)
 DEFINE_PROPERTY_GETTER(staticKey, "staticKey", QString, toString)
+DEFINE_PROPERTY_GETTER_ENUM(staticKeyDirection, "staticKeyDirection", KeyDir)
 DEFINE_PROPERTY_GETTER(username, "username", QString, toString)
 
 // Advanced general properties
@@ -217,7 +219,7 @@ DEFINE_PROPERTY_GETTER(tlsRemote, "tlsRemote", QString, toString)
 DEFINE_PROPERTY_GETTER_ENUM(remoteCertTls, "remoteCertTls", TlsType)
 DEFINE_PROPERTY_GETTER(remoteCertTlsSet, "remoteCertTlsSet", bool, toBool)
 DEFINE_PROPERTY_GETTER(ta, "ta", QString, toString)
-DEFINE_PROPERTY_GETTER_ENUM(taDir, "taDir", TaDir)
+DEFINE_PROPERTY_GETTER_ENUM(taDir, "taDir", KeyDir)
 DEFINE_PROPERTY_GETTER(taSet, "taSet", bool, toBool)
 
 // Advanced proxy settings
@@ -243,6 +245,7 @@ DEFINE_PROPERTY_SETTER(Password, "password", const QString &)
 DEFINE_PROPERTY_SETTER(Remote, "remote", const QString &)
 DEFINE_PROPERTY_SETTER(RemoteIp, "remoteIp", const QString &)
 DEFINE_PROPERTY_SETTER(StaticKey, "staticKey", const QString &)
+DEFINE_PROPERTY_SETTER_ENUM(StaticKeyDirection, "staticKeyDirection", KeyDir)
 DEFINE_PROPERTY_SETTER(Username, "username", const QString &)
 
 // Advanced general properties
@@ -276,7 +279,7 @@ DEFINE_PROPERTY_SETTER(TlsRemote, "tlsRemote", const QString &)
 DEFINE_PROPERTY_SETTER_ENUM(RemoteCertTls, "remoteCertTls", TlsType)
 DEFINE_PROPERTY_SETTER(RemoteCertTlsSet, "remoteCertTlsSet", bool)
 DEFINE_PROPERTY_SETTER(Ta, "ta", const QString &)
-DEFINE_PROPERTY_SETTER_ENUM(TaDir, "taDir", TaDir)
+DEFINE_PROPERTY_SETTER_ENUM(TaDir, "taDir", KeyDir)
 DEFINE_PROPERTY_SETTER(TaSet, "taSet", bool)
 
 // Advanced proxy settings

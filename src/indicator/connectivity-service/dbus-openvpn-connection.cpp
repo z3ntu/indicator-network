@@ -81,6 +81,7 @@ DBusOpenvpnConnection::DBusOpenvpnConnection(VpnConnection::SPtr vpnConnection,
     DEFINE_PROPERTY_CONNECTION_FORWARD(Remote)
     DEFINE_PROPERTY_CONNECTION_FORWARD(RemoteIp)
     DEFINE_PROPERTY_CONNECTION_FORWARD(StaticKey)
+    // staticKeyDirection is enum
     DEFINE_PROPERTY_CONNECTION_FORWARD(Username)
 
     // Advanced general properties
@@ -140,6 +141,7 @@ DBusOpenvpnConnection::DBusOpenvpnConnection(VpnConnection::SPtr vpnConnection,
     DEFINE_PROPERTY_CONNECTION_REVERSE(remote)
     DEFINE_PROPERTY_CONNECTION_REVERSE(remoteIp)
     DEFINE_PROPERTY_CONNECTION_REVERSE(staticKey)
+    DEFINE_PROPERTY_CONNECTION_REVERSE(staticKeyDirection)
     DEFINE_PROPERTY_CONNECTION_REVERSE(username)
 
     // Advanced general properties
@@ -200,10 +202,12 @@ nmofono::vpn::VpnConnection::Type DBusOpenvpnConnection::type() const
 // Enum properties
 
 DEFINE_PROPERTY_SETTER_ENUM(ConnectionType, ConnectionType)
+DEFINE_PROPERTY_SETTER_ENUM(StaticKeyDirection, KeyDir)
 DEFINE_PROPERTY_SETTER_ENUM(DevType, DevType)
 DEFINE_PROPERTY_SETTER_ENUM(Cipher, Cipher)
 DEFINE_PROPERTY_SETTER_ENUM(Auth, Auth)
 DEFINE_PROPERTY_SETTER_ENUM(RemoteCertTls, TlsType)
+DEFINE_PROPERTY_SETTER_ENUM(TaDir, KeyDir)
 DEFINE_PROPERTY_SETTER_ENUM(ProxyType, ProxyType)
 
 // Basic properties
@@ -218,6 +222,7 @@ DEFINE_PROPERTY_GETTER(password, QString)
 DEFINE_PROPERTY_GETTER(remote, QString)
 DEFINE_PROPERTY_GETTER(remoteIp, QString)
 DEFINE_PROPERTY_GETTER(staticKey, QString)
+DEFINE_PROPERTY_GETTER_ENUM(staticKeyDirection)
 DEFINE_PROPERTY_GETTER(username, QString)
 
 // Advanced general properties
@@ -286,6 +291,7 @@ DEFINE_PROPERTY_UPDATER(password, "password", const QString &)
 DEFINE_PROPERTY_UPDATER(remote, "remote", const QString &)
 DEFINE_PROPERTY_UPDATER(remoteIp, "remoteIp", const QString &)
 DEFINE_PROPERTY_UPDATER(staticKey, "staticKey", const QString &)
+DEFINE_PROPERTY_UPDATER_ENUM(staticKeyDirection, "staticKeyDirection", KeyDir)
 DEFINE_PROPERTY_UPDATER(username, "username", const QString &)
 
 // Advanced general properties
@@ -319,7 +325,7 @@ DEFINE_PROPERTY_UPDATER(tlsRemote, "tlsRemote", const QString &)
 DEFINE_PROPERTY_UPDATER_ENUM(remoteCertTls, "remoteCertTls", TlsType)
 DEFINE_PROPERTY_UPDATER(remoteCertTlsSet, "remoteCertTlsSet", bool)
 DEFINE_PROPERTY_UPDATER(ta, "ta", const QString &)
-DEFINE_PROPERTY_UPDATER_ENUM(taDir, "taDir", TaDir)
+DEFINE_PROPERTY_UPDATER_ENUM(taDir, "taDir", KeyDir)
 DEFINE_PROPERTY_UPDATER(taSet, "taSet", bool)
 
 // Advanced proxy settings

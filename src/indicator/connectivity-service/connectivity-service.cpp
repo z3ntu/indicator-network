@@ -53,6 +53,8 @@ public:
 
     QString m_status;
 
+    QMap<QString, QDBusMessage> m_addQueue;
+
     Private(ConnectivityService& parent, const QDBusConnection& connection) :
         p(parent), m_connection(connection)
     {
@@ -222,6 +224,8 @@ public Q_SLOTS:
             m_vpnConnections.remove(con);
         }
 
+        QList<QPair<QDBusMessage, QDBusObjectPath>> addReplies;
+
         for (const auto& path: toAdd)
         {
             auto vpn = m_vpnManager->connection(path);
@@ -239,11 +243,24 @@ public Q_SLOTS:
             {
                 m_vpnConnections[path] = vpnConnection;
             }
+
+            QString uuid = vpn->uuid();
+            if (m_addQueue.contains(uuid))
+            {
+                addReplies << QPair<QDBusMessage, QDBusObjectPath>(m_addQueue.take(uuid), vpnConnection->path());
+            }
         }
 
         if (!toRemove.isEmpty() || !toAdd.isEmpty())
         {
             notifyPrivateProperties({"VpnConnections"});
+            flushProperties();
+        }
+
+        for (const auto& reply: addReplies)
+        {
+            m_connection.send(
+                    reply.first.createReply(QVariant::fromValue(reply.second)));
         }
     }
 };
@@ -417,18 +434,57 @@ void PrivateService::SetHotspotAuth(const QString &auth)
     p.d->m_manager->setHotspotAuth(auth);
 }
 
-QDBusObjectPath PrivateService::AddOpenvpnConnection(const QString &auth)
+QDBusObjectPath PrivateService::AddVpnConnection(int type)
 {
-    return QDBusObjectPath();
-}
+    setDelayedReply(true);
 
-QDBusObjectPath PrivateService::AddPptpConnection(const QString &auth)
-{
+    if (type < 0 || type > 1)
+    {
+        p.d->m_connection.send(
+                message().createErrorReply(QDBusError::InvalidArgs,
+                                           "Invalid VPN type"));
+    }
+    else
+    {
+        try
+        {
+            QString uuid = p.d->m_vpnManager->addConnection(
+                    static_cast<VpnConnection::Type>(type));
+            p.d->m_addQueue[uuid] = message();
+        }
+        catch (domain_error& e)
+        {
+            p.d->m_connection.send(
+                    message().createErrorReply(QDBusError::InvalidArgs,
+                                               e.what()));
+        }
+    }
+
     return QDBusObjectPath();
 }
 
 void PrivateService::RemoveVpnConnection(const QDBusObjectPath &path)
 {
+    DBusVpnConnection::SPtr vpnConnection;
+    for (const auto& tmp: p.d->m_vpnConnections)
+    {
+        if (tmp->path() == path)
+        {
+            vpnConnection = tmp;
+            break;
+        }
+    }
+
+    if (vpnConnection)
+    {
+        vpnConnection->remove();
+    }
+    else
+    {
+        setDelayedReply(true);
+                p.d->m_connection.send(
+                        message().createErrorReply(QDBusError::InvalidArgs, "Unknown VPN connection: " + path.path()));
+    }
 }
 
 QString PrivateService::hotspotPassword() const

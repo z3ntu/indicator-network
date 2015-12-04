@@ -57,6 +57,8 @@ public:
 
     QDBusObjectPath path() const;
 
+    void remove();
+
 Q_SIGNALS:
     void setActive(bool active);
 

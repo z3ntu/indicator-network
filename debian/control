@@ -46,6 +46,7 @@ Multi-Arch: foreign
 Depends: ${misc:Depends},
          ${shlibs:Depends},
          network-manager,
+         network-manager-openvpn,
          ofono,
          ubuntu-mobile-icons (>= 13.04+13.10.20131014),
 # For apport hook

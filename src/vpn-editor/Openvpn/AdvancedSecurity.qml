@@ -15,29 +15,28 @@
  */
 
 import QtQuick 2.4
-import QtQuick.Layouts 1.1
-import QtQuick.Controls 1.3 as QQC
 import Ubuntu.Components 1.3
+import Ubuntu.Components.ListItems 1.3 as ListItems
 
 Page {
     property var connection
 
     title: i18n.tr("Security")
 
-    ColumnLayout {
-        spacing: units.gu(1)
-        anchors.top: parent.top
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.topMargin: units.gu(1)
-        anchors.rightMargin: units.gu(1)
-        anchors.leftMargin: units.gu(1)
+    Flickable {
+        anchors.fill: parent
+        contentHeight: contentItem.childrenRect.height
+        boundsBehavior: (contentHeight > root.height) ?
+                            Flickable.DragAndOvershootBounds :
+                            Flickable.StopAtBounds
+        flickableDirection: Flickable.VerticalFlick
 
-        RowLayout {
-            Layout.fillWidth: true
+        Column {
+            anchors.left: parent.left
+            anchors.right: parent.right
 
-            Label {text: i18n.tr("Cipher:")}
-            QQC.ComboBox {
+            ListItems.ItemSelector {
+                text: i18n.tr("Cipher:")
                 model: [
                     i18n.tr("Default"),
                     i18n.tr("DES-CBC"),
@@ -56,36 +55,27 @@ Page {
                     i18n.tr("AES-128-CBC-HMAC-SHA1"),
                     i18n.tr("AES-256-CBC-HMAC-SHA1"),
                 ]
-                currentIndex: connection.cipher
-                onCurrentIndexChanged: connection.cipher = currentIndex
-                Layout.fillWidth: true
+                selectedIndex: connection.cipher
+                onSelectedIndexChanged: connection.cipher = selectedIndex
             }
-        }
 
-        RowLayout {
-            Layout.fillWidth: true
+            OptionalValue {
+                text: i18n.tr("Use cipher key size:")
 
-            CheckBox {
                 checked: connection.keysizeSet
                 onCheckedChanged: connection.keysizeSet = checked
+
+                control: TextField {
+                    text: connection.keysize
+                    onTextChanged: connection.keysize = parseInt(text) || 0
+                    enabled: connection.keysizeSet
+                    validator: IntValidator{bottom: 0}
+                    width: units.gu(8)
+                }
             }
 
-            Label {text: i18n.tr("Use custom size of cipher key:")}
-
-            TextField {
-                text: connection.keysize
-                onTextChanged: connection.keysize = parseInt(text) || 0
-                enabled: connection.keysizeSet
-                validator: IntValidator{bottom: 0}
-                Layout.fillWidth: true
-            }
-        }
-
-        RowLayout {
-            Layout.fillWidth: true
-
-            Label {text: i18n.tr("HMAC authentication:")}
-            QQC.ComboBox {
+            ListItems.ItemSelector {
+                text: i18n.tr("HMAC authentication:")
                 model: [
                     i18n.tr("Default"),
                     i18n.tr("None"),
@@ -98,10 +88,8 @@ Page {
                     i18n.tr("SHA-512"),
                     i18n.tr("RIPEMD-160")
                 ]
-                currentIndex: connection.auth
-                onCurrentIndexChanged: connection.auth = currentIndex
-                enabled: connection.devTypeSet
-                Layout.fillWidth: true
+                selectedIndex: connection.auth
+                onSelectedIndexChanged: connection.auth = selectedIndex
             }
         }
     }

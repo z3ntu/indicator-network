@@ -41,6 +41,7 @@ Page {
     Item {
         anchors.fill: parent
         Flickable {
+
             anchors.fill: parent
             contentWidth: parent.width
             contentHeight: units.gu(100)
@@ -48,7 +49,8 @@ Page {
 
             Loader {
                 id: editor
-                width: vpnEditor.width
+                anchors.left: parent.left
+                anchors.right: parent.right
             }
         }
     }

@@ -1,0 +1,9 @@
+[Desktop Entry]
+Exec=qmlscene -qt5 Main.qml
+Icon=data/icon.svg
+Name=VPN editor
+MimeType=text/plain;
+Terminal=false
+Type=Application
+StartupNotify=true
+X-Ubuntu-Touch=true

@@ -15,108 +15,76 @@
  */
 
 import QtQuick 2.4
-import QtQuick.Controls 1.3 as QQC
-import QtQuick.Layouts 1.1
 import Ubuntu.Components 1.3
+import Ubuntu.Components.ListItems 1.3 as ListItems
 
 Page {
     property var connection
 
     title: i18n.tr("TLS authentication:")
 
-    ColumnLayout {
-        spacing: units.gu(1)
-        anchors.top: parent.top
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.topMargin: units.gu(1)
-        anchors.rightMargin: units.gu(1)
-        anchors.leftMargin: units.gu(1)
+    Flickable {
+        anchors.fill: parent
+        contentHeight: contentItem.childrenRect.height
+        boundsBehavior: (contentHeight > root.height) ?
+                            Flickable.DragAndOvershootBounds :
+                            Flickable.StopAtBounds
+        flickableDirection: Flickable.VerticalFlick
 
-        RowLayout {
-            Layout.fillWidth: true
+        Column {
+            anchors.left: parent.left
+            anchors.right: parent.right
 
-            Label {text: i18n.tr("Subject match:")}
-
-            TextField {
-                text: connection.tlsRemote
-                onTextChanged: connection.tlsRemote = text
-                Layout.fillWidth: true
+            ListItems.Standard {
+                control: TextField {
+                    text: connection.tlsRemote
+                    onTextChanged: connection.tlsRemote = text
+                    width: units.gu(19)
+                }
+                text: i18n.tr("Subject match:")
             }
-        }
 
-        RowLayout {
-            Layout.fillWidth: true
+            OptionalValue {
+                text: i18n.tr("Verify peer certificate:")
 
-            CheckBox {
                 checked: connection.remoteCertTlsSet
                 onCheckedChanged: connection.remoteCertTlsSet = checked
             }
-
-            Label {
-                text: i18n.tr("Verify peer certificate:")
-            }
-        }
-
-        RowLayout {
-            Layout.fillWidth: true
-            enabled: connection.remoteCertTlsSet
-
-            Label {
+            ListItems.ValueSelector {
                 text: i18n.tr("Peer certificate TLS type:")
-//                enabled: connection.remoteCertTlsSet
-            }
-            QQC.ComboBox {
-                model: [
+                values: [
                     i18n.tr("Server"),
                     i18n.tr("Client"),
                 ]
-                currentIndex: connection.remoteCertTls
-                onCurrentIndexChanged: connection.remoteCertTls = currentIndex
+                selectedIndex: connection.remoteCertTls
+                onSelectedIndexChanged: connection.remoteCertTls = selectedIndex
                 enabled: connection.remoteCertTlsSet
-                Layout.fillWidth: true
             }
-        }
 
-        RowLayout {
-            Layout.fillWidth: true
+            OptionalValue {
+                text: i18n.tr("Use additional TLS authentication:")
 
-            CheckBox {
                 checked: connection.taSet
                 onCheckedChanged: connection.taSet = checked
             }
-
-            Label {text: i18n.tr("Use additional TLS authentication:")}
-        }
-
-        RowLayout {
-            Layout.fillWidth: true
-
-            enabled: connection.taSet
-
-            Label {text: i18n.tr("Key file:")}
-            TextField {
-                text: connection.ta
-                onTextChanged: connection.ta = text
-                Layout.fillWidth: true
+            ListItems.Standard {
+                text: i18n.tr("Key file:")
+                control: TextField {
+                    text: connection.ta
+                    onTextChanged: connection.ta = text
+                }
+                enabled: connection.taSet
             }
-        }
-        RowLayout {
-            Layout.fillWidth: true
-
-            enabled: connection.taSet
-
-            Label {text: i18n.tr("Key direction:")}
-            QQC.ComboBox {
-                model: [
+            ListItems.ValueSelector {
+                text: i18n.tr("Key direction:")
+                values: [
                     i18n.tr("None"),
                     i18n.tr("0"),
                     i18n.tr("1"),
                 ]
-                currentIndex: connection.taDir
-                onCurrentIndexChanged: connection.taDir = currentIndex
+                selectedIndex: connection.taDir
+                onSelectedIndexChanged: connection.taDir = selectedIndex
                 enabled: connection.taSet
-                Layout.fillWidth: true
             }
         }
     }

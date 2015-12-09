@@ -15,10 +15,9 @@
  */
 
 import QtQuick 2.4
-import QtQuick.Controls 1.3 as QQC
-import QtQuick.Layouts 1.1
 import Ubuntu.Components 1.3
 import Ubuntu.Connectivity 1.0
+import Ubuntu.Components.ListItems 1.3 as ListItems
 
 Page {
     property var connection
@@ -28,91 +27,79 @@ Page {
 
     title: i18n.tr("Proxies")
 
-    ColumnLayout {
-        spacing: units.gu(1)
-        anchors.top: parent.top
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.topMargin: units.gu(1)
-        anchors.rightMargin: units.gu(1)
-        anchors.leftMargin: units.gu(1)
+    Flickable {
+        anchors.fill: parent
+        contentHeight: contentItem.childrenRect.height
+        boundsBehavior: (contentHeight > root.height) ?
+                            Flickable.DragAndOvershootBounds :
+                            Flickable.StopAtBounds
+        flickableDirection: Flickable.VerticalFlick
 
-        RowLayout {
-            Layout.fillWidth: true
+        Column {
+            anchors.left: parent.left
+            anchors.right: parent.right
 
-            Label {text: i18n.tr("Proxy type:")}
-            QQC.ComboBox {
-                model: [
+            ListItems.ValueSelector {
+                text: i18n.tr("Proxy type:")
+                values: [
                     i18n.tr("Not required"),
                     i18n.tr("HTTP"),
                     i18n.tr("Socks"),
                 ]
-                currentIndex: connection.proxyType
-                onCurrentIndexChanged: connection.proxyType = currentIndex
-                Layout.fillWidth: true
-            }
-        }
-
-        RowLayout {
-            Layout.fillWidth: true
-            enabled: usesProxy
-
-            Label {text: i18n.tr("Server address:")}
-
-            TextField {
-                text: connection.proxyServer
-                onTextChanged: connection.proxyServer = text
-                Layout.fillWidth: true
-            }
-        }
-
-        RowLayout {
-            Layout.fillWidth: true
-            enabled: usesProxy
-
-            Label {text: i18n.tr("Port:")}
-
-            TextField {
-                text: connection.proxyPort
-                onTextChanged: connection.proxyPort = parseInt(text) || 0
-                validator: IntValidator{bottom: 0}
-                Layout.fillWidth: true
-            }
-        }
-
-        RowLayout {
-            Layout.fillWidth: true
-            enabled: usesProxy
-
-            CheckBox {
-                checked: connection.proxyRetry
-                onCheckedChanged: connection.proxyRetry = checked
+                selectedIndex: connection.proxyType
+                onSelectedIndexChanged: connection.proxyType = selectedIndex
             }
 
-            Label {text: i18n.tr("Retry indefinitely when errors occur:")}
-        }
-
-        RowLayout {
-            Layout.fillWidth: true
-            enabled: usesHttp
-
-            Label {text: i18n.tr("Proxy username:")}
-            TextField {
-                text: connection.proxyUsername
-                onTextChanged: connection.proxyUsername = text
-                Layout.fillWidth: true
+            ListItems.Standard {
+                text: i18n.tr("Server address:")
+                control: TextField {
+                    text: connection.proxyServer
+                    onTextChanged: connection.proxyServer = text
+                    width: units.gu(18)
+                }
+                enabled: usesProxy
             }
-        }
 
-        RowLayout {
-            Layout.fillWidth: true
-            enabled: usesHttp
+            ListItems.Standard {
+                text: i18n.tr("Port:")
+                control: TextField {
+                    text: connection.proxyPort
+                    onTextChanged: connection.proxyPort = parseInt(text) || 0
+                    validator: IntValidator{bottom: 0}
+                    width: units.gu(8)
+                }
+                enabled: usesProxy
+            }
 
-            Label {text: i18n.tr("Proxy password:")}
-            TextField {
-                text: connection.proxyPassword
-                onTextChanged: connection.proxyPassword = text
-                Layout.fillWidth: true
+            ListItems.Standard {
+                text: i18n.tr("Retry indefinitely:")
+                control: CheckBox {
+                    checked: connection.proxyRetry
+                    onCheckedChanged: connection.proxyRetry = checked
+                }
+                enabled: usesProxy
+            }
+
+            ListItems.Standard {
+                text: i18n.tr("Proxy username:")
+                control: TextField {
+                    text: connection.proxyUsername
+                    onTextChanged: connection.proxyUsername = text
+                    validator: IntValidator{bottom: 0}
+                    width: units.gu(18)
+                }
+                enabled: usesHttp
+            }
+
+            ListItems.Standard {
+                text: i18n.tr("Proxy password:")
+                control: TextField {
+                    text: connection.proxyPassword
+                    onTextChanged: connection.proxyPassword = text
+                    validator: IntValidator{bottom: 0}
+                    width: units.gu(18)
+                }
+                enabled: usesHttp
             }
         }
     }

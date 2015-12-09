@@ -15,7 +15,6 @@
  */
 
 import QtQuick 2.4
-import QtQuick.Controls 1.3 as QQC
 import QtQuick.Layouts 1.1
 import Ubuntu.Components 1.3
 import Ubuntu.Components.ListItems 1.3 as ListItems
@@ -57,83 +56,54 @@ Item {
         }
     }
 
-    ColumnLayout {
+    Column {
         id: topPart
-        spacing: units.gu(1)
-        anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: parent.right
-        anchors.margins: units.gu(1)
 
-        Label {
-            text: i18n.tr("General")
-            font.bold: true
-            Layout.fillWidth: true
-        }
 
-        RowLayout {
-            Layout.fillWidth: true
+        ListItems.Header {text: i18n.tr("General")}
 
-            Label {
-                text: i18n.tr("ID:")
-            }
-            TextField {
+        ListItems.Standard {
+            control: TextField {
                 text: connection.id
                 onTextChanged: connection.id = text
-                Layout.fillWidth: true
+                width: units.gu(20)
             }
-
+            text: i18n.tr("ID:")
         }
 
-        Label {
-            text: i18n.tr("Authentication")
-            font.bold: true
-            Layout.fillWidth: true
-        }
+        ListItems.Header {text: i18n.tr("Authentication")}
 
-        RowLayout {
-            Layout.fillWidth: true
-
-            Label {
-                text: i18n.tr("Remote:")
-            }
-            TextField {
+        ListItems.Standard {
+            control: TextField {
                 text: connection.remote
                 onTextChanged: connection.remote = text
-                Layout.fillWidth: true
+                width: units.gu(20)
             }
+            text: i18n.tr("Remote:")
         }
 
-        RowLayout {
-            Layout.fillWidth: true
-
-            Label {text: i18n.tr("Type:")}
-            QQC.ComboBox {
-                model: [
-                    i18n.tr("Certificates (TLS)"),
-                    i18n.tr("Password"),
-                    i18n.tr("Password with certificates (TLS)"),
-                    i18n.tr("Static key")
-                ]
-                currentIndex: connection.connectionType
-                onCurrentIndexChanged: connection.connectionType = currentIndex
-                Layout.fillWidth: true
-            }
+        ListItems.ValueSelector {
+            values: [
+                i18n.tr("Certificates (TLS)"),
+                i18n.tr("Password"),
+                i18n.tr("Password with certificates (TLS)"),
+                i18n.tr("Static key")
+            ]
+            selectedIndex: connection.connectionType
+            onSelectedIndexChanged: connection.connectionType = selectedIndex
+            text: i18n.tr("Type:")
         }
 
         // Basic properties handled here
         // Load in a different component depending on the type
         Loader {
-            id: basicPropertiesLoader
-            Layout.fillWidth: true
-        }
-    }
+            anchors.left: parent.left
+            anchors.right: parent.right
 
-    Column {
-        anchors.top: topPart.bottom
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.topMargin: units.gu(1)
+            id: basicPropertiesLoader
+        }
 
         ListItems.Divider {}
 

@@ -15,44 +15,36 @@
  */
 
 import QtQuick 2.4
-import QtQuick.Layouts 1.1
 import Ubuntu.Components 1.3
+import Ubuntu.Components.ListItems 1.3 as ListItems
 
-ColumnLayout {
+Column {
     property var connection
 
-    spacing: units.gu(1)
-
-    RowLayout {
-        Layout.fillWidth: true
-
-        Label {text: i18n.tr("Username")}
-        TextField {
+    ListItems.Standard {
+        control: TextField {
             text: connection.username
             onTextChanged: connection.username = text
-            Layout.fillWidth: true
+            width: units.gu(20)
         }
+        text: i18n.tr("Username:")
     }
 
-    RowLayout {
-        Layout.fillWidth: true
-
-        Label {text: i18n.tr("Password")}
-        TextField {
+    ListItems.Standard {
+        control: TextField {
             text: connection.password
             onTextChanged: connection.password = text
-            Layout.fillWidth: true
+            width: units.gu(20)
         }
+        text: i18n.tr("Password:")
     }
 
-    RowLayout {
-        Layout.fillWidth: true
-
-        Label {text: i18n.tr("CA certificate")}
-        TextField {
+    ListItems.Standard {
+        control: TextField {
             text: connection.ca
             onTextChanged: connection.ca = text
-            Layout.fillWidth: true
+            width: units.gu(20)
         }
+        text: i18n.tr("CA certificate:")
     }
 }

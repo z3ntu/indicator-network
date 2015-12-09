@@ -15,61 +15,47 @@
  */
 
 import QtQuick 2.4
-import QtQuick.Controls 1.3 as QQC
-import QtQuick.Layouts 1.1
 import Ubuntu.Components 1.3
+import Ubuntu.Components.ListItems 1.3 as ListItems
 
-ColumnLayout {
+Column {
     property var connection
 
-    spacing: units.gu(1)
-
-    RowLayout {
-        Layout.fillWidth: true
-
-        Label {text: i18n.tr("Static key:")}
-        TextField {
+    ListItems.Standard {
+        control: TextField {
             text: connection.staticKey
             onTextChanged: connection.staticKey = text
-            Layout.fillWidth: true
+            width: units.gu(20)
         }
+        text: i18n.tr("Static key:")
     }
 
-    RowLayout {
-        Layout.fillWidth: true
-
-        Label {text: i18n.tr("Key direction:")}
-        QQC.ComboBox {
-            model: [
-                i18n.tr("None"),
-                i18n.tr("0"),
-                i18n.tr("1"),
-            ]
-            currentIndex: connection.staticKeyDirection
-            onCurrentIndexChanged: connection.staticKeyDirection = currentIndex
-            Layout.fillWidth: true
-        }
+    ListItems.ValueSelector {
+        text: i18n.tr("Key direction:")
+        values: [
+            i18n.tr("None"),
+            i18n.tr("0"),
+            i18n.tr("1"),
+        ]
+        selectedIndex: connection.staticKeyDirection
+        onSelectedIndexChanged: connection.staticKeyDirection = selectedIndex
     }
 
-    RowLayout {
-        Layout.fillWidth: true
-
-        Label {text: i18n.tr("Remote IP address")}
-        TextField {
+    ListItems.Standard {
+        control: TextField {
             text: connection.remoteIp
             onTextChanged: connection.remoteIp = text
-            Layout.fillWidth: true
+            width: units.gu(20)
         }
+        text: i18n.tr("Remote IP:")
     }
 
-    RowLayout {
-        Layout.fillWidth: true
-
-        Label {text: i18n.tr("Local IP address")}
-        TextField {
+    ListItems.Standard {
+        control: TextField {
             text: connection.localIp
             onTextChanged: connection.localIp = text
-            Layout.fillWidth: true
+            width: units.gu(20)
         }
+        text: i18n.tr("Local IP:")
     }
 }

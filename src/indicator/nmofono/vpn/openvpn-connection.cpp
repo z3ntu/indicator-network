@@ -386,10 +386,7 @@ public:
                     {
                         data["ta-dir"] = keyDirMap[m_taDir];
                     }
-                    if (!m_ta.isEmpty())
-                    {
-                        data["ta"] = m_ta;
-                    }
+                    data["ta"] = (m_ta.isEmpty() ? "/" : m_ta);
                 }
             }
 

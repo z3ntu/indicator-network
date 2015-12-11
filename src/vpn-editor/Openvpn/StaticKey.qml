@@ -26,6 +26,7 @@ Column {
             text: connection.staticKey
             onTextChanged: connection.staticKey = text
             width: units.gu(20)
+            inputMethodHints: Qt.ImhNoPredictiveText
         }
         text: i18n.tr("Static key:")
     }
@@ -46,6 +47,7 @@ Column {
             text: connection.remoteIp
             onTextChanged: connection.remoteIp = text
             width: units.gu(20)
+            inputMethodHints: Qt.ImhNoPredictiveText
         }
         text: i18n.tr("Remote IP:")
     }
@@ -55,6 +57,7 @@ Column {
             text: connection.localIp
             onTextChanged: connection.localIp = text
             width: units.gu(20)
+            inputMethodHints: Qt.ImhNoPredictiveText
         }
         text: i18n.tr("Local IP:")
     }

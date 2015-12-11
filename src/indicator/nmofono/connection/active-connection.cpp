@@ -70,6 +70,17 @@ public Q_SLOTS:
 
         m_type = type;
         Q_EMIT p.typeChanged(m_type);
+
+        if (m_type == "vpn")
+        {
+            m_activeVpnConnection = make_shared<ActiveVpnConnection>(
+                    QDBusObjectPath(m_activeConnection->path()),
+                    m_activeConnection->QDBusAbstractInterface::connection());
+        }
+        else
+        {
+            m_activeVpnConnection.reset();
+        }
     }
 
     void setState(State state)
@@ -98,6 +109,8 @@ public:
     ActiveConnection& p;
 
     shared_ptr<OrgFreedesktopNetworkManagerConnectionActiveInterface> m_activeConnection;
+
+    ActiveVpnConnection::SPtr m_activeVpnConnection;
 
     QString m_type;
 
@@ -136,6 +149,11 @@ QDBusObjectPath ActiveConnection::connectionPath() const
 QDBusObjectPath ActiveConnection::path() const
 {
     return QDBusObjectPath(d->m_activeConnection->path());
+}
+
+ActiveVpnConnection::SPtr ActiveConnection::vpnConnection() const
+{
+    return d->m_activeVpnConnection;
 }
 
 }

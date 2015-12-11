@@ -22,52 +22,58 @@
 #include <QDBusObjectPath>
 #include <QObject>
 
-#include <unity/util/DefinesPtrs.h>
 #include <NetworkManager.h>
 
-#include <nmofono/connection/active-vpn-connection.h>
+#include <unity/util/DefinesPtrs.h>
 
 namespace nmofono
 {
 namespace connection
 {
 
-class ActiveConnection: public QObject
+class ActiveVpnConnection: public QObject
 {
     Q_OBJECT
 
 public:
-    UNITY_DEFINES_PTRS(ActiveConnection);
+    UNITY_DEFINES_PTRS(ActiveVpnConnection);
 
     enum class State
     {
-        unknown = NM_ACTIVE_CONNECTION_STATE_UNKNOWN,
-        activating = NM_ACTIVE_CONNECTION_STATE_ACTIVATING,
-        activated = NM_ACTIVE_CONNECTION_STATE_ACTIVATED,
-        deactivating = NM_ACTIVE_CONNECTION_STATE_DEACTIVATING,
-        deactivated = NM_ACTIVE_CONNECTION_STATE_DEACTIVATED
+        UNKNOWN = 0,
+        PREPARE,
+        NEED_AUTH,
+        CONNECT,
+        IP_CONFIG_GET,
+        ACTIVATED,
+        FAILED,
+        DISCONNECTED
     };
 
-    ActiveConnection(const QDBusObjectPath& path, const QDBusConnection& systemConnection);
+    enum class Reason
+    {
+        UNKNOWN = 0,
+        NONE,
+        DISCONNECTED,
+        DEVICE_DISCONNECTED,
+        SERVICE_STOPPED,
+        IP_CONFIG_INVALID,
+        CONNECT_TIMEOUT,
+        SERVICE_START_TIMEOUT,
+        SERVICE_START_FAILED,
+        NO_SECRETS,
+        LOGIN_FAILED,
+        CONNECTION_REMOVED
+    };
 
-    ~ActiveConnection() = default;
+    ActiveVpnConnection(const QDBusObjectPath& path, const QDBusConnection& connection);
 
-    QString type() const;
+    ~ActiveVpnConnection();
 
-    State state() const;
-
-    QDBusObjectPath connectionPath() const;
-
-    QDBusObjectPath path() const;
-
-    ActiveVpnConnection::SPtr vpnConnection() const;
+    State vpnState() const;
 
 Q_SIGNALS:
-    void typeChanged(const QString& type);
-
-    void stateChanged(State state);
-
-    void connectionPathChanged(const QDBusObjectPath& connectionPath);
+    void stateChanged(State state, Reason reason);
 
 protected:
     class Priv;

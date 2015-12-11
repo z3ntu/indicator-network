@@ -228,3 +228,9 @@ agent::SecretAgent::UPtr Factory::newSecretAgent()
                                            QDBusConnection::sessionBus());
 }
 
+VpnStatusNotifier::UPtr Factory::newVpnStatusNotifier()
+{
+    return make_unique<VpnStatusNotifier>(d->singletonActiveConnectionManager(),
+                                          d->singletonNotificationManager());
+}
+

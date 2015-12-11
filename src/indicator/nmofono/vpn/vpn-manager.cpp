@@ -112,7 +112,19 @@ public Q_SLOTS:
 
     void activateConnection(const QDBusObjectPath& connection)
     {
-        m_nmInterface->ActivateConnection(connection, QDBusObjectPath("/"), QDBusObjectPath("/"));
+        auto reply = m_nmInterface->ActivateConnection(connection, QDBusObjectPath("/"), QDBusObjectPath("/"));
+        auto watcher(new QDBusPendingCallWatcher(reply, this));
+        connect(watcher, &QDBusPendingCallWatcher::finished, this, &Priv::activateConnectionFinished);
+    }
+
+    void activateConnectionFinished(QDBusPendingCallWatcher *call)
+    {
+        QDBusPendingReply<QDBusObjectPath> reply = *call;
+        if (reply.isError())
+        {
+            qWarning() << __PRETTY_FUNCTION__ << reply.error().message();
+        }
+        call->deleteLater();
     }
 
     void updateActiveAndBusy()

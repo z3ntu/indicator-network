@@ -60,6 +60,7 @@ main(int argc, char **argv)
     Factory factory;
     auto menu = factory.newMenuBuilder();
     auto connectivityService = factory.newConnectivityService();
+    auto vpnStatusNotifier = factory.newVpnStatusNotifier();
 
     return app.exec();
 }

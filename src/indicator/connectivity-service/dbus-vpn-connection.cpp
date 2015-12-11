@@ -64,6 +64,7 @@ void DBusVpnConnection::idUpdated(const QString&)
 void DBusVpnConnection::activeUpdated(bool)
 {
     notifyProperties({"active"});
+    DBusUtils::flushPropertyChanges();
 }
 
 void DBusVpnConnection::notifyProperties(const QStringList& propertyNames)

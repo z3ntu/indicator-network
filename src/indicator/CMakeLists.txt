@@ -32,6 +32,7 @@ set(NETWORK_SERVICE_SOURCES
     nmofono/manager-impl.cpp
     nmofono/connection/active-connection.cpp
     nmofono/connection/active-connection-manager.cpp
+    nmofono/connection/active-vpn-connection.cpp
     nmofono/wifi/access-point.cpp
     nmofono/wifi/access-point-impl.cpp
     nmofono/wifi/grouped-access-point.cpp
@@ -51,6 +52,7 @@ set(NETWORK_SERVICE_SOURCES
     menu-builder.cpp
     sim-unlock-dialog.cpp
     root-state.cpp
+    vpn-status-notifier.cpp
     sections/quick-access-section.cpp
     sections/wifi-section.cpp
     sections/vpn-section.cpp

@@ -69,6 +69,7 @@ Item {
                 text: connection.id
                 onTextChanged: connection.id = text
                 width: units.gu(20)
+                inputMethodHints: Qt.ImhNoPredictiveText
             }
             text: i18n.tr("ID:")
         }
@@ -80,6 +81,7 @@ Item {
                 text: connection.remote
                 onTextChanged: connection.remote = text
                 width: units.gu(20)
+                inputMethodHints: Qt.ImhNoPredictiveText
             }
             text: i18n.tr("Remote:")
         }

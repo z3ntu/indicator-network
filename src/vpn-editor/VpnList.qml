@@ -52,14 +52,16 @@ Page {
             ListItems.Standard {
                 anchors.fill: parent
                 text: id
-//                iconFrame: false
-//                iconName: "network-vpn"
                 progression: true
                 onClicked: openConnection(connection)
 
-                control: CheckBox {
+                control: Switch {
                     checked: active
                     onCheckedChanged: active = checked
+
+                    // Not sure why I need to do this
+                    property bool forceChecked: active
+                    onForceCheckedChanged: checked = active
                 }
             }
 

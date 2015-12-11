@@ -40,6 +40,7 @@ Page {
                     text: connection.tlsRemote
                     onTextChanged: connection.tlsRemote = text
                     width: units.gu(19)
+                    inputMethodHints: Qt.ImhNoPredictiveText
                 }
                 text: i18n.tr("Subject match:")
             }
@@ -72,6 +73,7 @@ Page {
                 control: TextField {
                     text: connection.ta
                     onTextChanged: connection.ta = text
+                    inputMethodHints: Qt.ImhNoPredictiveText
                 }
                 enabled: connection.taSet
             }

@@ -26,6 +26,7 @@ Column {
             text: connection.username
             onTextChanged: connection.username = text
             width: units.gu(20)
+            inputMethodHints: Qt.ImhNoPredictiveText
         }
         text: i18n.tr("Username:")
     }
@@ -35,6 +36,7 @@ Column {
             text: connection.password
             onTextChanged: connection.password = text
             width: units.gu(20)
+            echoMode: TextInput.Password
         }
         text: i18n.tr("Password:")
     }
@@ -44,6 +46,7 @@ Column {
             text: connection.cert
             onTextChanged: connection.cert = text
             width: units.gu(20)
+            inputMethodHints: Qt.ImhNoPredictiveText
         }
         text: i18n.tr("User cert:")
     }
@@ -53,6 +56,7 @@ Column {
             text: connection.ca
             onTextChanged: connection.ca = text
             width: units.gu(20)
+            inputMethodHints: Qt.ImhNoPredictiveText
         }
         text: i18n.tr("CA cert:")
     }
@@ -62,6 +66,7 @@ Column {
             text: connection.key
             onTextChanged: connection.key = text
             width: units.gu(20)
+            inputMethodHints: Qt.ImhNoPredictiveText
         }
         text: i18n.tr("Private key:")
     }
@@ -71,6 +76,7 @@ Column {
             text: connection.certPass
             onTextChanged: connection.certPass = text
             width: units.gu(20)
+            echoMode: TextInput.Password
         }
         text: i18n.tr("Key password:")
     }

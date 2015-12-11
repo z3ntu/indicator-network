@@ -39,7 +39,7 @@ Page {
                 control: TextField {
                     text: connection.tlsRemote
                     onTextChanged: connection.tlsRemote = text
-                    width: units.gu(19)
+                    width: units.gu(20)
                     inputMethodHints: Qt.ImhNoPredictiveText
                 }
                 text: i18n.tr("Subject match:")

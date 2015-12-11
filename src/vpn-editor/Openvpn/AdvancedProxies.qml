@@ -55,7 +55,7 @@ Page {
                 control: TextField {
                     text: connection.proxyServer
                     onTextChanged: connection.proxyServer = text
-                    width: units.gu(18)
+                    width: units.gu(20)
                     inputMethodHints: Qt.ImhNoPredictiveText
                 }
                 enabled: usesProxy
@@ -67,7 +67,7 @@ Page {
                     text: connection.proxyPort
                     onTextChanged: connection.proxyPort = parseInt(text) || 0
                     validator: IntValidator{bottom: 0}
-                    width: units.gu(9)
+                    width: units.gu(10)
                     inputMethodHints: Qt.ImhDigitsOnly
                 }
                 enabled: usesProxy
@@ -87,7 +87,7 @@ Page {
                 control: TextField {
                     text: connection.proxyUsername
                     onTextChanged: connection.proxyUsername = text
-                    width: units.gu(18)
+                    width: units.gu(20)
                     inputMethodHints: Qt.ImhNoPredictiveText
                 }
                 enabled: usesHttp
@@ -98,7 +98,7 @@ Page {
                 control: TextField {
                     text: connection.proxyPassword
                     onTextChanged: connection.proxyPassword = text
-                    width: units.gu(18)
+                    width: units.gu(20)
                     echoMode: TextInput.Password
                 }
                 enabled: usesHttp

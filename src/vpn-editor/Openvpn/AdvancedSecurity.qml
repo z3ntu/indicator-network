@@ -70,7 +70,7 @@ Page {
                     onTextChanged: connection.keysize = parseInt(text) || 0
                     enabled: connection.keysizeSet
                     validator: IntValidator{bottom: 0}
-                    width: units.gu(9)
+                    width: units.gu(10)
                     inputMethodHints: Qt.ImhDigitsOnly
                 }
             }

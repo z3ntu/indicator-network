@@ -46,7 +46,7 @@ Page {
                     onTextChanged: connection.port = parseInt(text) || 0
                     enabled: connection.portSet
                     validator: IntValidator{bottom: 0}
-                    width: units.gu(9)
+                    width: units.gu(10)
                     inputMethodHints: Qt.ImhDigitsOnly
                 }
             }
@@ -62,7 +62,7 @@ Page {
                     onTextChanged: connection.renegSeconds = parseInt(text) || 0
                     enabled: connection.renegSecondsSet
                     validator: IntValidator{bottom: 0}
-                    width: units.gu(9)
+                    width: units.gu(10)
                     inputMethodHints: Qt.ImhDigitsOnly
                 }
             }
@@ -121,7 +121,7 @@ Page {
                     onTextChanged: connection.tunnelMtu = parseInt(text) || 0
                     enabled: connection.tunnelMtuSet
                     validator: IntValidator{bottom: 0}
-                    width: units.gu(9)
+                    width: units.gu(10)
                     inputMethodHints: Qt.ImhDigitsOnly
                 }
             }
@@ -137,7 +137,7 @@ Page {
                     onTextChanged: connection.fragmentSize = parseInt(text) || 0
                     enabled: connection.fragmentSizeSet
                     validator: IntValidator{bottom: 0}
-                    width: units.gu(9)
+                    width: units.gu(10)
                     inputMethodHints: Qt.ImhDigitsOnly
                 }
             }

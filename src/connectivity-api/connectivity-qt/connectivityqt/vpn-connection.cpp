@@ -49,6 +49,10 @@ public Q_SLOTS:
         {
             Q_EMIT p.activeChanged(value.toBool());
         }
+        else if (name == "activatable")
+        {
+            Q_EMIT p.activatableChanged(value.toBool());
+        }
     }
 
 public:
@@ -94,6 +98,11 @@ QString VpnConnection::id() const
 bool VpnConnection::active() const
 {
     return d->m_propertyCache->get("active").toBool();
+}
+
+bool VpnConnection::activatable() const
+{
+    return d->m_propertyCache->get("activatable").toBool();
 }
 
 void VpnConnection::setId(const QString& id) const

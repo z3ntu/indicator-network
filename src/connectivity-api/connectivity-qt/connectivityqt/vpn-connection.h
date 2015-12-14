@@ -56,6 +56,9 @@ public:
     Q_PROPERTY(bool active READ active WRITE setActive NOTIFY activeChanged)
     bool active() const;
 
+    Q_PROPERTY(bool activatable READ activatable NOTIFY activatableChanged)
+    bool activatable() const;
+
     Q_PROPERTY(Type type READ type)
     virtual Type type() const = 0;
 
@@ -70,6 +73,8 @@ Q_SIGNALS:
     void idChanged(const QString& id);
 
     void activeChanged(bool active);
+
+    void activatableChanged(bool active);
 
     void remove() const;
 

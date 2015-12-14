@@ -44,6 +44,7 @@ public:
     {
         RoleId,
         RoleActive,
+        RoleActivatable,
         RoleType,
         RoleConnection
     };
@@ -67,6 +68,7 @@ public:
         QHash<int, QByteArray> roles;
         roles[RoleId] = "id";
         roles[RoleActive] = "active";
+        roles[RoleActivatable] = "activatable";
         roles[RoleType] = "type";
         roles[RoleConnection] = "connection";
         return roles;

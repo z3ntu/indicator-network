@@ -58,6 +58,7 @@ Page {
                 control: Switch {
                     checked: active
                     onCheckedChanged: active = checked
+                    enabled: activatable
 
                     // Not sure why I need to do this
                     property bool forceChecked: active

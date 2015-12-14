@@ -38,6 +38,7 @@ DBusVpnConnection::DBusVpnConnection(VpnConnection::SPtr vpnConnection,
 
     connect(m_vpnConnection.get(), &VpnConnection::idChanged, this, &DBusVpnConnection::idUpdated);
     connect(m_vpnConnection.get(), &VpnConnection::activeChanged, this, &DBusVpnConnection::activeUpdated);
+    connect(m_vpnConnection.get(), &VpnConnection::activatableChanged, this, &DBusVpnConnection::activatableUpdated);
 
     connect(this, &DBusVpnConnection::setActive, m_vpnConnection.get(), &VpnConnection::setActive);
     connect(this, &DBusVpnConnection::setId, m_vpnConnection.get(), &VpnConnection::setId);
@@ -67,6 +68,12 @@ void DBusVpnConnection::activeUpdated(bool)
     DBusUtils::flushPropertyChanges();
 }
 
+void DBusVpnConnection::activatableUpdated(bool)
+{
+    notifyProperties({"activatable"});
+    DBusUtils::flushPropertyChanges();
+}
+
 void DBusVpnConnection::notifyProperties(const QStringList& propertyNames)
 {
     DBusUtils::notifyPropertyChanged(
@@ -86,6 +93,11 @@ QString DBusVpnConnection::id() const
 bool DBusVpnConnection::active() const
 {
     return m_vpnConnection->isActive();
+}
+
+bool DBusVpnConnection::activatable() const
+{
+    return m_vpnConnection->isActivatable();
 }
 
 QDBusObjectPath DBusVpnConnection::path() const

@@ -12,6 +12,8 @@
 
         <property name="active" type="b" access="readwrite"/>
 
+        <property name="activatable" type="b" access="read"/>
+
     </interface>
 </node>
 

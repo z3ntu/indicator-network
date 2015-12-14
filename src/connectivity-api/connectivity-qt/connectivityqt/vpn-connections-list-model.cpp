@@ -106,6 +106,7 @@ public:
                     m_vpnConnections << vpnConnection;
                     connect(vpnConnection.get(), &VpnConnection::idChanged, this, &Priv::connectionIdChanged);
                     connect(vpnConnection.get(), &VpnConnection::activeChanged, this, &Priv::connectionActiveChanged);
+                    connect(vpnConnection.get(), &VpnConnection::activatableChanged, this, &Priv::connectionActivatableChanged);
                     connect(vpnConnection.get(), &VpnConnection::remove, this, &Priv::removeRequested);
                 }
             }
@@ -144,6 +145,12 @@ public Q_SLOTS:
     {
         auto idx = findVpnConnection(sender());
         p.dataChanged(idx, idx, {VpnConnectionsListModel::Roles::RoleActive});
+    }
+
+    void connectionActivatableChanged(bool)
+    {
+        auto idx = findVpnConnection(sender());
+        p.dataChanged(idx, idx, {VpnConnectionsListModel::Roles::RoleActivatable});
     }
 
     void propertyChanged(const QString& name, const QVariant& value)
@@ -257,6 +264,9 @@ QVariant VpnConnectionsListModel::data(const QModelIndex &index, int role) const
             break;
         case Roles::RoleActive:
             return vpnConnection->active();
+            break;
+        case Roles::RoleActivatable:
+            return vpnConnection->activatable();
             break;
         case Roles::RoleType:
             return static_cast<int>(vpnConnection->type());

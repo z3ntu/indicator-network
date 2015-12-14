@@ -55,6 +55,9 @@ public:
     Q_PROPERTY(bool active READ active WRITE setActive)
     bool active() const;
 
+    Q_PROPERTY(bool activatable READ activatable)
+    bool activatable() const;
+
     QDBusObjectPath path() const;
 
     void remove();
@@ -68,6 +71,8 @@ Q_SIGNALS:
 
 protected Q_SLOTS:
     void activeUpdated(bool active);
+
+    void activatableUpdated(bool activatable);
 
     void idUpdated(const QString& id);
 

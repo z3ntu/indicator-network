@@ -411,6 +411,9 @@ void VpnConnection::setActive(bool active)
 
     if (active)
     {
+        // Set active properly early as we are not always quick enough
+        // to see a temporarily active ActiveConnection object
+        d->setActive(true);
         Q_EMIT activateConnection(QDBusObjectPath(d->m_connection->path()));
     }
     else

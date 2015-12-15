@@ -56,13 +56,11 @@ Page {
                 onClicked: openConnection(connection)
 
                 control: Switch {
-                    checked: active
-                    onCheckedChanged: active = checked
+                    id: vpnSwitch
                     enabled: activatable
-
-                    // Not sure why I need to do this
-                    property bool forceChecked: active
-                    onForceCheckedChanged: checked = active
+                    // If you create a binding normally, it gets lost, so use a Binding element
+                    Binding {target: vpnSwitch; property: "checked"; value: active}
+                    onTriggered: active = !active
                 }
             }
 

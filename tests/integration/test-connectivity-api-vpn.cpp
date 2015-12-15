@@ -33,7 +33,7 @@ using namespace std;
 using namespace testing;
 using namespace connectivityqt;
 
-typedef QPair<QString, bool> CS;
+typedef QPair<QString, QVector<bool>> CS;
 typedef QList<CS> CSL;
 
 inline void PrintTo(const CS& list, std::ostream* os) {
@@ -59,7 +59,8 @@ protected:
             auto idx = model.index(i, 0);
             CS connectionState;
             connectionState.first = model.data(idx, VpnConnectionsListModel::Roles::RoleId).toString();
-            connectionState.second = model.data(idx, VpnConnectionsListModel::Roles::RoleActive).toBool();
+            connectionState.second << model.data(idx, VpnConnectionsListModel::Roles::RoleActive).toBool();
+            connectionState.second << model.data(idx, VpnConnectionsListModel::Roles::RoleActivatable).toBool();
             connectionStates << connectionState;
         }
         return connectionStates;
@@ -125,7 +126,7 @@ TEST_F(TestConnectivityApiVpn, VpnListStartsEmpty)
     EXPECT_TRUE(rowsRemovedSpy.isEmpty());
     EXPECT_TRUE(dataChangedSpy.isEmpty());
 
-    EXPECT_EQ(CSL({{"apple", false}}), vpnList(*sortedVpnConnections));
+    EXPECT_EQ(CSL({{"apple", {false, true}}}), vpnList(*sortedVpnConnections));
 
     rowsAboutToBeRemovedSpy.clear();
     rowsRemovedSpy.clear();
@@ -171,7 +172,7 @@ TEST_F(TestConnectivityApiVpn, VpnListStartsPopulated)
     QSignalSpy rowsInsertedSpy(sortedVpnConnections.get(), SIGNAL(rowsInserted(const QModelIndex &, int, int)));
     QSignalSpy dataChangedSpy(sortedVpnConnections.get(), SIGNAL(dataChanged(const QModelIndex &, const QModelIndex &, const QVector<int> &)));
 
-    EXPECT_EQ(CSL({{"apple", false}, {"banana", false}, {"coconut", false}}), vpnList(*sortedVpnConnections));
+    EXPECT_EQ(CSL({{"apple", {false, true}}, {"banana", {false, true}}, {"coconut", {false, true}}}), vpnList(*sortedVpnConnections));
 
     rowsAboutToBeRemovedSpy.clear();
     rowsRemovedSpy.clear();
@@ -188,7 +189,7 @@ TEST_F(TestConnectivityApiVpn, VpnListStartsPopulated)
     EXPECT_TRUE(rowsInsertedSpy.isEmpty());
     EXPECT_TRUE(dataChangedSpy.isEmpty());
 
-    EXPECT_EQ(CSL({{"banana", false}, {"coconut", false}}), vpnList(*sortedVpnConnections));
+    EXPECT_EQ(CSL({{"banana", {false, true}}, {"coconut", {false, true}}}), vpnList(*sortedVpnConnections));
 
     rowsAboutToBeRemovedSpy.clear();
     rowsRemovedSpy.clear();
@@ -205,7 +206,7 @@ TEST_F(TestConnectivityApiVpn, VpnListStartsPopulated)
     WAIT_FOR_SIGNALS(rowsInsertedSpy, 1);
     EXPECT_TRUE(dataChangedSpy.isEmpty());
 
-    EXPECT_EQ(CSL({{"avocado", false}, {"banana", false}, {"coconut", false}}), vpnList(*sortedVpnConnections));
+    EXPECT_EQ(CSL({{"avocado", {false, true}}, {"banana", {false, true}}, {"coconut", {false, true}}}), vpnList(*sortedVpnConnections));
 
     rowsAboutToBeRemovedSpy.clear();
     rowsRemovedSpy.clear();
@@ -216,13 +217,13 @@ TEST_F(TestConnectivityApiVpn, VpnListStartsPopulated)
     // Activate the banana connection
     auto activeConnection = createActiveConnection("0", device, bananaConnection, "/");
 
+    WAIT_FOR_SIGNALS(dataChangedSpy, 3);
     EXPECT_TRUE(rowsAboutToBeRemovedSpy.isEmpty());
     EXPECT_TRUE(rowsRemovedSpy.isEmpty());
     EXPECT_TRUE(rowsAboutToBeInsertedSpy.isEmpty());
     EXPECT_TRUE(rowsInsertedSpy.isEmpty());
-    WAIT_FOR_SIGNALS(dataChangedSpy, 1);
 
-    EXPECT_EQ(CSL({{"avocado", false}, {"banana", true}, {"coconut", false}}), vpnList(*sortedVpnConnections));
+    EXPECT_EQ(CSL({{"avocado", {false, false}}, {"banana", {true, true}}, {"coconut", {false, false}}}), vpnList(*sortedVpnConnections));
 
     rowsAboutToBeRemovedSpy.clear();
     rowsRemovedSpy.clear();
@@ -233,13 +234,13 @@ TEST_F(TestConnectivityApiVpn, VpnListStartsPopulated)
     // Deactivate the banana connection
     removeActiveConnection(device, activeConnection);
 
+    WAIT_FOR_SIGNALS(dataChangedSpy, 3);
     EXPECT_TRUE(rowsAboutToBeRemovedSpy.isEmpty());
     EXPECT_TRUE(rowsRemovedSpy.isEmpty());
     EXPECT_TRUE(rowsAboutToBeInsertedSpy.isEmpty());
     EXPECT_TRUE(rowsInsertedSpy.isEmpty());
-    WAIT_FOR_SIGNALS(dataChangedSpy, 1);
 
-    EXPECT_EQ(CSL({{"avocado", false}, {"banana", false}, {"coconut", false}}), vpnList(*sortedVpnConnections));
+    EXPECT_EQ(CSL({{"avocado", {false, true}}, {"banana", {false, true}}, {"coconut", {false, true}}}), vpnList(*sortedVpnConnections));
 }
 
 TEST_F(TestConnectivityApiVpn, FollowsVpnState)
@@ -265,7 +266,7 @@ TEST_F(TestConnectivityApiVpn, FollowsVpnState)
     QSignalSpy rowsInsertedSpy(sortedVpnConnections.get(), SIGNAL(rowsInserted(const QModelIndex &, int, int)));
     QSignalSpy dataChangedSpy(sortedVpnConnections.get(), SIGNAL(dataChanged(const QModelIndex &, const QModelIndex &, const QVector<int> &)));
 
-    EXPECT_EQ(CSL({{"apple", false}}), vpnList(*sortedVpnConnections));
+    EXPECT_EQ(CSL({{"apple", {false, true}}}), vpnList(*sortedVpnConnections));
 
     rowsAboutToBeRemovedSpy.clear();
     rowsRemovedSpy.clear();
@@ -287,7 +288,7 @@ TEST_F(TestConnectivityApiVpn, FollowsVpnState)
     EXPECT_TRUE(rowsInsertedSpy.isEmpty());
 
     // Name should have changed
-    EXPECT_EQ(CSL({{"banana", false}}), vpnList(*sortedVpnConnections));
+    EXPECT_EQ(CSL({{"banana", {false, true}}}), vpnList(*sortedVpnConnections));
 }
 
 TEST_F(TestConnectivityApiVpn, UpdatesVpnState)
@@ -313,7 +314,7 @@ TEST_F(TestConnectivityApiVpn, UpdatesVpnState)
     QSignalSpy rowsInsertedSpy(sortedVpnConnections.get(), SIGNAL(rowsInserted(const QModelIndex &, int, int)));
     QSignalSpy dataChangedSpy(sortedVpnConnections.get(), SIGNAL(dataChanged(const QModelIndex &, const QModelIndex &, const QVector<int> &)));
 
-    EXPECT_EQ(CSL({{"apple", false}}), vpnList(*sortedVpnConnections));
+    EXPECT_EQ(CSL({{"apple", {false, true}}}), vpnList(*sortedVpnConnections));
 
     rowsAboutToBeRemovedSpy.clear();
     rowsRemovedSpy.clear();
@@ -333,7 +334,7 @@ TEST_F(TestConnectivityApiVpn, UpdatesVpnState)
     EXPECT_TRUE(rowsInsertedSpy.isEmpty());
 
     // Name should have changed
-    EXPECT_EQ(CSL({{"banana", false}}), vpnList(*sortedVpnConnections));
+    EXPECT_EQ(CSL({{"banana", {false, true}}}), vpnList(*sortedVpnConnections));
 
     OrgFreedesktopNetworkManagerSettingsConnectionInterface appleInterface(
                 NM_DBUS_SERVICE, appleConnection, dbusTestRunner.systemConnection());
@@ -357,7 +358,7 @@ TEST_F(TestConnectivityApiVpn, UpdatesVpnState)
     EXPECT_TRUE(rowsAboutToBeInsertedSpy.isEmpty());
     EXPECT_TRUE(rowsInsertedSpy.isEmpty());
 
-    EXPECT_EQ(CSL({{"banana", true}}), vpnList(*sortedVpnConnections));
+    EXPECT_EQ(CSL({{"banana", {true, true}}}), vpnList(*sortedVpnConnections));
 
     OrgFreedesktopNetworkManagerInterface managerInterface(
             NM_DBUS_SERVICE, NM_DBUS_PATH,
@@ -397,7 +398,7 @@ TEST_F(TestConnectivityApiVpn, ReadsOpenvpnProperties)
 
     auto vpnConnections = connectivity->vpnConnections();
 
-    ASSERT_EQ(CSL({{"apple", false}}), vpnList(*vpnConnections));
+    ASSERT_EQ(CSL({{"apple", {false, true}}}), vpnList(*vpnConnections));
     auto connection = getOpenvpnConnection(vpnConnections, 0);
     ASSERT_TRUE(connection);
 
@@ -481,7 +482,7 @@ TEST_F(TestConnectivityApiVpn, WritesOpenvpnProperties)
 
     auto vpnConnections = connectivity->vpnConnections();
 
-    ASSERT_EQ(CSL({{"apple", false}}), vpnList(*vpnConnections));
+    ASSERT_EQ(CSL({{"apple", {false, true}}}), vpnList(*vpnConnections));
     auto connection = getOpenvpnConnection(vpnConnections, 0);
     ASSERT_TRUE(connection);
 
@@ -535,7 +536,7 @@ TEST_F(TestConnectivityApiVpn, CreatesOpenvpnConnection)
     vpnConnections->add(VpnConnection::Type::OPENVPN);
     WAIT_FOR_SIGNALS(addConnectionSpy, 1);
 
-    ASSERT_EQ(CSL({{"VPN connection 1", false}}), vpnList(*vpnConnections));
+    ASSERT_EQ(CSL({{"VPN connection 1", {false, true}}}), vpnList(*vpnConnections));
     auto connection = getOpenvpnConnection(vpnConnections, 0);
     ASSERT_TRUE(connection);
 
@@ -568,7 +569,7 @@ TEST_F(TestConnectivityApiVpn, DeletesVpnConnection)
     auto vpnConnections = qobject_cast<VpnConnectionsListModel*>(connectivity->vpnConnections());
     ASSERT_TRUE(vpnConnections);
 
-    ASSERT_EQ(CSL({{"apple", false}}), vpnList(*vpnConnections));
+    ASSERT_EQ(CSL({{"apple", {false, true}}}), vpnList(*vpnConnections));
     auto connection = getOpenvpnConnection(vpnConnections, 0);
     ASSERT_TRUE(connection);
 

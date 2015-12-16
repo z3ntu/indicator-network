@@ -347,6 +347,11 @@ TEST_F(TestConnectivityApiVpn, UpdatesVpnState)
     rowsInsertedSpy.clear();
     dataChangedSpy.clear();
 
+    OrgFreedesktopNetworkManagerInterface managerInterface(
+            NM_DBUS_SERVICE, NM_DBUS_PATH,
+            dbusTestRunner.systemConnection());
+    QSignalSpy managerPropertiesSpy(&managerInterface, SIGNAL(PropertiesChanged(const QVariantMap &)));
+
     // Activate the VPN connection
     sortedVpnConnections->setData(
             sortedVpnConnections->index(0, 0), true,
@@ -360,9 +365,7 @@ TEST_F(TestConnectivityApiVpn, UpdatesVpnState)
 
     EXPECT_EQ(CSL({{"banana", {true, true}}}), vpnList(*sortedVpnConnections));
 
-    OrgFreedesktopNetworkManagerInterface managerInterface(
-            NM_DBUS_SERVICE, NM_DBUS_PATH,
-            dbusTestRunner.systemConnection());
+    WAIT_FOR_SIGNALS(managerPropertiesSpy, 1);
     auto activeConnections = managerInterface.activeConnections();
     EXPECT_EQ(QList<QDBusObjectPath>({QDBusObjectPath("/org/freedesktop/NetworkManager/ActiveConnection/0")}),
               activeConnections);
@@ -487,18 +490,10 @@ TEST_F(TestConnectivityApiVpn, WritesOpenvpnProperties)
     ASSERT_TRUE(connection);
 
     QSignalSpy remoteChangedSpy(connection, SIGNAL(remoteChanged(const QString &)));
-
-    auto& appleMockInterface = dbusMock.mockInterface(
-            NM_DBUS_SERVICE, appleConnection,
-            NM_DBUS_IFACE_SETTINGS_CONNECTION,
-            QDBusConnection::SystemBus);
-    QSignalSpy appleMockCallSpy(
-            &appleMockInterface,
-            SIGNAL(MethodCalled(const QString &, const QVariantList &)));
-
     OrgFreedesktopNetworkManagerSettingsConnectionInterface appleInterface(
             NM_DBUS_SERVICE, appleConnection,
             dbusTestRunner.systemConnection());
+    QSignalSpy appleInterfaceSpy(&appleInterface, SIGNAL(Updated()));
 
     EXPECT_EQ("apple", connection->id());
     EXPECT_FALSE(connection->active());
@@ -507,7 +502,7 @@ TEST_F(TestConnectivityApiVpn, WritesOpenvpnProperties)
     EXPECT_EQ(OpenvpnConnection::ConnectionType::TLS, connection->connectionType());
     connection->setRemote("remote2");
 
-    WAIT_FOR_SIGNALS(appleMockCallSpy, 1);
+    WAIT_FOR_SIGNALS(appleInterfaceSpy, 1);
     WAIT_FOR_SIGNALS(remoteChangedSpy, 1);
 
     QStringMap vpnData;

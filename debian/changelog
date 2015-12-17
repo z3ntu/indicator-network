@@ -1,12 +1,16 @@
-indicator-network (0.6.0-0ubuntu1) UNRELEASED; urgency=medium
+indicator-network (0.6.0+16.04.20151217-0ubuntu1) xenial; urgency=medium
 
+  [ Pete Woods ]
   * Add VPN editing support (LP: #1361793)
   * Add network-manager-openvpn install dependency on service.
   * Split secret agent back out into separate process.
   * Depend on new release of python-dbusmock (0.16.3).
   * Don't run tests of s390x arch.
 
- -- Pete Woods <pete.woods@canonical.com>  Thu, 17 Dec 2015 11:18:46 +0000
+  [ CI Train Bot ]
+  * No-change rebuild.
+
+ -- Pete Woods <ci-train-bot@canonical.com>  Thu, 17 Dec 2015 11:24:37 +0000
 
 indicator-network (0.5.5+16.04.20151120-0ubuntu1) xenial; urgency=medium
 

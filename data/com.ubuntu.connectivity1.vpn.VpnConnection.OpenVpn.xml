@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<node name="/com/ubuntu/connectivity1/Connection/OpenVpn" xmlns:tp="http://telepathy.freedesktop.org/wiki/DbusSpec#extensions-v0">
+    <interface name="com.ubuntu.connectivity1.vpn.VpnConnection.OpenVpn">
+
+        <!--basic -->
+
+        <property name="connectionType" type="i" access="readwrite"/>
+        <property name="remote" type="s" access="readwrite"/>
+
+        <property name="ca" type="s" access="readwrite"/>
+
+        <property name="cert" type="s" access="readwrite"/>
+        <property name="certPass" type="s" access="readwrite"/>
+
+        <property name="key" type="s" access="readwrite"/>
+
+        <property name="username" type="s" access="readwrite"/>
+        <property name="password" type="s" access="readwrite"/>
+
+        <property name="localIp" type="s" access="readwrite"/>
+        <property name="remoteIp" type="s" access="readwrite"/>
+        <property name="staticKey" type="s" access="readwrite"/>
+        <property name="staticKeyDirection" type="i" access="readwrite"/>
+        
+        <!--advanced->general -->
+
+        <property name="portSet" type="b" access="readwrite"/>
+        <property name="port" type="i" access="readwrite"/>
+
+        <property name="renegSecondsSet" type="b" access="readwrite"/>
+        <property name="renegSeconds" type="i" access="readwrite"/>
+
+        <property name="compLzo" type="b" access="readwrite"/>
+
+        <property name="protoTcp" type="b" access="readwrite"/>
+
+        <property name="devTypeSet" type="b" access="readwrite"/>
+        <property name="devType" type="i" access="readwrite"/>
+        <property name="dev" type="s" access="readwrite"/>
+
+        <property name="tunnelMtuSet" type="b" access="readwrite"/>
+        <property name="tunnelMtu" type="i" access="readwrite"/>
+
+        <property name="fragmentSizeSet" type="b" access="readwrite"/>
+        <property name="fragmentSize" type="i" access="readwrite"/>
+
+        <property name="mssFix" type="b" access="readwrite"/>
+    
+        <property name="remoteRandom" type="b" access="readwrite"/>
+
+        <!--advanced->security -->
+
+        <property name="cipher" type="i" access="readwrite"/>
+
+        <property name="keysizeSet" type="b" access="readwrite"/>
+        <property name="keysize" type="i" access="readwrite"/>
+
+        <property name="auth" type="i" access="readwrite"/>
+
+        <!-- advanced->tls auth (N/A for static key) -->
+
+        <property name="tlsRemote" type="s" access="readwrite"/>
+
+        <property name="remoteCertTlsSet" type="b" access="readwrite"/>
+        <property name="remoteCertTls" type="i" access="readwrite"/>
+
+        <property name="taSet" type="b" access="readwrite"/>
+        <property name="ta" type="s" access="readwrite"/>
+        <property name="taDir" type="i" access="readwrite"/>
+        
+        <!-- advanced->proxies -->
+
+        <property name="proxyType" type="i" access="readwrite"/>
+
+        <property name="proxyServer" type="s" access="readwrite"/>
+
+        <property name="proxyPort" type="i" access="readwrite"/>
+    
+        <property name="proxyRetry" type="b" access="readwrite"/>
+
+        <property name="proxyUsername" type="s" access="readwrite"/>
+
+        <property name="proxyPassword" type="s" access="readwrite"/>
+
+    </interface>
+</node>
+
+<!--
+
+tls:
+{
+'connection': {'autoconnect': False, 'permissions': ['user:pete:'], 'type': 'vpn', 'id': 'tls', 'uuid': '799623fc-e37a-4b39-9841-87588f2e8b8d'},
+'vpn': {'service-type': 'org.freedesktop.NetworkManager.openvpn',
+    'data': {
+        'connection-type': 'tls',
+        'remote': 'gatewoo',
+
+        'ca': '/home/pete/.sesame/canonical_ca.crt',
+
+        'cert': '/home/pete/.sesame/canonical-pete.crt',
+        'cert-pass-flags': '1',
+
+        'key': '/home/pete/.sesame/canonical-pete.key'
+    }
+},
+'ipv4': {'routes': [], 'addresses': [], 'dns': [], 'method': 'auto'},
+'ipv6': {'routes': [], 'ip6-privacy': 0, 'addresses': [], 'dns': [], 'method': 'auto'}
+}
+
+tls (all options):
+{
+'connection': {'autoconnect': False, 'permissions': ['user:pete:'], 'type': 'vpn', 'id': 'tls', 'uuid': '799623fc-e37a-4b39-9841-87588f2e8b8d'},
+'vpn': {'service-type': 'org.freedesktop.NetworkManager.openvpn',
+    'data': {
+        'connection-type': 'tls',
+
+        Basic:
+        'key': '/home/pete/.sesame/canonical-pete.key',
+        'ca': '/home/pete/.sesame/canonical_ca.crt',
+        'remote': 'gatewoo',
+        'cert': '/home/pete/.sesame/canonical-pete.crt',
+        'cert-pass-flags': '1',
+
+        General:
+        'port': '1234',
+        'reneg-seconds': '123',
+        'comp-lzo': 'yes',
+        'proto-tcp': 'yes',
+        'dev-type': 'tun',
+        'dev': 'banana',
+        'tunnel-mtu': '1495',
+        'fragment-size': '1301',
+        'mssfix': 'yes',
+        'remote-random': 'yes',
+
+        Security:
+        'cipher': 'DES-CBC',
+        'keysize': '128',
+        'auth': 'RSA-MD4',
+
+        TLS Auth:
+        'tls-remote': '/banana',
+        'remote-cert-tls': 'server',
+        'ta': '/home/pete/.sesame/canonical_ta.key'
+        'ta-dir': '1',
+        
+        Proxies:
+        'proxy-type': 'http',
+        'proxy-server': '1234',
+        'proxy-port': '4567',
+        'proxy-retry': 'yes',
+        'http-proxy-username': 'proxyuser',
+    }
+},
+'ipv4': {'routes': [], 'addresses': [], 'dns': [], 'method': 'auto'},
+'ipv6': {'routes': [], 'ip6-privacy': 0, 'addresses': [], 'dns': [], 'method': 'auto'}}
+
+{'connection': {'autoconnect': False, 'permissions': ['user:pete:'], 'type': 'vpn', 'id': 'tls', 'uuid': '799623fc-e37a-4b39-9841-87588f2e8b8d'},
+'vpn': {'service-type': 'org.freedesktop.NetworkManager.openvpn',
+    'data': {
+        'key': '/home/pete/.sesame/canonical-pete.key',
+        'mssfix': 'yes',
+        'proxy-port': '4567',
+        'http-proxy-username': 'proxyuser',
+        'connection-type': 'tls',
+        'reneg-seconds': '123',
+        'port': '1234',
+        'dev-type': 'tun',
+        'remote-random': 'yes',
+        'ta-dir': '1',
+        'proxy-server': '1234',
+        'ca': '/home/pete/.sesame/canonical_ca.crt',
+        'keysize': '128',
+        'fragment-size': '1301',
+        'tunnel-mtu': '1495',
+        'proxy-retry': 'yes',
+        'remote-cert-tls': 'server',
+        'comp-lzo': 'yes',
+        'remote': 'gatewoo',
+        'proto-tcp': 'yes',
+        'dev': 'banana',
+        'proxy-type': 'http',
+        'cert': '/home/pete/.sesame/canonical-pete.crt',
+        'tls-remote': '/banana',
+        'cert-pass-flags': '1',
+        'ta': '/home/pete/.sesame/canonical_ta.key'        
+}}, 'ipv4': {'routes': [], 'addresses': [], 'dns': [], 'method': 'auto'}, 'ipv6': {'routes': [], 'ip6-privacy': 0, 'addresses': [], 'dns': [], 'method': 'auto'}}
+
+password:
+{
+'connection': {'autoconnect': False, 'permissions': ['user:pete:'], 'type': 'vpn', 'id': 'username-password', 'uuid': '330cc533-102e-4a1f-b854-79eb6016a68b'},
+'vpn': {'service-type': 'org.freedesktop.NetworkManager.openvpn',
+    'data': {
+        'connection-type': 'password',
+        'remote': 'gatewoo',
+
+        'ca': '/home/pete/.sesame/canonical_ca.crt'
+
+        'username': 'usernoo',
+        'password-flags': '1',
+
+    }
+},
+'ipv4': {'routes': [], 'addresses': [], 'dns': [], 'method': 'auto'},
+'ipv6': {'routes': [], 'ip6-privacy': 0, 'addresses': [], 'dns': [], 'method': 'auto'}}
+
+password-tls:
+{
+'connection': {'autoconnect': False, 'permissions': ['user:pete:'], 'type': 'vpn', 'id': 'password-cert', 'uuid': '2b4baf88-7cbb-40f2-b124-b57173a762bb'},
+'vpn': {'service-type': 'org.freedesktop.NetworkManager.openvpn',
+    'data': {
+        'connection-type': 'password-tls',
+        'remote': 'gatewoo',
+
+        'ca': '/home/pete/.sesame/canonical_ca.crt',
+
+        'username': 'usernoo',
+        'password-flags': '1',
+
+        'cert': '/home/pete/.sesame/canonical-pete.crt',
+        'cert-pass-flags': '1',
+
+        'key': '/home/pete/.sesame/canonical-pete.key'
+    }
+},
+'ipv4': {'routes': [], 'addresses': [], 'dns': [], 'method': 'auto'},
+'ipv6': {'routes': [], 'ip6-privacy': 0, 'addresses': [], 'dns': [], 'method': 'auto'}
+}
+
+static-key:
+{
+'connection': {'autoconnect': False, 'permissions': ['user:pete:'], 'type': 'vpn', 'id': 'static-key', 'uuid': '796e396b-0688-4639-ad60-82c26e8a717e'},
+'vpn': {'service-type': 'org.freedesktop.NetworkManager.openvpn',
+    'data': {
+        'connection-type': 'static-key',
+        'remote': 'gatewoo',
+
+        'local-ip': '10.1.1.1',
+        'static-key': '/home/pete/.sesame/canonical_ta.key',
+        'static-key-direction': '0',
+        'remote-ip': '123.1.1.1'
+    }
+},
+'ipv4': {'routes': [], 'addresses': [], 'dns': [], 'method': 'auto'},
+'ipv6': {'routes': [], 'ip6-privacy': 0, 'addresses': [], 'dns': [], 'method': 'auto'}
+}
+
+-->

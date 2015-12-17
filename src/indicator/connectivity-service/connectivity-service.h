@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Canonical, Ltd.
+ * Copyright (C) 2015 Canonical, Ltd.
  *
  * This program is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 3, as published
@@ -15,11 +15,13 @@
  *
  * Authors:
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
+ *     Pete Woods <pete.woods@canonical.com>
  */
 
 #pragma once
 
 #include <nmofono/manager.h>
+#include <nmofono/vpn/vpn-manager.h>
 
 #include <QDBusContext>
 #include <QDBusConnection>
@@ -40,7 +42,9 @@ class ConnectivityService: public QObject, protected QDBusContext
     friend PrivateService;
 
 public:
-    ConnectivityService(nmofono::Manager::Ptr manager, const QDBusConnection& connection);
+    ConnectivityService(nmofono::Manager::Ptr manager,
+                        nmofono::vpn::VpnManager::SPtr vpnManager,
+                        const QDBusConnection& connection);
     virtual ~ConnectivityService();
 
 public:
@@ -102,6 +106,9 @@ public:
     Q_PROPERTY(QString HotspotAuth READ hotspotAuth)
     QString hotspotAuth() const;
 
+    Q_PROPERTY(QList<QDBusObjectPath> VpnConnections READ vpnConnections)
+    QList<QDBusObjectPath> vpnConnections() const;
+
 protected Q_SLOTS:
     void UnlockAllModems();
 
@@ -120,6 +127,10 @@ protected Q_SLOTS:
     void SetHotspotMode(const QString &mode);
 
     void SetHotspotAuth(const QString &auth);
+
+    QDBusObjectPath AddVpnConnection(int type);
+
+    void RemoveVpnConnection(const QDBusObjectPath &path);
 
 Q_SIGNALS:
     void ReportError(int reason);

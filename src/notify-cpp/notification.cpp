@@ -93,8 +93,9 @@ Notification::Notification(
 
 Notification::~Notification()
 {
-    if (d->m_id > 0 && d->m_open)
+    if (d->m_id > 0 && d->m_open && d->m_expireTimeout <= 0)
     {
+        qDebug() << __PRETTY_FUNCTION__ << "Closing notification:" << d->m_id;
         auto reply = d->m_notificationsInterface->CloseNotification(d->m_id);
         reply.waitForFinished();
         if (reply.isError())

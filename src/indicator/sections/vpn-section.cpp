@@ -92,7 +92,7 @@ public Q_SLOTS:
         while (it.hasNext())
         {
             it.next();
-            sorted.insert(make_pair(it.key()->name(), it.value()));
+            sorted.insert(make_pair(it.key()->id(), it.value()));
         }
         for (auto pair : sorted)
         {

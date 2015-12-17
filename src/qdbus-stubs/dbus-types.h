@@ -26,13 +26,25 @@
 typedef QMap<QString, QVariantMap> QVariantDictMap;
 Q_DECLARE_METATYPE(QVariantDictMap)
 
+typedef QMap<QString, QString> QStringMap;
+Q_DECLARE_METATYPE(QStringMap)
+
 namespace DBusTypes
 {
     inline void registerMetaTypes()
     {
         qRegisterMetaType<QVariantDictMap>("QVariantDictMap");
+        qRegisterMetaType<QStringMap>("QStringMap");
 
         qDBusRegisterMetaType<QVariantDictMap>();
+        qDBusRegisterMetaType<QStringMap>();
+    }
+
+    inline QString vpnConnectionPath()
+    {
+        static int counter {0};
+        static QString path{"/com/ubuntu/connectivity1/vpn/VpnConnection%1"};
+        return path.arg(counter++);
     }
 
     static constexpr char const* WPASUPPLICANT_DBUS_NAME = "fi.w1.wpa_supplicant1";
@@ -67,5 +79,4 @@ namespace DBusTypes
     static constexpr char const* NOTIFY_DBUS_INTERFACE = "org.freedesktop.Notifications";
 
     static constexpr char const* NOTIFY_DBUS_PATH = "/org/freedesktop/Notifications";
-
 }

@@ -13,6 +13,7 @@ set(
     test-indicator.cpp
     test-indicator-vpn.cpp
     test-connectivity-api.cpp
+    test-connectivity-api-vpn.cpp
 )
 
 add_executable(

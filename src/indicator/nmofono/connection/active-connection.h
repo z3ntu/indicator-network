@@ -52,6 +52,8 @@ public:
 
     ~ActiveConnection() = default;
 
+    QString id() const;
+
     QString type() const;
 
     State state() const;
@@ -63,6 +65,8 @@ public:
     ActiveVpnConnection::SPtr vpnConnection() const;
 
 Q_SIGNALS:
+    void idChanged(const QString& id);
+
     void typeChanged(const QString& type);
 
     void stateChanged(State state);

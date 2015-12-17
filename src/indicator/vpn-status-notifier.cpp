@@ -45,24 +45,27 @@ public Q_SLOTS:
 
     void vpnStateChanged(ActiveVpnConnection::State state, ActiveVpnConnection::Reason reason)
     {
+        static const QString FAILED_MESSAGE{_("The VPN connection '%1' failed.")};
         static const QMap<ActiveVpnConnection::Reason, QString> REASON_MAP{
-            {ActiveVpnConnection::Reason::UNKNOWN, _("Unknown reason")},
-            {ActiveVpnConnection::Reason::NONE, _("No reason")},
-            {ActiveVpnConnection::Reason::DISCONNECTED, _("Disconnected")},
-            {ActiveVpnConnection::Reason::DEVICE_DISCONNECTED, _("Device disconnected")},
-            {ActiveVpnConnection::Reason::SERVICE_STOPPED, _("VPN service stopped")},
-            {ActiveVpnConnection::Reason::IP_CONFIG_INVALID, _("IP configuration invalid")},
-            {ActiveVpnConnection::Reason::CONNECT_TIMEOUT, _("Connection timeout")},
-            {ActiveVpnConnection::Reason::SERVICE_START_TIMEOUT, _("VPN service start timeout")},
-            {ActiveVpnConnection::Reason::SERVICE_START_FAILED, _("VPN service start failed")},
-            {ActiveVpnConnection::Reason::NO_SECRETS, _("Required password not provided")},
-            {ActiveVpnConnection::Reason::LOGIN_FAILED, _("Login failed")},
-            {ActiveVpnConnection::Reason::CONNECTION_REMOVED, _("Connection removed")}
+            {ActiveVpnConnection::Reason::DEVICE_DISCONNECTED, _("The VPN connection '%1' failed because the network connection was interrupted.")},
+            {ActiveVpnConnection::Reason::SERVICE_STOPPED, _("The VPN connection '%1' failed because the VPN service stopped unexpectedly.")},
+            {ActiveVpnConnection::Reason::IP_CONFIG_INVALID, _("The VPN connection '%1' failed because the VPN service returned invalid configuration.")},
+            {ActiveVpnConnection::Reason::CONNECT_TIMEOUT, _("The VPN connection '%1' failed because the connection attempt timed out.")},
+            {ActiveVpnConnection::Reason::SERVICE_START_TIMEOUT, _("The VPN connection '%1' failed because the VPN service did not start in time.")},
+            {ActiveVpnConnection::Reason::SERVICE_START_FAILED, _("The VPN connection '%1' failed because the VPN service failed to start.")},
+            {ActiveVpnConnection::Reason::NO_SECRETS, _("The VPN connection '%1' failed because there were no valid VPN secrets.")},
+            {ActiveVpnConnection::Reason::LOGIN_FAILED, _("The VPN connection '%1' failed because of invalid VPN secrets.")},
         };
-        if (state == ActiveVpnConnection::State::FAILED)
+        if (state == ActiveVpnConnection::State::FAILED
+                || (state == ActiveVpnConnection::State::DISCONNECTED
+                        && reason == ActiveVpnConnection::Reason::SERVICE_STOPPED))
         {
-            qDebug() << __PRETTY_FUNCTION__ << "VPN connection failed" << REASON_MAP[reason];
-            m_notificationManager->notify(_("VPN connection failed"), REASON_MAP[reason], "network-vpn", {}, {}, 5)->show();
+            auto activeVpnConnection = qobject_cast<ActiveVpnConnection*>(sender());
+            QString id = activeVpnConnection->activeConnection().id();
+            QString message = REASON_MAP.value(reason, FAILED_MESSAGE).arg(id);
+
+            qDebug() << __PRETTY_FUNCTION__ << "VPN Connection Failed" << message;
+            m_notificationManager->notify(_("VPN Connection Failed"), message, "network-vpn", {}, {}, 5)->show();
         }
     }
 

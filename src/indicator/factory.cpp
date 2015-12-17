@@ -130,7 +130,9 @@ unique_ptr<MenuBuilder> Factory::newMenuBuilder()
 
 unique_ptr<connectivity_service::ConnectivityService> Factory::newConnectivityService()
 {
-    return make_unique<connectivity_service::ConnectivityService>(d->singletonNmofono(), QDBusConnection::sessionBus());
+    return make_unique<connectivity_service::ConnectivityService>(
+            d->singletonNmofono(), d->singletonVpnManager(),
+            QDBusConnection::sessionBus());
 }
 
 unique_ptr<RootState> Factory::newRootState()
@@ -224,5 +226,11 @@ agent::SecretAgent::UPtr Factory::newSecretAgent()
     return make_unique<agent::SecretAgent>(d->singletonNotificationManager(),
                                            QDBusConnection::systemBus(),
                                            QDBusConnection::sessionBus());
+}
+
+VpnStatusNotifier::UPtr Factory::newVpnStatusNotifier()
+{
+    return make_unique<VpnStatusNotifier>(d->singletonActiveConnectionManager(),
+                                          d->singletonNotificationManager());
 }
 

@@ -1,15 +1,30 @@
 {
 global:
     extern "C++" {
-        typeinfo?for?connectivityqt::Connectivity;
-        typeinfo?for?ubuntu::connectivity::NetworkingStatus;
+        typeinfo*for?connectivityqt::Connectivity;
+        typeinfo*for?connectivityqt::OpenvpnConnection;
+        typeinfo*for?connectivityqt::VpnConnection;
+        typeinfo*for?connectivityqt::VpnConnectionsListModel;
+        typeinfo*for?ubuntu::connectivity::NetworkingStatus;
         VTT?for?connectivityqt::Connectivity;
+        VTT?for?connectivityqt::OpenvpnConnection;
+        VTT?for?connectivityqt::VpnConnection;
+        VTT?for?connectivityqt::VpnConnectionsListModel;
         VTT?for?ubuntu::connectivity::NetworkingStatus;
         virtual?thunk?to?connectivityqt::Connectivity;
+        virtual?thunk?to?connectivityqt::OpenvpnConnection;
+        virtual?thunk?to?connectivityqt::VpnConnection;
+        virtual?thunk?to?connectivityqt::VpnConnectionsListModel;
         virtual?thunk?to?ubuntu::connectivity::NetworkingStatus;
         vtable?for?connectivityqt::Connectivity;
+        vtable?for?connectivityqt::OpenvpnConnection;
+        vtable?for?connectivityqt::VpnConnection;
+        vtable?for?connectivityqt::VpnConnectionsListModel;
         vtable?for?ubuntu::connectivity::NetworkingStatus;
         connectivityqt::Connectivity::[!P]*;
+        connectivityqt::OpenvpnConnection::[!P]*;
+        connectivityqt::VpnConnection::[!P]*;
+        connectivityqt::VpnConnectionsListModel::[!P]*;
         ubuntu::connectivity::NetworkingStatus::[!P]*;
     };
 local:

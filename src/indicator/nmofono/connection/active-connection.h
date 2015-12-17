@@ -25,6 +25,8 @@
 #include <unity/util/DefinesPtrs.h>
 #include <NetworkManager.h>
 
+#include <nmofono/connection/active-vpn-connection.h>
+
 namespace nmofono
 {
 namespace connection
@@ -50,6 +52,8 @@ public:
 
     ~ActiveConnection() = default;
 
+    QString id() const;
+
     QString type() const;
 
     State state() const;
@@ -58,7 +62,11 @@ public:
 
     QDBusObjectPath path() const;
 
+    ActiveVpnConnection::SPtr vpnConnection() const;
+
 Q_SIGNALS:
+    void idChanged(const QString& id);
+
     void typeChanged(const QString& type);
 
     void stateChanged(State state);

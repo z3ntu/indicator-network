@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<node name="/com/ubuntu/connectivity1/Connection" xmlns:tp="http://telepathy.freedesktop.org/wiki/DbusSpec#extensions-v0">
+    <interface name="com.ubuntu.connectivity1.vpn.VpnConnection">
+
+        <method name="UpdateSecrets">
+        </method>
+
+        <property name="type" type="i" access="read"/>
+
+        <property name="id" type="s" access="readwrite"/>
+
+        <property name="active" type="b" access="readwrite"/>
+
+        <property name="activatable" type="b" access="read"/>
+
+    </interface>
+</node>
+

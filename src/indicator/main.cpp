@@ -59,8 +59,8 @@ main(int argc, char **argv)
 
     Factory factory;
     auto menu = factory.newMenuBuilder();
-    auto secretAgent = factory.newSecretAgent();
     auto connectivityService = factory.newConnectivityService();
+    auto vpnStatusNotifier = factory.newVpnStatusNotifier();
 
     return app.exec();
 }

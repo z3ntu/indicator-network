@@ -22,6 +22,7 @@
 #include <menu-builder.h>
 #include <indicator-menu.h>
 #include <root-state.h>
+#include <vpn-status-notifier.h>
 #include <connectivity-service/connectivity-service.h>
 #include <menumodel-cpp/menu-exporter.h>
 #include <menumodel-cpp/action-group-merger.h>
@@ -77,4 +78,6 @@ public:
                                      std::function<void(std::string)> lost);
 
     virtual agent::SecretAgent::UPtr newSecretAgent();
+
+    virtual VpnStatusNotifier::UPtr newVpnStatusNotifier();
 };

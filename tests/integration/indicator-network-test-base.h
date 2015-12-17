@@ -18,6 +18,10 @@
 
 #pragma once
 
+#include <connectivityqt/connectivity.h>
+
+#include <dbus-types.h>
+
 #include <libqtdbustest/DBusTestRunner.h>
 #include <libqtdbustest/QProcessDBusService.h>
 #include <libqtdbusmock/DBusMock.h>
@@ -28,6 +32,9 @@
 #include <NetworkManager.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
+
+#include <QSignalSpy>
+#include <QTest>
 
 inline QString qVariantToString(const QVariant& variant) {
     QString output;
@@ -42,6 +49,28 @@ inline void PrintTo(const QVariant& variant, std::ostream* os) {
     dbg << variant;
 
     *os << "QVariant(" << output.toStdString() << ")";
+}
+
+inline void PrintTo(const QString& s, std::ostream* os) {
+    *os << "\"" << s.toStdString() << "\"";
+}
+
+inline void PrintTo(const QStringList& list, std::ostream* os) {
+    QString output;
+    QDebug dbg(&output);
+    dbg << list;
+
+    *os << "QStringList(" << output.toStdString() << ")";
+}
+
+inline void PrintTo(const QList<QDBusObjectPath>& list, std::ostream* os) {
+    QString output;
+    for (const auto& path: list)
+    {
+        output.append("\"" + path.path() + "\",");
+    }
+
+    *os << "QList<QDBusObjectPath>(" << output.toStdString() << ")";
 }
 
 #define WAIT_FOR_SIGNALS(signalSpy, signalsExpected)\
@@ -147,7 +176,24 @@ protected:
 
     OrgFreedesktopDBusMockInterface& networkManagerMockInterface();
 
-    QString createVpnConnection(const QString& id);
+    QString createVpnConnection(const QString& id,
+                                const QString& serviceType = "org.freedesktop.NetworkManager.openvpn",
+                                const QStringMap& =
+                                {
+                                    {"connection-type", "tls"},
+                                    {"remote", "remote"},
+                                    {"ca", "/path/to/ca.crt"},
+                                    {"cert", "/path/to/cert.crt"},
+                                    {"cert-pass-flags", "1"},
+                                    {"key", "/path/to/key.key"}
+                                },
+                                const QStringMap& secrets = {});
+
+    void deleteSettings(const QString& path);
+
+    connectivityqt::Connectivity::UPtr newConnectivity();
+
+    QVariantList getMethodCall(const QSignalSpy& spy, const QString& method);
 
     static bool qDBusArgumentToMap(QVariant const& variant, QVariantMap& map);
 

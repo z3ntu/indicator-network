@@ -19,6 +19,9 @@ set(
     CONNECTIVITY_QT_SRC
     connectivityqt/internal/dbus-property-cache.cpp
     connectivityqt/connectivity.cpp
+    connectivityqt/openvpn-connection.cpp
+    connectivityqt/vpn-connection.cpp
+    connectivityqt/vpn-connections-list-model.cpp
     ubuntu/connectivity/networking-status.cpp
 )
 
@@ -41,6 +44,18 @@ qt5_add_dbus_interface(
     CONNECTIVITY_QT_SRC
     "${DATA_DIR}/com.ubuntu.connectivity1.Private.xml"
     NetworkingStatusPrivateInterface
+)
+
+qt5_add_dbus_interface(
+    CONNECTIVITY_QT_SRC
+    "${DATA_DIR}/com.ubuntu.connectivity1.vpn.VpnConnection.xml"
+    VpnConnectionInterface
+)
+
+qt5_add_dbus_interface(
+    CONNECTIVITY_QT_SRC
+    "${DATA_DIR}/com.ubuntu.connectivity1.vpn.VpnConnection.OpenVpn.xml"
+    OpenVpnConnectionInterface
 )
 
 qt5_add_dbus_interface(

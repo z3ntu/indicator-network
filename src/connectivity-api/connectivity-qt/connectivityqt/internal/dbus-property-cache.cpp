@@ -1,17 +1,17 @@
 /*
- * Copyright (C) 2015 Canonical, Ltd.
+ * Copyright © 2014 Canonical Ltd.
  *
  * This program is free software: you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 3, as published
- * by the Free Software Foundation.
+ * under the terms of the GNU Lesser General Public License version 3,
+ * as published by the Free Software Foundation.
  *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranties of
- * MERCHANTABILITY, SATISFACTORY QUALITY, or FITNESS FOR A PARTICULAR
- * PURPOSE.  See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along
- * with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  * Authors:
  *     Pete Woods <pete.woods@canonical.com>
@@ -58,9 +58,10 @@ public:
     {
         for(const QString& name: names)
         {
-            QDBusVariant value = m_propertiesInterface->Get(m_interface, name);
-            m_propertyCache[name] = value.variant();
-            Q_EMIT p.propertyChanged(name, value.variant());
+            QDBusVariant v = m_propertiesInterface->Get(m_interface, name);
+            QVariant variant = v.variant();
+            m_propertyCache[name] = variant;
+            Q_EMIT p.propertyChanged(name, variant);
         }
     }
 
@@ -112,6 +113,16 @@ public Q_SLOTS:
 
         refreshProperties(invalidatedProperties);
     }
+
+    void dbusCallFinished(QDBusPendingCallWatcher *call)
+    {
+        QDBusPendingReply<> reply = *call;
+        if (reply.isError())
+        {
+            qCritical() << __PRETTY_FUNCTION__ << reply.error().message();
+        }
+        call->deleteLater();
+    }
 };
 
 DBusPropertyCache::DBusPropertyCache(const QString &service,
@@ -142,7 +153,17 @@ DBusPropertyCache::~DBusPropertyCache()
 {
 }
 
-QVariant DBusPropertyCache::get(const QString& name)
+void DBusPropertyCache::set(const QString& name, const QVariant& value)
+{
+    if (d->m_propertyCache.value(name) != value)
+    {
+        auto reply = d->m_propertiesInterface->Set(d->m_interface, name, QDBusVariant(value));
+        auto watcher(new QDBusPendingCallWatcher(reply, this));
+        connect(watcher, &QDBusPendingCallWatcher::finished, d.get(), &Priv::dbusCallFinished);
+    }
+}
+
+QVariant DBusPropertyCache::get(const QString& name) const
 {
     return d->m_propertyCache[name];
 }
@@ -150,6 +171,11 @@ QVariant DBusPropertyCache::get(const QString& name)
 bool DBusPropertyCache::isInitialized() const
 {
     return !d->m_propertyCache.empty();
+}
+
+QDBusConnection DBusPropertyCache::connection() const
+{
+    return d->m_connection;
 }
 
 }

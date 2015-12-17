@@ -1,29 +1,31 @@
 /*
- * Copyright (C) 2015 Canonical, Ltd.
+ * Copyright © 2014 Canonical Ltd.
  *
  * This program is free software: you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 3, as published
- * by the Free Software Foundation.
+ * under the terms of the GNU Lesser General Public License version 3,
+ * as published by the Free Software Foundation.
  *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranties of
- * MERCHANTABILITY, SATISFACTORY QUALITY, or FITNESS FOR A PARTICULAR
- * PURPOSE.  See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along
- * with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  * Authors:
  *     Pete Woods <pete.woods@canonical.com>
  */
 
 #include <connectivityqt/connectivity.h>
-#include <connectivityqt/internal/dbus-property-cache.h>
+#include <connectivityqt/internal/vpn-connection-list-model-parameters.h>
+#include <connectivityqt/vpn-connections-list-model.h>
 #include <dbus-types.h>
 #include <NetworkingStatusInterface.h>
 #include <NetworkingStatusPrivateInterface.h>
 
 #include <QDebug>
+#include <QDBusPendingCallWatcher>
 
 using namespace std;
 
@@ -41,15 +43,19 @@ public:
 
     Connectivity& p;
 
+    function<void(QObject*)> m_objectOwner;
+
     QDBusConnection m_sessionConnection;
 
-    shared_ptr<internal::DBusPropertyCache> m_propertyCache;
+    internal::DBusPropertyCache::SPtr m_propertyCache;
 
-    shared_ptr<internal::DBusPropertyCache> m_writePropertyCache;
+    internal::DBusPropertyCache::SPtr m_writePropertyCache;
 
     shared_ptr<ComUbuntuConnectivity1NetworkingStatusInterface> m_readInterface;
 
     shared_ptr<ComUbuntuConnectivity1PrivateInterface> m_writeInterface;
+
+    VpnConnectionsListModel::SPtr m_vpnConnectionsModel;
 
     static QVector<Limitations> toLimitations(const QVariant& value)
     {
@@ -159,6 +165,7 @@ public Q_SLOTS:
             Q_EMIT p.hotspotStoredUpdated(value.toBool());
         }
     }
+
 };
 
 void Connectivity::registerMetaTypes()
@@ -168,11 +175,27 @@ void Connectivity::registerMetaTypes()
     qRegisterMetaType<connectivityqt::Connectivity::Limitations>("connectivityqt::Connectivity::Limitations");
     qRegisterMetaType<QVector<connectivityqt::Connectivity::Limitations>>("QVector<connectivityqt::Connectivity::Limitations>");
     qRegisterMetaType<connectivityqt::Connectivity::Status>("connectivityqt::Connectivity::Status");
+
+    qRegisterMetaType<connectivityqt::VpnConnection*>("VpnConnection*");
+    qRegisterMetaType<connectivityqt::VpnConnection::Type>("VpnConnection::Type");
 }
 
 Connectivity::Connectivity(const QDBusConnection& sessionConnection, QObject* parent) :
+        Connectivity(
+                [](QObject*){},
+                sessionConnection,
+                parent
+        )
+{
+}
+
+Connectivity::Connectivity(const std::function<void(QObject*)>& objectOwner,
+                           const QDBusConnection& sessionConnection,
+                           QObject* parent) :
         QObject(parent), d(new Priv(*this, sessionConnection))
 {
+    d->m_objectOwner = objectOwner;
+
     d->m_readInterface = make_shared<
             ComUbuntuConnectivity1NetworkingStatusInterface>(
             DBusTypes::DBUS_NAME, DBusTypes::SERVICE_PATH,
@@ -344,6 +367,21 @@ void Connectivity::setHotspotMode(const QString& mode)
 void Connectivity::setHotspotAuth(const QString& auth)
 {
     d->m_writeInterface->SetHotspotAuth(auth);
+}
+
+QAbstractItemModel* Connectivity::vpnConnections() const
+{
+    // Lazy initialisation
+    if (!d->m_vpnConnectionsModel)
+    {
+        d->m_vpnConnectionsModel = make_shared<VpnConnectionsListModel>(
+                    internal::VpnConnectionsListModelParameters{
+                            d->m_objectOwner,
+                            d->m_writeInterface,
+                            d->m_writePropertyCache});
+        d->m_objectOwner(d->m_vpnConnectionsModel.get());
+    }
+    return d->m_vpnConnectionsModel.get();
 }
 
 }

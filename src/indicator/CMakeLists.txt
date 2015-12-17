@@ -32,11 +32,13 @@ set(NETWORK_SERVICE_SOURCES
     nmofono/manager-impl.cpp
     nmofono/connection/active-connection.cpp
     nmofono/connection/active-connection-manager.cpp
+    nmofono/connection/active-vpn-connection.cpp
     nmofono/wifi/access-point.cpp
     nmofono/wifi/access-point-impl.cpp
     nmofono/wifi/grouped-access-point.cpp
     nmofono/wifi/wifi-link-impl.cpp
     nmofono/wwan/modem.cpp
+    nmofono/vpn/openvpn-connection.cpp
     nmofono/vpn/vpn-connection.cpp
     nmofono/vpn/vpn-manager.cpp
 
@@ -50,12 +52,15 @@ set(NETWORK_SERVICE_SOURCES
     menu-builder.cpp
     sim-unlock-dialog.cpp
     root-state.cpp
+    vpn-status-notifier.cpp
     sections/quick-access-section.cpp
     sections/wifi-section.cpp
     sections/vpn-section.cpp
     sections/wwan-section.cpp
 
     connectivity-service/connectivity-service.cpp
+    connectivity-service/dbus-openvpn-connection.cpp
+    connectivity-service/dbus-vpn-connection.cpp
 
     menuitems/access-point-item.cpp
     menuitems/switch-item.cpp
@@ -65,6 +70,7 @@ set(NETWORK_SERVICE_SOURCES
     menuitems/wwan-link-item.cpp
     menuitems/modem-info-item.cpp
     
+    util/dbus-utils.cpp
     util/unix-signal-handler.cpp
 )
 
@@ -82,6 +88,22 @@ qt5_add_dbus_adaptor(
     connectivity-service/connectivity-service.h
     connectivity_service::PrivateService
     NetworkingStatusPrivateAdaptor
+)
+
+qt5_add_dbus_adaptor(
+    NETWORK_SERVICE_SOURCES
+    "${DATA_DIR}/com.ubuntu.connectivity1.vpn.VpnConnection.xml"
+    connectivity-service/dbus-vpn-connection.h
+    connectivity_service::DBusVpnConnection
+    VpnConnectionAdaptor
+)
+
+qt5_add_dbus_adaptor(
+    NETWORK_SERVICE_SOURCES
+    "${DATA_DIR}/com.ubuntu.connectivity1.vpn.VpnConnection.OpenVpn.xml"
+    connectivity-service/dbus-openvpn-connection.h
+    connectivity_service::DBusOpenvpnConnection
+    OpenVpnAdaptor
 )
 
 qt5_add_dbus_adaptor(
@@ -108,16 +130,12 @@ target_link_libraries(
     ${DBUSCPP_LIBRARIES}
     ${GLIB_LIBRARIES}
     ${QOFONO_LIBRARIES}
-)
-
-qt5_use_modules(
-    indicator-network-service-static
-    Core
-    DBus
+    Qt5::Core
+    Qt5::DBus
 )
 
 ###########################
-# Executable
+# Executables
 ###########################
 
 add_executable(
@@ -128,12 +146,20 @@ add_executable(
 target_link_libraries(
     indicator-network-service
     indicator-network-service-static
+    Qt5::Core
+    Qt5::DBus
 )
 
-qt5_use_modules(
-    indicator-network-service
-    Core
-    DBus
+add_executable(
+  indicator-network-secret-agent
+  agent-main.cpp
+)
+
+target_link_libraries(
+    indicator-network-secret-agent
+    indicator-network-service-static
+    Qt5::Core
+    Qt5::DBus
 )
 
 ###########################
@@ -141,6 +167,8 @@ qt5_use_modules(
 ###########################
 
 install(
-  TARGETS indicator-network-service
+  TARGETS
+    indicator-network-service
+    indicator-network-secret-agent
   RUNTIME DESTINATION "${CMAKE_INSTALL_LIBEXECDIR}/indicator-network/"
 )

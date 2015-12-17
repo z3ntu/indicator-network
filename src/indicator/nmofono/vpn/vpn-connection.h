@@ -26,6 +26,7 @@
 #include <memory>
 
 #include <nmofono/connection/active-connection-manager.h>
+#include <nmofono/vpn/openvpn-connection.h>
 
 #include <unity/util/DefinesPtrs.h>
 
@@ -41,11 +42,19 @@ class VpnConnection: public QObject
 public:
     UNITY_DEFINES_PTRS(VpnConnection);
 
+    enum class Type
+    {
+        openvpn,
+        pptp
+    };
+
     VpnConnection(const QDBusObjectPath& path, connection::ActiveConnectionManager::SPtr activeConnectionManager, const QDBusConnection& systemConnection);
 
     ~VpnConnection() = default;
 
-    QString name() const;
+    QString uuid() const;
+
+    QString id() const;
 
     QDBusObjectPath path() const;
 
@@ -57,15 +66,25 @@ public:
 
     bool isActivatable() const;
 
+    Type type() const;
+
+    OpenvpnConnection::SPtr openvpnConnection() const;
+
 public Q_SLOTS:
     void setActive(bool active);
+
+    void setId(const QString& id);
 
     void setOtherConnectionIsBusy(bool otherConnectionIsBusy);
 
     void setActiveConnectionPath(const QDBusObjectPath& path);
 
+    void updateSecrets();
+
+    void remove();
+
 Q_SIGNALS:
-    void nameChanged(const QString& name);
+    void idChanged(const QString& id);
 
     void activeChanged(bool active);
 

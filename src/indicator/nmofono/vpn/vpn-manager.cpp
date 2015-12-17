@@ -18,6 +18,7 @@
  */
 
 #include <nmofono/vpn/vpn-manager.h>
+#include <util/localisation.h>
 #include <NetworkManager.h>
 #include <QMap>
 
@@ -46,7 +47,7 @@ public:
         auto connection = make_shared<VpnConnection>(path, m_activeConnectionManager, m_settingsInterface->connection());
         if (connection->isValid())
         {
-            m_connections[path.path()] = connection;
+            m_connections[path] = connection;
             connection->setOtherConnectionIsBusy(m_busy);
             connection->setActiveConnectionPath(m_activeConnectionPath);
             connect(connection.get(), &VpnConnection::activateConnection, this, &Priv::activateConnection);
@@ -63,6 +64,31 @@ public:
         }
     }
 
+    QSet<QString> connectionIds()
+    {
+        QSet<QString> ids;
+        QMapIterator<QDBusObjectPath, VpnConnection::SPtr> it(m_connections);
+        while (it.hasNext())
+        {
+            it.next();
+            ids << it.value()->id();
+        }
+        return ids;
+    }
+
+    QString newConnectionName()
+    {
+        static const QString NAME_FORMAT(_("VPN connection %1"));
+        auto ids = connectionIds();
+        int i = 1;
+        QString name = NAME_FORMAT.arg(i);
+        while (ids.contains(name))
+        {
+            name = NAME_FORMAT.arg(++i);
+        }
+        return name;
+    }
+
 Q_SIGNALS:
     void busyChanged(bool busy);
 
@@ -71,7 +97,7 @@ Q_SIGNALS:
 public Q_SLOTS:
     void connectionRemoved(const QDBusObjectPath &path)
     {
-        auto connection = m_connections.take(path.path());
+        auto connection = m_connections.take(path);
         if (connection)
         {
             Q_EMIT p.connectionsChanged();
@@ -86,7 +112,19 @@ public Q_SLOTS:
 
     void activateConnection(const QDBusObjectPath& connection)
     {
-        m_nmInterface->ActivateConnection(connection, QDBusObjectPath("/"), QDBusObjectPath("/"));
+        auto reply = m_nmInterface->ActivateConnection(connection, QDBusObjectPath("/"), QDBusObjectPath("/"));
+        auto watcher(new QDBusPendingCallWatcher(reply, this));
+        connect(watcher, &QDBusPendingCallWatcher::finished, this, &Priv::activateConnectionFinished);
+    }
+
+    void activateConnectionFinished(QDBusPendingCallWatcher *call)
+    {
+        QDBusPendingReply<QDBusObjectPath> reply = *call;
+        if (reply.isError())
+        {
+            qWarning() << __PRETTY_FUNCTION__ << reply.error().message();
+        }
+        call->deleteLater();
     }
 
     void updateActiveAndBusy()
@@ -145,7 +183,7 @@ public:
 
     shared_ptr<OrgFreedesktopNetworkManagerSettingsInterface> m_settingsInterface;
 
-    QMap<QString, VpnConnection::SPtr> m_connections;
+    QMap<QDBusObjectPath, VpnConnection::SPtr> m_connections;
 
     bool m_busy = false;
 
@@ -173,6 +211,62 @@ VpnManager::VpnManager(connection::ActiveConnectionManager::SPtr activeConnectio
 QList<VpnConnection::SPtr> VpnManager::connections() const
 {
     return d->m_connections.values();
+}
+
+QSet<QDBusObjectPath> VpnManager::connectionPaths() const
+{
+    return d->m_connections.keys().toSet();
+}
+
+VpnConnection::SPtr VpnManager::connection(const QDBusObjectPath& path) const
+{
+    return d->m_connections.value(path);
+}
+
+QString VpnManager::addConnection(VpnConnection::Type type)
+{
+    static const QMap<VpnConnection::Type, QString> typeMap
+    {
+        {VpnConnection::Type::openvpn, "org.freedesktop.NetworkManager.openvpn"},
+        {VpnConnection::Type::pptp, "org.freedesktop.NetworkManager.pptp"}
+    };
+
+    QString uuid = QUuid::createUuid().toString().mid(1,36);
+
+
+    QStringMap vpnData;
+    switch (type)
+    {
+        case VpnConnection::Type::openvpn:
+            vpnData["connection-type"] = "tls";
+            break;
+        case VpnConnection::Type::pptp:
+            // TODO PPTP
+            break;
+    };
+
+
+    QVariantDictMap connection;
+    connection["connection"] = QVariantMap
+    {
+        {"type", "vpn"},
+        {"id", d->newConnectionName()},
+        {"uuid", uuid}
+    };
+    connection["vpn"] = QVariantMap
+    {
+        {"service-type", typeMap[type]},
+        {"data", QVariant::fromValue(vpnData)}
+    };
+
+    auto reply = d->m_settingsInterface->AddConnection(connection);
+    reply.waitForFinished();
+    if (reply.isError())
+    {
+        throw domain_error(reply.error().message().toStdString());
+    }
+
+    return uuid;
 }
 
 }

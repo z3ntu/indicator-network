@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-12-04 13:16+0000\n"
+"POT-Creation-Date: 2015-12-17 10:40+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -104,6 +104,53 @@ msgstr ""
 
 #: ../src/indicator/sim-unlock-dialog.cpp:373
 msgid "PIN codes did not match."
+msgstr ""
+
+#: ../src/indicator/vpn-status-notifier.cpp:48
+msgid "The VPN connection '%1' failed."
+msgstr ""
+
+#: ../src/indicator/vpn-status-notifier.cpp:50
+msgid ""
+"The VPN connection '%1' failed because the network connection was "
+"interrupted."
+msgstr ""
+
+#: ../src/indicator/vpn-status-notifier.cpp:51
+msgid ""
+"The VPN connection '%1' failed because the VPN service stopped unexpectedly."
+msgstr ""
+
+#: ../src/indicator/vpn-status-notifier.cpp:52
+msgid ""
+"The VPN connection '%1' failed because the VPN service returned invalid "
+"configuration."
+msgstr ""
+
+#: ../src/indicator/vpn-status-notifier.cpp:53
+msgid ""
+"The VPN connection '%1' failed because the connection attempt timed out."
+msgstr ""
+
+#: ../src/indicator/vpn-status-notifier.cpp:54
+msgid ""
+"The VPN connection '%1' failed because the VPN service did not start in time."
+msgstr ""
+
+#: ../src/indicator/vpn-status-notifier.cpp:55
+msgid "The VPN connection '%1' failed because the VPN service failed to start."
+msgstr ""
+
+#: ../src/indicator/vpn-status-notifier.cpp:56
+msgid "The VPN connection '%1' failed because there were no valid VPN secrets."
+msgstr ""
+
+#: ../src/indicator/vpn-status-notifier.cpp:57
+msgid "The VPN connection '%1' failed because of invalid VPN secrets."
+msgstr ""
+
+#: ../src/indicator/vpn-status-notifier.cpp:68
+msgid "VPN Connection Failed"
 msgstr ""
 
 #: ../src/indicator/agent/SecretRequest.cpp:61

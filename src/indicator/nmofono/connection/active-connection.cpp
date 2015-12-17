@@ -46,7 +46,11 @@ public Q_SLOTS:
             QString property = it.key();
             QVariant value = it.value();
 
-            if (property == "Type")
+            if (property == "Id")
+            {
+                setId(value.toString());
+            }
+            else if (property == "Type")
             {
                 setType(value.toString());
             }
@@ -59,6 +63,17 @@ public Q_SLOTS:
                 setConnectionPath(qvariant_cast<QDBusObjectPath>(value));
             }
         }
+    }
+
+    void setId(const QString& id)
+    {
+        if (id == m_id)
+        {
+            return;
+        }
+
+        m_id = id;
+        Q_EMIT p.idChanged(m_id);
     }
 
     void setType(const QString& type)
@@ -75,7 +90,8 @@ public Q_SLOTS:
         {
             m_activeVpnConnection = make_shared<ActiveVpnConnection>(
                     QDBusObjectPath(m_activeConnection->path()),
-                    m_activeConnection->QDBusAbstractInterface::connection());
+                    m_activeConnection->QDBusAbstractInterface::connection(),
+                    p);
         }
         else
         {
@@ -112,6 +128,8 @@ public:
 
     ActiveVpnConnection::SPtr m_activeVpnConnection;
 
+    QString m_id;
+
     QString m_type;
 
     State m_state = State::unknown;
@@ -124,11 +142,17 @@ ActiveConnection::ActiveConnection(const QDBusObjectPath& path, const QDBusConne
 {
     d->m_activeConnection = make_shared<OrgFreedesktopNetworkManagerConnectionActiveInterface>(NM_DBUS_SERVICE, path.path(), systemConnection);
 
+    d->setId(d->m_activeConnection->id());
     d->setType(d->m_activeConnection->type());
     d->setState(static_cast<State>(d->m_activeConnection->state()));
     d->setConnectionPath(d->m_activeConnection->connection());
 
     connect(d->m_activeConnection.get(), &OrgFreedesktopNetworkManagerConnectionActiveInterface::PropertiesChanged, d.get(), &Priv::propertiesChanged);
+}
+
+QString ActiveConnection::id() const
+{
+    return d->m_id;
 }
 
 QString ActiveConnection::type() const

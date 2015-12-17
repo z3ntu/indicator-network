@@ -16,6 +16,7 @@
  * Author: Pete Woods <pete.woods@canonical.com>
  */
 
+#include <nmofono/connection/active-connection.h>
 #include <nmofono/connection/active-vpn-connection.h>
 #include <NetworkManagerVpnConnectionInterface.h>
 
@@ -38,20 +39,22 @@ public Q_SLOTS:
     }
 
 public:
-    Priv(ActiveVpnConnection& parent) :
-        p(parent)
+    Priv(ActiveVpnConnection& parent, ActiveConnection& activeConnection) :
+        p(parent), m_activeConnection(activeConnection)
     {
     }
 
     ActiveVpnConnection& p;
+
+    ActiveConnection& m_activeConnection;
 
     shared_ptr<OrgFreedesktopNetworkManagerVPNConnectionInterface> m_interface;
 
     State m_state = State::UNKNOWN;
 };
 
-ActiveVpnConnection::ActiveVpnConnection(const QDBusObjectPath& path, const QDBusConnection& connection) :
-        d(new Priv(*this))
+ActiveVpnConnection::ActiveVpnConnection(const QDBusObjectPath& path, const QDBusConnection& connection, ActiveConnection& activeConnection) :
+        d(new Priv(*this, activeConnection))
 {
     d->m_interface = make_shared<OrgFreedesktopNetworkManagerVPNConnectionInterface>(NM_DBUS_SERVICE, path.path(), connection);
     connect(d->m_interface.get(), &OrgFreedesktopNetworkManagerVPNConnectionInterface::VpnStateChanged, d.get(), &Priv::vpnStateChanged);
@@ -66,6 +69,11 @@ ActiveVpnConnection::~ActiveVpnConnection()
 ActiveVpnConnection::State ActiveVpnConnection::vpnState() const
 {
     return d->m_state;
+}
+
+ActiveConnection& ActiveVpnConnection::activeConnection() const
+{
+    return d->m_activeConnection;
 }
 
 }

@@ -31,6 +31,8 @@ namespace nmofono
 namespace connection
 {
 
+class ActiveConnection;
+
 class ActiveVpnConnection: public QObject
 {
     Q_OBJECT
@@ -66,11 +68,13 @@ public:
         CONNECTION_REMOVED
     };
 
-    ActiveVpnConnection(const QDBusObjectPath& path, const QDBusConnection& connection);
+    ActiveVpnConnection(const QDBusObjectPath& path, const QDBusConnection& connection, ActiveConnection& activeConnection);
 
     ~ActiveVpnConnection();
 
     State vpnState() const;
+
+    ActiveConnection& activeConnection() const;
 
 Q_SIGNALS:
     void stateChanged(State state, Reason reason);

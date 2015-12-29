@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-15 17:40+0100\n"
+"POT-Creation-Date: 2015-12-17 10:40+0000\n"
 "PO-Revision-Date: 2015-09-03 09:50+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Arabic <ar@li.org>\n"
@@ -16,8 +16,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n % 100 >= "
 "3 && n % 100 <= 10 ? 3 : n % 100 >= 11 && n % 100 <= 99 ? 4 : 5;\n"
-"X-Launchpad-Export-Date: 2015-10-31 05:37+0000\n"
-"X-Generator: Launchpad (build 17838)\n"
+"X-Launchpad-Export-Date: 2015-12-29 05:38+0000\n"
+"X-Generator: Launchpad (build 17865)\n"
 "Language: ar\n"
 
 #: ../src/indicator/sim-unlock-dialog.cpp:144
@@ -112,6 +112,55 @@ msgstr ""
 msgid "PIN codes did not match."
 msgstr ""
 
+#: ../src/indicator/vpn-status-notifier.cpp:48
+msgid "The VPN connection '%1' failed."
+msgstr ""
+
+#: ../src/indicator/vpn-status-notifier.cpp:50
+msgid ""
+"The VPN connection '%1' failed because the network connection was "
+"interrupted."
+msgstr ""
+
+#: ../src/indicator/vpn-status-notifier.cpp:51
+msgid ""
+"The VPN connection '%1' failed because the VPN service stopped unexpectedly."
+msgstr ""
+
+#: ../src/indicator/vpn-status-notifier.cpp:52
+msgid ""
+"The VPN connection '%1' failed because the VPN service returned invalid "
+"configuration."
+msgstr ""
+
+#: ../src/indicator/vpn-status-notifier.cpp:53
+msgid ""
+"The VPN connection '%1' failed because the connection attempt timed out."
+msgstr ""
+
+#: ../src/indicator/vpn-status-notifier.cpp:54
+msgid ""
+"The VPN connection '%1' failed because the VPN service did not start in time."
+msgstr ""
+
+#: ../src/indicator/vpn-status-notifier.cpp:55
+msgid ""
+"The VPN connection '%1' failed because the VPN service failed to start."
+msgstr ""
+
+#: ../src/indicator/vpn-status-notifier.cpp:56
+msgid ""
+"The VPN connection '%1' failed because there were no valid VPN secrets."
+msgstr ""
+
+#: ../src/indicator/vpn-status-notifier.cpp:57
+msgid "The VPN connection '%1' failed because of invalid VPN secrets."
+msgstr ""
+
+#: ../src/indicator/vpn-status-notifier.cpp:68
+msgid "VPN Connection Failed"
+msgstr ""
+
 #: ../src/indicator/agent/SecretRequest.cpp:61
 msgid "Connect to “%1”"
 msgstr "الاتصال بـ “%1”"
@@ -178,18 +227,22 @@ msgstr "غير متصل"
 msgid "Other network…"
 msgstr "شبكات أخرى..."
 
+#: ../src/indicator/nmofono/vpn/vpn-manager.cpp:81
+msgid "VPN connection %1"
+msgstr ""
+
 #. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:159
+#: ../src/indicator/factory.cpp:187
 msgid "Wi-Fi"
 msgstr "واي فاي"
 
 #. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:170
+#: ../src/indicator/factory.cpp:198
 msgid "Flight Mode"
 msgstr "وضع الطيران"
 
 #. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:181
+#: ../src/indicator/factory.cpp:209
 msgid "Hotspot"
 msgstr "نقطة اتصال"
 
@@ -201,6 +254,6 @@ msgstr "إعدادات الواي فاي..."
 msgid "Cellular settings…"
 msgstr "إعدادات الشبكة الخلوية..."
 
-#: ../src/indicator/sections/vpn-section.cpp:124
+#: ../src/indicator/sections/vpn-section.cpp:140
 msgid "VPN settings…"
 msgstr ""

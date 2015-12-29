@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-15 17:40+0100\n"
+"POT-Creation-Date: 2015-12-17 10:40+0000\n"
 "PO-Revision-Date: 2015-09-03 09:50+0000\n"
 "Last-Translator: Marcos Lans <Unknown>\n"
 "Language-Team: Galician <gl@li.org>\n"
@@ -15,8 +15,8 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2015-10-31 05:37+0000\n"
-"X-Generator: Launchpad (build 17838)\n"
+"X-Launchpad-Export-Date: 2015-12-29 05:39+0000\n"
+"X-Generator: Launchpad (build 17865)\n"
 "Language: gl\n"
 
 #: ../src/indicator/sim-unlock-dialog.cpp:144
@@ -112,6 +112,71 @@ msgstr "Confirme o PIN da %{1}"
 msgid "PIN codes did not match."
 msgstr "Os códigos PIN non coinciden"
 
+#: ../src/indicator/vpn-status-notifier.cpp:48
+msgid "The VPN connection '%1' failed."
+msgstr "A conexión VPN «%1» fallou."
+
+#: ../src/indicator/vpn-status-notifier.cpp:50
+msgid ""
+"The VPN connection '%1' failed because the network connection was "
+"interrupted."
+msgstr ""
+"Produciuse un fallo na conexión VPN «%1» porque a conexión de rede foi "
+"interrompida."
+
+#: ../src/indicator/vpn-status-notifier.cpp:51
+msgid ""
+"The VPN connection '%1' failed because the VPN service stopped unexpectedly."
+msgstr ""
+"Produciuse un fallo na conexión VPN «%1» porque o servizo VPN detívose "
+"inesperadamente."
+
+#: ../src/indicator/vpn-status-notifier.cpp:52
+msgid ""
+"The VPN connection '%1' failed because the VPN service returned invalid "
+"configuration."
+msgstr ""
+"Produciuse un fallo na conexión VPN «%1» porque o servizo VPN devolveu unha "
+"configuración incorrecta."
+
+#: ../src/indicator/vpn-status-notifier.cpp:53
+msgid ""
+"The VPN connection '%1' failed because the connection attempt timed out."
+msgstr ""
+"Produciuse un fallo na conexión VPN «%1» porque o intento de conexión "
+"excedeu o límite de tempo."
+
+#: ../src/indicator/vpn-status-notifier.cpp:54
+msgid ""
+"The VPN connection '%1' failed because the VPN service did not start in time."
+msgstr ""
+"Produciuse un fallo na conexión VPN «%1» porque o servizo VPN non se iniciou "
+"a tempo."
+
+#: ../src/indicator/vpn-status-notifier.cpp:55
+msgid ""
+"The VPN connection '%1' failed because the VPN service failed to start."
+msgstr ""
+"Produciuse un fallo na conexión VPN «%1» porque o servizo VPN non se iniciou "
+"correctamente."
+
+#: ../src/indicator/vpn-status-notifier.cpp:56
+msgid ""
+"The VPN connection '%1' failed because there were no valid VPN secrets."
+msgstr ""
+"Produciuse un fallo na conexión VPN «%1» porque non houbo secretos correctos "
+"para a VPN."
+
+#: ../src/indicator/vpn-status-notifier.cpp:57
+msgid "The VPN connection '%1' failed because of invalid VPN secrets."
+msgstr ""
+"Produciuse un fallo na conexión VPN «%1» porque os secretos da VPN eran "
+"incorrectos."
+
+#: ../src/indicator/vpn-status-notifier.cpp:68
+msgid "VPN Connection Failed"
+msgstr "Fallou a conexión VPN"
+
 #: ../src/indicator/agent/SecretRequest.cpp:61
 msgid "Connect to “%1”"
 msgstr "Conectar a «%1»"
@@ -178,18 +243,22 @@ msgstr "Desconectado"
 msgid "Other network…"
 msgstr "Outra rede..."
 
+#: ../src/indicator/nmofono/vpn/vpn-manager.cpp:81
+msgid "VPN connection %1"
+msgstr "Conexión VPN %1"
+
 #. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:159
+#: ../src/indicator/factory.cpp:187
 msgid "Wi-Fi"
 msgstr "Wifi"
 
 #. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:170
+#: ../src/indicator/factory.cpp:198
 msgid "Flight Mode"
 msgstr "Modo avión"
 
 #. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:181
+#: ../src/indicator/factory.cpp:209
 msgid "Hotspot"
 msgstr "Punto de conexión"
 
@@ -201,6 +270,6 @@ msgstr "Axustes da wifi..."
 msgid "Cellular settings…"
 msgstr "Axustes do móbil..."
 
-#: ../src/indicator/sections/vpn-section.cpp:124
+#: ../src/indicator/sections/vpn-section.cpp:140
 msgid "VPN settings…"
 msgstr "Axustes da VPN…"

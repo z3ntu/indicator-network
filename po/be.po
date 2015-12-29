@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-15 17:40+0100\n"
+"POT-Creation-Date: 2015-12-17 10:40+0000\n"
 "PO-Revision-Date: 2015-09-03 09:50+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Belarusian <be@li.org>\n"
@@ -16,187 +16,256 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Launchpad-Export-Date: 2015-10-31 05:37+0000\n"
-"X-Generator: Launchpad (build 17838)\n"
+"X-Launchpad-Export-Date: 2015-12-29 05:38+0000\n"
+"X-Generator: Launchpad (build 17865)\n"
 "Language: be\n"
 
 #: ../src/indicator/sim-unlock-dialog.cpp:144
 msgid "Sorry, incorrect %{1} PIN."
-msgstr ""
+msgstr "Калі ласка, увядзіце слушны %{1} PIN-код."
 
 #: ../src/indicator/sim-unlock-dialog.cpp:149
 #: ../src/indicator/sim-unlock-dialog.cpp:178
 msgid "This will be your last attempt."
-msgstr ""
+msgstr "Гэта будзе ваша апошняя спроба."
 
 #: ../src/indicator/sim-unlock-dialog.cpp:151
 msgid ""
 "If %{1} PIN is entered incorrectly you will require your PUK code to unlock."
 msgstr ""
+"Калі PIN-код %{1} будзе уведзены памылкова, для разблакавання вам "
+"спатрэбіцца PUK-код."
 
 #: ../src/indicator/sim-unlock-dialog.cpp:161
 msgid "Sorry, your %{1} is now blocked."
-msgstr ""
+msgstr "Нажаль твой %{1} заблакаваны."
 
 #: ../src/indicator/sim-unlock-dialog.cpp:166
 msgid "Please enter your PUK code to unblock SIM card."
-msgstr ""
+msgstr "Увядзі PUK-код, каб разблакаваць SIM-картку."
 
 #: ../src/indicator/sim-unlock-dialog.cpp:168
 msgid "You may need to contact your network provider for PUK code."
 msgstr ""
+"Для атрымання PUK кода магчыма спатрэбіцца звярнуцца да аператару сувязі."
 
 #: ../src/indicator/sim-unlock-dialog.cpp:176
 #: ../src/indicator/sim-unlock-dialog.cpp:190
 msgid "Sorry, incorrect PUK."
-msgstr ""
+msgstr "Няслушны PUK-код."
 
 #: ../src/indicator/sim-unlock-dialog.cpp:180
 msgid ""
 "If PUK code is entered incorrectly, your SIM card will be blocked and needs "
 "replacement."
 msgstr ""
+"У выпадку ўвода няслушнага PUK-коду, SIM-картка будзе заблакавана і "
+"спатрэбіцца яе замена, вось."
 
 #: ../src/indicator/sim-unlock-dialog.cpp:182
 msgid "Please contact your network provider."
-msgstr ""
+msgstr "Калі ласка, зверніся да аператару сувязі."
 
 #: ../src/indicator/sim-unlock-dialog.cpp:192
 msgid "Your SIM card is now permanently blocked and needs replacement."
 msgstr ""
+"Нажаль, твая SIM-картка незваротна заблакавана і неабходна яе замена, шкадую."
 
 #: ../src/indicator/sim-unlock-dialog.cpp:194
 msgid "Please contact your service provider."
-msgstr ""
+msgstr "Калі ласка, зверніся да пастаўшчыка паслугі."
 
 #: ../src/indicator/sim-unlock-dialog.cpp:218
 msgid "Sorry, incorrect PIN"
-msgstr ""
+msgstr "Няслушны PIN-код."
 
 #: ../src/indicator/sim-unlock-dialog.cpp:230
 msgid "Sorry, incorrect PUK"
-msgstr ""
+msgstr "Няслушны PUK-код."
 
 #: ../src/indicator/sim-unlock-dialog.cpp:292
 msgid "Enter %{1} PIN"
-msgstr ""
+msgstr "Увядзі %{1} PIN-код"
 
 #: ../src/indicator/sim-unlock-dialog.cpp:300
 msgid "Enter PUK code"
-msgstr ""
+msgstr "Увядзі  PUK-код"
 
 #: ../src/indicator/sim-unlock-dialog.cpp:304
 msgid "Enter PUK code for %{1}"
-msgstr ""
+msgstr "Увядзі PUK код для %{1}"
 
 #: ../src/indicator/sim-unlock-dialog.cpp:315
 #, c-format
 msgid "1 attempt remaining"
 msgid_plural "%d attempts remaining"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "засталася толькі 1 спроба"
+msgstr[1] "засталося  %d спробы"
+msgstr[2] "засталося %d спробаў"
 
 #: ../src/indicator/sim-unlock-dialog.cpp:326
 msgid "Enter new %{1} PIN"
-msgstr ""
+msgstr "Увядзі новы %{1} PIN-код"
 
 #: ../src/indicator/sim-unlock-dialog.cpp:334
 msgid "Confirm new %{1} PIN"
-msgstr ""
+msgstr "Пацвердзі новы %{1} PIN-код"
 
 #: ../src/indicator/sim-unlock-dialog.cpp:373
 msgid "PIN codes did not match."
+msgstr "Коды ня супадаюць."
+
+#: ../src/indicator/vpn-status-notifier.cpp:48
+msgid "The VPN connection '%1' failed."
+msgstr "Злучэньне VPN '%1' скончылася памылкаю."
+
+#: ../src/indicator/vpn-status-notifier.cpp:50
+msgid ""
+"The VPN connection '%1' failed because the network connection was "
+"interrupted."
 msgstr ""
+"Злучэньне з VPN '%1' скончылася памылкаю праз адсутнасць сігналу з сеткай."
+
+#: ../src/indicator/vpn-status-notifier.cpp:51
+msgid ""
+"The VPN connection '%1' failed because the VPN service stopped unexpectedly."
+msgstr ""
+"Злучэньне VPNз '%1' скончылася памылкаю з-за нечаканай супынкі VPN сервісаў."
+
+#: ../src/indicator/vpn-status-notifier.cpp:52
+msgid ""
+"The VPN connection '%1' failed because the VPN service returned invalid "
+"configuration."
+msgstr ""
+"VPN-падлучэньня з '% 1' не атрымалася, так як сервіс даслаў памылковыя "
+"канфігурацыя."
+
+#: ../src/indicator/vpn-status-notifier.cpp:53
+msgid ""
+"The VPN connection '%1' failed because the connection attempt timed out."
+msgstr ""
+"Злучэньня VPN '%1' скончылася памылкаю, так як скончыўся час падлучэньня."
+
+#: ../src/indicator/vpn-status-notifier.cpp:54
+msgid ""
+"The VPN connection '%1' failed because the VPN service did not start in time."
+msgstr ""
+"VPN-падлучэньня '%1' не атрымалася, так як VPN сэрвіс не адказаў своечасова."
+
+#: ../src/indicator/vpn-status-notifier.cpp:55
+msgid ""
+"The VPN connection '%1' failed because the VPN service failed to start."
+msgstr ""
+"VPN-падлучэньня '% 1' скончылася памылкаю, з-за адсутнасьць немагчымасьці "
+"запуску VPN службы."
+
+#: ../src/indicator/vpn-status-notifier.cpp:56
+msgid ""
+"The VPN connection '%1' failed because there were no valid VPN secrets."
+msgstr "VPN '%1' не атрымалася злучыцца, бо не было ніякай працуючай VPN."
+
+#: ../src/indicator/vpn-status-notifier.cpp:57
+msgid "The VPN connection '%1' failed because of invalid VPN secrets."
+msgstr ""
+"VPN злучэньня '%1' скончылася памылкаю з-за памылковых альбо нядзеючых VPN."
+
+#: ../src/indicator/vpn-status-notifier.cpp:68
+msgid "VPN Connection Failed"
+msgstr "Памылка злучэньня з VPN"
 
 #: ../src/indicator/agent/SecretRequest.cpp:61
 msgid "Connect to “%1”"
-msgstr ""
+msgstr "Падлучэньня да “%1”"
 
 #: ../src/indicator/agent/SecretRequest.cpp:66
 msgid "WPA"
-msgstr ""
+msgstr "WPA"
 
 #: ../src/indicator/agent/SecretRequest.cpp:68
 msgid "WEP"
-msgstr ""
+msgstr "WEP"
 
 #: ../src/indicator/agent/SecretRequest.cpp:74
 msgid "Connect"
-msgstr ""
+msgstr "Падлучыцца"
 
 #: ../src/indicator/agent/SecretRequest.cpp:75
 msgid "Cancel"
-msgstr ""
+msgstr "Скасаваць"
 
 #. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
 #: ../src/indicator/root-state.cpp:306
 msgid "Network"
-msgstr ""
+msgstr "Сетка"
 
 #: ../src/indicator/menuitems/wwan-link-item.cpp:90
 msgid "No SIM"
-msgstr ""
+msgstr "Адсутнічае SIM-картка"
 
 #: ../src/indicator/menuitems/wwan-link-item.cpp:97
 msgid "SIM Error"
-msgstr ""
+msgstr "Памылка SIM-карткі"
 
 #: ../src/indicator/menuitems/wwan-link-item.cpp:105
 msgid "SIM Locked"
-msgstr ""
+msgstr "SIM-картка заблакаваная"
 
 #: ../src/indicator/menuitems/wwan-link-item.cpp:118
 msgid "Unregistered"
-msgstr ""
+msgstr "Незарэгістраваная"
 
 #: ../src/indicator/menuitems/wwan-link-item.cpp:123
 msgid "Unknown"
-msgstr ""
+msgstr "Невядома"
 
 #: ../src/indicator/menuitems/wwan-link-item.cpp:128
 msgid "Denied"
-msgstr ""
+msgstr "Адхілена"
 
 #: ../src/indicator/menuitems/wwan-link-item.cpp:133
 msgid "Searching"
-msgstr ""
+msgstr "Пошук"
 
 #: ../src/indicator/menuitems/wwan-link-item.cpp:145
 msgid "No Signal"
-msgstr ""
+msgstr "Адсутнічае сігнал"
 
 #: ../src/indicator/menuitems/wwan-link-item.cpp:157
 #: ../src/indicator/menuitems/wwan-link-item.cpp:164
 msgid "Offline"
-msgstr ""
+msgstr "Адсутнічае"
 
 #: ../src/indicator/menuitems/wifi-link-item.cpp:109
 msgid "Other network…"
-msgstr ""
+msgstr "Іншыя сеткі..."
+
+#: ../src/indicator/nmofono/vpn/vpn-manager.cpp:81
+msgid "VPN connection %1"
+msgstr "VPN злучэньне %1"
 
 #. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:159
+#: ../src/indicator/factory.cpp:187
 msgid "Wi-Fi"
-msgstr ""
+msgstr "Wi-Fi"
 
 #. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:170
+#: ../src/indicator/factory.cpp:198
 msgid "Flight Mode"
-msgstr ""
+msgstr "Рэжым лёту"
 
 #. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:181
+#: ../src/indicator/factory.cpp:209
 msgid "Hotspot"
-msgstr ""
+msgstr "Кропка доступу"
 
 #: ../src/indicator/sections/wifi-section.cpp:65
 msgid "Wi-Fi settings…"
-msgstr ""
+msgstr "Налады Wi-Fi"
 
 #: ../src/indicator/sections/wwan-section.cpp:99
 msgid "Cellular settings…"
-msgstr ""
+msgstr "Налады сеткі"
 
-#: ../src/indicator/sections/vpn-section.cpp:124
+#: ../src/indicator/sections/vpn-section.cpp:140
 msgid "VPN settings…"
-msgstr ""
+msgstr "Налады VPN"

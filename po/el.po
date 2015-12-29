@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-15 17:40+0100\n"
+"POT-Creation-Date: 2015-12-17 10:40+0000\n"
 "PO-Revision-Date: 2015-09-03 09:50+0000\n"
 "Last-Translator: Aggelos Arnaoutis <angelosarn@hotmail.com>\n"
 "Language-Team: Greek <el@li.org>\n"
@@ -15,8 +15,8 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2015-10-31 05:37+0000\n"
-"X-Generator: Launchpad (build 17838)\n"
+"X-Launchpad-Export-Date: 2015-12-29 05:39+0000\n"
+"X-Generator: Launchpad (build 17865)\n"
 "Language: el\n"
 
 #: ../src/indicator/sim-unlock-dialog.cpp:144
@@ -116,6 +116,60 @@ msgstr "Επιβεβαιώστε νέο %{1} κωδικό PIN"
 msgid "PIN codes did not match."
 msgstr "Οι κωδικοί PIN ήταν διαφορετικοί."
 
+#: ../src/indicator/vpn-status-notifier.cpp:48
+msgid "The VPN connection '%1' failed."
+msgstr "Η σύνδεση VPN '%1' απέτυχε."
+
+#: ../src/indicator/vpn-status-notifier.cpp:50
+msgid ""
+"The VPN connection '%1' failed because the network connection was "
+"interrupted."
+msgstr "Η σύνδεση VPN '%1' απέτυχε γιατί η σύνδεση δικτύου διεκόπη."
+
+#: ../src/indicator/vpn-status-notifier.cpp:51
+msgid ""
+"The VPN connection '%1' failed because the VPN service stopped unexpectedly."
+msgstr ""
+"Η σύνδεση VPN '%1' απέτυχε γιατί η υπηρεσία VPN σταμάτησε απροσδόκητα."
+
+#: ../src/indicator/vpn-status-notifier.cpp:52
+msgid ""
+"The VPN connection '%1' failed because the VPN service returned invalid "
+"configuration."
+msgstr ""
+"Η σύνδεση VPN '%1' απέτυχε γιατί η υπηρεσία VPN επέστρεψε μη έγκυρη ρύθμιση."
+
+#: ../src/indicator/vpn-status-notifier.cpp:53
+msgid ""
+"The VPN connection '%1' failed because the connection attempt timed out."
+msgstr "Η σύνδεση VPN '%1' απέτυχε γιατί η απόπειρα σύνδεσης έληξε."
+
+#: ../src/indicator/vpn-status-notifier.cpp:54
+msgid ""
+"The VPN connection '%1' failed because the VPN service did not start in time."
+msgstr ""
+"Η σύνδεση VPN '%1' απέτυχε γιατί η υπηρεσία VPN δεν εκκίνησε εγκαίρως."
+
+#: ../src/indicator/vpn-status-notifier.cpp:55
+msgid ""
+"The VPN connection '%1' failed because the VPN service failed to start."
+msgstr ""
+"Η σύνδεση VPN '%1' απέτυχε γιατί η υπηρεσία VPN απέτυχε να εκκινήσει."
+
+#: ../src/indicator/vpn-status-notifier.cpp:56
+msgid ""
+"The VPN connection '%1' failed because there were no valid VPN secrets."
+msgstr ""
+"Η σύνδεση VPN '%1' απέτυχε γιατί δεν υπήρχε κανένα έγκυρο VPN μυστικό."
+
+#: ../src/indicator/vpn-status-notifier.cpp:57
+msgid "The VPN connection '%1' failed because of invalid VPN secrets."
+msgstr "Η σύνδεση VPN '%1' απέτυχε εξαιτίας μη έγκυρων VPN μυστικών."
+
+#: ../src/indicator/vpn-status-notifier.cpp:68
+msgid "VPN Connection Failed"
+msgstr "Απέτυχε η σύνδεση VPN"
+
 #: ../src/indicator/agent/SecretRequest.cpp:61
 msgid "Connect to “%1”"
 msgstr "Σύνδεση σε «%1»"
@@ -182,18 +236,22 @@ msgstr "Εκτός σύνδεσης"
 msgid "Other network…"
 msgstr "Άλλο δίκτυο..."
 
+#: ../src/indicator/nmofono/vpn/vpn-manager.cpp:81
+msgid "VPN connection %1"
+msgstr "Σύνδεση VPN %1"
+
 #. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:159
+#: ../src/indicator/factory.cpp:187
 msgid "Wi-Fi"
 msgstr "Wi-Fi"
 
 #. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:170
+#: ../src/indicator/factory.cpp:198
 msgid "Flight Mode"
 msgstr "Λειτουργία πτήσης"
 
 #. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:181
+#: ../src/indicator/factory.cpp:209
 msgid "Hotspot"
 msgstr "Παροχή ασύρματης δικτύωσης"
 
@@ -205,6 +263,6 @@ msgstr "Ρυθμίσεις Wi-Fi…"
 msgid "Cellular settings…"
 msgstr "Ρυθμίσεις ασύρματης τηλεφωνίας…"
 
-#: ../src/indicator/sections/vpn-section.cpp:124
+#: ../src/indicator/sections/vpn-section.cpp:140
 msgid "VPN settings…"
-msgstr ""
+msgstr "Ρυθμίσεις VPN..."

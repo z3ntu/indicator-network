@@ -60,6 +60,7 @@ public:
         CAST5_CBC,
         AES_128_CBC,
         AES_192_CBC,
+        AES_256_CBC,
         CAMELLIA_128_CBC,
         CAMELLIA_192_CBC,
         CAMELLIA_256_CBC,

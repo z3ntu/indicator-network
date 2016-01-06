@@ -48,6 +48,7 @@ Page {
                     i18n.tr("CAST5-CBC"),
                     i18n.tr("AES-128-CBC"),
                     i18n.tr("AES-192-CBC"),
+                    i18n.tr("AES-256-CBC"),
                     i18n.tr("CAMELLIA-128-CBC"),
                     i18n.tr("CAMELLIA-192-CBC"),
                     i18n.tr("CAMELLIA-256-CBC"),

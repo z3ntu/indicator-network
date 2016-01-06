@@ -22,11 +22,10 @@ Column {
     property var connection
 
     ListItems.Standard {
-        control: TextField {
-            text: connection.staticKey
-            onTextChanged: connection.staticKey = text
+        control: FileSelector {
+            path: connection.staticKey
+            onPathChanged: connection.staticKey = text
             width: units.gu(20)
-            inputMethodHints: Qt.ImhNoPredictiveText
         }
         text: i18n.tr("Static key:")
     }

@@ -22,27 +22,27 @@ Column {
     property var connection
 
     ListItems.Standard {
-        control: TextField {
-            text: connection.cert
-            onTextChanged: connection.cert = text
+        control: FileSelector {
+            path: connection.cert
+            onPathChanged: connection.cert = path
             width: units.gu(20)
         }
-        text: i18n.tr("User cert:")
+        text: i18n.tr("User certificate:")
     }
 
     ListItems.Standard {
-        control: TextField {
-            text: connection.ca
-            onTextChanged: connection.ca = text
+        control: FileSelector {
+            path: connection.ca
+            onPathChanged: connection.ca = path
             width: units.gu(20)
         }
-        text: i18n.tr("CA cert:")
+        text: i18n.tr("CA certificate:")
     }
 
     ListItems.Standard {
-        control: TextField {
-            text: connection.key
-            onTextChanged: connection.key = text
+        control: FileSelector {
+            path: connection.key
+            onPathChanged: connection.key = path
             width: units.gu(20)
         }
         text: i18n.tr("Private key:")

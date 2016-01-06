@@ -23,8 +23,15 @@ MainView {
     objectName: "mainView"
     applicationName: "com.ubuntu.developer.pete-woods.vpn-editor"
 
-    width: units.gu(38)
+    width: units.gu(40)
     height: units.gu(60)
+
+    Component {
+        id: fileDialogComponent
+        DialogFile {
+            id: fileDialog
+        }
+    }
 
     PageStack {
         id: pageStack

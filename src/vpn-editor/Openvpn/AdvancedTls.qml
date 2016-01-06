@@ -70,10 +70,10 @@ Page {
             }
             ListItems.Standard {
                 text: i18n.tr("Key file:")
-                control: TextField {
-                    text: connection.ta
-                    onTextChanged: connection.ta = text
-                    inputMethodHints: Qt.ImhNoPredictiveText
+                control: FileSelector {
+                    path: connection.ta
+                    onPathChanged: connection.ta = path
+                    width: units.gu(20)
                 }
                 enabled: connection.taSet
             }

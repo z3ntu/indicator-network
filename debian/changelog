@@ -1,3 +1,12 @@
+indicator-network (0.6.0+16.04.20160106.1-0ubuntu1) xenial; urgency=medium
+
+  * Add file picker to VPN editor UI added: src/vpn-
+    editor/DialogFile.qml src/vpn-editor/DialogFileProperties.qml
+    src/vpn-editor/Openvpn/FileSelector.qml src/vpn-editor/qmldir
+  * Add missing AES 256 cipher enum
+
+ -- Pete Woods <ci-train-bot@canonical.com>  Wed, 06 Jan 2016 23:07:43 +0000
+
 indicator-network (0.6.0+16.04.20151217-0ubuntu1) xenial; urgency=medium
 
   [ Pete Woods ]

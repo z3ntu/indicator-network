@@ -42,11 +42,10 @@ Column {
     }
 
     ListItems.Standard {
-        control: TextField {
-            text: connection.ca
-            onTextChanged: connection.ca = text
+        control: FileSelector {
+            path: connection.ca
+            onPathChanged: connection.ca = path
             width: units.gu(20)
-            inputMethodHints: Qt.ImhNoPredictiveText
         }
         text: i18n.tr("CA certificate:")
     }

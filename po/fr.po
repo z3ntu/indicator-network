@@ -15,8 +15,8 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Launchpad-Export-Date: 2015-12-30 05:34+0000\n"
-"X-Generator: Launchpad (build 17865)\n"
+"X-Launchpad-Export-Date: 2016-01-14 06:16+0000\n"
+"X-Generator: Launchpad (build 17886)\n"
 "Language: fr\n"
 
 #: ../src/indicator/sim-unlock-dialog.cpp:144
@@ -117,39 +117,51 @@ msgstr "Les codes PIN ne correspondent pas."
 
 #: ../src/indicator/vpn-status-notifier.cpp:48
 msgid "The VPN connection '%1' failed."
-msgstr ""
+msgstr "La connexion au réseau privé virtuel « %1 » a échoué."
 
 #: ../src/indicator/vpn-status-notifier.cpp:50
 msgid ""
 "The VPN connection '%1' failed because the network connection was "
 "interrupted."
 msgstr ""
+"La connexion au réseau privé virtuel « %1 » a échoué car la connexion au "
+"réseau a été interrompue."
 
 #: ../src/indicator/vpn-status-notifier.cpp:51
 msgid ""
 "The VPN connection '%1' failed because the VPN service stopped unexpectedly."
 msgstr ""
+"La connexion au réseau privé virtuel « %1 » a échoué car le service de "
+"réseau privé virtuel s'est arrêté de manière impromptue."
 
 #: ../src/indicator/vpn-status-notifier.cpp:52
 msgid ""
 "The VPN connection '%1' failed because the VPN service returned invalid "
 "configuration."
 msgstr ""
+"La connexion au réseau privé virtuel « %1 » a échoué car le service de "
+"réseau privé virtuel a renvoyé une configuration non valide."
 
 #: ../src/indicator/vpn-status-notifier.cpp:53
 msgid ""
 "The VPN connection '%1' failed because the connection attempt timed out."
 msgstr ""
+"La connexion au réseau privé virtuel « %1 » a échoué car la connexion a "
+"expiré."
 
 #: ../src/indicator/vpn-status-notifier.cpp:54
 msgid ""
 "The VPN connection '%1' failed because the VPN service did not start in time."
 msgstr ""
+"La connexion au réseau privé virtuel « %1 » a échoué car le service de "
+"réseau privé virtuel n'a pas démarré à temps."
 
 #: ../src/indicator/vpn-status-notifier.cpp:55
 msgid ""
 "The VPN connection '%1' failed because the VPN service failed to start."
 msgstr ""
+"La connexion au réseau privé virtuel « %1 » a échoué car le service de "
+"réseau privé virtuel n'a pas réussi à démarrer."
 
 #: ../src/indicator/vpn-status-notifier.cpp:56
 msgid ""
@@ -162,7 +174,7 @@ msgstr ""
 
 #: ../src/indicator/vpn-status-notifier.cpp:68
 msgid "VPN Connection Failed"
-msgstr ""
+msgstr "La connexion au réseau privé virtuel a échoué"
 
 #: ../src/indicator/agent/SecretRequest.cpp:61
 msgid "Connect to “%1”"
@@ -232,7 +244,7 @@ msgstr "Autre réseau..."
 
 #: ../src/indicator/nmofono/vpn/vpn-manager.cpp:81
 msgid "VPN connection %1"
-msgstr ""
+msgstr "Connexion au réseau privé virtuel « %1 »"
 
 #. TODO Move this into a new class
 #: ../src/indicator/factory.cpp:187

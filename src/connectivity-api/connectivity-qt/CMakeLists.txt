@@ -20,6 +20,7 @@ set(
     connectivityqt/internal/dbus-property-cache.cpp
     connectivityqt/connectivity.cpp
     connectivityqt/openvpn-connection.cpp
+    connectivityqt/pptp-connection.cpp
     connectivityqt/vpn-connection.cpp
     connectivityqt/vpn-connections-list-model.cpp
     ubuntu/connectivity/networking-status.cpp
@@ -29,10 +30,12 @@ set_source_files_properties(
     "${DATA_DIR}/org.freedesktop.DBus.Properties.xml"
     "${DATA_DIR}/com.ubuntu.connectivity1.NetworkingStatus.xml"
     "${DATA_DIR}/com.ubuntu.connectivity1.Private.xml"
+    "${DATA_DIR}/com.ubuntu.connectivity1.vpn.VpnConnection.xml"
+    "${DATA_DIR}/com.ubuntu.connectivity1.vpn.VpnConnection.OpenVpn.xml"
+    "${DATA_DIR}/com.ubuntu.connectivity1.vpn.VpnConnection.Pptp.xml"
     PROPERTIES
     NO_NAMESPACE YES
 )
-
 
 qt5_add_dbus_interface(
     CONNECTIVITY_QT_SRC
@@ -56,6 +59,12 @@ qt5_add_dbus_interface(
     CONNECTIVITY_QT_SRC
     "${DATA_DIR}/com.ubuntu.connectivity1.vpn.VpnConnection.OpenVpn.xml"
     OpenVpnConnectionInterface
+)
+
+qt5_add_dbus_interface(
+    CONNECTIVITY_QT_SRC
+    "${DATA_DIR}/com.ubuntu.connectivity1.vpn.VpnConnection.Pptp.xml"
+    PptpConnectionInterface
 )
 
 qt5_add_dbus_interface(

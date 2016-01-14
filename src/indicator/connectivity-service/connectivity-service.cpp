@@ -21,6 +21,7 @@
 #include <connectivity-service/connectivity-service.h>
 #include <connectivity-service/dbus-vpn-connection.h>
 #include <connectivity-service/dbus-openvpn-connection.h>
+#include <connectivity-service/dbus-pptp-connection.h>
 #include <NetworkingStatusAdaptor.h>
 #include <NetworkingStatusPrivateAdaptor.h>
 #include <dbus-types.h>
@@ -236,7 +237,7 @@ public Q_SLOTS:
                     vpnConnection = make_shared<DBusOpenvpnConnection>(vpn, m_connection);
                     break;
                 case VpnConnection::Type::pptp:
-                    // TODO pptp
+                    vpnConnection = make_shared<DBusPptpConnection>(vpn, m_connection);
                     break;
             }
             if (vpnConnection)

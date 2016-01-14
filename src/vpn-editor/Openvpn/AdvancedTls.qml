@@ -17,6 +17,7 @@
 import QtQuick 2.4
 import Ubuntu.Components 1.3
 import Ubuntu.Components.ListItems 1.3 as ListItems
+import "../DialogFile"
 
 Page {
     property var connection
@@ -48,7 +49,8 @@ Page {
             OptionalValue {
                 text: i18n.tr("Verify peer certificate:")
 
-                checked: connection.remoteCertTlsSet
+                id: remoteCertTlsSetCheckbox
+                Binding {target: remoteCertTlsSetCheckbox; property: "checked"; value: connection.remoteCertTlsSet}
                 onCheckedChanged: connection.remoteCertTlsSet = checked
             }
             ListItems.ValueSelector {
@@ -65,7 +67,8 @@ Page {
             OptionalValue {
                 text: i18n.tr("Use additional TLS authentication:")
 
-                checked: connection.taSet
+                id: taSetCheckbox
+                Binding {target: taSetCheckbox; property: "checked"; value: connection.taSet}
                 onCheckedChanged: connection.taSet = checked
             }
             ListItems.Standard {

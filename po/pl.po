@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-12-17 10:40+0000\n"
-"PO-Revision-Date: 2015-11-10 10:23+0000\n"
+"PO-Revision-Date: 2016-01-18 14:45+0000\n"
 "Last-Translator: Krzysztof Tataradziński <Unknown>\n"
 "Language-Team: Polish <pl@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2;\n"
-"X-Launchpad-Export-Date: 2016-01-14 06:16+0000\n"
+"X-Launchpad-Export-Date: 2016-01-19 05:55+0000\n"
 "X-Generator: Launchpad (build 17886)\n"
 "Language: pl\n"
 
@@ -116,7 +116,7 @@ msgstr "Wprowadzono różne kody PIN"
 
 #: ../src/indicator/vpn-status-notifier.cpp:48
 msgid "The VPN connection '%1' failed."
-msgstr ""
+msgstr "Połączenie przez VPN '%1' nie powiodło się."
 
 #: ../src/indicator/vpn-status-notifier.cpp:50
 msgid ""

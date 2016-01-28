@@ -233,7 +233,6 @@ QString VpnManager::addConnection(VpnConnection::Type type)
 
     QString uuid = QUuid::createUuid().toString().mid(1,36);
 
-
     QStringMap vpnData;
     switch (type)
     {
@@ -241,7 +240,7 @@ QString VpnManager::addConnection(VpnConnection::Type type)
             vpnData["connection-type"] = "tls";
             break;
         case VpnConnection::Type::pptp:
-            // TODO PPTP
+            vpnData["password-flags"] = "1";
             break;
     };
 
@@ -251,12 +250,22 @@ QString VpnManager::addConnection(VpnConnection::Type type)
     {
         {"type", "vpn"},
         {"id", d->newConnectionName()},
-        {"uuid", uuid}
+        {"uuid", uuid},
+        {"autoconnect", "false"}
+
     };
     connection["vpn"] = QVariantMap
     {
         {"service-type", typeMap[type]},
         {"data", QVariant::fromValue(vpnData)}
+    };
+    connection["ipv4"] = QVariantMap
+    {
+        {"method", "auto"}
+    };
+    connection["ipv6"] = QVariantMap
+    {
+        {"method", "auto"}
     };
 
     auto reply = d->m_settingsInterface->AddConnection(connection);

@@ -69,7 +69,8 @@ Page {
 
             ListItems.Standard {
                 control: CheckBox {
-                    checked: connection.compLzo
+                    id: compLzoCheckbox
+                    Binding {target: compLzoCheckbox; property: "checked"; value: connection.compLzo}
                     onCheckedChanged: connection.compLzo = checked
                 }
                 text: i18n.tr("Use LZO data compression")
@@ -77,7 +78,8 @@ Page {
 
             ListItems.Standard {
                 control: CheckBox {
-                    checked: connection.protoTcp
+                    id: protoTcpCheckbox
+                    Binding {target: protoTcpCheckbox; property: "checked"; value: connection.protoTcp}
                     onCheckedChanged: connection.protoTcp = checked
                 }
                 text: i18n.tr("Use a TCP connection")
@@ -85,8 +87,8 @@ Page {
 
             OptionalValue {
                 text: i18n.tr("Use custom virtual device type:")
-
-                checked: connection.devTypeSet
+                id: devTypeSetCheckbox
+                Binding {target: devTypeSetCheckbox; property: "checked"; value: connection.devTypeSet}
                 onCheckedChanged: connection.devTypeSet = checked
             }
             ListItems.ItemSelector {
@@ -113,7 +115,8 @@ Page {
             OptionalValue {
                 text: i18n.tr("Use custom tunnel MTU:")
 
-                checked: connection.tunnelMtuSet
+                id: tunnelMtuSetCheckbox
+                Binding {target: tunnelMtuSetCheckbox; property: "checked"; value: connection.tunnelMtuSet}
                 onCheckedChanged: connection.tunnelMtuSet = checked
 
                 control: TextField {
@@ -129,7 +132,8 @@ Page {
             OptionalValue {
                 text: i18n.tr("Use UDP fragment size:")
 
-                checked: connection.fragmentSizeSet
+                id: fragmentSizeSetCheckbox
+                Binding {target: fragmentSizeSetCheckbox; property: "checked"; value: connection.fragmentSizeSet}
                 onCheckedChanged: connection.fragmentSizeSet = checked
 
                 control: TextField {
@@ -144,7 +148,8 @@ Page {
 
             ListItems.Standard {
                 control: CheckBox {
-                    checked: connection.mssFix
+                    id: mssFixCheckbox
+                    Binding {target: mssFixCheckbox; property: "checked"; value: connection.mssFix}
                     onCheckedChanged: connection.mssFix = checked
                 }
                 text: i18n.tr("Restrict tunnel TCP MSS")
@@ -152,7 +157,8 @@ Page {
 
             ListItems.Standard {
                 control: CheckBox {
-                    checked: connection.remoteRandom
+                    id: remoteRandomCheckbox
+                    Binding {target: remoteRandomCheckbox; property: "checked"; value: connection.remoteRandom}
                     onCheckedChanged: connection.remoteRandom = checked
                 }
                 text: i18n.tr("Randomize remote hosts")

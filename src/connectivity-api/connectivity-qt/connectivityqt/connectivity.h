@@ -50,7 +50,7 @@ public:
     /**
       * @brief enum for networking limitations
       *
-      * Networking limitations may be accessed through the NetworkingStatus::limitations property.
+      * Networking limitations may be accessed through the Connectivity::limitations property.
       */
     enum class Limitations
     {
@@ -64,7 +64,7 @@ public:
     /**
       * @brief enum for networking status
       *
-      * Networking status may be accessed through the NetworkingStatus::status property.
+      * Networking status may be accessed through the Connectivity::status property.
       */
     enum class Status
     {
@@ -82,7 +82,6 @@ public:
     ~Connectivity();
 
     Q_PROPERTY(bool flightMode READ flightMode WRITE setFlightMode NOTIFY flightModeUpdated)
-    Q_PROPERTY(bool FlightMode READ flightMode WRITE setFlightMode NOTIFY flightModeUpdated)
     bool flightMode() const;
 
     Q_PROPERTY(bool online READ online NOTIFY onlineUpdated)
@@ -94,25 +93,21 @@ public:
     Q_PROPERTY(QVector<Limitations> Limitations READ limitations NOTIFY limitationsUpdated)
     QVector<Limitations> limitations() const;
 
-    Q_PROPERTY(connectivityqt::Connectivity::Status Status READ status NOTIFY statusUpdated)
-    Status status() const;
+    Q_PROPERTY(connectivityqt::Connectivity::Status status READ status NOTIFY statusUpdated)
+    connectivityqt::Connectivity::Status status() const;
 
     Q_PROPERTY(bool wifiEnabled READ wifiEnabled WRITE setwifiEnabled NOTIFY wifiEnabledUpdated)
-    Q_PROPERTY(bool WifiEnabled READ wifiEnabled WRITE setwifiEnabled NOTIFY wifiEnabledUpdated)
     bool wifiEnabled() const;
 
-    Q_PROPERTY(bool UnstoppableOperationHappening READ unstoppableOperationHappening NOTIFY unstoppableOperationHappeningUpdated)
+    Q_PROPERTY(bool unstoppableOperationHappening READ unstoppableOperationHappening NOTIFY unstoppableOperationHappeningUpdated)
     bool unstoppableOperationHappening() const;
 
-    Q_PROPERTY(bool FlightModeSwitchEnabled READ flightModeSwitchEnabled NOTIFY flightModeSwitchEnabledUpdated)
     Q_PROPERTY(bool flightModeSwitchEnabled READ flightModeSwitchEnabled NOTIFY flightModeSwitchEnabledUpdated)
     bool flightModeSwitchEnabled() const;
 
-    Q_PROPERTY(bool WifiSwitchEnabled READ wifiSwitchEnabled NOTIFY wifiSwitchEnabledUpdated)
     Q_PROPERTY(bool wifiSwitchEnabled READ wifiSwitchEnabled NOTIFY wifiSwitchEnabledUpdated)
     bool wifiSwitchEnabled() const;
 
-    Q_PROPERTY(bool HotspotSwitchEnabled READ hotspotSwitchEnabled NOTIFY hotspotSwitchEnabledUpdated)
     Q_PROPERTY(bool hotspotSwitchEnabled READ hotspotSwitchEnabled NOTIFY hotspotSwitchEnabledUpdated)
     bool hotspotSwitchEnabled() const;
 
@@ -137,7 +132,7 @@ public:
     Q_PROPERTY(bool hotspotStored READ hotspotStored NOTIFY hotspotStoredUpdated)
     bool hotspotStored() const;
 
-    Q_PROPERTY(bool Initialized READ isInitialized NOTIFY initialized)
+    Q_PROPERTY(bool initialized READ isInitialized NOTIFY initialized)
     bool isInitialized() const;
 
     Q_PROPERTY(QAbstractItemModel* vpnConnections READ vpnConnections NOTIFY vpnConnectionsUpdated)

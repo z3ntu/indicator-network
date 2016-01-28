@@ -30,6 +30,8 @@ namespace connectivity {
 /**
  * @brief Overall system networking status.
  *
+ * NOTE: This class is deprecated, please move to using connectivityqt::Connectivity
+ *
  * This is the top-level class for accessing networking information.
  *
  * * For system networking status, see NetworkingStatus::status.
@@ -38,7 +40,7 @@ namespace connectivity {
  * Examples:
  * - @ref networking-status "Getting the networking status."
  */
-class Q_DECL_EXPORT NetworkingStatus : public QObject
+class Q_DECL_DEPRECATED Q_DECL_EXPORT NetworkingStatus : public QObject
 {
     Q_OBJECT
     Q_DISABLE_COPY(NetworkingStatus)
@@ -68,7 +70,7 @@ class Q_DECL_EXPORT NetworkingStatus : public QObject
      *
      * \snippet example_networking_status.cpp status
      */
-    Q_PROPERTY(Status status
+    Q_PROPERTY(ubuntu::connectivity::NetworkingStatus::Status status
                READ status
                NOTIFY statusChanged)
 
@@ -102,16 +104,20 @@ public:
 
 
     /** @see NetworkingStatus::limitations */
+    Q_DECL_DEPRECATED
     QVector<Limitations> limitations() const;
 
     /** @see NetworkingStatus::status */
+    Q_DECL_DEPRECATED
     Status status() const;
 
 Q_SIGNALS:
     /** @see NetworkingStatus::limitations */
+    Q_DECL_DEPRECATED
     void limitationsChanged();
 
     /** @see NetworkingStatus::status */
+    Q_DECL_DEPRECATED
     void statusChanged(Status value);
 
 private:

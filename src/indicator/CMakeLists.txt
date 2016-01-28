@@ -39,6 +39,7 @@ set(NETWORK_SERVICE_SOURCES
     nmofono/wifi/wifi-link-impl.cpp
     nmofono/wwan/modem.cpp
     nmofono/vpn/openvpn-connection.cpp
+    nmofono/vpn/pptp-connection.cpp
     nmofono/vpn/vpn-connection.cpp
     nmofono/vpn/vpn-manager.cpp
 
@@ -60,6 +61,7 @@ set(NETWORK_SERVICE_SOURCES
 
     connectivity-service/connectivity-service.cpp
     connectivity-service/dbus-openvpn-connection.cpp
+    connectivity-service/dbus-pptp-connection.cpp
     connectivity-service/dbus-vpn-connection.cpp
 
     menuitems/access-point-item.cpp
@@ -104,6 +106,14 @@ qt5_add_dbus_adaptor(
     connectivity-service/dbus-openvpn-connection.h
     connectivity_service::DBusOpenvpnConnection
     OpenVpnAdaptor
+)
+
+qt5_add_dbus_adaptor(
+    NETWORK_SERVICE_SOURCES
+    "${DATA_DIR}/com.ubuntu.connectivity1.vpn.VpnConnection.Pptp.xml"
+    connectivity-service/dbus-pptp-connection.h
+    connectivity_service::DBusPptpConnection
+    PptpAdaptor
 )
 
 qt5_add_dbus_adaptor(

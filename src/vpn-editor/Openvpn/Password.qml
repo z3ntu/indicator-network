@@ -17,6 +17,7 @@
 import QtQuick 2.4
 import Ubuntu.Components 1.3
 import Ubuntu.Components.ListItems 1.3 as ListItems
+import "../DialogFile"
 
 Column {
     property var connection
@@ -42,11 +43,10 @@ Column {
     }
 
     ListItems.Standard {
-        control: TextField {
-            text: connection.ca
-            onTextChanged: connection.ca = text
+        control: FileSelector {
+            path: connection.ca
+            onPathChanged: connection.ca = path
             width: units.gu(20)
-            inputMethodHints: Qt.ImhNoPredictiveText
         }
         text: i18n.tr("CA certificate:")
     }

@@ -33,7 +33,40 @@ namespace
 
 class TestConnectivityApi: public IndicatorNetworkTestBase
 {
+protected:
+    static void SetUpTestCase()
+    {
+        Connectivity::registerMetaTypes();
+    }
 };
+
+TEST_F(TestConnectivityApi, OnlineStatus)
+{
+    // Set up disconnected
+    setGlobalConnectedState(NM_STATE_DISCONNECTED);
+
+    // Start the indicator
+    ASSERT_NO_THROW(startIndicator());
+
+    // Connect to the service
+    auto connectivity(newConnectivity());
+    QSignalSpy spy(connectivity.get(), &Connectivity::statusUpdated);
+
+    // Check we are connected
+    EXPECT_EQ(Connectivity::Status::Offline, connectivity->status());
+
+    // Now we are connecting
+    spy.clear();
+    setGlobalConnectedState(NM_STATE_CONNECTING);
+    WAIT_FOR_SIGNALS(spy, 1);
+    EXPECT_EQ(Connectivity::Status::Connecting, connectivity->status());
+
+    // Now we are connecting
+    spy.clear();
+    setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
+    WAIT_FOR_SIGNALS(spy, 1);
+    EXPECT_EQ(Connectivity::Status::Online, connectivity->status());
+}
 
 TEST_F(TestConnectivityApi, FollowsFlightMode)
 {

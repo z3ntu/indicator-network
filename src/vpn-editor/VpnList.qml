@@ -26,11 +26,23 @@ Page {
     title: i18n.tr("VPN configurations")
 
     head.actions: [
+        // There has to be a better way to force all the actions
+        // into the menu
+        Action {
+            enabled: false
+        },
+        Action {
+            enabled: false
+        },
         Action {
             iconName: "add"
-            text: i18n.tr("New configuration")
-            // TODO Pick from OpenVPN or PPTP when supported
             onTriggered: model.add(VpnConnection.OPENVPN)
+            text: i18n.tr("OpenVPN")
+        },
+        Action {
+            iconName: "add"
+            onTriggered: model.add(VpnConnection.PPTP)
+            text: i18n.tr("PPTP")
         }
     ]
 
@@ -46,6 +58,7 @@ Page {
     ListView {
         id: listView
         anchors.fill: parent
+        visible: (listView.count !== 0)
         model: root.model
 
         delegate: ListItem {
@@ -75,6 +88,18 @@ Page {
                    }
                ]
            }
+        }
+    }
+
+    Rectangle {
+        visible: (listView.count === 0)
+        color: "lightgrey"
+        anchors.fill: parent
+
+        Label {
+            text: i18n.tr("No VPN connections")
+            fontSize: "x-large"
+            anchors.centerIn: parent
         }
     }
 }

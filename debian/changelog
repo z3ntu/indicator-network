@@ -1,3 +1,10 @@
+indicator-network (0.7.0-0ubuntu1) UNRELEASED; urgency=medium
+
+  * Fix Connectivity::status property. (LP: #1531380)
+  * Add PPTP support to VPN editor.
+
+ -- Pete Woods <pete.woods@canonical.com>  Tue, 12 Jan 2016 18:10:06 +0000
+
 indicator-network (0.6.0+16.04.20160106.1-0ubuntu1) xenial; urgency=medium
 
   * Add file picker to VPN editor UI added: src/vpn-

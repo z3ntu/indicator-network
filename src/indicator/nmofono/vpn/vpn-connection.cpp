@@ -342,6 +342,8 @@ public:
     QDBusObjectPath m_otherActiveConnectionPath;
 
     OpenvpnConnection::SPtr m_openvpnConnection;
+
+    PptpConnection::SPtr m_pptpConnection;
 };
 
 VpnConnection::VpnConnection(
@@ -381,7 +383,14 @@ VpnConnection::VpnConnection(
             connect(d->m_openvpnConnection.get(), &OpenvpnConnection::updateVpnData, d.get(), &Priv::updateVpnData);
             connect(d->m_openvpnConnection.get(), &OpenvpnConnection::updateVpnSecrets, d.get(), &Priv::updateVpnSecrets);
             break;
-        //TODO pptp, etc
+        case Type::pptp:
+            d->m_pptpConnection = make_shared<PptpConnection>();
+            d->m_pptpConnection->updateData(d->m_settings["vpn"]["data"].value<QStringMap>());
+            connect(d.get(), &Priv::updateData, d->m_pptpConnection.get(), &PptpConnection::updateData);
+            connect(d.get(), &Priv::updateSecrets, d->m_pptpConnection.get(), &PptpConnection::updateSecrets);
+            connect(d->m_pptpConnection.get(), &PptpConnection::updateVpnData, d.get(), &Priv::updateVpnData);
+            connect(d->m_pptpConnection.get(), &PptpConnection::updateVpnSecrets, d.get(), &Priv::updateVpnSecrets);
+            break;
         default:
             break;
     }
@@ -483,6 +492,11 @@ VpnConnection::Type VpnConnection::type() const
 OpenvpnConnection::SPtr VpnConnection::openvpnConnection() const
 {
     return d->m_openvpnConnection;
+}
+
+PptpConnection::SPtr VpnConnection::pptpConnection() const
+{
+    return d->m_pptpConnection;
 }
 
 }

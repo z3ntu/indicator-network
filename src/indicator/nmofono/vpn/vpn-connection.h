@@ -27,6 +27,7 @@
 
 #include <nmofono/connection/active-connection-manager.h>
 #include <nmofono/vpn/openvpn-connection.h>
+#include <nmofono/vpn/pptp-connection.h>
 
 #include <unity/util/DefinesPtrs.h>
 
@@ -69,6 +70,8 @@ public:
     Type type() const;
 
     OpenvpnConnection::SPtr openvpnConnection() const;
+
+    PptpConnection::SPtr pptpConnection() const;
 
 public Q_SLOTS:
     void setActive(bool active);

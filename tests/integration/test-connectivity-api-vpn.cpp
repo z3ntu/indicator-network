@@ -50,6 +50,11 @@ namespace
 class TestConnectivityApiVpn: public IndicatorNetworkTestBase
 {
 protected:
+    static void SetUpTestCase()
+    {
+        Connectivity::registerMetaTypes();
+    }
+
     CSL vpnList(QAbstractItemModel& model)
     {
         CSL connectionStates;

@@ -88,7 +88,7 @@ Pre-Depends: ${misc:Pre-Depends}
 Multi-Arch: same
 Depends: ${misc:Depends},
          ${shlibs:Depends},
-         indicator-network (>= ${source:Version}),
+Recommends: indicator-network (>= ${source:Version}),
 Description: Ubuntu Connectivity Qt API
  Ubuntu Connectivity API - Qt bindings
 

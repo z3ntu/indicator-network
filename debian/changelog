@@ -1,10 +1,17 @@
-indicator-network (0.7.0-0ubuntu1) UNRELEASED; urgency=medium
+indicator-network (0.7.0+16.04.20160212-0ubuntu1) xenial; urgency=medium
 
+  [ Pete Woods ]
   * Fix Connectivity::status property. (LP: #1531380)
   * Add PPTP support to VPN editor.
   * Make ofono dependency optional. (LP: #1521142)
+  * Only show the modem menu when there's actually a modem (LP:
+    #1541588)
 
- -- Pete Woods <pete.woods@canonical.com>  Tue, 12 Jan 2016 18:10:06 +0000
+  [ Rodney Dawes ]
+  * Change the dependency on indicator-network to a Recommends. (LP:
+    #1472186)
+
+ -- Pete Woods <ci-train-bot@canonical.com>  Fri, 12 Feb 2016 14:27:33 +0000
 
 indicator-network (0.6.0+16.04.20160106.1-0ubuntu1) xenial; urgency=medium
 

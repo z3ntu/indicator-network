@@ -19,6 +19,7 @@
 
 #include <connectivityqt/internal/vpn-connection-list-model-parameters.h>
 #include <connectivityqt/openvpn-connection.h>
+#include <connectivityqt/pptp-connection.h>
 #include <connectivityqt/vpn-connections-list-model.h>
 
 #include <VpnConnectionInterface.h>
@@ -97,7 +98,8 @@ public:
                                 [](QObject* self){self->deleteLater();});
                         break;
                     default:
-                        // TODO pptp, etc
+                        vpnConnection.reset(new PptpConnection(path, m_propertyCache->connection()),
+                                [](QObject* self){self->deleteLater();});
                         break;
                 }
                 if (vpnConnection)

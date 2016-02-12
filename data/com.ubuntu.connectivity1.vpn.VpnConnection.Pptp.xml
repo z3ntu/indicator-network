@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<node name="/com/ubuntu/connectivity1/Connection/Pptp" xmlns:tp="http://telepathy.freedesktop.org/wiki/DbusSpec#extensions-v0">
+    <interface name="com.ubuntu.connectivity1.vpn.VpnConnection.Pptp">
+
+        <!-- basic -->
+
+        <property name="gateway" type="s" access="readwrite"/>
+
+        <property name="user" type="s" access="readwrite"/>
+        <property name="password" type="s" access="readwrite"/>
+
+        <property name="domain" type="s" access="readwrite"/>
+        
+        <!-- advanced -->
+
+        <property name="allowPap" type="b" access="readwrite"/>
+        <property name="allowChap" type="b" access="readwrite"/>
+        <property name="allowMschap" type="b" access="readwrite"/>
+        <property name="allowMschapv2" type="b" access="readwrite"/>
+        <property name="allowEap" type="b" access="readwrite"/>
+        
+        <property name="requireMppe" type="b" access="readwrite"/>
+        <property name="mppeType" type="i" access="readwrite"/>
+        <property name="mppeStateful" type="b" access="readwrite"/>
+        
+        <property name="bsdCompression" type="b" access="readwrite"/>
+        <property name="deflateCompression" type="b" access="readwrite"/>
+        <property name="tcpHeaderCompression" type="b" access="readwrite"/>
+
+        <property name="sendPppEchoPackets" type="b" access="readwrite"/>
+
+    </interface>
+</node>

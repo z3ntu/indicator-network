@@ -63,7 +63,8 @@ Page {
             OptionalValue {
                 text: i18n.tr("Use cipher key size:")
 
-                checked: connection.keysizeSet
+                id: keysizeSetCheckbox
+                Binding {target: keysizeSetCheckbox; property: "checked"; value: connection.keysizeSet}
                 onCheckedChanged: connection.keysizeSet = checked
 
                 control: TextField {

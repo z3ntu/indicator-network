@@ -26,6 +26,12 @@
 using namespace connectivityqt;
 //! [include]
 
+static const QMap<Connectivity::Status, QString> STATUS_MAP {
+    {Connectivity::Status::Offline, "Offline"},
+    {Connectivity::Status::Connecting, "Connecting"},
+    {Connectivity::Status::Online, "Online"},
+};
+
 int
 main(int argc, char *argv[])
 {
@@ -47,19 +53,11 @@ main(int argc, char *argv[])
                      &Connectivity::statusUpdated,
                      [](Connectivity::Status value)
     {
-        switch(value) {
-        case Connectivity::Status::Offline:
-            qDebug() << "System networking status changed to: Offline";
-            break;
-        case Connectivity::Status::Connecting:
-            qDebug() << "System networking status changed to: Connecting";
-            break;
-        case Connectivity::Status::Online:
-            qDebug() << "System networking status changed to: Online";
-            break;
-        }
+        qDebug() << "System networking status changed to: " + STATUS_MAP[value];
     });
     //! [status]
+
+    qDebug() << "System networking status: " + STATUS_MAP[ns->status()];
 
     //! [limitations]
     // normal getter

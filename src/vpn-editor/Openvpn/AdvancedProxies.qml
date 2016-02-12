@@ -76,7 +76,8 @@ Page {
             ListItems.Standard {
                 text: i18n.tr("Retry indefinitely:")
                 control: CheckBox {
-                    checked: connection.proxyRetry
+                    id: proxyRetryCheckbox
+                    Binding {target: proxyRetryCheckbox; property: "checked"; value: connection.proxyRetry}
                     onCheckedChanged: connection.proxyRetry = checked
                 }
                 enabled: usesProxy

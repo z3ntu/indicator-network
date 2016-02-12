@@ -22,27 +22,24 @@ import Ubuntu.Connectivity 1.0
 MainView {
     id: root
     objectName: "mainView"
-    applicationName: "NetworkingStatus"
+    applicationName: "Connectivity"
 
     width: units.gu(100)
     height: units.gu(75)
 
     property real margins: units.gu(2)
     property real buttonWidth: units.gu(9)
+    
+    property var statusMap: ["Offline", "Connecting", "Online"]
 
     Connections {
-        target: NetworkingStatus
+        target: Connectivity
 
         // full status can be retrieved from the base C++ class
         // status property
-        onStatusChanged: {
-            if (status === NetworkingStatus.Offline)
-                console.log("Status: Offline")
-            if (status === NetworkingStatus.Connecting)
-                console.log("Status: Connecting")
-            if (status === NetworkingStatus.Online)
-                console.log("Status: Online")
-        }
+        onStatusChanged: console.log("Status: " + statusMap[Connectivity.status])
+
+        onOnlineChanged: console.log("Online: " + Connectivity.online)
     }
 
     Page {
@@ -52,12 +49,17 @@ MainView {
             anchors.centerIn: parent
             Label {
                 // use the online property
-                text: NetworkingStatus.online ? "Online" : "Not online"
+                text: Connectivity.online ? "Online" : "Not online"
+                fontSize: "large"
+            }
+            Label {
+                // use the status property
+                text: "Status: " + statusMap[Connectivity.status]
                 fontSize: "large"
             }
             Label {
                 // use the limitedBandwith property
-                text: NetworkingStatus.limitedBandwith ? "Bandwith limited" : "Bandwith not limited"
+                text: Connectivity.limitedBandwith ? "Bandwith limited" : "Bandwith not limited"
                 fontSize: "large"
             }
         }

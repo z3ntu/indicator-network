@@ -79,7 +79,7 @@ Item {
         ListItems.Standard {
             control: TextField {
                 text: connection.domain
-                onTextChanged: password.domain = text
+                onTextChanged: connection.domain = text
                 width: units.gu(20)
                 inputMethodHints: Qt.ImhNoPredictiveText
             }

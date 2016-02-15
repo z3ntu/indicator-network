@@ -71,7 +71,7 @@ Item {
                 text: connection.password
                 onTextChanged: connection.password = text
                 width: units.gu(20)
-                echoMode:TextInput.Password
+                echoMode: TextInput.PasswordEchoOnEdit
             }
             text: i18n.tr("Password:")
         }

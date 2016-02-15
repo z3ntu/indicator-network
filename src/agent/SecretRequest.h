@@ -51,6 +51,8 @@ public:
 
 	const QDBusMessage & message() const;
 
+	const QDBusObjectPath & connectionPath() const;
+
 protected:
 	notify::Notification::UPtr m_notification;
 

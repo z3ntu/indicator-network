@@ -31,7 +31,6 @@
 #include <sections/wifi-section.h>
 #include <sections/wwan-section.h>
 #include <menuitems/switch-item.h>
-#include <agent/SecretAgent.h>
 
 #include <memory>
 
@@ -77,7 +76,6 @@ public:
                                      std::function<void(std::string)> acquired,
                                      std::function<void(std::string)> lost);
 
-    virtual agent::SecretAgent::UPtr newSecretAgent();
 
     virtual VpnStatusNotifier::UPtr newVpnStatusNotifier();
 };

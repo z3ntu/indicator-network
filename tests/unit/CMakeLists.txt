@@ -27,7 +27,7 @@ qt5_use_modules(
 
 target_link_libraries(
     secret-agent-test-bin
-    indicator-network-service-static
+    agent-static
 )
 
 ###################

@@ -78,16 +78,16 @@ protected:
 
 	QVariantDictMap connection(const QString &keyManagement) {
 		QVariantMap wirelessSecurity;
-		wirelessSecurity[SecretAgent::WIRELESS_SECURITY_KEY_MGMT] =
+		wirelessSecurity[SecretAgent::NM_WIRELESS_SECURITY_KEY_MGMT] =
 				keyManagement;
 
 		QVariantMap conn;
-		conn[SecretAgent::CONNECTION_ID] = "the ssid";
+		conn[SecretAgent::NM_CONNECTION_ID] = "the ssid";
 
 		QVariantDictMap connection;
-		connection[SecretAgent::WIRELESS_SECURITY_SETTING_NAME] =
+		connection[SecretAgent::NM_WIRELESS_SECURITY_SETTING_NAME] =
 				wirelessSecurity;
-		connection[SecretAgent::CONNECTION_SETTING_NAME] = conn;
+		connection[SecretAgent::NM_CONNECTION_SETTING_NAME] = conn;
 
 		return connection;
 	}
@@ -96,17 +96,17 @@ protected:
 			const QString &keyName, const QString &password) {
 
 		QVariantMap wirelessSecurity;
-		wirelessSecurity[SecretAgent::WIRELESS_SECURITY_KEY_MGMT] =
+		wirelessSecurity[SecretAgent::NM_WIRELESS_SECURITY_KEY_MGMT] =
 				keyManagement;
 		wirelessSecurity[keyName] = password;
 
 		QVariantMap conn;
-		conn[SecretAgent::CONNECTION_ID] = "the ssid";
+		conn[SecretAgent::NM_CONNECTION_ID] = "the ssid";
 
 		QVariantDictMap connection;
-		connection[SecretAgent::WIRELESS_SECURITY_SETTING_NAME] =
+		connection[SecretAgent::NM_WIRELESS_SECURITY_SETTING_NAME] =
 				wirelessSecurity;
-		connection[SecretAgent::CONNECTION_SETTING_NAME] = conn;
+		connection[SecretAgent::NM_CONNECTION_SETTING_NAME] = conn;
 
 		return connection;
 	}
@@ -166,7 +166,7 @@ TEST_P(TestSecretAgentGetSecrets, ProvidesPasswordForWpaPsk) {
 	QDBusPendingReply<QVariantDictMap> reply(
 			agentInterface->GetSecrets(connection(GetParam().keyManagement),
 					QDBusObjectPath("/connection/foo"),
-					SecretAgent::WIRELESS_SECURITY_SETTING_NAME, QStringList(),
+					SecretAgent::NM_WIRELESS_SECURITY_SETTING_NAME, QStringList(),
 					5));
 
 	QSignalSpy notificationSpy(notificationsInterface.data(),
@@ -230,21 +230,21 @@ TEST_P(TestSecretAgentGetSecrets, ProvidesPasswordForWpaPsk) {
 }
 
 INSTANTIATE_TEST_CASE_P(WpaPsk, TestSecretAgentGetSecrets,
-		Values(TestSecretAgentParams( { SecretAgent::KEY_MGMT_WPA_PSK,
-				SecretAgent::WIRELESS_SECURITY_PSK, "hard-coded-password" })));
+		Values(TestSecretAgentParams( { SecretAgent::NM_KEY_MGMT_WPA_PSK,
+				SecretAgent::NM_WIRELESS_SECURITY_PSK, "hard-coded-password" })));
 
 INSTANTIATE_TEST_CASE_P(WpaPskLongPassword, TestSecretAgentGetSecrets,
-		Values(TestSecretAgentParams( { SecretAgent::KEY_MGMT_WPA_PSK,
-				SecretAgent::WIRELESS_SECURITY_PSK, "123456789012345678901234567890123456789012345678901234" })));
+		Values(TestSecretAgentParams( { SecretAgent::NM_KEY_MGMT_WPA_PSK,
+				SecretAgent::NM_WIRELESS_SECURITY_PSK, "123456789012345678901234567890123456789012345678901234" })));
 
 INSTANTIATE_TEST_CASE_P(WpaNone, TestSecretAgentGetSecrets,
-		Values(TestSecretAgentParams( { SecretAgent::KEY_MGMT_WPA_NONE,
-				SecretAgent::WIRELESS_SECURITY_PSK, "hard-coded-password" })));
+		Values(TestSecretAgentParams( { SecretAgent::NM_KEY_MGMT_WPA_NONE,
+				SecretAgent::NM_WIRELESS_SECURITY_PSK, "hard-coded-password" })));
 
 INSTANTIATE_TEST_CASE_P(None, TestSecretAgentGetSecrets,
 		Values(
-				TestSecretAgentParams( { SecretAgent::KEY_MGMT_NONE,
-						SecretAgent::WIRELESS_SECURITY_WEP_KEY0,
+				TestSecretAgentParams( { SecretAgent::NM_KEY_MGMT_NONE,
+						SecretAgent::NM_WIRELESS_SECURITY_WEP_KEY0,
 						"hard-coded-password" })));
 
 class TestSecretAgent: public TestSecretAgentCommon, public Test {
@@ -254,9 +254,9 @@ TEST_F(TestSecretAgent, GetSecretsWithNone) {
 
 	QDBusPendingReply<QVariantDictMap> reply(
 			agentInterface->GetSecrets(
-					connection(SecretAgent::KEY_MGMT_WPA_PSK),
+					connection(SecretAgent::NM_KEY_MGMT_WPA_PSK),
 					QDBusObjectPath("/connection/foo"),
-					SecretAgent::WIRELESS_SECURITY_SETTING_NAME, QStringList(),
+					SecretAgent::NM_WIRELESS_SECURITY_SETTING_NAME, QStringList(),
 					0));
 	reply.waitForFinished();
 
@@ -272,9 +272,9 @@ TEST_F(TestSecretAgent, CancelGetSecrets) {
 	QSignalSpy notificationSpy(notificationsInterface.data(), SIGNAL(MethodCalled(const QString &, const QVariantList &)));
 
 	agentInterface->GetSecrets(
-			connection(SecretAgent::KEY_MGMT_WPA_PSK),
+			connection(SecretAgent::NM_KEY_MGMT_WPA_PSK),
 			QDBusObjectPath("/connection/foo"),
-			SecretAgent::WIRELESS_SECURITY_SETTING_NAME, QStringList(),
+			SecretAgent::NM_WIRELESS_SECURITY_SETTING_NAME, QStringList(),
 			5);
 
 	notificationSpy.wait();
@@ -286,7 +286,7 @@ TEST_F(TestSecretAgent, CancelGetSecrets) {
 	notificationSpy.clear();
 
 	agentInterface->CancelGetSecrets(QDBusObjectPath("/connection/foo"),
-			SecretAgent::WIRELESS_SECURITY_SETTING_NAME);
+			SecretAgent::NM_WIRELESS_SECURITY_SETTING_NAME);
 
 	notificationSpy.wait();
 
@@ -301,9 +301,9 @@ TEST_F(TestSecretAgent, MultiSecrets) {
 	QSignalSpy notificationSpy(notificationsInterface.data(), SIGNAL(MethodCalled(const QString &, const QVariantList &)));
 
 	agentInterface->GetSecrets(
-			connection(SecretAgent::KEY_MGMT_WPA_PSK),
+			connection(SecretAgent::NM_KEY_MGMT_WPA_PSK),
 			QDBusObjectPath("/connection/foo"),
-			SecretAgent::WIRELESS_SECURITY_SETTING_NAME, QStringList(),
+			SecretAgent::NM_WIRELESS_SECURITY_SETTING_NAME, QStringList(),
 			5);
 
 	notificationSpy.wait();
@@ -315,9 +315,9 @@ TEST_F(TestSecretAgent, MultiSecrets) {
 	notificationSpy.clear();
 
 	agentInterface->GetSecrets(
-			connection(SecretAgent::KEY_MGMT_WPA_PSK),
+			connection(SecretAgent::NM_KEY_MGMT_WPA_PSK),
 			QDBusObjectPath("/connection/foo2"),
-			SecretAgent::WIRELESS_SECURITY_SETTING_NAME, QStringList(),
+			SecretAgent::NM_WIRELESS_SECURITY_SETTING_NAME, QStringList(),
 			5);
 
 	notificationSpy.wait();

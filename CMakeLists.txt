@@ -60,6 +60,18 @@ pkg_check_modules(
 )
 include_directories(${OFONO_INCLUDE_DIRS})
 
+pkg_check_modules(
+    NETWORKMANAGER REQUIRED
+    NetworkManager
+)
+include_directories(${NETWORKMANAGER_INCLUDE_DIRS})
+
+pkg_check_modules(
+  LIBSECRET REQUIRED
+  libsecret-1
+)
+include_directories(${LIBSECRET_INCLUDE_DIRS})
+
 find_package(Qt5Core REQUIRED)
 include_directories(${Qt5Core_INCLUDE_DIRS})
 

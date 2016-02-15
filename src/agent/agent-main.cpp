@@ -17,7 +17,9 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#include <factory.h>
+#include <notify-cpp/notification-manager.h>
+#include <agent/KeyringCredentialStore.h>
+#include <agent/SecretAgent.h>
 #include <util/unix-signal-handler.h>
 #include <dbus-types.h>
 
@@ -32,7 +34,6 @@
 #include <config.h>
 
 using namespace std;
-using namespace connectivity_service;
 
 int
 main(int argc, char **argv)
@@ -42,23 +43,20 @@ main(int argc, char **argv)
     Variant::registerMetaTypes();
     std::srand(std::time(0));
 
-    util::UnixSignalHandler handler([]{
-        QCoreApplication::exit(0);
-    });
-    handler.setupUnixSignalHandlers();
-
     bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");
     setlocale(LC_ALL, "");
     bindtextdomain(GETTEXT_PACKAGE, LOCALE_DIR);
     textdomain(GETTEXT_PACKAGE);
 
-    if (argc == 2 && QString("--print-address") == argv[1])
-    {
-        qDebug() << QDBusConnection::systemBus().baseService();
-    }
+    util::UnixSignalHandler handler([]{
+		QCoreApplication::exit(0);
+	});
+	handler.setupUnixSignalHandlers();
 
-    Factory factory;
-    auto secretAgent = factory.newSecretAgent();
+    auto agent = make_unique<agent::SecretAgent>(
+            make_shared<notify::NotificationManager>(GETTEXT_PACKAGE),
+            make_shared<agent::KeyringCredentialStore>(),
+            QDBusConnection::systemBus(), QDBusConnection::sessionBus());
 
     return app.exec();
 }

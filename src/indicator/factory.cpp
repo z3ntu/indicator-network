@@ -221,13 +221,6 @@ BusName::UPtr Factory::newBusName(string name,
     return make_unique<BusName>(name, acquired, lost, d->singletonSessionBus());
 }
 
-agent::SecretAgent::UPtr Factory::newSecretAgent()
-{
-    return make_unique<agent::SecretAgent>(d->singletonNotificationManager(),
-                                           QDBusConnection::systemBus(),
-                                           QDBusConnection::sessionBus());
-}
-
 VpnStatusNotifier::UPtr Factory::newVpnStatusNotifier()
 {
     return make_unique<VpnStatusNotifier>(d->singletonActiveConnectionManager(),

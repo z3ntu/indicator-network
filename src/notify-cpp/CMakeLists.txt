@@ -11,5 +11,6 @@ set(NOTIFY_CPP_SOURCES
 add_library(notify_cpp STATIC ${NOTIFY_CPP_SOURCES})
 target_link_libraries(
     notify_cpp
+    menumodel_cpp
     qdbus-stubs
 )

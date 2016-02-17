@@ -2,13 +2,16 @@
 set(CONNECTIVITY_QT_INCLUDE_DIR
 "${CMAKE_INSTALL_FULL_INCLUDEDIR}/connectivity-api/qt${CONNECTIVITY_QT_VERSION_MAJOR}")
 
-set(PUBLIC_HEADER_DIR "${CMAKE_SOURCE_DIR}/src/connectivity-api/connectivity-qt/ubuntu/connectivity")
-set(PUBLIC_HEADERS
-    ${PUBLIC_HEADER_DIR}/networking-status.h
+install(
+  DIRECTORY
+    "ubuntu"
+    "connectivityqt"
+  DESTINATION
+    "${CONNECTIVITY_QT_INCLUDE_DIR}"
+  FILES_MATCHING
+    PATTERN "*internal*" EXCLUDE
+    PATTERN "*.h"
 )
-install(FILES ${PUBLIC_HEADERS}
-        DESTINATION "${CONNECTIVITY_QT_INCLUDE_DIR}/ubuntu/connectivity")
-
 
 
 set(SYMBOL_MAP "${DATA_DIR}/connectivity-qt.map")

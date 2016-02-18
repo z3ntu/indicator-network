@@ -74,11 +74,13 @@ void KeyringCredentialStore::save(const QString& uuid,
 			secret.toUtf8().constData(),
 			NULL, &error)) {
 		QString message;
-		if (error && error->message) {
-			message = QString::fromUtf8(error->message);
+		if (error != NULL) {
+			if (error->message) {
+				message = QString::fromUtf8(error->message);
+			}
+			g_error_free(error);
 		}
 		qCritical() << __PRETTY_FUNCTION__ << message;
-		g_error_free(error);
 	}
 }
 
@@ -100,8 +102,11 @@ QMap<QString, QString> KeyringCredentialStore::get(const QString& uuid, const QS
 	});
 
 	if (list == NULL) {
-		if (error && error->message) {
-			string errorMessage(error->message);
+		if (error != NULL) {
+			string errorMessage;
+			if (error->message) {
+				errorMessage = error->message;
+			}
 			g_error_free(error);
 			throw domain_error(errorMessage);
 		}
@@ -135,12 +140,14 @@ void KeyringCredentialStore::clear(const QString& uuid) {
 	if (!secret_password_clear_sync(&network_manager_secret_schema, NULL, &error,
 						   KEYRING_UUID_TAG, uuid.toUtf8().constData(),
 						   NULL)) {
-		QString message;
-		if (error && error->message) {
-			message = QString::fromUtf8(error->message);
+		if (error != NULL) {
+			QString message;
+			if (error->message) {
+				message = QString::fromUtf8(error->message);
+			}
+			g_error_free(error);
+			qCritical() << __PRETTY_FUNCTION__ << message;
 		}
-		qCritical() << __PRETTY_FUNCTION__ << message;
-		g_error_free(error);
 	}
 }
 

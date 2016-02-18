@@ -232,13 +232,21 @@ QVariantDictMap SecretAgent::GetSecrets(const QVariantDictMap &connection,
 
 	setDelayedReply(true);
 
-	if (((flags == NM_SECRET_AGENT_GET_SECRETS_FLAG_ALLOW_INTERACTION) ||
-			(flags == NM_SECRET_AGENT_GET_SECRETS_FLAG_REQUEST_NEW))
-			&& settingName == NM_WIRELESS_SECURITY_SETTING_NAME) {
+	qDebug() << __PRETTY_FUNCTION__ << connectionPath.path() << settingName << hints << flags;
+
+	// If we want a WiFi secret, and
+	if (settingName == NM_WIRELESS_SECURITY_SETTING_NAME &&
+			((flags & NM_SECRET_AGENT_GET_SECRETS_FLAG_ALLOW_INTERACTION) > 0) &&
+			(
+				((flags & NM_SECRET_AGENT_GET_SECRETS_FLAG_REQUEST_NEW) > 0) ||
+				((flags & NM_SECRET_AGENT_GET_SECRETS_FLAG_USER_REQUESTED) > 0)
+			)) {
+		qDebug() << __PRETTY_FUNCTION__ << "Requesting secret from user";
 		d->m_request.reset(new SecretRequest(*this, connection,
 						connectionPath, settingName, hints, flags, message()));
 	} else if (((flags == NM_SECRET_AGENT_GET_SECRETS_FLAG_NONE) ||
 				(flags == NM_SECRET_AGENT_GET_SECRETS_FLAG_USER_REQUESTED))) {
+		qDebug() << __PRETTY_FUNCTION__ << "Retrieving secret from keyring";
 
 		bool isVpn = (settingName == NM_VPN_SETTING_NAME);
 
@@ -280,6 +288,7 @@ QVariantDictMap SecretAgent::GetSecrets(const QVariantDictMap &connection,
 		d->m_systemConnection.send(
 				message().createReply(QVariant::fromValue(newConnection)));
 	} else {
+		qDebug() << __PRETTY_FUNCTION__ << "Can't get secrets for this connection";
 		d->m_systemConnection.send(
 				message().createErrorReply("org.freedesktop.NetworkManager.SecretAgent.NoSecrets",
 						"No secrets found for this connection."));

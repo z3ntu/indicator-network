@@ -1,11 +1,5 @@
 
 pkg_check_modules(
-    NETWORKMANAGER REQUIRED
-    NetworkManager
-)
-include_directories(${NETWORKMANAGER_INCLUDE_DIRS})
-
-pkg_check_modules(
     QOFONO REQUIRED
     qofono-qt5
 )
@@ -43,10 +37,6 @@ set(NETWORK_SERVICE_SOURCES
     nmofono/vpn/vpn-connection.cpp
     nmofono/vpn/vpn-manager.cpp
 
-    agent/SecretAgent.cpp
-    agent/SecretRequest.cpp
-    agent/PasswordMenu.cpp
-
     factory.cpp
     indicator-menu.cpp
     icons.cpp
@@ -71,9 +61,6 @@ set(NETWORK_SERVICE_SOURCES
     menuitems/wifi-link-item.cpp
     menuitems/wwan-link-item.cpp
     menuitems/modem-info-item.cpp
-    
-    util/dbus-utils.cpp
-    util/unix-signal-handler.cpp
 )
 
 qt5_add_dbus_adaptor(
@@ -116,14 +103,6 @@ qt5_add_dbus_adaptor(
     PptpAdaptor
 )
 
-qt5_add_dbus_adaptor(
-    NETWORK_SERVICE_SOURCES
-    "${DATA_DIR}/nm-secret-agent.xml"
-    "agent/SecretAgentInclude.h"
-    "agent::SecretAgent"
-    SecretAgentAdaptor
-)
-
 add_library(
   indicator-network-service-static
   STATIC
@@ -137,9 +116,9 @@ target_link_libraries(
     url_dispatcher_cpp
     qdbus-stubs
     qpowerd
-    ${DBUSCPP_LIBRARIES}
-    ${GLIB_LIBRARIES}
-    ${QOFONO_LIBRARIES}
+    util
+    ${GLIB_LDFLAGS}
+    ${QOFONO_LDFLAGS}
     Qt5::Core
     Qt5::DBus
 )
@@ -160,18 +139,6 @@ target_link_libraries(
     Qt5::DBus
 )
 
-add_executable(
-  indicator-network-secret-agent
-  agent-main.cpp
-)
-
-target_link_libraries(
-    indicator-network-secret-agent
-    indicator-network-service-static
-    Qt5::Core
-    Qt5::DBus
-)
-
 ###########################
 # Installation
 ###########################
@@ -179,6 +146,5 @@ target_link_libraries(
 install(
   TARGETS
     indicator-network-service
-    indicator-network-secret-agent
   RUNTIME DESTINATION "${CMAKE_INSTALL_LIBEXECDIR}/indicator-network/"
 )

@@ -251,7 +251,7 @@ QString VpnManager::addConnection(VpnConnection::Type type)
         {"type", "vpn"},
         {"id", d->newConnectionName()},
         {"uuid", uuid},
-        {"autoconnect", "false"}
+        {"autoconnect", false}
 
     };
     connection["vpn"] = QVariantMap

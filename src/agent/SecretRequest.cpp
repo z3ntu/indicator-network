@@ -52,24 +52,24 @@ SecretRequest::SecretRequest(SecretAgent &secretAgent,
 
 	notificationHints["x-canonical-private-menu-model"] = menuModelPaths;
 
-	const QVariantMap &conn = m_connection[SecretAgent::CONNECTION_SETTING_NAME];
+	const QVariantMap &conn = m_connection[SecretAgent::NM_CONNECTION_SETTING_NAME];
 
 	auto wirelessSecurity = m_connection.find(m_settingName);
 	QString keyMgmt(
-			wirelessSecurity->value(SecretAgent::WIRELESS_SECURITY_KEY_MGMT).toString());
+			wirelessSecurity->value(SecretAgent::NM_WIRELESS_SECURITY_KEY_MGMT).toString());
 
 	QString title(_("Connect to “%1”"));
 
 	QString subject;
-	if (keyMgmt == SecretAgent::KEY_MGMT_WPA_NONE
-			|| keyMgmt == SecretAgent::KEY_MGMT_WPA_PSK) {
+	if (keyMgmt == SecretAgent::NM_KEY_MGMT_WPA_NONE
+			|| keyMgmt == SecretAgent::NM_KEY_MGMT_WPA_PSK) {
 		subject = _("WPA");
-	} else if (keyMgmt == SecretAgent::KEY_MGMT_NONE) {
+	} else if (keyMgmt == SecretAgent::NM_KEY_MGMT_NONE) {
 		subject = _("WEP");
 	}
 
 	m_notification = m_secretAgent.notifications()->notify(
-			title.arg(conn[SecretAgent::CONNECTION_ID].toString()), subject,
+			title.arg(conn[SecretAgent::NM_CONNECTION_ID].toString()), subject,
 			"wifi-full-secure",
 			QStringList() << "connect_id" << _("Connect") << "cancel_id"
 					<< _("Cancel"), notificationHints, 0);
@@ -101,13 +101,13 @@ void SecretRequest::actionInvoked(const QString &actionKey) {
 
 	auto wirelessSecurity = m_connection.find(m_settingName);
 	QString keyMgmt(
-			wirelessSecurity->value(SecretAgent::WIRELESS_SECURITY_KEY_MGMT).toString());
+			wirelessSecurity->value(SecretAgent::NM_WIRELESS_SECURITY_KEY_MGMT).toString());
 
-	if (keyMgmt == SecretAgent::KEY_MGMT_WPA_NONE
-			|| keyMgmt == SecretAgent::KEY_MGMT_WPA_PSK) {
-		wirelessSecurity->insert(SecretAgent::WIRELESS_SECURITY_PSK, key);
-	} else if (keyMgmt == SecretAgent::KEY_MGMT_NONE) {
-		wirelessSecurity->insert(SecretAgent::WIRELESS_SECURITY_WEP_KEY0, key);
+	if (keyMgmt == SecretAgent::NM_KEY_MGMT_WPA_NONE
+			|| keyMgmt == SecretAgent::NM_KEY_MGMT_WPA_PSK) {
+		wirelessSecurity->insert(SecretAgent::NM_WIRELESS_SECURITY_PSK, key);
+	} else if (keyMgmt == SecretAgent::NM_KEY_MGMT_NONE) {
+		wirelessSecurity->insert(SecretAgent::NM_WIRELESS_SECURITY_WEP_KEY0, key);
 	}
 
 	m_secretAgent.FinishGetSecrets(*this, false);
@@ -128,6 +128,10 @@ const QVariantDictMap & SecretRequest::connection() const {
 
 const QDBusMessage & SecretRequest::message() const {
 	return m_message;
+}
+
+const QDBusObjectPath & SecretRequest::connectionPath() const {
+	return m_connectionPath;
 }
 
 }

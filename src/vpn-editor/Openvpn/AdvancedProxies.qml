@@ -100,7 +100,7 @@ Page {
                     text: connection.proxyPassword
                     onTextChanged: connection.proxyPassword = text
                     width: units.gu(20)
-                    echoMode: TextInput.Password
+                    echoMode: TextInput.PasswordEchoOnEdit
                 }
                 enabled: usesHttp
             }

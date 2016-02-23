@@ -19,19 +19,23 @@
 #include <config.h>
 #include <libintl.h>
 #include <config.h>
-#include <factory.h>
 #include <dbus-types.h>
+#include <notify-cpp/notification-manager.h>
+#include <agent/KeyringCredentialStore.h>
+#include <agent/SecretAgent.h>
 #include <util/unix-signal-handler.h>
 
 #include <QCoreApplication>
+#include <QDBusConnection>
 #include <iostream>
+#include <memory>
 
 using namespace std;
-
 
 int main(int argc, char *argv[]) {
     QCoreApplication application(argc, argv);
     DBusTypes::registerMetaTypes();
+    Variant::registerMetaTypes();
 
     setlocale(LC_ALL, "");
     bindtextdomain(GETTEXT_PACKAGE, LOCALE_DIR);
@@ -43,8 +47,10 @@ int main(int argc, char *argv[]) {
     });
     handler.setupUnixSignalHandlers();
 
-    Factory factory;
-    auto secretAgent = factory.newSecretAgent();
+    auto secretAgent = make_unique<agent::SecretAgent>(
+                make_shared<notify::NotificationManager>(GETTEXT_PACKAGE),
+				make_shared<agent::KeyringCredentialStore>(),
+                QDBusConnection::systemBus(), QDBusConnection::sessionBus());
 
     if (argc == 2 && QString("--print-address") == argv[1]) {
         cout << QDBusConnection::systemBus().baseService().toStdString()

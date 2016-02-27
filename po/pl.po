@@ -16,7 +16,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2;\n"
-"X-Launchpad-Export-Date: 2016-02-25 05:32+0000\n"
+"X-Launchpad-Export-Date: 2016-02-27 05:31+0000\n"
 "X-Generator: Launchpad (build 17925)\n"
 "Language: pl\n"
 
@@ -174,23 +174,23 @@ msgstr ""
 msgid "VPN Connection Failed"
 msgstr "Połączenie VPN się nie powiodło"
 
-#: ../src/indicator/agent/SecretRequest.cpp:61
+#: ../src/agent/SecretRequest.cpp:61
 msgid "Connect to “%1”"
 msgstr "Połącz z “%1”"
 
-#: ../src/indicator/agent/SecretRequest.cpp:66
+#: ../src/agent/SecretRequest.cpp:66
 msgid "WPA"
 msgstr "WPA"
 
-#: ../src/indicator/agent/SecretRequest.cpp:68
+#: ../src/agent/SecretRequest.cpp:68
 msgid "WEP"
 msgstr "WEP"
 
-#: ../src/indicator/agent/SecretRequest.cpp:74
+#: ../src/agent/SecretRequest.cpp:74
 msgid "Connect"
 msgstr "Połącz"
 
-#: ../src/indicator/agent/SecretRequest.cpp:75
+#: ../src/agent/SecretRequest.cpp:75
 msgid "Cancel"
 msgstr "Anuluj"
 

@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2016-02-25 05:32+0000\n"
+"X-Launchpad-Export-Date: 2016-02-27 05:32+0000\n"
 "X-Generator: Launchpad (build 17925)\n"
 "Language: \n"
 
@@ -168,23 +168,23 @@ msgstr "The VPN connection '%1' failed because of invalid VPN secrets."
 msgid "VPN Connection Failed"
 msgstr "VPN Connection Failed"
 
-#: ../src/indicator/agent/SecretRequest.cpp:61
+#: ../src/agent/SecretRequest.cpp:61
 msgid "Connect to “%1”"
 msgstr "Connect to “%1”"
 
-#: ../src/indicator/agent/SecretRequest.cpp:66
+#: ../src/agent/SecretRequest.cpp:66
 msgid "WPA"
 msgstr "WPA"
 
-#: ../src/indicator/agent/SecretRequest.cpp:68
+#: ../src/agent/SecretRequest.cpp:68
 msgid "WEP"
 msgstr "WEP"
 
-#: ../src/indicator/agent/SecretRequest.cpp:74
+#: ../src/agent/SecretRequest.cpp:74
 msgid "Connect"
 msgstr "Connect"
 
-#: ../src/indicator/agent/SecretRequest.cpp:75
+#: ../src/agent/SecretRequest.cpp:75
 msgid "Cancel"
 msgstr "Cancel"
 

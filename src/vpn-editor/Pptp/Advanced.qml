@@ -35,6 +35,15 @@ Page {
             anchors.left: parent.left
             anchors.right: parent.right
 
+            ListItems.Standard {
+                control: CheckBox {
+                    id: neverDefaultCheckbox
+                    Binding {target: neverDefaultCheckbox; property: "checked"; value: connection.neverDefault}
+                    onCheckedChanged: connection.neverDefault = checked
+                }
+                text: i18n.tr("Only use connection for VPN resources")
+            }
+
             ListItems.Header {text: i18n.tr("Authentication methods")}
 
             ListItems.Standard {

@@ -10,6 +10,8 @@
 
         <property name="id" type="s" access="readwrite"/>
 
+        <property name="neverDefault" type="b" access="readwrite"/>
+
         <property name="active" type="b" access="readwrite"/>
 
         <property name="activatable" type="b" access="read"/>

@@ -135,7 +135,11 @@ public:
 
     void updateNeverDefault()
     {
-        bool neverDefault = m_settings["ipv4"]["never-default"].toBool();
+    	auto ipv4 = m_settings.value("ipv4");
+        bool neverDefault = false;
+        if (ipv4.contains("never-default") && ipv4.value("never-default").toBool()) {
+        	neverDefault = true;
+        }
 
         if (neverDefault == m_neverDefault)
         {
@@ -201,7 +205,7 @@ public Q_SLOTS:
         reply.waitForFinished();
         if (reply.isError())
         {
-            qWarning() << __PRETTY_FUNCTION__ << reply.error().message();
+            qWarning() << __PRETTY_FUNCTION__ << reply.error().message() << m_pendingSettings;
         }
 
         m_dirty = false;

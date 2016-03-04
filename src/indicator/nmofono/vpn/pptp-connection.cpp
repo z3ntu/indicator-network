@@ -79,9 +79,13 @@ void PptpConnection::set##uppername(type value)\
     {\
         return;\
     }\
-    Priv::Data data(d->m_data);\
-    data.m_##varname = value;\
-    Q_EMIT updateVpnData(data.buildData());\
+    if (!d->m_dirty)\
+    {\
+        d->m_pendingData = d->m_data;\
+    }\
+    d->m_dirty = true;\
+    d->m_pendingData.m_##varname = value;\
+    Q_EMIT updateVpnData(d->m_pendingData.buildData());\
 }
 
 #define DEFINE_SECRET_PROPERTY_SETTER(varname, uppername, type) \
@@ -91,9 +95,13 @@ void PptpConnection::set##uppername(type value)\
     {\
         return;\
     }\
-    Priv::Data data(d->m_data);\
-    data.m_##varname = value;\
-    Q_EMIT updateVpnSecrets(data.buildSecrets());\
+    if (!d->m_dirty)\
+    {\
+        d->m_pendingData = d->m_data;\
+    }\
+    d->m_dirty = true;\
+    d->m_pendingData.m_##varname = value;\
+    Q_EMIT updateVpnSecrets(d->m_pendingData.buildSecrets());\
 }
 
 namespace nmofono
@@ -110,32 +118,34 @@ public:
         {
         }
 
-        Data(const Data& other) :
+        Data(const Data& other) = delete;
+
+        Data& operator=(const Data& other)
+        {
             // Basic properties
 
-            m_gateway(other.m_gateway),
-            m_user(other.m_user),
-            m_password(other.m_password),
-            m_domain(other.m_domain),
+            m_gateway = other.m_gateway;
+            m_user = other.m_user;
+            m_password = other.m_password;
+            m_domain = other.m_domain;
 
             // Advanced properties
 
-            m_allowPap(other.m_allowPap),
-            m_allowChap(other.m_allowChap),
-            m_allowMschap(other.m_allowMschap),
-            m_allowMschapv2(other.m_allowMschapv2),
-            m_allowEap(other.m_allowEap),
-            m_requireMppe(other.m_requireMppe),
-            m_mppeType(other.m_mppeType),
-            m_mppeStateful(other.m_mppeStateful),
-            m_bsdCompression(other.m_bsdCompression),
-            m_deflateCompression(other.m_deflateCompression),
-            m_tcpHeaderCompression(other.m_tcpHeaderCompression),
-            m_sendPppEchoPackets(other.m_sendPppEchoPackets)
-        {
-        }
+            m_allowPap = other.m_allowPap;
+            m_allowChap = other.m_allowChap;
+            m_allowMschap = other.m_allowMschap;
+            m_allowMschapv2 = other.m_allowMschapv2;
+            m_allowEap = other.m_allowEap;
+            m_requireMppe = other.m_requireMppe;
+            m_mppeType = other.m_mppeType;
+            m_mppeStateful = other.m_mppeStateful;
+            m_bsdCompression = other.m_bsdCompression;
+            m_deflateCompression = other.m_deflateCompression;
+            m_tcpHeaderCompression = other.m_tcpHeaderCompression;
+            m_sendPppEchoPackets = other.m_sendPppEchoPackets;
 
-        Data& operator=(const Data& other) = delete;
+            return *this;
+        }
 
         QStringMap buildSecrets()
         {
@@ -328,6 +338,10 @@ public:
     PptpConnection& p;
 
     Data m_data;
+
+    Data m_pendingData;
+
+    bool m_dirty = false;
 };
 
 PptpConnection::PptpConnection() :
@@ -365,6 +379,11 @@ void PptpConnection::updateData(const QStringMap& data)
 void PptpConnection::updateSecrets(const QStringMap& secrets)
 {
     d->updatePassword(secrets);
+}
+
+void PptpConnection::markClean()
+{
+    d->m_dirty = false;
 }
 
 // Basic properties

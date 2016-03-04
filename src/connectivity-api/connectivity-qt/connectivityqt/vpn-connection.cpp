@@ -45,6 +45,10 @@ public Q_SLOTS:
         {
             Q_EMIT p.idChanged(value.toString());
         }
+        else if (name == "neverDefault")
+        {
+            Q_EMIT p.neverDefaultChanged(value.toBool());
+        }
         else if (name == "active")
         {
             Q_EMIT p.activeChanged(value.toBool());
@@ -95,6 +99,11 @@ QString VpnConnection::id() const
     return d->m_propertyCache->get("id").toString();
 }
 
+bool VpnConnection::neverDefault() const
+{
+    return d->m_propertyCache->get("neverDefault").toBool();
+}
+
 bool VpnConnection::active() const
 {
     return d->m_propertyCache->get("active").toBool();
@@ -108,6 +117,11 @@ bool VpnConnection::activatable() const
 void VpnConnection::setId(const QString& id) const
 {
     d->m_propertyCache->set("id", id);
+}
+
+void VpnConnection::setNeverDefault(bool neverDefault) const
+{
+    d->m_propertyCache->set("neverDefault", neverDefault);
 }
 
 void VpnConnection::setActive(bool active) const

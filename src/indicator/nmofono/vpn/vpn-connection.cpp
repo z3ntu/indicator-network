@@ -133,6 +133,23 @@ public:
         Q_EMIT p.validChanged(m_valid);
     }
 
+    void updateNeverDefault()
+    {
+    	auto ipv4 = m_settings.value("ipv4");
+        bool neverDefault = false;
+        if (ipv4.contains("never-default") && ipv4.value("never-default").toBool()) {
+        	neverDefault = true;
+        }
+
+        if (neverDefault == m_neverDefault)
+        {
+            return;
+        }
+
+        m_neverDefault = neverDefault;
+        Q_EMIT p.neverDefaultChanged(m_neverDefault);
+    }
+
     void updateType()
     {
         static const QMap<QString, Type> typeMap
@@ -188,7 +205,7 @@ public Q_SLOTS:
         reply.waitForFinished();
         if (reply.isError())
         {
-            qWarning() << __PRETTY_FUNCTION__ << reply.error().message();
+            qWarning() << __PRETTY_FUNCTION__ << reply.error().message() << m_pendingSettings;
         }
 
         m_dirty = false;
@@ -258,6 +275,7 @@ public Q_SLOTS:
         }
 
         updateId();
+        updateNeverDefault();
         updateValid();
         updateType();
 
@@ -324,6 +342,8 @@ public:
     QString m_uuid;
 
     QString m_id;
+
+    bool m_neverDefault = false;
 
     bool m_valid = false;
 
@@ -406,6 +426,11 @@ QString VpnConnection::id() const
     return d->m_id;
 }
 
+bool VpnConnection::neverDefault() const
+{
+    return d->m_neverDefault;
+}
+
 QDBusObjectPath VpnConnection::path() const
 {
     return QDBusObjectPath(d->m_connection->path());
@@ -440,6 +465,18 @@ void VpnConnection::setId(const QString& id)
 
     d->setDirty();
     d->m_pendingSettings["connection"]["id"] = id;
+}
+
+void VpnConnection::setNeverDefault(bool neverDefault)
+{
+    if (d->m_neverDefault == neverDefault)
+    {
+        return;
+    }
+
+    d->setDirty();
+    d->m_pendingSettings["ipv4"]["never-default"] = neverDefault;
+    d->m_pendingSettings["ipv6"]["never-default"] = neverDefault;
 }
 
 void VpnConnection::setOtherConnectionIsBusy(bool otherConnectionIsBusy)

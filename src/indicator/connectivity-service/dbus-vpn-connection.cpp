@@ -37,11 +37,13 @@ DBusVpnConnection::DBusVpnConnection(VpnConnection::SPtr vpnConnection,
     new VpnConnectionAdaptor(this);
 
     connect(m_vpnConnection.get(), &VpnConnection::idChanged, this, &DBusVpnConnection::idUpdated);
+    connect(m_vpnConnection.get(), &VpnConnection::neverDefaultChanged, this, &DBusVpnConnection::neverDefaultUpdated);
     connect(m_vpnConnection.get(), &VpnConnection::activeChanged, this, &DBusVpnConnection::activeUpdated);
     connect(m_vpnConnection.get(), &VpnConnection::activatableChanged, this, &DBusVpnConnection::activatableUpdated);
 
     connect(this, &DBusVpnConnection::setActive, m_vpnConnection.get(), &VpnConnection::setActive);
     connect(this, &DBusVpnConnection::setId, m_vpnConnection.get(), &VpnConnection::setId);
+    connect(this, &DBusVpnConnection::setNeverDefault, m_vpnConnection.get(), &VpnConnection::setNeverDefault);
     connect(this, &DBusVpnConnection::UpdateSecrets, m_vpnConnection.get(), &VpnConnection::updateSecrets);
 }
 
@@ -60,6 +62,11 @@ void DBusVpnConnection::registerDBusObject()
 void DBusVpnConnection::idUpdated(const QString&)
 {
     notifyProperties({"id"});
+}
+
+void DBusVpnConnection::neverDefaultUpdated(bool)
+{
+    notifyProperties({"neverDefault"});
 }
 
 void DBusVpnConnection::activeUpdated(bool)
@@ -88,6 +95,11 @@ void DBusVpnConnection::notifyProperties(const QStringList& propertyNames)
 QString DBusVpnConnection::id() const
 {
     return m_vpnConnection->id();
+}
+
+bool DBusVpnConnection::neverDefault() const
+{
+    return m_vpnConnection->neverDefault();
 }
 
 bool DBusVpnConnection::active() const

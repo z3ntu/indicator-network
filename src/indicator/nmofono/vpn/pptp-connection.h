@@ -106,6 +106,8 @@ public Q_SLOTS:
 
     void updateSecrets(const QMap<QString, QString>& data);
 
+    void markClean();
+
     // Basic properties
 
     void setGateway(const QString &value);

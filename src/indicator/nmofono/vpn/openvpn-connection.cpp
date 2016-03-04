@@ -79,9 +79,13 @@ void OpenvpnConnection::set##uppername(type value)\
     {\
         return;\
     }\
-    Priv::Data data(d->m_data);\
-    data.m_##varname = value;\
-    Q_EMIT updateVpnData(data.buildData());\
+    if (!d->m_dirty)\
+    {\
+        d->m_pendingData = d->m_data;\
+    }\
+    d->m_dirty = true;\
+    d->m_pendingData.m_##varname = value;\
+    Q_EMIT updateVpnData(d->m_pendingData.buildData());\
 }
 
 #define DEFINE_SECRET_PROPERTY_SETTER(varname, uppername, type) \
@@ -91,9 +95,13 @@ void OpenvpnConnection::set##uppername(type value)\
     {\
         return;\
     }\
-    Priv::Data data(d->m_data);\
-    data.m_##varname = value;\
-    Q_EMIT updateVpnSecrets(data.buildSecrets());\
+    if (!d->m_dirty)\
+    {\
+        d->m_pendingData = d->m_data;\
+    }\
+    d->m_dirty = true;\
+    d->m_pendingData.m_##varname = value;\
+    Q_EMIT updateVpnSecrets(d->m_pendingData.buildSecrets());\
 }
 
 namespace nmofono
@@ -103,6 +111,7 @@ namespace vpn
 
 class OpenvpnConnection::Priv
 {
+
 public:
     struct Data
     {
@@ -110,68 +119,70 @@ public:
         {
         }
 
-        Data(const Data& other) :
+        Data(const Data& other) = delete;
+
+        Data& operator=(const Data& other)
+        {
             // Basic properties
 
-            m_ca(other.m_ca),
-            m_cert(other.m_cert),
-            m_certPass(other.m_certPass),
-            m_connectionType(other.m_connectionType),
-            m_key(other.m_key),
-            m_localIp(other.m_localIp),
-            m_password(other.m_password),
-            m_remote(other.m_remote),
-            m_remoteIp(other.m_remoteIp),
-            m_staticKey(other.m_staticKey),
-            m_staticKeyDirection(other.m_staticKeyDirection),
-            m_username(other.m_username),
+            m_ca = other.m_ca;
+            m_cert = other.m_cert;
+            m_certPass = other.m_certPass;
+            m_connectionType = other.m_connectionType;
+            m_key = other.m_key;
+            m_localIp = other.m_localIp;
+            m_password = other.m_password;
+            m_remote = other.m_remote;
+            m_remoteIp = other.m_remoteIp;
+            m_staticKey = other.m_staticKey;
+            m_staticKeyDirection = other.m_staticKeyDirection;
+            m_username = other.m_username;
 
             // Advanced general properties
 
-            m_port(other.m_port),
-            m_portSet(other.m_portSet),
-            m_renegSeconds(other.m_renegSeconds),
-            m_renegSecondsSet(other.m_renegSecondsSet),
-            m_compLzo(other.m_compLzo),
-            m_protoTcp(other.m_protoTcp),
-            m_dev(other.m_dev),
-            m_devType(other.m_devType),
-            m_devTypeSet(other.m_devTypeSet),
-            m_tunnelMtu(other.m_tunnelMtu),
-            m_tunnelMtuSet(other.m_tunnelMtuSet),
-            m_fragmentSize(other.m_fragmentSize),
-            m_fragmentSizeSet(other.m_fragmentSizeSet),
-            m_mssFix(other.m_mssFix),
-            m_remoteRandom(other.m_remoteRandom),
+            m_port = other.m_port;
+            m_portSet = other.m_portSet;
+            m_renegSeconds = other.m_renegSeconds;
+            m_renegSecondsSet = other.m_renegSecondsSet;
+            m_compLzo = other.m_compLzo;
+            m_protoTcp = other.m_protoTcp;
+            m_dev = other.m_dev;
+            m_devType = other.m_devType;
+            m_devTypeSet = other.m_devTypeSet;
+            m_tunnelMtu = other.m_tunnelMtu;
+            m_tunnelMtuSet = other.m_tunnelMtuSet;
+            m_fragmentSize = other.m_fragmentSize;
+            m_fragmentSizeSet = other.m_fragmentSizeSet;
+            m_mssFix = other.m_mssFix;
+            m_remoteRandom = other.m_remoteRandom;
 
             // Advanced security properties
 
-            m_cipher(other.m_cipher),
-            m_keysize(other.m_keysize),
-            m_keysizeSet(other.m_keysizeSet),
-            m_auth(other.m_auth),
+            m_cipher = other.m_cipher;
+            m_keysize = other.m_keysize;
+            m_keysizeSet = other.m_keysizeSet;
+            m_auth = other.m_auth;
 
             // Advanced TLS auth properties
 
-            m_tlsRemote(other.m_tlsRemote),
-            m_remoteCertTls(other.m_remoteCertTls),
-            m_remoteCertTlsSet(other.m_remoteCertTlsSet),
-            m_ta(other.m_ta),
-            m_taDir(other.m_taDir),
-            m_taSet(other.m_taSet),
+            m_tlsRemote = other.m_tlsRemote;
+            m_remoteCertTls = other.m_remoteCertTls;
+            m_remoteCertTlsSet = other.m_remoteCertTlsSet;
+            m_ta = other.m_ta;
+            m_taDir = other.m_taDir;
+            m_taSet = other.m_taSet;
 
             // Advanced proxy settings
 
-            m_proxyType(other.m_proxyType),
-            m_proxyServer(other.m_proxyServer),
-            m_proxyPort(other.m_proxyPort),
-            m_proxyRetry(other.m_proxyRetry),
-            m_proxyUsername(other.m_proxyUsername),
-            m_proxyPassword(other.m_proxyPassword)
-        {
-        }
+            m_proxyType = other.m_proxyType;
+            m_proxyServer = other.m_proxyServer;
+            m_proxyPort = other.m_proxyPort;
+            m_proxyRetry = other.m_proxyRetry;
+            m_proxyUsername = other.m_proxyUsername;
+            m_proxyPassword = other.m_proxyPassword;
 
-        Data& operator=(const Data& other) = delete;
+            return *this;
+        }
 
         QStringMap buildSecrets()
         {
@@ -749,9 +760,15 @@ public:
         }
     }
 
+public:
+
     OpenvpnConnection& p;
 
     Data m_data;
+
+    Data m_pendingData;
+
+    bool m_dirty = false;
 };
 
 OpenvpnConnection::OpenvpnConnection() :
@@ -812,6 +829,11 @@ void OpenvpnConnection::updateSecrets(const QStringMap& secrets)
     d->updateCertPass(secrets);
     d->updatePassword(secrets);
     d->updateProxySecrets(secrets);
+}
+
+void OpenvpnConnection::markClean()
+{
+    d->m_dirty = false;
 }
 
 // Basic properties

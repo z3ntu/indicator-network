@@ -41,6 +41,8 @@ int main(int argc, char **argv)
 {
     qputenv("LANG", "C.UTF-8");
     unsetenv("LC_ALL");
+    unsetenv("GDM_LANG");
+    unsetenv("LANGUAGE");
 
     setlocale(LC_ALL, "");
     bindtextdomain(GETTEXT_PACKAGE, LOCALE_DIR);

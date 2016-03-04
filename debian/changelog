@@ -1,3 +1,15 @@
+indicator-network (0.7.1+16.04.20160304-0ubuntu1) xenial; urgency=medium
+
+  [ CI Train Bot ]
+  * Resync trunk.
+
+  [ Pete Woods ]
+  * Add never default property (LP: #1546573)
+  * Use a shared pending settings instance so we don't overwrite rapid
+    incoming changes (LP: #1546559)
+
+ -- Pete Woods <ci-train-bot@canonical.com>  Fri, 04 Mar 2016 11:14:03 +0000
+
 indicator-network (0.7.1+16.04.20160223-0ubuntu1) xenial; urgency=medium
 
   * Add keyring support to secret agent (requires libsecret) (LP:

@@ -197,6 +197,7 @@ public:
 Q_SIGNALS:
     void updateData(const QStringMap& data);
     void updateSecrets(const QStringMap& secrets);
+    void settingsDispatched();
 
 public Q_SLOTS:
     void dispatchPendingSettings()
@@ -209,6 +210,8 @@ public Q_SLOTS:
         }
 
         m_dirty = false;
+
+        Q_EMIT settingsDispatched();
     }
 
     void updateVpnData(const QStringMap &vpnData)
@@ -400,6 +403,7 @@ VpnConnection::VpnConnection(
             d->m_openvpnConnection->updateData(d->m_settings["vpn"]["data"].value<QStringMap>());
             connect(d.get(), &Priv::updateData, d->m_openvpnConnection.get(), &OpenvpnConnection::updateData);
             connect(d.get(), &Priv::updateSecrets, d->m_openvpnConnection.get(), &OpenvpnConnection::updateSecrets);
+            connect(d.get(), &Priv::settingsDispatched, d->m_openvpnConnection.get(), &OpenvpnConnection::markClean);
             connect(d->m_openvpnConnection.get(), &OpenvpnConnection::updateVpnData, d.get(), &Priv::updateVpnData);
             connect(d->m_openvpnConnection.get(), &OpenvpnConnection::updateVpnSecrets, d.get(), &Priv::updateVpnSecrets);
             break;
@@ -408,6 +412,7 @@ VpnConnection::VpnConnection(
             d->m_pptpConnection->updateData(d->m_settings["vpn"]["data"].value<QStringMap>());
             connect(d.get(), &Priv::updateData, d->m_pptpConnection.get(), &PptpConnection::updateData);
             connect(d.get(), &Priv::updateSecrets, d->m_pptpConnection.get(), &PptpConnection::updateSecrets);
+            connect(d.get(), &Priv::settingsDispatched, d->m_pptpConnection.get(), &PptpConnection::markClean);
             connect(d->m_pptpConnection.get(), &PptpConnection::updateVpnData, d.get(), &Priv::updateVpnData);
             connect(d->m_pptpConnection.get(), &PptpConnection::updateVpnSecrets, d.get(), &Priv::updateVpnSecrets);
             break;

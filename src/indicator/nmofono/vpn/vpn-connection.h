@@ -57,6 +57,8 @@ public:
 
     QString id() const;
 
+    bool neverDefault() const;
+
     QDBusObjectPath path() const;
 
     bool isActive() const;
@@ -78,6 +80,8 @@ public Q_SLOTS:
 
     void setId(const QString& id);
 
+    void setNeverDefault(bool neverDefault);
+
     void setOtherConnectionIsBusy(bool otherConnectionIsBusy);
 
     void setActiveConnectionPath(const QDBusObjectPath& path);
@@ -88,6 +92,8 @@ public Q_SLOTS:
 
 Q_SIGNALS:
     void idChanged(const QString& id);
+
+    void neverDefaultChanged(bool neverDefault);
 
     void activeChanged(bool active);
 

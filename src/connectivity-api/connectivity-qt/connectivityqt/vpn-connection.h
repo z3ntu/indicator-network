@@ -53,6 +53,9 @@ public:
     Q_PROPERTY(QString id READ id WRITE setId NOTIFY idChanged)
     QString id() const;
 
+    Q_PROPERTY(bool neverDefault READ neverDefault WRITE setNeverDefault NOTIFY neverDefaultChanged)
+    bool neverDefault() const;
+
     Q_PROPERTY(bool active READ active WRITE setActive NOTIFY activeChanged)
     bool active() const;
 
@@ -65,12 +68,16 @@ public:
 public Q_SLOTS:
     void setId(const QString& id) const;
 
+    void setNeverDefault(bool neverDefault) const;
+
     void setActive(bool active) const;
 
     void updateSecrets() const;
 
 Q_SIGNALS:
     void idChanged(const QString& id);
+
+    void neverDefaultChanged(bool neverDefault);
 
     void activeChanged(bool active);
 

@@ -50,6 +50,9 @@ public:
     Q_PROPERTY(QString id READ id WRITE setId)
     QString id() const;
 
+    Q_PROPERTY(bool neverDefault READ neverDefault WRITE setNeverDefault)
+    bool neverDefault() const;
+
     virtual nmofono::vpn::VpnConnection::Type type() const = 0;
 
     Q_PROPERTY(bool active READ active WRITE setActive)
@@ -67,6 +70,8 @@ Q_SIGNALS:
 
     void setId(const QString& id);
 
+    void setNeverDefault(bool neverDefault);
+
     void UpdateSecrets();
 
 protected Q_SLOTS:
@@ -75,6 +80,8 @@ protected Q_SLOTS:
     void activatableUpdated(bool activatable);
 
     void idUpdated(const QString& id);
+
+    void neverDefaultUpdated(bool neverDefault);
 
 private:
     void notifyProperties(const QStringList& propertyNames);

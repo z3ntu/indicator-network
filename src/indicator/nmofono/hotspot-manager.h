@@ -150,6 +150,8 @@ public:
 
     QString auth() const;
 
+    QString interface() const;
+
     bool disconnectWifi() const;
 
 Q_SIGNALS:

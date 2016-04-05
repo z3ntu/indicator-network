@@ -296,6 +296,7 @@ public:
             if (device.deviceType() == NM_DEVICE_TYPE_WIFI)
             {
                 qDebug() << "Using AP interface " << interface;
+                m_interface = interface;
                 result = *path;
                 break;
             }
@@ -545,6 +546,7 @@ public:
     bool m_stored = false;
     QString m_password;
     QByteArray m_ssid = "Ubuntu";
+    QString m_interface;
 
     QPowerd::UPtr m_powerd;
     QPowerd::RequestSPtr m_wakelock;
@@ -619,7 +621,7 @@ void HotspotManager::setEnabled(bool value)
 
         d->setDisconnectWifi(true);
 
-        // This could take a while on Hybris devices
+        // We use Hybris to load the new device firmware
         auto device = d->createApDevice();
 
         if (device.path() == "/")
@@ -688,6 +690,14 @@ QString HotspotManager::mode() const {
 
 QString HotspotManager::auth() const {
     return d->m_auth;
+}
+
+QString HotspotManager::interface() const
+{
+    if (enabled())
+        return d->m_interface;
+    else
+        return QString();
 }
 
 void HotspotManager::setMode(const QString& value) {

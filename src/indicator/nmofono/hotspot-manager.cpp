@@ -40,11 +40,6 @@ using namespace std;
 namespace nmofono
 {
 
-namespace
-{
-static const QRegularExpression ACCESS_POINT_EXPRESSION("^ap\\d+$");
-}
-
 class HotspotManager::Priv: public QObject
 {
 
@@ -225,11 +220,11 @@ public:
 
     // wpa_supplicant interaction
 
-    bool isHybrisWlan()
+    QString getTetheringInterface()
     {
         QString program("getprop");
         QStringList arguments;
-        arguments << "urfkill.hybris.wlan";
+        arguments << "wifi.tethering.interface";
 
         QProcess getprop;
         getprop.start(program, arguments);
@@ -237,13 +232,12 @@ public:
         if (!getprop.waitForFinished())
         {
             qCritical() << "getprop process failed:" << getprop.errorString();
-            return false;
+            return QString();
         }
 
-        int index = getprop.readAllStandardOutput().indexOf("1");
-
-        // A non-negative integer means getprop returned 1
-        return index >= 0;
+        QString output = getprop.readAllStandardOutput();
+        // Take just the first line
+        return output.split("\n").first();
     }
 
     /**
@@ -281,6 +275,7 @@ public:
     QDBusObjectPath getApDevice()
     {
         QDBusObjectPath result("/");
+        QString tetherIface = getTetheringInterface();
 
         auto devices = QList<QDBusObjectPath>(m_manager->GetDevices()).toStdList();
         // Iterate in reverse to attempt to minimise dbus calls (new device is likely at the end)
@@ -290,9 +285,9 @@ public:
 
             QString interface = device.interface();
 
-            if (m_isHybrisWlan)
+            if (!tetherIface.isEmpty())
             {
-                if (!ACCESS_POINT_EXPRESSION.match(interface).hasMatch())
+                if (tetherIface.compare(interface) != 0)
                 {
                     continue;
                 }
@@ -300,6 +295,8 @@ public:
 
             if (device.deviceType() == NM_DEVICE_TYPE_WIFI)
             {
+                qDebug() << "Using AP interface " << interface;
+                m_interface = interface;
                 result = *path;
                 break;
             }
@@ -549,11 +546,11 @@ public:
     bool m_stored = false;
     QString m_password;
     QByteArray m_ssid = "Ubuntu";
+    QString m_interface;
 
     QPowerd::UPtr m_powerd;
     QPowerd::RequestSPtr m_wakelock;
 
-    bool m_isHybrisWlan = false;
     bool m_disconnectWifi = false;
 
     /**
@@ -583,7 +580,6 @@ HotspotManager::HotspotManager(connection::ActiveConnectionManager::SPtr activeC
         QObject(parent), d(new Priv(*this))
 {
     d->m_activeConnectionManager = activeConnectionManager;
-    d->m_isHybrisWlan = d->isHybrisWlan();
 
     d->m_manager = make_unique<OrgFreedesktopNetworkManagerInterface>(
             NM_DBUS_SERVICE, NM_DBUS_PATH, connection);
@@ -625,7 +621,7 @@ void HotspotManager::setEnabled(bool value)
 
         d->setDisconnectWifi(true);
 
-        // This could take a while on Hybris devices
+        // We use Hybris to load the new device firmware
         auto device = d->createApDevice();
 
         if (device.path() == "/")
@@ -694,6 +690,14 @@ QString HotspotManager::mode() const {
 
 QString HotspotManager::auth() const {
     return d->m_auth;
+}
+
+QString HotspotManager::interface() const
+{
+    if (enabled())
+        return d->m_interface;
+    else
+        return QString();
 }
 
 void HotspotManager::setMode(const QString& value) {

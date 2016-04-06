@@ -443,7 +443,7 @@ ManagerImpl::device_added(const QDBusObjectPath &path)
                                                 d->m_killSwitch);
 
             // We're not interested in showing access points
-            if (tmp->name().compare(d->m_hotspotManager->interface()) != 0)
+            if (tmp->name() != d->m_hotspotManager->interface())
             {
                 tmp->setDisconnectWifi(d->m_hotspotManager->disconnectWifi());
                 QObject::connect(d->m_hotspotManager.get(), &HotspotManager::disconnectWifiChanged,

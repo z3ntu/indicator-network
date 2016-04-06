@@ -48,8 +48,6 @@ using namespace std;
 
 namespace nmofono {
 
-static const QRegularExpression ACCESS_POINT_EXPRESSION("^ap\\d+$");
-
 class ManagerImpl::Private : public QObject
 {
     Q_OBJECT
@@ -445,7 +443,7 @@ ManagerImpl::device_added(const QDBusObjectPath &path)
                                                 d->m_killSwitch);
 
             // We're not interested in showing access points
-            if (!ACCESS_POINT_EXPRESSION.match(tmp->name()).hasMatch())
+            if (tmp->name() != d->m_hotspotManager->interface())
             {
                 tmp->setDisconnectWifi(d->m_hotspotManager->disconnectWifi());
                 QObject::connect(d->m_hotspotManager.get(), &HotspotManager::disconnectWifiChanged,

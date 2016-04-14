@@ -15,8 +15,8 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2016-02-27 05:29+0000\n"
-"X-Generator: Launchpad (build 17925)\n"
+"X-Launchpad-Export-Date: 2016-04-14 06:28+0000\n"
+"X-Generator: Launchpad (build 17990)\n"
 "Language: de\n"
 
 #: ../src/indicator/sim-unlock-dialog.cpp:144
@@ -37,7 +37,7 @@ msgstr ""
 
 #: ../src/indicator/sim-unlock-dialog.cpp:161
 msgid "Sorry, your %{1} is now blocked."
-msgstr "Entschuldigung, Ihre %{1} ist jetzt gesperrt."
+msgstr "Ihre %{1} ist jetzt leider gesperrt."
 
 #: ../src/indicator/sim-unlock-dialog.cpp:166
 msgid "Please enter your PUK code to unblock SIM card."
@@ -164,10 +164,13 @@ msgstr ""
 msgid ""
 "The VPN connection '%1' failed because there were no valid VPN secrets."
 msgstr ""
+"Die VPN-Verbindung »%1« ist fehlgeschlagen, weil keine gültigen VPN-"
+"Anmeldedaten vorhanden waren."
 
 #: ../src/indicator/vpn-status-notifier.cpp:57
 msgid "The VPN connection '%1' failed because of invalid VPN secrets."
 msgstr ""
+"Die VPN-Verbindung »%1« ist wegen ungültiger VPN-Anmeldedaten fehlgeschlagen."
 
 #: ../src/indicator/vpn-status-notifier.cpp:68
 msgid "VPN Connection Failed"

@@ -15,8 +15,8 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2016-02-27 05:32+0000\n"
-"X-Generator: Launchpad (build 17925)\n"
+"X-Launchpad-Export-Date: 2016-04-14 06:28+0000\n"
+"X-Generator: Launchpad (build 17990)\n"
 "Language: sv\n"
 
 #: ../src/indicator/sim-unlock-dialog.cpp:144
@@ -113,39 +113,48 @@ msgstr "PIN-koderna stämmer inte överens."
 
 #: ../src/indicator/vpn-status-notifier.cpp:48
 msgid "The VPN connection '%1' failed."
-msgstr ""
+msgstr "VPN-anslutningen '%1' misslyckades."
 
 #: ../src/indicator/vpn-status-notifier.cpp:50
 msgid ""
 "The VPN connection '%1' failed because the network connection was "
 "interrupted."
 msgstr ""
+"VPN-anslutningen '%1' misslyckades för att nätverksanslutningen avbröts."
 
 #: ../src/indicator/vpn-status-notifier.cpp:51
 msgid ""
 "The VPN connection '%1' failed because the VPN service stopped unexpectedly."
 msgstr ""
+"VPN-anslutningen '%1' misslyckades för att VPN-tjänsten avslutades oväntat."
 
 #: ../src/indicator/vpn-status-notifier.cpp:52
 msgid ""
 "The VPN connection '%1' failed because the VPN service returned invalid "
 "configuration."
 msgstr ""
+"VPN-anslutningen '%1' misslyckades för att VPN-tjänsten svarade med en "
+"ogiltig konfiguration."
 
 #: ../src/indicator/vpn-status-notifier.cpp:53
 msgid ""
 "The VPN connection '%1' failed because the connection attempt timed out."
 msgstr ""
+"VPN-anslutningen '%1' misslyckades för att anslutningsförsökets tidsgräns "
+"överskreds."
 
 #: ../src/indicator/vpn-status-notifier.cpp:54
 msgid ""
 "The VPN connection '%1' failed because the VPN service did not start in time."
 msgstr ""
+"VPN-anslutningen '%1' misslyckades för att VPN-tjästen inte startade i tid."
 
 #: ../src/indicator/vpn-status-notifier.cpp:55
 msgid ""
 "The VPN connection '%1' failed because the VPN service failed to start."
 msgstr ""
+"VPN-anslutningen '%1' misslyckades för att VPN-tjästen misslyckades att "
+"starta."
 
 #: ../src/indicator/vpn-status-notifier.cpp:56
 msgid ""
@@ -158,7 +167,7 @@ msgstr ""
 
 #: ../src/indicator/vpn-status-notifier.cpp:68
 msgid "VPN Connection Failed"
-msgstr ""
+msgstr "VPN-anslutningen misslyckades"
 
 #: ../src/agent/SecretRequest.cpp:61
 msgid "Connect to “%1”"
@@ -228,7 +237,7 @@ msgstr "Annat nätverk…"
 
 #: ../src/indicator/nmofono/vpn/vpn-manager.cpp:81
 msgid "VPN connection %1"
-msgstr ""
+msgstr "VPN-anslutning %1"
 
 #. TODO Move this into a new class
 #: ../src/indicator/factory.cpp:187
@@ -255,4 +264,4 @@ msgstr "Mobilinställningar…"
 
 #: ../src/indicator/sections/vpn-section.cpp:140
 msgid "VPN settings…"
-msgstr ""
+msgstr "VPN-inställningar..."

@@ -16,8 +16,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Launchpad-Export-Date: 2016-02-27 05:31+0000\n"
-"X-Generator: Launchpad (build 17925)\n"
+"X-Launchpad-Export-Date: 2016-04-14 06:28+0000\n"
+"X-Generator: Launchpad (build 17990)\n"
 "Language: sr\n"
 
 #: ../src/indicator/sim-unlock-dialog.cpp:144
@@ -41,11 +41,11 @@ msgstr "Жао нам је, ваш %{1} је сада блокиран."
 
 #: ../src/indicator/sim-unlock-dialog.cpp:166
 msgid "Please enter your PUK code to unblock SIM card."
-msgstr "Молимо да унесете ваш ПУК код да одблокирате СИМ картицу."
+msgstr "Унесите ПУК код да одблокирате СИМ картицу."
 
 #: ../src/indicator/sim-unlock-dialog.cpp:168
 msgid "You may need to contact your network provider for PUK code."
-msgstr "Можда ћете морати да контактирате провајдера за ПУК код."
+msgstr "Мораћете да се обратите вашем мрежном достављачу за ПУК код."
 
 #: ../src/indicator/sim-unlock-dialog.cpp:176
 #: ../src/indicator/sim-unlock-dialog.cpp:190
@@ -62,7 +62,7 @@ msgstr ""
 
 #: ../src/indicator/sim-unlock-dialog.cpp:182
 msgid "Please contact your network provider."
-msgstr "Молимо контактирајте провајдера."
+msgstr "Обратите се вашем мрежном достављачу."
 
 #: ../src/indicator/sim-unlock-dialog.cpp:192
 msgid "Your SIM card is now permanently blocked and needs replacement."
@@ -70,15 +70,15 @@ msgstr "Ваша СИМ картица је трајно блокирана и �
 
 #: ../src/indicator/sim-unlock-dialog.cpp:194
 msgid "Please contact your service provider."
-msgstr "Молимо контактирајте вашег сервис провајдера."
+msgstr "Обратите се вашем достављачу услуге."
 
 #: ../src/indicator/sim-unlock-dialog.cpp:218
 msgid "Sorry, incorrect PIN"
-msgstr "Жао нам је, погрешан ПИН"
+msgstr "Извините, погрешан ПИН"
 
 #: ../src/indicator/sim-unlock-dialog.cpp:230
 msgid "Sorry, incorrect PUK"
-msgstr "Жао нам је, погрешан ПУК"
+msgstr "Извините, погрешан ПУК"
 
 #: ../src/indicator/sim-unlock-dialog.cpp:292
 msgid "Enter %{1} PIN"
@@ -96,9 +96,9 @@ msgstr "Унесите ПУК код за %{1}"
 #, c-format
 msgid "1 attempt remaining"
 msgid_plural "%d attempts remaining"
-msgstr[0] "1 покушај остао"
-msgstr[1] "%d покушаја остало"
-msgstr[2] "%d покушаја остало"
+msgstr[0] "Остао је 1 покушај"
+msgstr[1] "Остала су %d покушаја"
+msgstr[2] "Остало је %d покушаја"
 
 #: ../src/indicator/sim-unlock-dialog.cpp:326
 msgid "Enter new %{1} PIN"
@@ -114,58 +114,53 @@ msgstr "ПИН код није тачан."
 
 #: ../src/indicator/vpn-status-notifier.cpp:48
 msgid "The VPN connection '%1' failed."
-msgstr "ВПН конекција '%1' је неуспешна"
+msgstr "ВПН веза „%1“ није успела."
 
 #: ../src/indicator/vpn-status-notifier.cpp:50
 msgid ""
 "The VPN connection '%1' failed because the network connection was "
 "interrupted."
-msgstr "ВПН конекција '%1' је неуспешна јер је мрежна конекција прекинута."
+msgstr "ВПН веза „%1“ није успела јер је мрежна веза прекинута."
 
 #: ../src/indicator/vpn-status-notifier.cpp:51
 msgid ""
 "The VPN connection '%1' failed because the VPN service stopped unexpectedly."
-msgstr ""
-"ВПН конекција '%1' је неуспешна јер је ВПНсервис заустављен неочекивано."
+msgstr "ВПН веза „%1“ није успела јер је ВПН услуга неочекивано заустављена."
 
 #: ../src/indicator/vpn-status-notifier.cpp:52
 msgid ""
 "The VPN connection '%1' failed because the VPN service returned invalid "
 "configuration."
 msgstr ""
-"ВПН конекција '%1' је неуспешна јер је ВПН сервис вратио погрешну "
-"конфигурацију."
+"ВПН веза „%1“ није успела јер је ВПН услуга вратила погрешно подешавање."
 
 #: ../src/indicator/vpn-status-notifier.cpp:53
 msgid ""
 "The VPN connection '%1' failed because the connection attempt timed out."
-msgstr ""
-"ВПН конекција '%1' је неуспешна јер је покушај успостављања везе истекао."
+msgstr "ВПН веза „%1“ није успела јер је покушај успостављања везе истекао."
 
 #: ../src/indicator/vpn-status-notifier.cpp:54
 msgid ""
 "The VPN connection '%1' failed because the VPN service did not start in time."
-msgstr ""
-"ВПН конекција '%1' је неуспешна јер ВПН сервис није покренут на време."
+msgstr "ВПН веза „%1“ није успела јер ВПН услуга није покренута на време."
 
 #: ../src/indicator/vpn-status-notifier.cpp:55
 msgid ""
 "The VPN connection '%1' failed because the VPN service failed to start."
-msgstr ""
-"ВПН конекција '%1' је неуспешна јер ВПН сервис није успео да се стартује."
+msgstr "ВПН веза „%1“ није успела јер ВПН услуга није успела да се покрене."
 
 #: ../src/indicator/vpn-status-notifier.cpp:56
 msgid ""
 "The VPN connection '%1' failed because there were no valid VPN secrets."
-msgstr "ВПН конекција '%1' је неуспешна јер нема исправних ВПН тајни."
+msgstr "ВПН веза „%1“ није успела јер нема исправних ВПН тајни."
 
 #: ../src/indicator/vpn-status-notifier.cpp:57
 msgid "The VPN connection '%1' failed because of invalid VPN secrets."
-msgstr "ВПН конекција '%1' је неуспешна због погрешне ВПН тајне."
+msgstr "ВПН веза „%1“ није успела због погрешне ВПН тајне."
 
 #: ../src/indicator/vpn-status-notifier.cpp:68
 msgid "VPN Connection Failed"
-msgstr "ВПН конекција је неуспешна"
+msgstr "ВПН веза није успела"
 
 #: ../src/agent/SecretRequest.cpp:61
 msgid "Connect to “%1”"
@@ -194,7 +189,7 @@ msgstr "Мрежа"
 
 #: ../src/indicator/menuitems/wwan-link-item.cpp:90
 msgid "No SIM"
-msgstr "Без СИМ картице"
+msgstr "Нема СИМ картице"
 
 #: ../src/indicator/menuitems/wwan-link-item.cpp:97
 msgid "SIM Error"
@@ -222,7 +217,7 @@ msgstr "Тражим"
 
 #: ../src/indicator/menuitems/wwan-link-item.cpp:145
 msgid "No Signal"
-msgstr "Без сигнала"
+msgstr "Нема сигнала"
 
 #: ../src/indicator/menuitems/wwan-link-item.cpp:157
 #: ../src/indicator/menuitems/wwan-link-item.cpp:164
@@ -231,11 +226,11 @@ msgstr "Неповезан"
 
 #: ../src/indicator/menuitems/wifi-link-item.cpp:109
 msgid "Other network…"
-msgstr "Друга мрежа..."
+msgstr "Друга мрежа…"
 
 #: ../src/indicator/nmofono/vpn/vpn-manager.cpp:81
 msgid "VPN connection %1"
-msgstr "ВПН конекција %1"
+msgstr "ВПН веза %1"
 
 #. TODO Move this into a new class
 #: ../src/indicator/factory.cpp:187
@@ -254,12 +249,12 @@ msgstr "Дељење интернета"
 
 #: ../src/indicator/sections/wifi-section.cpp:65
 msgid "Wi-Fi settings…"
-msgstr "Бежична подешавања..."
+msgstr "Бежична подешавања…"
 
 #: ../src/indicator/sections/wwan-section.cpp:99
 msgid "Cellular settings…"
-msgstr "Мобилна подешавања..."
+msgstr "Мобилна подешавања…"
 
 #: ../src/indicator/sections/vpn-section.cpp:140
 msgid "VPN settings…"
-msgstr "ВПН подешавања..."
+msgstr "ВПН подешавања…"

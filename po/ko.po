@@ -15,8 +15,8 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Launchpad-Export-Date: 2016-02-27 05:30+0000\n"
-"X-Generator: Launchpad (build 17925)\n"
+"X-Launchpad-Export-Date: 2016-04-14 06:28+0000\n"
+"X-Generator: Launchpad (build 17990)\n"
 "Language: ko\n"
 
 #: ../src/indicator/sim-unlock-dialog.cpp:144
@@ -109,52 +109,52 @@ msgstr "PIN 코드가 일치하지 않습니다."
 
 #: ../src/indicator/vpn-status-notifier.cpp:48
 msgid "The VPN connection '%1' failed."
-msgstr ""
+msgstr "가상 사설망 '%1' 연결 실패"
 
 #: ../src/indicator/vpn-status-notifier.cpp:50
 msgid ""
 "The VPN connection '%1' failed because the network connection was "
 "interrupted."
-msgstr ""
+msgstr "네트워크 연결이 중단되어 가상 사설망 '%1'에 연결하지 못했습니다."
 
 #: ../src/indicator/vpn-status-notifier.cpp:51
 msgid ""
 "The VPN connection '%1' failed because the VPN service stopped unexpectedly."
-msgstr ""
+msgstr "가상 사설망 서비스가 예상하지 못하게 정지해 가상 사설망 '%1'에 연결하지 못했습니다."
 
 #: ../src/indicator/vpn-status-notifier.cpp:52
 msgid ""
 "The VPN connection '%1' failed because the VPN service returned invalid "
 "configuration."
-msgstr ""
+msgstr "가상 사설망 서비스가 올바르지 않은 설정을 반환해 가상 사설망 '%1'에 연결하지 못했습니다."
 
 #: ../src/indicator/vpn-status-notifier.cpp:53
 msgid ""
 "The VPN connection '%1' failed because the connection attempt timed out."
-msgstr ""
+msgstr "연결 시도 횟수가 제한을 초과해 가상 사설망 '%1'에 연결하지 못했습니다."
 
 #: ../src/indicator/vpn-status-notifier.cpp:54
 msgid ""
 "The VPN connection '%1' failed because the VPN service did not start in time."
-msgstr ""
+msgstr "가상 사설망 서비스가 제때 시작하지 않아 가상 사설망 '%1'에 연결하지 못했습니다."
 
 #: ../src/indicator/vpn-status-notifier.cpp:55
 msgid ""
 "The VPN connection '%1' failed because the VPN service failed to start."
-msgstr ""
+msgstr "가상 사설망 서비스가 시작되지 않아 가상 사설망 '%1'에 연결하지 못했습니다."
 
 #: ../src/indicator/vpn-status-notifier.cpp:56
 msgid ""
 "The VPN connection '%1' failed because there were no valid VPN secrets."
-msgstr ""
+msgstr "유효한 가상 사설망 비밀 정보가 없어 가상 사설망 '%1'에 연결하지 못했습니다."
 
 #: ../src/indicator/vpn-status-notifier.cpp:57
 msgid "The VPN connection '%1' failed because of invalid VPN secrets."
-msgstr ""
+msgstr "유효하지 않은 가상 사설망 비밀 정보 때문에 가상 사설망 '%1'에 연결하지 못했습니다."
 
 #: ../src/indicator/vpn-status-notifier.cpp:68
 msgid "VPN Connection Failed"
-msgstr ""
+msgstr "가상 사설망 연결 실패"
 
 #: ../src/agent/SecretRequest.cpp:61
 msgid "Connect to “%1”"
@@ -224,7 +224,7 @@ msgstr "다른 네트워크..."
 
 #: ../src/indicator/nmofono/vpn/vpn-manager.cpp:81
 msgid "VPN connection %1"
-msgstr ""
+msgstr "가상 사설망 연결 %1"
 
 #. TODO Move this into a new class
 #: ../src/indicator/factory.cpp:187
@@ -251,4 +251,4 @@ msgstr "셀룰러 네트워크 설정..."
 
 #: ../src/indicator/sections/vpn-section.cpp:140
 msgid "VPN settings…"
-msgstr ""
+msgstr "가상 사설망 설정..."

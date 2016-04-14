@@ -15,8 +15,8 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2016-02-27 05:30+0000\n"
-"X-Generator: Launchpad (build 17925)\n"
+"X-Launchpad-Export-Date: 2016-04-14 06:28+0000\n"
+"X-Generator: Launchpad (build 17990)\n"
 "Language: ia\n"
 
 #: ../src/indicator/sim-unlock-dialog.cpp:144
@@ -114,52 +114,64 @@ msgstr "Le codice PIN non concorda."
 
 #: ../src/indicator/vpn-status-notifier.cpp:48
 msgid "The VPN connection '%1' failed."
-msgstr ""
+msgstr "Le connection VPN '%1' ha fallite."
 
 #: ../src/indicator/vpn-status-notifier.cpp:50
 msgid ""
 "The VPN connection '%1' failed because the network connection was "
 "interrupted."
 msgstr ""
+"Le connexion VPN '%1' ha fallite perque le connexion de rete ha essite "
+"interrupte."
 
 #: ../src/indicator/vpn-status-notifier.cpp:51
 msgid ""
 "The VPN connection '%1' failed because the VPN service stopped unexpectedly."
 msgstr ""
+"Le connexion VPN '%1' ha fallite perque le servicio VPN se arrestava "
+"inspectatemente"
 
 #: ../src/indicator/vpn-status-notifier.cpp:52
 msgid ""
 "The VPN connection '%1' failed because the VPN service returned invalid "
 "configuration."
 msgstr ""
+"Le connexion VPN '%1' ha fallite perque le servicio VPN retornava "
+"configuration non valide."
 
 #: ../src/indicator/vpn-status-notifier.cpp:53
 msgid ""
 "The VPN connection '%1' failed because the connection attempt timed out."
 msgstr ""
+"Le connexion VPN '%1' ha fallite perque le tentativa de connexion iva foras "
+"tempore."
 
 #: ../src/indicator/vpn-status-notifier.cpp:54
 msgid ""
 "The VPN connection '%1' failed because the VPN service did not start in time."
 msgstr ""
+"Le connexion VPN '%1' ha fallite perque le servicio VPN non ha initiate per "
+"tempore."
 
 #: ../src/indicator/vpn-status-notifier.cpp:55
 msgid ""
 "The VPN connection '%1' failed because the VPN service failed to start."
 msgstr ""
+"Le connexion VPN '%1' ha fallite perque le servicio VPN non ha initiate."
 
 #: ../src/indicator/vpn-status-notifier.cpp:56
 msgid ""
 "The VPN connection '%1' failed because there were no valid VPN secrets."
 msgstr ""
+"Le connexion VPN '%1' ha fallite perque il non habeva secretos de VPN valide"
 
 #: ../src/indicator/vpn-status-notifier.cpp:57
 msgid "The VPN connection '%1' failed because of invalid VPN secrets."
-msgstr ""
+msgstr "Le connexion VPN '%1' ha fallite per le secretos de VPN valide"
 
 #: ../src/indicator/vpn-status-notifier.cpp:68
 msgid "VPN Connection Failed"
-msgstr ""
+msgstr "Le connexion VPN ha fallite"
 
 #: ../src/agent/SecretRequest.cpp:61
 msgid "Connect to “%1”"
@@ -229,7 +241,7 @@ msgstr "Altere rete…"
 
 #: ../src/indicator/nmofono/vpn/vpn-manager.cpp:81
 msgid "VPN connection %1"
-msgstr ""
+msgstr "Connection VPN %1"
 
 #. TODO Move this into a new class
 #: ../src/indicator/factory.cpp:187
@@ -244,7 +256,7 @@ msgstr "Modo volo"
 #. TODO Move this into a new class
 #: ../src/indicator/factory.cpp:209
 msgid "Hotspot"
-msgstr ""
+msgstr "Hotspot"
 
 #: ../src/indicator/sections/wifi-section.cpp:65
 msgid "Wi-Fi settings…"
@@ -256,4 +268,4 @@ msgstr "Preparationes del cellular…"
 
 #: ../src/indicator/sections/vpn-section.cpp:140
 msgid "VPN settings…"
-msgstr ""
+msgstr "Configurationes VPN..."

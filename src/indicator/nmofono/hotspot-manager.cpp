@@ -367,10 +367,7 @@ public:
         connection["connection"] = connsettings;
 
         QVariantMap ipv4;
-        ipv4[QStringLiteral("addressess")] = QVariant(QStringList());
-        ipv4[QStringLiteral("dns")] = QVariant(QStringList());
         ipv4[QStringLiteral("method")] = QVariant(QStringLiteral("shared"));
-        ipv4[QStringLiteral("routes")] = QVariant(QStringList());
         connection["ipv4"] = ipv4;
 
         QVariantMap ipv6;

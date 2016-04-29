@@ -206,10 +206,6 @@ SwitchItem::UPtr Factory::newFlightModeSwitch()
 SwitchItem::UPtr Factory::newMobileDataSwitch()
 {
     auto s = make_unique<SwitchItem>(_("Cellular data"), "mobiledata", "enabled");
-    //auto manager = d->singletonNmofono();
-    //s->setState(manager->flightMode());
-    //QObject::connect(manager.get(), &nmofono::Manager::flightModeUpdated, flightModeSwitch.get(), &SwitchItem::setState);
-    //QObject::connect(flightModeSwitch.get(), &SwitchItem::stateUpdated, manager.get(), &nmofono::Manager::setFlightMode);
     return s;
 }
 

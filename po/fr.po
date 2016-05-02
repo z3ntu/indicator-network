@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-04-29 12:38+0300\n"
-"PO-Revision-Date: 2016-02-15 17:40+0000\n"
+"PO-Revision-Date: 2016-05-01 09:09+0000\n"
 "Last-Translator: Anne <anneonyme017@gmail.com>\n"
 "Language-Team: French <fr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Launchpad-Export-Date: 2016-05-01 05:55+0000\n"
+"X-Launchpad-Export-Date: 2016-05-02 05:52+0000\n"
 "X-Generator: Launchpad (build 17995)\n"
 "Language: fr\n"
 
@@ -92,7 +92,7 @@ msgstr "Mode avion"
 
 #: ../src/indicator/factory.cpp:208
 msgid "Cellular data"
-msgstr ""
+msgstr "Données cellulaires"
 
 #. TODO Move this into a new class
 #: ../src/indicator/factory.cpp:215

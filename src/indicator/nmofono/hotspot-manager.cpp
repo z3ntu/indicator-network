@@ -308,6 +308,11 @@ public:
                 continue;
             }
 
+            if (device.state() <= NM_DEVICE_STATE_UNAVAILABLE)
+            {
+                continue;
+            }
+
             qDebug() << __PRETTY_FUNCTION__ << "Using AP interface " << interface;
             m_device = make_unique<ApDevice>(*path, interface);
             break;

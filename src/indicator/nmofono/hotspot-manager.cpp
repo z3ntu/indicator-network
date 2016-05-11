@@ -119,7 +119,22 @@ public:
             return false;
         }
 
-        return true;
+        QDBusObjectPath activeConnectionPath(reply);
+
+        OrgFreedesktopNetworkManagerConnectionActiveInterface activeConnection (
+                    NM_DBUS_SERVICE, activeConnectionPath.path (),
+                    m_manager->connection());
+
+        int count = 0;
+        // Wait for connection to activate
+        while (count < 20 && activeConnection.state() != NM_ACTIVE_CONNECTION_STATE_ACTIVATED)
+        {
+            qDebug() << __PRETTY_FUNCTION__ << "Waiting for hotspot to connect";
+            QThread::msleep(100);
+            ++count;
+        }
+
+        return (activeConnection.state() == NM_ACTIVE_CONNECTION_STATE_ACTIVATED);
     }
 
     /**
@@ -134,12 +149,16 @@ public:
         }
 
         qDebug() << __PRETTY_FUNCTION__ << "Activating hotspot on device" << device.path();
-        setEnable(activateConnection(device));
-        // If our connection gets booted, reconnect
-        connect(m_activeConnectionManager.get(),
-                &connection::ActiveConnectionManager::connectionsUpdated, this,
-                &Priv::reactivateConnection,
-                Qt::QueuedConnection);
+        bool success = activateConnection(device);
+        setEnable(success);
+        if (success)
+        {
+            // If our connection gets booted, reconnect
+            connect(m_activeConnectionManager.get(),
+                    &connection::ActiveConnectionManager::connectionsUpdated, this,
+                    &Priv::reactivateConnection,
+                    Qt::QueuedConnection);
+        }
     }
 
     /**

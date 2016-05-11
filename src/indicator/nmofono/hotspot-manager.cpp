@@ -355,10 +355,13 @@ public:
         QVariantDictMap connection;
 
         QString s_ssid = QString::fromLatin1(ssid);
-        QString s_uuid = QUuid().createUuid().toString();
-        // Remove {} from the generated uuid.
-        s_uuid.remove(0, 1);
-        s_uuid.remove(s_uuid.size() - 1, 1);
+
+        if (m_uuid.isEmpty()) {
+            m_uuid = QUuid().createUuid().toString();
+            // Remove {} from the generated uuid.
+            m_uuid.remove(0, 1);
+            m_uuid.remove(m_uuid.size() - 1, 1);
+        }
 
         QVariantMap wireless;
 
@@ -374,7 +377,7 @@ public:
         QVariantMap connsettings;
         connsettings[QStringLiteral("autoconnect")] = QVariant(autoConnect);
         connsettings[QStringLiteral("id")] = QVariant(s_ssid);
-        connsettings[QStringLiteral("uuid")] = QVariant(s_uuid);
+        connsettings[QStringLiteral("uuid")] = QVariant(m_uuid);
         connsettings[QStringLiteral("type")] = QVariant(QStringLiteral("802-11-wireless"));
         connection["connection"] = connsettings;
 
@@ -452,11 +455,13 @@ public:
                 if (wifi_mode == m_mode)
                 {
                     m_hotspot = conn;
+                    m_uuid = connection_settings["connection"]["uuid"].toString();
                     return;
                 }
             }
         }
         m_hotspot.reset();
+        m_uuid = QString();
     }
 
     connection::ActiveConnection::SPtr getActiveConnection()
@@ -580,6 +585,8 @@ public:
     unique_ptr<OrgFreedesktopNetworkManagerSettingsInterface> m_settings;
 
     shared_ptr<OrgFreedesktopNetworkManagerSettingsConnectionInterface> m_hotspot;
+
+    QString m_uuid;
 
     connection::ActiveConnectionManager::SPtr m_activeConnectionManager;
 };

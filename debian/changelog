@@ -1,3 +1,19 @@
+indicator-network (0.7.1+16.04.20160511-0ubuntu1) xenial; urgency=medium
+
+  [ Pete Woods ]
+  * Fix limitations property (LP: #1547194)
+  * Remember hotspot UUID
+  * Store information about which device we are using in a member
+    variable
+  * Wait for hotspot device to be ready, not just present (LP: #1579221)
+  * Wait for hotspot to finish activating
+
+  [ Tony Espy ]
+  * hotspot: Don't create NM ipv4 settings with empty values. (LP:
+    #1579221)
+
+ -- Tony Espy <ci-train-bot@canonical.com>  Wed, 11 May 2016 16:57:39 +0000
+
 indicator-network (0.7.1+16.04.20160429-0ubuntu1) xenial; urgency=medium
 
   * Add cellular data switch to the factory to introduce the

@@ -76,7 +76,8 @@ public Q_SLOTS:
             return;
         }
         m_present = value;
-        if (!m_present) {
+        if (!m_present)
+        {
             m_imsiSet = false;
             m_phoneNumbersSet = false;
             m_mccSet = false;

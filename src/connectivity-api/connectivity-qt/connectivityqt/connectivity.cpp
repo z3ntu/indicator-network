@@ -178,24 +178,19 @@ public Q_SLOTS:
         else if (name == "SimForMobileData")
         {
             auto path = value.value<QDBusObjectPath>();
-            qDebug() << "Property Update: " << path.path();
             auto sim = m_simsModel->getSimByPath(path);
             p.setSimForMobileData(sim);
         }
         else if (name == "Modems")
         {
-            qDebug() << "FOO1";
             QList<QDBusObjectPath> tmp;
             qvariant_cast<QDBusArgument>(value) >> tmp;
-            qDebug() << "Bar";
             m_modemsModel->updateModemDBusPaths(tmp);
         }
         else if (name == "Sims")
         {
-             qDebug() << "FOO2";
             QList<QDBusObjectPath> tmp;
             qvariant_cast<QDBusArgument>(value) >> tmp;
-            qDebug() << "Bar2";
             m_simsModel->updateSimDBusPaths(tmp);
 
             auto path = m_writePropertyCache->get("SimForMobileData").value<QDBusObjectPath>();
@@ -278,7 +273,6 @@ Connectivity::Connectivity(const std::function<void(QObject*)>& objectOwner,
         d->m_modemsModel->updateModemDBusPaths(tmp);
 
         auto sim = d->m_simsModel->getSimByPath(d->m_writePropertyCache->get("SimForMobileData").value<QDBusObjectPath>());
-        qDebug() << "Hot Start: " << sim->path().path();
         d->m_simForMobileData = sim;
     }
 
@@ -288,9 +282,7 @@ Connectivity::Connectivity(const std::function<void(QObject*)>& objectOwner,
 }
 
 Connectivity::~Connectivity()
-{
-    qDebug() << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
-}
+{}
 
 bool Connectivity::flightMode() const
 {
@@ -459,19 +451,23 @@ Sim *Connectivity::simForMobileData() const
 
 void Connectivity::setSimForMobileData(Sim *sim)
 {
-    qDebug() << "setSimForMobileData: " << sim;
     if (d->m_simForMobileData == sim)
     {
         return;
     }
     d->m_simForMobileData = sim;
+    QDBusObjectPath path;
     if (sim)
     {
-        d->m_writeInterface->setSimForMobileData(sim->path());
+        path = sim->path();
     }
     else
     {
-        d->m_writeInterface->setSimForMobileData(QDBusObjectPath("/"));
+        path = QDBusObjectPath("/");
+    }
+    if (d->m_writePropertyCache->get("SimForMobileData").value<QDBusObjectPath>() != path)
+    {
+        d->m_writeInterface->setSimForMobileData(path);
     }
     Q_EMIT simForMobileDataUpdated(sim);
 }

@@ -76,11 +76,9 @@ public:
             p.beginInsertRows(QModelIndex(), m_modems.size(), m_modems.size() + toAdd.size() - 1);
             for (const auto& path: toAdd)
             {
-                qDebug() << "ADDING " << path.path();
                 auto modem = std::make_shared<Modem>(path, m_connection, m_sims, this);
                 m_modems << modem;
                 connect(modem.get(), &Modem::simChanged, this, &Priv::simChanged);
-                qDebug() << "ADDED " << path.path();
             }
             p.endInsertRows();
         }

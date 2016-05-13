@@ -83,6 +83,8 @@ public:
             }
             p.endInsertRows();
         }
+
+        Q_EMIT p.simsUpdated();
     }
 
     QModelIndex findSim(QObject* o)

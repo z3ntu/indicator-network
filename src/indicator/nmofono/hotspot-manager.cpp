@@ -40,6 +40,17 @@ using namespace std;
 namespace nmofono
 {
 
+struct ApDevice
+{
+    ApDevice (const QDBusObjectPath& path, const QString& interface) :
+            m_path (path), m_interface (interface)
+    {
+    }
+
+    QDBusObjectPath m_path;
+    QString m_interface;
+};
+
 class HotspotManager::Priv: public QObject
 {
 
@@ -108,7 +119,22 @@ public:
             return false;
         }
 
-        return true;
+        QDBusObjectPath activeConnectionPath(reply);
+
+        OrgFreedesktopNetworkManagerConnectionActiveInterface activeConnection (
+                    NM_DBUS_SERVICE, activeConnectionPath.path (),
+                    m_manager->connection());
+
+        int count = 0;
+        // Wait for connection to activate
+        while (count < 20 && activeConnection.state() != NM_ACTIVE_CONNECTION_STATE_ACTIVATED)
+        {
+            qDebug() << __PRETTY_FUNCTION__ << "Waiting for hotspot to connect";
+            QThread::msleep(100);
+            ++count;
+        }
+
+        return (activeConnection.state() == NM_ACTIVE_CONNECTION_STATE_ACTIVATED);
     }
 
     /**
@@ -123,12 +149,16 @@ public:
         }
 
         qDebug() << __PRETTY_FUNCTION__ << "Activating hotspot on device" << device.path();
-        setEnable(activateConnection(device));
-        // If our connection gets booted, reconnect
-        connect(m_activeConnectionManager.get(),
-                &connection::ActiveConnectionManager::connectionsUpdated, this,
-                &Priv::reactivateConnection,
-                Qt::QueuedConnection);
+        bool success = activateConnection(device);
+        setEnable(success);
+        if (success)
+        {
+            // If our connection gets booted, reconnect
+            connect(m_activeConnectionManager.get(),
+                    &connection::ActiveConnectionManager::connectionsUpdated, this,
+                    &Priv::reactivateConnection,
+                    Qt::QueuedConnection);
+        }
     }
 
     /**
@@ -271,10 +301,9 @@ public:
         return true;
     }
 
-
-    QDBusObjectPath getApDevice()
+    void findApDevice()
     {
-        QDBusObjectPath result("/");
+        m_device.release();
         QString tetherIface = getTetheringInterface();
 
         auto devices = QList<QDBusObjectPath>(m_manager->GetDevices()).toStdList();
@@ -293,35 +322,37 @@ public:
                 }
             }
 
-            if (device.deviceType() == NM_DEVICE_TYPE_WIFI)
+            if (device.deviceType() != NM_DEVICE_TYPE_WIFI)
             {
-                qDebug() << "Using AP interface " << interface;
-                m_interface = interface;
-                result = *path;
-                break;
+                continue;
             }
-        }
 
-        return result;
+            if (device.state() <= NM_DEVICE_STATE_UNAVAILABLE)
+            {
+                continue;
+            }
+
+            qDebug() << __PRETTY_FUNCTION__ << "Using AP interface " << interface;
+            m_device = make_unique<ApDevice>(*path, interface);
+            break;
+        }
     }
 
-    QDBusObjectPath createApDevice()
+    void createApDevice()
     {
         setInterfaceFirmware("/", m_mode);
 
-        QDBusObjectPath result("/");
+        m_device.release();
 
         int count = 0;
         // Wait for AP device to appear
-        while (count < 20 && result.path() == "/")
+        while (count < 20 && !m_device)
         {
             QThread::msleep(100);
-            result = getApDevice();
-            qDebug() << __PRETTY_FUNCTION__ << "Searching for AP device" << result.path();
+            findApDevice();
+            qDebug() << __PRETTY_FUNCTION__ << "Searching for AP device";
             ++count;
         }
-
-        return result;
     }
 
     // wpa_supplicant interaction
@@ -343,10 +374,13 @@ public:
         QVariantDictMap connection;
 
         QString s_ssid = QString::fromLatin1(ssid);
-        QString s_uuid = QUuid().createUuid().toString();
-        // Remove {} from the generated uuid.
-        s_uuid.remove(0, 1);
-        s_uuid.remove(s_uuid.size() - 1, 1);
+
+        if (m_uuid.isEmpty()) {
+            m_uuid = QUuid().createUuid().toString();
+            // Remove {} from the generated uuid.
+            m_uuid.remove(0, 1);
+            m_uuid.remove(m_uuid.size() - 1, 1);
+        }
 
         QVariantMap wireless;
 
@@ -362,15 +396,12 @@ public:
         QVariantMap connsettings;
         connsettings[QStringLiteral("autoconnect")] = QVariant(autoConnect);
         connsettings[QStringLiteral("id")] = QVariant(s_ssid);
-        connsettings[QStringLiteral("uuid")] = QVariant(s_uuid);
+        connsettings[QStringLiteral("uuid")] = QVariant(m_uuid);
         connsettings[QStringLiteral("type")] = QVariant(QStringLiteral("802-11-wireless"));
         connection["connection"] = connsettings;
 
         QVariantMap ipv4;
-        ipv4[QStringLiteral("addressess")] = QVariant(QStringList());
-        ipv4[QStringLiteral("dns")] = QVariant(QStringList());
         ipv4[QStringLiteral("method")] = QVariant(QStringLiteral("shared"));
-        ipv4[QStringLiteral("routes")] = QVariant(QStringList());
         connection["ipv4"] = ipv4;
 
         QVariantMap ipv6;
@@ -443,11 +474,13 @@ public:
                 if (wifi_mode == m_mode)
                 {
                     m_hotspot = conn;
+                    m_uuid = connection_settings["connection"]["uuid"].toString();
                     return;
                 }
             }
         }
         m_hotspot.reset();
+        m_uuid = QString();
     }
 
     connection::ActiveConnection::SPtr getActiveConnection()
@@ -524,12 +557,12 @@ public Q_SLOTS:
         }
 
 
-        auto device = getApDevice();
+        findApDevice();
 
-        if (device.path() != "/")
+        if (m_device)
         {
-            qDebug() << __PRETTY_FUNCTION__ << "Reactivating hotspot connection on device" << device.path();
-            activateConnection(device);
+            qDebug() << __PRETTY_FUNCTION__ << "Reactivating hotspot connection on device" << m_device->m_path.path();
+            activateConnection(m_device->m_path);
         }
         else
         {
@@ -546,7 +579,8 @@ public:
     bool m_stored = false;
     QString m_password;
     QByteArray m_ssid = "Ubuntu";
-    QString m_interface;
+
+    unique_ptr<ApDevice> m_device;
 
     QPowerd::UPtr m_powerd;
     QPowerd::RequestSPtr m_wakelock;
@@ -570,6 +604,8 @@ public:
     unique_ptr<OrgFreedesktopNetworkManagerSettingsInterface> m_settings;
 
     shared_ptr<OrgFreedesktopNetworkManagerSettingsConnectionInterface> m_hotspot;
+
+    QString m_uuid;
 
     connection::ActiveConnectionManager::SPtr m_activeConnectionManager;
 };
@@ -622,9 +658,9 @@ void HotspotManager::setEnabled(bool value)
         d->setDisconnectWifi(true);
 
         // We use Hybris to load the new device firmware
-        auto device = d->createApDevice();
+        d->createApDevice();
 
-        if (device.path() == "/")
+        if (!d->m_device)
         {
             qWarning() << __PRETTY_FUNCTION__ << "Failed to create AP device";
             Q_EMIT reportError(1);
@@ -640,7 +676,7 @@ void HotspotManager::setEnabled(bool value)
         {
             d->addConnection();
         }
-        d->enable(device);
+        d->enable(d->m_device->m_path);
     }
     else
     {
@@ -694,8 +730,8 @@ QString HotspotManager::auth() const {
 
 QString HotspotManager::interface() const
 {
-    if (enabled())
-        return d->m_interface;
+    if (enabled() && d->m_device)
+        return d->m_device->m_interface;
     else
         return QString();
 }

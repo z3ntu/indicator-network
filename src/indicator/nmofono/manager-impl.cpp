@@ -180,7 +180,7 @@ public:
         wwan::Modem *modem_raw = qobject_cast<wwan::Modem*>(sender());
         if (!modem_raw)
         {
-            qWarning() << "modem cast failed.";
+            Q_ASSERT(0);
             return;
         }
         m_modems.append(m_ofonoLinks[modem_raw->name()]);
@@ -680,7 +680,8 @@ ManagerImpl::hasWifi() const
 bool
 ManagerImpl::roaming() const
 {
-    for (auto modem : d->m_ofonoLinks) {
+    for (auto modem : d->m_ofonoLinks)
+    {
         if (modem->modemStatus() == wwan::Modem::ModemStatus::roaming) {
             return true;
         }
@@ -696,7 +697,9 @@ ManagerImpl::unlockModem(wwan::Modem::Ptr modem)
         if (!d->m_ofonoLinks.values().contains(modem)
                 || d->m_unlockDialog->modem() == modem
                 || count(d->m_pendingUnlocks.begin(), d->m_pendingUnlocks.end(), modem) != 0)
+        {
             return;
+        }
 
         if (d->m_unlockDialog->state() == SimUnlockDialog::State::ready
                 && (d->m_pendingUnlocks.size() == 0))

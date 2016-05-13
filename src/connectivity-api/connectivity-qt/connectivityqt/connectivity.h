@@ -194,7 +194,7 @@ Q_SIGNALS:
 
     void limitedBandwithUpdated(bool value);
 
-    void limitationsUpdated(const QVector<Limitations>&);
+    void limitationsUpdated(const QVector<connectivityqt::Connectivity::Limitations>&);
 
     void statusUpdated(connectivityqt::Connectivity::Status value);
 

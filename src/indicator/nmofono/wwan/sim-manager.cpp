@@ -108,7 +108,7 @@ public Q_SLOTS:
         {
             if (!m_ofonoModems.contains(path))
             {
-                qWarning("Something went horribly wrong.");
+                qWarning() << __PRETTY_FUNCTION__ << ": trying to remove unknown modem: " << path;
                 continue;
             }
             auto modem = m_ofonoModems.take(path);
@@ -131,13 +131,13 @@ public Q_SLOTS:
 
             if (m_ofonoModems.contains(path))
             {
-                qWarning("Something went horribly wrong.");
+                qWarning() << __PRETTY_FUNCTION__ << ": trying to add already existing modem: " << path;
+                continue;
             }
             m_ofonoModems[path] = modem;
 
             connect(modem.get(), &QOfonoModem::interfacesChanged, this, &Private::modemInterfacesChanged);
-            // use Q_EMIT to get the sender() set.
-            Q_EMIT modem->interfacesChanged(modem->interfaces());
+            modem->interfacesChanged(modem->interfaces());
         }
     }
 
@@ -145,7 +145,7 @@ public Q_SLOTS:
         QOfonoModem *modem = qobject_cast<QOfonoModem*>(sender());
         if (!modem)
         {
-            qWarning() << "Unable to cast sender().";
+            Q_ASSERT(0);
             return;
         }
 
@@ -182,11 +182,14 @@ public Q_SLOTS:
     void ofonoSimPresentChanged(bool present)
     {
         auto wrapper = qobject_cast<QOfonoSimWrapper*>(sender());
-        if (!wrapper) {
-            qWarning("casting failed.");
+        if (!wrapper)
+        {
+            Q_ASSERT(0);
+            return;
         }
 
-        if (!present) {
+        if (!present)
+        {
             if (m_knownSims.contains(wrapper->imsi()))
             {
                 auto sim = m_knownSims[wrapper->imsi()];
@@ -206,11 +209,9 @@ public Q_SLOTS:
         auto wrapper = qobject_cast<wwan::QOfonoSimWrapper*>(sender());
         if (!wrapper)
         {
-            qWarning("casting failed.");
+            Q_ASSERT(0);
             return;
         }
-
-        auto wrappers = m_wrappers;
 
         bool found = false;
         for (auto i : m_knownSims.values())
@@ -238,10 +239,15 @@ public Q_SLOTS:
         Q_UNUSED(value)
 
         auto sim_raw = qobject_cast<Sim*>(sender());
+        if (!sim_raw)
+        {
+            Q_ASSERT(0);
+            return;
+        }
         auto sim = m_knownSims[sim_raw->imsi()];
         if (!sim)
         {
-            qWarning("foobar");
+            Q_ASSERT(0);
             return;
         }
         Sim::saveToSettings(m_settings, sim);

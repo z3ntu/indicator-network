@@ -85,6 +85,8 @@ public Q_SLOTS:
 
 Q_SIGNALS:
 
+    void simsUpdated();
+
 protected:
     class Priv;
     std::shared_ptr<Priv> d;

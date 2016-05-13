@@ -43,11 +43,25 @@ public Q_SLOTS:
     {
         if (name == "Sim")
         {
-            qDebug() << "MODEM SIM: " << value.value<QDBusObjectPath>().path();
-            m_sim = m_sims->getSimByPath(value.value<QDBusObjectPath>());
-            qDebug() << "MODEM SIM: " << m_sim;
-            Q_EMIT p.simChanged(m_sim);
+            auto sim = m_sims->getSimByPath(value.value<QDBusObjectPath>());
+            setSim(sim);
         }
+    }
+
+    void simsUpdated()
+    {
+        auto sim = m_sims->getSimByPath(m_propertyCache->get("Sim").value<QDBusObjectPath>());
+        setSim(sim);
+    }
+
+    void setSim(Sim *sim)
+    {
+        if (m_sim == sim)
+        {
+            return;
+        }
+        m_sim = sim;
+        Q_EMIT p.simChanged(m_sim);
     }
 
 public:
@@ -82,10 +96,9 @@ Modem::Modem(const QDBusObjectPath& path,
                 &internal::DBusPropertyCache::propertyChanged, d.get(),
                 &Priv::propertyChanged);
 
-    qDebug() << "MODEM SIM: " << d->m_propertyCache->get("Sim").value<QDBusObjectPath>().path();
     d->m_sim = d->m_sims->getSimByPath(d->m_propertyCache->get("Sim").value<QDBusObjectPath>());
-    qDebug() << "MODEM SIM: " << d->m_sim;
 
+    connect(d->m_sims, &SimsListModel::simsUpdated, d.get(), &Priv::simsUpdated);
 }
 
 Modem::~Modem()

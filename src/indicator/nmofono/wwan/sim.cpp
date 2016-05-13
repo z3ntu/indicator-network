@@ -100,14 +100,6 @@ public:
 
     Sim& p;
 
-    Sim::PinType m_requiredPin;
-    RetriesType m_retries;
-    Sim::Status m_status = Sim::Status::missing;
-
-    bool m_requiredPinSet = false;
-    bool m_retriesSet = false;
-    bool m_statusSet = false;
-
     int m_index = -1;
 
     QString m_simIdentifier;
@@ -115,11 +107,7 @@ public:
     shared_ptr<QOfonoSimManager> m_simManager;
     shared_ptr<QOfonoConnectionManager> m_connManager;
 
-    bool m_shouldTriggerUnlock = false;
-
     QSet<QString> m_interfaces;
-
-    QTimer m_updatedTimer;
 
     QString m_imsi;
     QString m_primaryPhoneNumber;
@@ -147,25 +135,10 @@ public:
         {
             setSimIdentifier(m_primaryPhoneNumber);
         }
-
-        // Throttle the updates using a timer
-        m_updatedTimer.setInterval(0);
-        m_updatedTimer.setSingleShot(true);
-        connect(&m_updatedTimer, &QTimer::timeout, this, &Private::fireUpdate);
     }
 
 public Q_SLOTS:
 
-    void fireUpdate()
-    {
-        Q_EMIT p.updated(p);
-
-        if (p.isReadyToUnlock() && m_shouldTriggerUnlock)
-        {
-            m_shouldTriggerUnlock = false;
-            Q_EMIT p.readyToUnlock(p.ofonoPath());
-        }
-    }
 
     void simManagerChanged(shared_ptr<QOfonoSimManager> simmgr)
     {
@@ -175,25 +148,6 @@ public Q_SLOTS:
         }
 
         m_simManager = simmgr;
-        if (m_simManager)
-        {
-            connect(m_simManager.get(),
-                    &QOfonoSimManager::pinRequiredChanged, this,
-                    &Private::update);
-
-            connect(m_simManager.get(),
-                    &QOfonoSimManager::pinRetriesChanged, this,
-                    &Private::update);
-
-            connect(m_simManager.get(),
-                    &QOfonoSimManager::enterPinComplete, this,
-                    &Private::enterPinComplete);
-
-            connect(m_simManager.get(),
-                    &QOfonoSimManager::resetPinComplete, this,
-                    &Private::resetPinComplete);
-        }
-
         update();
 
         Q_EMIT p.presentChanged(m_simManager.get() != nullptr);
@@ -225,64 +179,6 @@ public Q_SLOTS:
 
     void update()
     {
-        if (m_simManager) {
-            // update requiredPin
-            switch(m_simManager->pinRequired())
-            {
-            case QOfonoSimManager::PinType::NoPin:
-                setRequiredPin(PinType::none);
-                break;
-            case QOfonoSimManager::PinType::SimPin:
-                setRequiredPin(PinType::pin);
-                break;
-            case QOfonoSimManager::PinType::SimPuk:
-                setRequiredPin(PinType::puk);
-                break;
-            default:
-                throw std::runtime_error("Ofono requires a PIN we have not been prepared to handle (" +
-                                         to_string(m_simManager->pinRequired()) +
-                                         "). Bailing out.");
-            }
-
-            m_requiredPinSet = true;
-
-            bool retriesWasSet = true;
-            // update retries
-            RetriesType tmp;
-            QVariantMap retries = m_simManager->pinRetries();
-            QMapIterator<QString, QVariant> i(retries);
-            while (i.hasNext()) {
-                i.next();
-                QOfonoSimManager::PinType type = (QOfonoSimManager::PinType) i.key().toInt();
-                int count = i.value().toInt();
-                if (count < 0)
-                {
-                    retriesWasSet = false;
-                }
-                switch(type)
-                {
-                    case QOfonoSimManager::PinType::SimPin:
-                        tmp[Sim::PinType::pin] = count;
-                        break;
-                    case QOfonoSimManager::PinType::SimPuk:
-                        tmp[Sim::PinType::puk] = count;
-                        break;
-                    default:
-                        break;
-                }
-            }
-            setRetries(tmp);
-
-            m_retriesSet = retriesWasSet;
-
-        } else {
-            setRequiredPin(PinType::none);
-            setRetries({});
-
-            m_requiredPinSet = false;
-            m_retriesSet = false;
-        }
-
         if (m_connManager)
         {
             bool powered = m_connManager->powered();
@@ -307,30 +203,6 @@ public Q_SLOTS:
         }
     }
 
-    void enterPinComplete(QOfonoSimManager::Error error, const QString &errorString)
-    {
-        if (error == QOfonoSimManager::Error::NoError)
-        {
-            Q_EMIT p.enterPinSuceeded();
-        }
-        else
-        {
-            Q_EMIT p.enterPinFailed(errorString);
-        }
-    }
-
-    void resetPinComplete(QOfonoSimManager::Error error, const QString &errorString)
-    {
-        if (error == QOfonoSimManager::Error::NoError)
-        {
-            Q_EMIT p.resetPinSuceeded();
-        }
-        else
-        {
-            Q_EMIT p.resetPinFailed(errorString);
-        }
-    }
-
     void setSimIdentifier(const QString& simIdentifier)
     {
         if (m_simIdentifier == simIdentifier)
@@ -340,39 +212,6 @@ public Q_SLOTS:
 
         m_simIdentifier = simIdentifier;
         Q_EMIT p.simIdentifierUpdated(m_simIdentifier);
-    }
-
-    void setRequiredPin(Sim::PinType requiredPin)
-    {
-        if (m_requiredPin == requiredPin)
-        {
-            return;
-        }
-
-        m_requiredPin = requiredPin;
-        Q_EMIT p.requiredPinUpdated(m_requiredPin);
-    }
-
-    void setRetries(const RetriesType& retries)
-    {
-        if (m_retries == retries)
-        {
-            return;
-        }
-
-        m_retries = retries;
-        Q_EMIT p.retriesUpdated();
-    }
-
-    void setStatus(Sim::Status value)
-    {
-        if (m_status == value)
-        {
-            return;
-        }
-
-        m_status = value;
-        Q_EMIT p.statusUpdated();
     }
 
     void setOfono(std::shared_ptr<QOfonoSimManager> simmgr)
@@ -413,84 +252,10 @@ Sim::Sim(const QString &imsi,
 Sim::~Sim()
 {}
 
-void
-Sim::enterPin(PinType type, const QString &pin)
-{
-    if (!d->m_simManager)
-    {
-        throw std::runtime_error(std::string(__PRETTY_FUNCTION__) + ": no simManager.");
-    }
-
-    switch(type) {
-    case PinType::none:
-        break;
-    case PinType::pin:
-        d->m_simManager->enterPin(QOfonoSimManager::PinType::SimPin,
-                                pin);
-        break;
-    case PinType::puk:
-        d->m_simManager->enterPin(QOfonoSimManager::PinType::SimPuk,
-                                pin);
-        break;
-    }
-}
-
-
-void
-Sim::resetPin(PinType type, const QString &puk, const QString &pin)
-{
-    if (!d->m_simManager) {
-        throw std::runtime_error(std::string(__PRETTY_FUNCTION__) + ": no simManager.");
-    }
-
-    switch(type) {
-    case PinType::none:
-        break;
-    case PinType::puk:
-        d->m_simManager->resetPin(QOfonoSimManager::PinType::SimPuk,
-                                puk,
-                                pin);
-        break;
-    default:
-        throw std::runtime_error(std::string(__PRETTY_FUNCTION__) + ": Not Supported.");
-    }
-}
-
-Sim::PinType
-Sim::requiredPin() const
-{
-    return d->m_requiredPin;
-}
-
-const Sim::RetriesType&
-Sim::retries() const
-{
-    return d->m_retries;
-}
-
 const QString&
 Sim::simIdentifier() const
 {
     return d->m_simIdentifier;
-}
-
-bool
-Sim::isReadyToUnlock() const
-{
-    return d->m_statusSet && d->m_requiredPinSet && d->m_retriesSet
-            && (d->m_requiredPin != PinType::none);
-}
-
-void
-Sim::notifyWhenReadyToUnlock()
-{
-    d->m_shouldTriggerUnlock = true;
-}
-
-
-Sim::Status Sim::status() const
-{
-    return d->m_status;
 }
 
 QString Sim::imsi() const
@@ -536,7 +301,9 @@ bool Sim::dataRoamingEnabled() const
 void Sim::setDataRoamingEnabled(bool value)
 {
     if (d->m_dataRoamingEnabled == value)
+    {
         return;
+    }
     d->m_dataRoamingEnabled = value;
     Q_EMIT dataRoamingEnabledChanged(value);
 }
@@ -549,7 +316,9 @@ bool Sim::mobileDataEnabled() const
 void Sim::setMobileDataEnabled(bool value)
 {
     if (d->m_mobileDataEnabled == value)
+    {
         return;
+    }
     d->m_mobileDataEnabled = value;
     if (d->m_connManager)
     {
@@ -565,7 +334,8 @@ void Sim::unlock()
 
 QString Sim::ofonoPath() const
 {
-    if (d->m_simManager) {
+    if (d->m_simManager)
+    {
         return d->m_simManager->objectPath();
     }
     return QString();

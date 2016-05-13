@@ -52,23 +52,6 @@ public:
     typedef std::shared_ptr<Sim> Ptr;
     typedef std::weak_ptr<Sim> WeakPtr;
 
-    enum class PinType
-    {
-        none,
-        pin,
-        puk
-    };
-
-    enum class Status
-    {
-        missing,
-        error,
-        locked,
-        permanentlyLocked,
-        ready,
-        not_available
-    };
-
     Sim() = delete;
 
     static Sim::Ptr createFromSettings(QSettings*, const QString &imsi);
@@ -88,19 +71,8 @@ public:
     ~Sim();
     void setOfonoSimManager(std::shared_ptr<QOfonoSimManager> simmgr);
 
-
-    Q_PROPERTY(Sim::PinType requiredPin READ requiredPin NOTIFY requiredPinUpdated)
-    PinType requiredPin() const;
-
-    typedef std::map<Sim::PinType, int> RetriesType;
-    Q_PROPERTY(RetriesType retries READ retries NOTIFY retriesUpdated)
-    const RetriesType &retries() const;
-
     Q_PROPERTY(QString simIdentifier READ simIdentifier NOTIFY simIdentifierUpdated)
     const QString &simIdentifier() const;
-
-    Q_PROPERTY(Sim::Status status READ status NOTIFY statusUpdated)
-    Status status() const;
 
     Q_PROPERTY(QString imsi READ imsi CONSTANT)
     QString imsi() const;
@@ -131,17 +103,6 @@ public:
     bool mobileDataEnabled() const;
     void setMobileDataEnabled(bool value);
 
-    bool isReadyToUnlock() const;
-
-    void notifyWhenReadyToUnlock();
-
-    void enterPin(PinType type,
-                  const QString &pin);
-
-    void resetPin(PinType type,
-                  const QString &puk,
-                  const QString &pin);
-
     QString ofonoPath() const;
 
 public Q_SLOTS:
@@ -149,25 +110,7 @@ public Q_SLOTS:
 
 Q_SIGNALS:
 
-    void requiredPinUpdated(PinType);
-
-    void retriesUpdated();
-
     void simIdentifierUpdated(const QString &);
-
-    void updated(const Sim& sim);
-
-    void enterPinSuceeded();
-
-    void enterPinFailed(const QString& error);
-
-    void resetPinSuceeded();
-
-    void resetPinFailed(const QString& error);
-
-    bool readyToUnlock(const QString& name);
-
-    void statusUpdated();
 
     void lockedChanged(bool value);
 

@@ -36,50 +36,6 @@ namespace
 
 }
 
-Sim::Ptr
-Sim::createFromSettings(QSettings *settings, const QString &imsi)
-{
-    settings->beginGroup(QString("Sims/%1/").arg(imsi));
-    QVariant primaryPhoneNumber_var = settings->value("PrimaryPhoneNumber");
-    QVariant mcc_var = settings->value("Mcc");
-    QVariant mnc_var = settings->value("Mnc");
-    QVariant preferredLanguages_var = settings->value("PreferredLanguages");
-    QVariant dataRoamingEnabled_var = settings->value("DataRoamingEnabled");
-    settings->endGroup();
-
-    if (imsi.isNull() ||
-            primaryPhoneNumber_var.isNull() ||
-            mcc_var.isNull() ||
-            mnc_var.isNull() ||
-            preferredLanguages_var.isNull() ||
-            dataRoamingEnabled_var.isNull())
-    {
-        qWarning() << "Corrupt settings for SIM: " << imsi;
-        settings->remove(QString("Sims/%1/").arg(imsi));
-        return Sim::Ptr();
-    }
-
-    return Sim::Ptr(new Sim(imsi,
-                            primaryPhoneNumber_var.toString(),
-                            mcc_var.toString(),
-                            mnc_var.toString(),
-                            preferredLanguages_var.toStringList(),
-                            dataRoamingEnabled_var.toBool()));
-}
-
-void
-Sim::saveToSettings(QSettings *settings, Sim::Ptr sim)
-{
-    settings->beginGroup(QString("Sims/%1/").arg(sim->imsi()));
-    settings->setValue("PrimaryPhoneNumber", QVariant(sim->primaryPhoneNumber()));
-    settings->setValue("Mcc", sim->mcc());
-    settings->setValue("Mnc", sim->mnc());
-    settings->setValue("PreferredLanguages", QVariant(sim->preferredLanguages()));
-    settings->setValue("DataRoamingEnabled", sim->dataRoamingEnabled());
-    settings->endGroup();
-    settings->sync();
-}
-
 Sim::Ptr Sim::fromQOfonoSimWrapper(const QOfonoSimWrapper *wrapper)
 {
     auto sim = Sim::Ptr(new Sim(wrapper->imsi(),

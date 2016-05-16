@@ -21,18 +21,17 @@
 
 #include <QObject>
 #include <QSettings>
+#include <QString>
+
+#include <nmofono/wwan/sim.h>
 
 #include <memory>
 
-#include "sim.h"
-#include <nmofono/connectivity-service-settings.h>
 
 namespace nmofono
 {
-namespace wwan
-{
 
-class SimManager : public QObject
+class ConnectivityServiceSettings : public QObject
 {
     Q_OBJECT
 
@@ -41,17 +40,28 @@ class SimManager : public QObject
 
 public:
 
-    typedef std::shared_ptr<SimManager> Ptr;
-    typedef std::weak_ptr<SimManager> WeakPtr;
+    typedef std::shared_ptr<ConnectivityServiceSettings> Ptr;
+    typedef std::weak_ptr<ConnectivityServiceSettings> WeakPtr;
 
-    SimManager(ConnectivityServiceSettings::Ptr settings);
-    ~SimManager();
+    ConnectivityServiceSettings(QObject *parent = 0);
+    virtual ~ConnectivityServiceSettings();
 
-    QList<Sim::Ptr> knownSims() const;
+    QVariant mobileDataEnabled();
+    void setMobileDataEnabled(bool value);
+
+    QVariant simForMobileData();
+    void setSimForMobileData(const QString &imsi);
+
+    QStringList knownSims();
+    void setKnownSims(const QStringList &list);
+
+    wwan::Sim::Ptr createSimFromSettings(const QString &imsi);
+    void saveSimToSettings(wwan::Sim::Ptr sim);
+
+public Q_SLOTS:
 
 Q_SIGNALS:
-    void simAdded(Sim::Ptr sim);
+
 };
 
-}
 }

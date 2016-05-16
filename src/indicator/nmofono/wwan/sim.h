@@ -36,6 +36,7 @@ class QOfonoModem;
 namespace nmofono
 {
 class ManagerImpl;
+class ConnectivityServiceSettings;
 
 namespace wwan
 {
@@ -47,15 +48,14 @@ class Sim : public QObject
     class Private;
     std::shared_ptr<Private> d;
 
+    friend class nmofono::ConnectivityServiceSettings;
+
 public:
 
     typedef std::shared_ptr<Sim> Ptr;
     typedef std::weak_ptr<Sim> WeakPtr;
 
     Sim() = delete;
-
-    static Sim::Ptr createFromSettings(QSettings*, const QString &imsi);
-    static void saveToSettings(QSettings *, Sim::Ptr);
 
     static Sim::Ptr fromQOfonoSimWrapper(const QOfonoSimWrapper *wrapper);
 

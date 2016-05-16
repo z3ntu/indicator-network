@@ -53,37 +53,21 @@ public:
     QMap<QString, shared_ptr<QOfonoModem>> m_ofonoModems;
     QMap<QString, QOfonoSimWrapper::Ptr> m_wrappers;
 
-    QSettings *m_settings;
+    ConnectivityServiceSettings::Ptr m_settings;
 
-    Private(SimManager& parent)
-        : p(parent)
+    Private(SimManager& parent, ConnectivityServiceSettings::Ptr settings)
+        : p(parent),
+          m_settings(settings)
     {
-        m_settings = new QSettings(QSettings::IniFormat,
-                                   QSettings::UserScope,
-                                   "Ubuntu",
-                                   "connectivityservice",
-                                   this);
-
-        QVariant ret;
-        ret = m_settings->value("KnownSims");
-        if (ret.isNull())
-        {
-            /* This is the first time we are running on a system.
-             */
-            m_settings->setValue("KnownSims", QVariant(QVariant::StringList));
-        }
-        else
-        {
-            QStringList imsis = ret.toStringList();
-            for(auto imsi : imsis) {
-                auto sim = wwan::Sim::createFromSettings(m_settings, imsi);
-                connect(sim.get(), &Sim::dataRoamingEnabledChanged, this, &Private::simDataRoamingEnabledChanged);
-                if (!sim)
-                {
-                    continue;
-                }
-                m_knownSims[sim->imsi()] = sim;
+        QStringList imsis = m_settings->knownSims();
+        for(auto imsi : imsis) {
+            auto sim = m_settings->createSimFromSettings(imsi);
+            connect(sim.get(), &Sim::dataRoamingEnabledChanged, this, &Private::simDataRoamingEnabledChanged);
+            if (!sim)
+            {
+                continue;
             }
+            m_knownSims[sim->imsi()] = sim;
         }
 
         m_ofono = make_shared<QOfonoManager>();
@@ -227,9 +211,9 @@ public Q_SLOTS:
         {
             auto sim = Sim::fromQOfonoSimWrapper(wrapper);
             connect(sim.get(), &Sim::dataRoamingEnabledChanged, this, &Private::simDataRoamingEnabledChanged);
-            wwan::Sim::saveToSettings(m_settings, sim);
+            m_settings->saveSimToSettings(sim);
             m_knownSims[sim->imsi()] = sim;
-            m_settings->setValue("KnownSims", QVariant(m_knownSims.keys()));
+            m_settings->setKnownSims(m_knownSims.keys());
             Q_EMIT p.simAdded(sim);
         }
     }
@@ -250,15 +234,15 @@ public Q_SLOTS:
             Q_ASSERT(0);
             return;
         }
-        Sim::saveToSettings(m_settings, sim);
+        m_settings->saveSimToSettings(sim);
     }
 
 };
 
 
 
-SimManager::SimManager()
-    : d{new Private(*this)}
+SimManager::SimManager(ConnectivityServiceSettings::Ptr settings)
+    : d{new Private(*this, settings)}
 {
 }
 

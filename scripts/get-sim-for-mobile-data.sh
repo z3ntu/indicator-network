@@ -1,3 +1,4 @@
+#!/bin/sh
 dbus-send --session --print-reply           \
     --dest=com.ubuntu.connectivity1         \
     /com/ubuntu/connectivity1/Private       \

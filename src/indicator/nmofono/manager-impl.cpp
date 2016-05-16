@@ -19,6 +19,7 @@
  */
 
 #include <nmofono/manager-impl.h>
+#include <nmofono/connectivity-service-settings.h>
 #include <nmofono/wifi/wifi-link-impl.h>
 #include <nmofono/wwan/sim-manager.h>
 #include <NetworkManagerActiveConnectionInterface.h>
@@ -90,21 +91,18 @@ public:
 
     wwan::SimManager::Ptr m_simManager;
 
-    QSettings *m_settings;
+    ConnectivityServiceSettings::Ptr m_settings;
 
     Private(Manager& parent) :
         p(parent)
     {
-         m_simManager = make_shared<wwan::SimManager>();
-         m_sims = m_simManager->knownSims();
-         connect(m_simManager.get(), &wwan::SimManager::simAdded, this, &Private::simAdded);
+        m_settings = std::make_shared<ConnectivityServiceSettings>();
 
-         m_settings = new QSettings(QSettings::IniFormat,
-                                    QSettings::UserScope,
-                                    "Ubuntu",
-                                    "connectivityservice",
-                                    this);
-        QVariant ret = m_settings->value("MobileDataEnabled");
+        m_simManager = make_shared<wwan::SimManager>(m_settings);
+        m_sims = m_simManager->knownSims();
+        connect(m_simManager.get(), &wwan::SimManager::simAdded, this, &Private::simAdded);
+
+        QVariant ret = m_settings->mobileDataEnabled();
         if (ret.isNull())
         {
             /* This is the first time we are running on a system.
@@ -113,14 +111,14 @@ public:
              * at the individual modems.
              */
             m_mobileDataEnabledPending = true;
-            m_settings->setValue("MobileDataEnabled", true);
+            m_settings->setMobileDataEnabled(false);
         }
         else
         {
             m_mobileDataEnabled = ret.toBool();
         }
 
-        ret = m_settings->value("SimForMobileData");
+        ret = m_settings->simForMobileData();
         if (ret.isNull())
         {
             /* This is the first time we are running on a system.
@@ -129,7 +127,7 @@ public:
              * from the individual modems.
              */
             m_simForMobileDataPending = true;
-            m_settings->setValue("SimForMobileData", QString());
+            m_settings->setSimForMobileData(QString());
         }
         else
         {
@@ -326,9 +324,7 @@ public Q_SLOTS:
             return;
         }
 
-        m_settings->setValue("MobileDataEnabled", value);
-        m_settings->sync();
-
+        m_settings->setMobileDataEnabled(value);
         m_mobileDataEnabled = value;
         Q_EMIT p.mobileDataEnabledChanged(value);
 
@@ -366,13 +362,13 @@ public Q_SLOTS:
 
         if (!sim)
         {
-            m_settings->setValue("SimForMobileData", "");
+            m_settings->setSimForMobileData("");
         }
         else
         {
-            m_settings->setValue("SimForMobileData", sim->imsi());
+            m_settings->setSimForMobileData(sim->imsi());
         }
-        m_settings->sync();
+
 
         m_simForMobileData = sim;
         if (m_simForMobileData)

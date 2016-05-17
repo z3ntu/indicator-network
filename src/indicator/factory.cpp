@@ -207,6 +207,7 @@ SwitchItem::UPtr Factory::newMobileDataSwitch()
 {
     auto s = make_unique<SwitchItem>(_("Cellular data"), "mobiledata", "enabled");
     auto manager = d->singletonNmofono();
+
     s->setState(manager->mobileDataEnabled());
     QObject::connect(manager.get(), &nmofono::Manager::mobileDataEnabledChanged, s.get(), &SwitchItem::setState);
     QObject::connect(s.get(), &SwitchItem::stateUpdated, manager.get(), &nmofono::Manager::setMobileDataEnabled);

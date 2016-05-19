@@ -198,12 +198,12 @@ void SimsListModel::updateSimDBusPaths(QList<QDBusObjectPath> values)
     d->updateSimDBusPaths(values);
 }
 
-Sim *SimsListModel::getSimByPath(const QDBusObjectPath &path) const
+Sim::SPtr SimsListModel::getSimByPath(const QDBusObjectPath &path) const
 {
     for (auto sim : d->m_sims)
     {
         if (sim->path() == path) {
-            return sim.get();
+            return sim;
         }
     }
     return nullptr;

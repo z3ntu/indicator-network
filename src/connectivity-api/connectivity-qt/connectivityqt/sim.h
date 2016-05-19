@@ -28,7 +28,7 @@
 namespace connectivityqt
 {
 
-class Q_DECL_EXPORT Sim : public QObject
+class Q_DECL_EXPORT Sim : public QObject, public std::enable_shared_from_this<Sim>
 {
     Q_OBJECT
 

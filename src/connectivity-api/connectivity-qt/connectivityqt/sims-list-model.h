@@ -24,6 +24,8 @@
 #include <QDBusObjectPath>
 #include <connectivityqt/sim.h>
 
+#include <unity/util/DefinesPtrs.h>
+
 #include <memory>
 
 namespace connectivityqt
@@ -36,6 +38,8 @@ class Q_DECL_EXPORT SimsListModel : public QAbstractListModel
     Q_ENUMS(Roles)
 
 public:
+
+    UNITY_DEFINES_PTRS(SimsListModel);
 
     enum Roles
     {
@@ -79,7 +83,7 @@ public:
 
     void updateSimDBusPaths(QList<QDBusObjectPath> values);
 
-    Sim *getSimByPath(const QDBusObjectPath &path) const;
+    Sim::SPtr getSimByPath(const QDBusObjectPath &path) const;
 
 public Q_SLOTS:
 

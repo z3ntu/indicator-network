@@ -54,21 +54,21 @@ public Q_SLOTS:
         setSim(sim);
     }
 
-    void setSim(Sim *sim)
+    void setSim(Sim::SPtr sim)
     {
         if (m_sim == sim)
         {
             return;
         }
         m_sim = sim;
-        Q_EMIT p.simChanged(m_sim);
+        Q_EMIT p.simChanged(m_sim.get());
     }
 
 public:
     Modem& p;
 
-    Sim *m_sim;
-    SimsListModel *m_sims;
+    Sim::SPtr m_sim;
+    SimsListModel::SPtr m_sims;
 
     unique_ptr<ComUbuntuConnectivity1ModemInterface> m_modemInterface;
 
@@ -77,7 +77,7 @@ public:
 
 Modem::Modem(const QDBusObjectPath& path,
              const QDBusConnection& connection,
-             SimsListModel *sims,
+             SimsListModel::SPtr sims,
              QObject* parent) :
         QObject(parent), d(new Priv(*this))
 {
@@ -98,7 +98,7 @@ Modem::Modem(const QDBusObjectPath& path,
 
     d->m_sim = d->m_sims->getSimByPath(d->m_propertyCache->get("Sim").value<QDBusObjectPath>());
 
-    connect(d->m_sims, &SimsListModel::simsUpdated, d.get(), &Priv::simsUpdated);
+    connect(d->m_sims.get(), &SimsListModel::simsUpdated, d.get(), &Priv::simsUpdated);
 }
 
 Modem::~Modem()
@@ -117,7 +117,7 @@ int Modem::index() const
 
 Sim *Modem::sim() const
 {
-    return d->m_sim;
+    return d->m_sim.get();
 }
 
 QString Modem::serial() const

@@ -38,7 +38,7 @@ public:
 
     Modem(const QDBusObjectPath& path,
           const QDBusConnection& connection,
-          SimsListModel *sims,
+          SimsListModel::SPtr sims,
           QObject* parent = 0);
 
     virtual ~Modem();

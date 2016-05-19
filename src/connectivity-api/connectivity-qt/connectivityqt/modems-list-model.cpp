@@ -107,14 +107,14 @@ public Q_SLOTS:
 
 public:
     ModemsListModel& p;
-    SimsListModel *m_sims;
+    SimsListModel::SPtr m_sims;
     QList<QDBusObjectPath> m_dbus_paths;
     QList<Modem::SPtr> m_modems;
 
     QDBusConnection m_connection;
 };
 
-ModemsListModel::ModemsListModel(const QDBusConnection& connection, SimsListModel *sims, QObject *parent) :
+ModemsListModel::ModemsListModel(const QDBusConnection& connection, SimsListModel::SPtr sims, QObject *parent) :
     QAbstractListModel(parent),
     d(new Priv(*this, connection))
 {

@@ -23,12 +23,14 @@
 #include <QDBusConnection>
 #include <QDBusObjectPath>
 
+#include "sims-list-model.h"
+
+#include <unity/util/DefinesPtrs.h>
+
 #include <memory>
 
 namespace connectivityqt
 {
-
-class SimsListModel;
 
 class Q_DECL_EXPORT ModemsListModel : public QAbstractListModel
 {
@@ -37,6 +39,7 @@ class Q_DECL_EXPORT ModemsListModel : public QAbstractListModel
     Q_ENUMS(Roles)
 
 public:
+    UNITY_DEFINES_PTRS(ModemsListModel);
 
     enum Roles
     {
@@ -45,7 +48,7 @@ public:
         RoleSim
     };
 
-    ModemsListModel(const QDBusConnection &connection, SimsListModel *sims, QObject *parent);
+    ModemsListModel(const QDBusConnection &connection, SimsListModel::SPtr sims, QObject *parent);
 
     ~ModemsListModel();
 

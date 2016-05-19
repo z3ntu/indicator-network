@@ -117,8 +117,8 @@ set_target_properties(
     ${CONNECTIVITY_QT_LIB_TARGET}
     PROPERTIES
     SOVERSION ${SO_VERSION}
-#    LINK_FLAGS "-Wl,--version-script,${SYMBOL_MAP}"
-#    LINK_DEPENDS "${SYMBOL_MAP}"
+    LINK_FLAGS "-Wl,--version-script,${SYMBOL_MAP}"
+    LINK_DEPENDS "${SYMBOL_MAP}"
 )
 
 install(

@@ -59,8 +59,8 @@ public:
 
     VpnConnectionsListModel::SPtr m_vpnConnectionsModel;
 
-    SimsListModel *m_simsModel;
-    ModemsListModel *m_modemsModel;
+    SimsListModel::SPtr m_simsModel;
+    ModemsListModel::SPtr m_modemsModel;
 
     Sim *m_simForMobileData = nullptr;
 
@@ -179,7 +179,7 @@ public Q_SLOTS:
         {
             auto path = value.value<QDBusObjectPath>();
             auto sim = m_simsModel->getSimByPath(path);
-            p.setSimForMobileData(sim);
+            p.setSimForMobileData(sim.get());
         }
         else if (name == "Modems")
         {
@@ -195,7 +195,7 @@ public Q_SLOTS:
 
             auto path = m_writePropertyCache->get("SimForMobileData").value<QDBusObjectPath>();
             auto sim = m_simsModel->getSimByPath(path);
-            p.setSimForMobileData(sim);
+            p.setSimForMobileData(sim.get());
         }
 
     }
@@ -232,8 +232,8 @@ Connectivity::Connectivity(const std::function<void(QObject*)>& objectOwner,
 {
     d->m_objectOwner = objectOwner;
 
-    d->m_simsModel = new SimsListModel(sessionConnection, this);
-    d->m_modemsModel = new ModemsListModel(sessionConnection, d->m_simsModel, this);
+    d->m_simsModel = std::make_shared<SimsListModel>(sessionConnection, this);
+    d->m_modemsModel = std::make_shared<ModemsListModel>(sessionConnection, d->m_simsModel, this);
 
     d->m_readInterface = make_shared<
             ComUbuntuConnectivity1NetworkingStatusInterface>(
@@ -273,7 +273,7 @@ Connectivity::Connectivity(const std::function<void(QObject*)>& objectOwner,
         d->m_modemsModel->updateModemDBusPaths(tmp);
 
         auto sim = d->m_simsModel->getSimByPath(d->m_writePropertyCache->get("SimForMobileData").value<QDBusObjectPath>());
-        d->m_simForMobileData = sim;
+        d->m_simForMobileData = sim.get();
     }
 
     connect(d->m_writeInterface.get(),
@@ -474,12 +474,12 @@ void Connectivity::setSimForMobileData(Sim *sim)
 
 QAbstractItemModel* Connectivity::modems() const
 {
-    return d->m_modemsModel;
+    return d->m_modemsModel.get();
 }
 
 QAbstractItemModel *Connectivity::sims() const
 {
-    return d->m_simsModel;
+    return d->m_simsModel.get();
 }
 
 

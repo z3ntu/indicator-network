@@ -30,6 +30,10 @@
 
 namespace connectivityqt
 {
+namespace internal
+{
+struct SimsListModelParameters;
+}
 
 class Q_DECL_EXPORT SimsListModel : public QAbstractListModel
 {
@@ -55,7 +59,7 @@ public:
         RoleSimObject
     };
 
-    SimsListModel(const QDBusConnection &connection, QObject *parent);
+    SimsListModel(const internal::SimsListModelParameters& parameters);
 
     ~SimsListModel();
 
@@ -80,8 +84,6 @@ public:
         roles[RoleSimObject] = "SimObject";
         return roles;
     }
-
-    void updateSimDBusPaths(QList<QDBusObjectPath> values);
 
     Sim::SPtr getSimByPath(const QDBusObjectPath &path) const;
 

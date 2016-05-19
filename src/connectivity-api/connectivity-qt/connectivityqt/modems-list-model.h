@@ -31,6 +31,10 @@
 
 namespace connectivityqt
 {
+namespace internal
+{
+struct ModemsListModelParameters;
+}
 
 class Q_DECL_EXPORT ModemsListModel : public QAbstractListModel
 {
@@ -48,7 +52,7 @@ public:
         RoleSim
     };
 
-    ModemsListModel(const QDBusConnection &connection, SimsListModel::SPtr sims, QObject *parent);
+    ModemsListModel(const internal::ModemsListModelParameters& parameters);
 
     ~ModemsListModel();
 
@@ -66,8 +70,6 @@ public:
         roles[RoleSim] = "Sim";
         return roles;
     }
-
-    void updateModemDBusPaths(QList<QDBusObjectPath> values);
 
 public Q_SLOTS:
 

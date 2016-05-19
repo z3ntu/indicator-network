@@ -20,6 +20,8 @@
 #include <connectivityqt/modems-list-model.h>
 #include <connectivityqt/modem.h>
 
+#include "internal/modems-list-model-parameters.h"
+
 #include <QDebug>
 
 using namespace std;
@@ -32,9 +34,8 @@ class ModemsListModel::Priv: public QObject
     Q_OBJECT
 
 public:
-    Priv(ModemsListModel& parent, const QDBusConnection &connection) :
-        p(parent),
-        m_connection(connection)
+    Priv(ModemsListModel& parent) :
+        p(parent)
     {
     }
 
@@ -76,7 +77,7 @@ public:
             p.beginInsertRows(QModelIndex(), m_modems.size(), m_modems.size() + toAdd.size() - 1);
             for (const auto& path: toAdd)
             {
-                auto modem = std::make_shared<Modem>(path, m_connection, m_sims, this);
+                auto modem = std::make_shared<Modem>(path, m_propertyCache->connection(), m_sims, this);
                 m_modems << modem;
                 connect(modem.get(), &Modem::simChanged, this, &Priv::simChanged);
             }
@@ -105,20 +106,41 @@ public Q_SLOTS:
         p.dataChanged(idx, idx, {ModemsListModel::Roles::RoleSim});
     }
 
+    void propertyChanged(const QString& name, const QVariant& value)
+    {
+        if (name == "Modems")
+        {
+            QList<QDBusObjectPath> tmp;
+            qvariant_cast<QDBusArgument>(value) >> tmp;
+            updateModemDBusPaths(tmp);
+        }
+    }
+
 public:
     ModemsListModel& p;
     SimsListModel::SPtr m_sims;
     QList<QDBusObjectPath> m_dbus_paths;
     QList<Modem::SPtr> m_modems;
 
-    QDBusConnection m_connection;
+    shared_ptr<ComUbuntuConnectivity1PrivateInterface> m_writeInterface;
+    internal::DBusPropertyCache::SPtr m_propertyCache;
 };
 
-ModemsListModel::ModemsListModel(const QDBusConnection& connection, SimsListModel::SPtr sims, QObject *parent) :
-    QAbstractListModel(parent),
-    d(new Priv(*this, connection))
+ModemsListModel::ModemsListModel(const internal::ModemsListModelParameters &parameters) :
+    QAbstractListModel(0),
+    d(new Priv(*this))
 {
-    d->m_sims = sims;
+    d->m_sims = parameters.sims;
+    d->m_writeInterface = parameters.writeInterface;
+    d->m_propertyCache = parameters.propertyCache;
+
+    connect(d->m_propertyCache.get(),
+            &internal::DBusPropertyCache::propertyChanged, d.get(),
+            &Priv::propertyChanged);
+
+    QList<QDBusObjectPath> tmp;
+    qvariant_cast<QDBusArgument>(d->m_propertyCache->get("Modems")) >> tmp;
+    d->updateModemDBusPaths(tmp);
 }
 
 ModemsListModel::~ModemsListModel()
@@ -159,11 +181,6 @@ QVariant ModemsListModel::data(const QModelIndex &index, int role) const
     }
 
     return QVariant();
-}
-
-void ModemsListModel::updateModemDBusPaths(QList<QDBusObjectPath> values)
-{
-    d->updateModemDBusPaths(values);
 }
 
 

@@ -19,6 +19,8 @@
 
 #include <connectivityqt/sims-list-model.h>
 
+#include "internal/sims-list-model-parameters.h"
+
 #include <QDebug>
 
 using namespace std;
@@ -31,9 +33,8 @@ class SimsListModel::Priv: public QObject
     Q_OBJECT
 
 public:
-    Priv(SimsListModel& parent, const QDBusConnection &connection) :
-        p(parent),
-        m_connection(connection)
+    Priv(SimsListModel& parent) :
+        p(parent)
     {
     }
 
@@ -75,7 +76,7 @@ public:
             p.beginInsertRows(QModelIndex(), m_sims.size(), m_sims.size() + toAdd.size() - 1);
             for (const auto& path: toAdd)
             {
-                auto sim = std::make_shared<Sim>(path, m_connection, this);
+                auto sim = std::make_shared<Sim>(path, m_propertyCache->connection(), this);
                 m_sims << sim;
                 connect(sim.get(), &Sim::lockedChanged, this, &Priv::lockedChanged);
                 connect(sim.get(), &Sim::presentChanged, this, &Priv::presentChanged);
@@ -118,18 +119,39 @@ public Q_SLOTS:
         p.dataChanged(idx, idx, {SimsListModel::Roles::RoleDataRoamingEnabled});
     }
 
+    void propertyChanged(const QString& name, const QVariant& value)
+    {
+        if (name == "Sims")
+        {
+            QList<QDBusObjectPath> tmp;
+            qvariant_cast<QDBusArgument>(value) >> tmp;
+            updateSimDBusPaths(tmp);
+        }
+    }
+
 public:
     SimsListModel& p;
     QList<QDBusObjectPath> m_dbus_paths;
     QList<Sim::SPtr> m_sims;
 
-    QDBusConnection m_connection;
+    shared_ptr<ComUbuntuConnectivity1PrivateInterface> m_writeInterface;
+    internal::DBusPropertyCache::SPtr m_propertyCache;
 };
 
-SimsListModel::SimsListModel(const QDBusConnection& connection, QObject *parent) :
-    QAbstractListModel(parent),
-    d(new Priv(*this, connection))
+SimsListModel::SimsListModel(const internal::SimsListModelParameters &parameters) :
+    QAbstractListModel(0),
+    d(new Priv(*this))
 {
+    d->m_writeInterface = parameters.writeInterface;
+    d->m_propertyCache = parameters.propertyCache;
+
+    connect(d->m_propertyCache.get(),
+            &internal::DBusPropertyCache::propertyChanged, d.get(),
+            &Priv::propertyChanged);
+
+    QList<QDBusObjectPath> tmp;
+    qvariant_cast<QDBusArgument>(d->m_propertyCache->get("Sims")) >> tmp;
+    d->updateSimDBusPaths(tmp);
 }
 
 SimsListModel::~SimsListModel()
@@ -191,11 +213,6 @@ QVariant SimsListModel::data(const QModelIndex &index, int role) const
 
 
     return QVariant();
-}
-
-void SimsListModel::updateSimDBusPaths(QList<QDBusObjectPath> values)
-{
-    d->updateSimDBusPaths(values);
 }
 
 Sim::SPtr SimsListModel::getSimByPath(const QDBusObjectPath &path) const

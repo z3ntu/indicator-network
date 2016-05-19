@@ -62,7 +62,7 @@ public:
     SimsListModel::SPtr m_simsModel;
     ModemsListModel::SPtr m_modemsModel;
 
-    Sim *m_simForMobileData = nullptr;
+    Sim::SPtr m_simForMobileData;
 
     static QVector<Limitations> toLimitations(const QVariant& value)
     {
@@ -273,7 +273,7 @@ Connectivity::Connectivity(const std::function<void(QObject*)>& objectOwner,
         d->m_modemsModel->updateModemDBusPaths(tmp);
 
         auto sim = d->m_simsModel->getSimByPath(d->m_writePropertyCache->get("SimForMobileData").value<QDBusObjectPath>());
-        d->m_simForMobileData = sim.get();
+        d->m_simForMobileData = sim;
     }
 
     connect(d->m_writeInterface.get(),
@@ -446,11 +446,17 @@ void Connectivity::setMobileDataEnabled(bool enabled)
 
 Sim *Connectivity::simForMobileData() const
 {
-    return d->m_simForMobileData;
+    return d->m_simForMobileData.get();
 }
 
-void Connectivity::setSimForMobileData(Sim *sim)
+void Connectivity::setSimForMobileData(Sim *sim_raw)
 {
+    Sim::SPtr sim;
+    if (sim_raw)
+    {
+        sim = sim_raw->shared_from_this();
+    }
+
     if (d->m_simForMobileData == sim)
     {
         return;
@@ -469,7 +475,7 @@ void Connectivity::setSimForMobileData(Sim *sim)
     {
         d->m_writeInterface->setSimForMobileData(path);
     }
-    Q_EMIT simForMobileDataUpdated(sim);
+    Q_EMIT simForMobileDataUpdated(sim.get());
 }
 
 QAbstractItemModel* Connectivity::modems() const

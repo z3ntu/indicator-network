@@ -215,10 +215,10 @@ SwitchItem::UPtr Factory::newMobileDataSwitch()
     s->setEnabled(!manager->flightMode() && manager->simForMobileData());
     auto switch_r = s.get();
     auto manager_r = manager.get();
-    QObject::connect(manager.get(), &nmofono::Manager::flightModeUpdated, switch_r, [manager_r, switch_r](bool value) {
+    QObject::connect(manager_r, &nmofono::Manager::flightModeUpdated, switch_r, [manager_r, switch_r](bool value) {
         switch_r->setEnabled(!value && manager_r->simForMobileData());
     });
-    QObject::connect(manager.get(), &nmofono::Manager::simForMobileDataChanged, switch_r, [manager_r, switch_r]() {
+    QObject::connect(manager_r, &nmofono::Manager::simForMobileDataChanged, switch_r, [manager_r, switch_r]() {
         switch_r->setEnabled(!manager_r->flightMode() && manager_r->simForMobileData());
     });
 

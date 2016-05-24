@@ -55,10 +55,9 @@ QmlConnectivityNetworkingPlugin::registerTypes(const char *uri)
     qmlRegisterUncreatableType<connectivityqt::VpnConnection>(uri, 1, 0, "VpnConnection", "Access VpnConnection via VpnConnectionsListModel object");
     qmlRegisterUncreatableType<connectivityqt::OpenvpnConnection>(uri, 1, 0, "OpenvpnConnection", "Access OpenvpnConnection via VpnConnectionsListModel object");
 
-    qmlRegisterUncreatableType<connectivityqt::Sim>(uri, 1, 1, "Sim", "");
-
-    qmlRegisterUncreatableType<connectivityqt::ModemsListModel>(uri, 1, 1, "ModemsListModel", "");
-    qmlRegisterUncreatableType<connectivityqt::ModemsListModel>(uri, 1, 1, "SimsListModel", "");
+    qmlRegisterUncreatableType<connectivityqt::Sim>(uri, 1, 0, "Sim", "");
+    qmlRegisterUncreatableType<connectivityqt::ModemsListModel>(uri, 1, 0, "ModemsListModel", "");
+    qmlRegisterUncreatableType<connectivityqt::ModemsListModel>(uri, 1, 0, "SimsListModel", "");
 }
 
 void

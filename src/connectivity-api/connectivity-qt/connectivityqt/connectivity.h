@@ -145,26 +145,22 @@ public:
     Q_PROPERTY(bool mobileDataEnabled
                READ mobileDataEnabled
                WRITE setMobileDataEnabled
-               NOTIFY mobileDataEnabledUpdated
-               REVISION 1)
+               NOTIFY mobileDataEnabledUpdated)
     bool mobileDataEnabled() const;
 
     Q_PROPERTY(Sim* simForMobileData
                READ simForMobileData
                WRITE setSimForMobileData
-               NOTIFY simForMobileDataUpdated
-               REVISION 1)
+               NOTIFY simForMobileDataUpdated)
     Sim* simForMobileData() const;
 
     Q_PROPERTY(QAbstractItemModel* modems
                READ modems
-               REVISION 1
                CONSTANT)
     QAbstractItemModel* modems() const;
 
     Q_PROPERTY(QAbstractItemModel* sims
                READ sims
-               REVISION 1
                CONSTANT)
     QAbstractItemModel* sims() const;
 

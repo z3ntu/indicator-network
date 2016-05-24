@@ -76,7 +76,7 @@ public:
             p.beginInsertRows(QModelIndex(), m_sims.size(), m_sims.size() + toAdd.size() - 1);
             for (const auto& path: toAdd)
             {
-                auto sim = std::make_shared<Sim>(path, m_propertyCache->connection(), this);
+                auto sim = std::make_shared<Sim>(path, m_propertyCache->connection(), 0);
                 m_sims << sim;
                 connect(sim.get(), &Sim::lockedChanged, this, &Priv::lockedChanged);
                 connect(sim.get(), &Sim::presentChanged, this, &Priv::presentChanged);

@@ -206,7 +206,7 @@ public Q_SLOTS:
         reply.waitForFinished();
         if (reply.isError())
         {
-            qWarning() << __PRETTY_FUNCTION__ << reply.error().message() << m_pendingSettings;
+            qWarning() << reply.error().message() << m_pendingSettings;
         }
 
         m_dirty = false;
@@ -237,7 +237,7 @@ public Q_SLOTS:
         reply.waitForFinished();
         if (reply.isError())
         {
-            qWarning() << __PRETTY_FUNCTION__ << reply.error().message();
+            qWarning() << reply.error().message();
             return;
         }
 
@@ -261,7 +261,7 @@ public Q_SLOTS:
         reply.waitForFinished();
         if (reply.isError())
         {
-            qWarning() << __PRETTY_FUNCTION__ << reply.error().message();
+            qWarning() << reply.error().message();
             return;
         }
 

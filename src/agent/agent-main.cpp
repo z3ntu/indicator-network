@@ -20,6 +20,7 @@
 #include <notify-cpp/notification-manager.h>
 #include <agent/KeyringCredentialStore.h>
 #include <agent/SecretAgent.h>
+#include <util/logging.h>
 #include <util/unix-signal-handler.h>
 #include <dbus-types.h>
 
@@ -38,6 +39,8 @@ using namespace std;
 int
 main(int argc, char **argv)
 {
+    qInstallMessageHandler(util::loggingFunction);
+
     QCoreApplication app(argc, argv);
     DBusTypes::registerMetaTypes();
     Variant::registerMetaTypes();

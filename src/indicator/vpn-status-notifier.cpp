@@ -64,7 +64,7 @@ public Q_SLOTS:
             QString id = activeVpnConnection->activeConnection().id();
             QString message = REASON_MAP.value(reason, FAILED_MESSAGE).arg(id);
 
-            qDebug() << __PRETTY_FUNCTION__ << "VPN Connection Failed" << message;
+            qDebug() << "VPN Connection Failed" << message;
             m_notificationManager->notify(_("VPN Connection Failed"), message, "network-vpn", {}, {}, 5)->show();
         }
     }

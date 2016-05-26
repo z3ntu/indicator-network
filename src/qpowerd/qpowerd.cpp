@@ -68,7 +68,7 @@ QPowerd::RequestSPtr QPowerd::requestSysState(const QString& name, SysPowerState
     reply.waitForFinished();
     if (reply.isError())
     {
-        qWarning() << __PRETTY_FUNCTION__ << reply.error().message();
+        qWarning() << reply.error().message();
     }
     else
     {

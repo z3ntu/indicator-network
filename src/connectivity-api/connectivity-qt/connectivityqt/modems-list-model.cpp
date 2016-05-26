@@ -78,6 +78,7 @@ public:
             for (const auto& path: toAdd)
             {
                 auto modem = std::make_shared<Modem>(path, m_propertyCache->connection(), m_sims, nullptr);
+                m_objectOwner(modem.get());
                 m_modems << modem;
                 connect(modem.get(), &Modem::simChanged, this, &Priv::simChanged);
             }
@@ -118,6 +119,7 @@ public Q_SLOTS:
 
 public:
     ModemsListModel& p;
+    function<void(QObject*)> m_objectOwner;
     SimsListModel::SPtr m_sims;
     QList<QDBusObjectPath> m_dbus_paths;
     QList<Modem::SPtr> m_modems;
@@ -130,6 +132,7 @@ ModemsListModel::ModemsListModel(const internal::ModemsListModelParameters &para
     QAbstractListModel(0),
     d(new Priv(*this))
 {
+    d->m_objectOwner = parameters.objectOwner;
     d->m_sims = parameters.sims;
     d->m_writeInterface = parameters.writeInterface;
     d->m_propertyCache = parameters.propertyCache;

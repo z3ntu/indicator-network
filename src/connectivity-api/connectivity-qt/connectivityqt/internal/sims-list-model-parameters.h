@@ -33,6 +33,7 @@ namespace internal
 
 struct SimsListModelParameters
 {
+    std::function<void(QObject*)> objectOwner;
     std::shared_ptr<ComUbuntuConnectivity1PrivateInterface> writeInterface;
     std::shared_ptr<internal::DBusPropertyCache> propertyCache;
 };

@@ -254,23 +254,6 @@ Connectivity::Connectivity(const std::function<void(QObject*)>& objectOwner,
             &Connectivity::Priv::interfaceInitialized);
 
 
-    d->m_simsModel = std::make_shared<SimsListModel>(
-                internal::SimsListModelParameters{
-                    d->m_writeInterface,
-                    d->m_writePropertyCache});
-    d->m_modemsModel = std::make_shared<ModemsListModel>(
-                internal::ModemsListModelParameters{
-                    d->m_writeInterface,
-                    d->m_writePropertyCache,
-                    d->m_simsModel});
-
-    connect(d->m_simsModel.get(), &SimsListModel::simsUpdated, d.get(), &Priv::simsUpdated);
-
-    if (d->m_writePropertyCache->isInitialized()) {
-        auto sim = d->m_simsModel->getSimByPath(d->m_writePropertyCache->get("SimForMobileData").value<QDBusObjectPath>());
-        d->m_simForMobileData = sim;
-    }
-
     connect(d->m_writeInterface.get(),
             &ComUbuntuConnectivity1PrivateInterface::ReportError, this,
             &Connectivity::reportError);
@@ -475,11 +458,43 @@ void Connectivity::setSimForMobileData(Sim *sim_raw)
 
 QAbstractItemModel* Connectivity::modems() const
 {
+    // Lazy initialisation
+    if (!d->m_modemsModel)
+    {
+        // We call this to ensure the SIMs model has been created.
+        sims();
+        d->m_modemsModel = std::make_shared<ModemsListModel>(
+                    internal::ModemsListModelParameters{
+                        d->m_objectOwner,
+                        d->m_writeInterface,
+                        d->m_writePropertyCache,
+                        d->m_simsModel});
+        d->m_objectOwner(d->m_modemsModel.get());
+    }
+
     return d->m_modemsModel.get();
 }
 
 QAbstractItemModel *Connectivity::sims() const
 {
+    // Lazy initialisation
+    if (!d->m_simsModel)
+    {
+        d->m_simsModel = std::make_shared<SimsListModel>(
+                    internal::SimsListModelParameters{
+                        d->m_objectOwner,
+                        d->m_writeInterface,
+                        d->m_writePropertyCache});
+        d->m_objectOwner(d->m_simsModel.get());
+
+        connect(d->m_simsModel.get(), &SimsListModel::simsUpdated, d.get(), &Priv::simsUpdated);
+
+        if (d->m_writePropertyCache->isInitialized()) {
+            auto sim = d->m_simsModel->getSimByPath(d->m_writePropertyCache->get("SimForMobileData").value<QDBusObjectPath>());
+            d->m_simForMobileData = sim;
+        }
+    }
+
     return d->m_simsModel.get();
 }
 

@@ -35,6 +35,7 @@ namespace internal
 
 struct ModemsListModelParameters
 {
+    std::function<void(QObject*)> objectOwner;
     std::shared_ptr<ComUbuntuConnectivity1PrivateInterface> writeInterface;
     std::shared_ptr<internal::DBusPropertyCache> propertyCache;
     SimsListModel::SPtr sims;

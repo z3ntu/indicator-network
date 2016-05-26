@@ -77,6 +77,7 @@ public:
             for (const auto& path: toAdd)
             {
                 auto sim = std::make_shared<Sim>(path, m_propertyCache->connection(), nullptr);
+                m_objectOwner(sim.get());
                 m_sims << sim;
                 connect(sim.get(), &Sim::lockedChanged, this, &Priv::lockedChanged);
                 connect(sim.get(), &Sim::presentChanged, this, &Priv::presentChanged);
@@ -131,6 +132,7 @@ public Q_SLOTS:
 
 public:
     SimsListModel& p;
+    function<void(QObject*)> m_objectOwner;
     QList<QDBusObjectPath> m_dbus_paths;
     QList<Sim::SPtr> m_sims;
 
@@ -142,6 +144,7 @@ SimsListModel::SimsListModel(const internal::SimsListModelParameters &parameters
     QAbstractListModel(0),
     d(new Priv(*this))
 {
+    d->m_objectOwner = parameters.objectOwner;
     d->m_writeInterface = parameters.writeInterface;
     d->m_propertyCache = parameters.propertyCache;
 

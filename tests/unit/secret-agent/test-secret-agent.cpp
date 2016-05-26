@@ -261,9 +261,9 @@ TEST_F(TestSecretAgent, GetSecretsWithNone) {
 	reply.waitForFinished();
 
 	ASSERT_TRUE(reply.isError());
-	EXPECT_EQ(QDBusError::InternalError, reply.error().type());
-	EXPECT_EQ("No password found for this connection.",
-			reply.error().message());
+	EXPECT_EQ("org.freedesktop.NetworkManager.SecretAgent.NoSecrets", reply.error().name().toStdString());
+	EXPECT_EQ("No secrets found for this connection.",
+			reply.error().message().toStdString());
 }
 
 /* Tests that if we request secrets and then cancel the request

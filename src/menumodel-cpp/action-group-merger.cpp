@@ -30,7 +30,7 @@ void ActionGroupMerger::addAction(Action::Ptr action)
         // then they will override each other in GActionGroup so let's catch that
         // early on.
         if (name_iter->second != action) {
-            qWarning() << __PRETTY_FUNCTION__ << ": Conflicting action names. \"" << action->name() << "\"";
+            qWarning() << "Conflicting action names. \"" << action->name() << "\"";
             /// @todo thow something.
             return;
         }
@@ -73,7 +73,7 @@ void ActionGroupMerger::add(ActionGroup::Ptr group)
     auto iter = m_groups.find(group);
     if (iter != m_groups.end()) {
         /// @todo throw something.
-        std::cerr << __PRETTY_FUNCTION__ << ": Trying to add action group which was already added before." << std::endl;
+        qWarning() << "Trying to add action group which was already added before.";
         return;
     }
 
@@ -91,7 +91,7 @@ void ActionGroupMerger::remove(ActionGroup::Ptr group)
     auto iter = m_groups.find(group);
     if (iter == m_groups.end()) {
         /// @todo throw something.
-        std::cerr << __PRETTY_FUNCTION__ << ": Trying to remove action group which was not added before." << std::endl;
+        qWarning() << "Trying to remove action group which was not added before.";
         return;
     }
     auto connections = m_groups[group];

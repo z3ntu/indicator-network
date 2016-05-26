@@ -288,6 +288,9 @@ public Q_SLOTS:
         auto toAdd = modemPaths;
         toAdd.subtract(currentModemPaths);
 
+        if (!toRemove.isEmpty()) {
+            qDebug() << "Removing modems" << toRemove;
+        }
         for (const auto& path : toRemove)
         {
             auto modem = m_ofonoLinks.take(path);
@@ -301,6 +304,9 @@ public Q_SLOTS:
             Q_EMIT p.modemsChanged();
         }
 
+        if (!toAdd.isEmpty()) {
+            qDebug() << "Adding modems" << toAdd;
+        }
         for (const auto& path : toAdd)
         {
             auto modemInterface = make_shared<QOfonoModem>();
@@ -467,6 +473,8 @@ ManagerImpl::wifiEnabled() const
 void
 ManagerImpl::setWifiEnabled(bool enabled)
 {
+    qDebug() << "Setting WiFi enabled =" << enabled;
+
     if (!d->m_hasWifi)
     {
         return;
@@ -504,6 +512,8 @@ ManagerImpl::hotspotEnabled() const
 void
 ManagerImpl::setHotspotEnabled(bool enabled)
 {
+    qDebug() << "Setting hotspot enabled =" << enabled;
+
     if (d->m_hotspotManager->enabled() == enabled)
     {
         return;
@@ -511,7 +521,7 @@ ManagerImpl::setHotspotEnabled(bool enabled)
 
     if (enabled && d->m_flightMode)
     {
-        qWarning() << __PRETTY_FUNCTION__ << "Cannot set hotspot enabled when flight mode is on";
+        qWarning() << "Cannot set hotspot enabled when flight mode is on";
         return;
     }
 
@@ -530,6 +540,8 @@ ManagerImpl::setHotspotEnabled(bool enabled)
 void
 ManagerImpl::setFlightMode(bool enabled)
 {
+    qDebug() << "Setting flight mode enabled =" << enabled;
+
     if (enabled == d->m_killSwitch->isFlightMode())
     {
         return;
@@ -567,9 +579,7 @@ ManagerImpl::nm_properties_changed(const QVariantMap &properties)
 void
 ManagerImpl::device_removed(const QDBusObjectPath &path)
 {
-#ifdef INDICATOR_NETWORK_TRACE_MESSAGES
-        qDebug() << "Device Removed:" << path.path();
-#endif
+    qDebug() << "Device Removed:" << path.path();
     Link::Ptr toRemove;
     for (auto dev : d->m_nmLinks)
     {
@@ -591,9 +601,7 @@ ManagerImpl::device_removed(const QDBusObjectPath &path)
 void
 ManagerImpl::device_added(const QDBusObjectPath &path)
 {
-#ifdef INDICATOR_NETWORK_TRACE_MESSAGES
     qDebug() << "Device Added:" << path.path();
-#endif
     for (const auto &dev : d->m_nmLinks)
     {
         auto wifiLink = dynamic_pointer_cast<wifi::WifiLinkImpl>(dev);
@@ -623,7 +631,7 @@ ManagerImpl::device_added(const QDBusObjectPath &path)
             }
         }
     } catch (const exception &e) {
-        qDebug() << __PRETTY_FUNCTION__ << ": failed to create Device proxy for "<< path.path() << ": ";
+        qDebug() << ": failed to create Device proxy for "<< path.path() << ": ";
         qDebug() << "\t" << e.what();
         qDebug() << "\tIgnoring.";
         return;
@@ -694,6 +702,7 @@ ManagerImpl::unlockModem(wwan::Modem::Ptr modem)
                 || d->m_unlockDialog->modem() == modem
                 || count(d->m_pendingUnlocks.begin(), d->m_pendingUnlocks.end(), modem) != 0)
         {
+            qDebug() << "Didn't unlock modem because it's already being unlocked or is queued for unlock" << modem->simIdentifier();
             return;
         }
 
@@ -702,15 +711,18 @@ ManagerImpl::unlockModem(wwan::Modem::Ptr modem)
         {
             if (modem->isReadyToUnlock())
             {
+                qDebug() << "Unlocking modem" << modem->simIdentifier();
                 d->m_unlockDialog->unlock(modem);
             }
             else
             {
+                qDebug() << "Waiting for modem to be ready" << modem->simIdentifier();
                 modem->notifyWhenReadyToUnlock();
             }
         }
         else
         {
+            qDebug() << "Queueing modem for unlock" << modem->simIdentifier();
             d->m_pendingUnlocks.push_back(modem);
         }
     } catch(const exception &e) {
@@ -718,21 +730,16 @@ ManagerImpl::unlockModem(wwan::Modem::Ptr modem)
         // crashed taking the notification server with it. There is no graceful
         // and reliable way to recover so die and get restarted.
         // See also https://bugs.launchpad.net/unity-notifications/+bug/1238990
-        qWarning() << __PRETTY_FUNCTION__ << " sim unlocking failed: " << QString::fromStdString(e.what());
+        qWarning() << " sim unlocking failed: " << QString::fromStdString(e.what());
     }
 }
 
 void
 ManagerImpl::unlockAllModems()
 {
-#ifdef INDICATOR_NETWORK_TRACE_MESSAGES
-    qDebug() << __PRETTY_FUNCTION__;
-#endif
+    qDebug() << "Unlock all modems";
     for (auto& m : d->m_ofonoLinks)
     {
-#ifdef INDICATOR_NETWORK_TRACE_MESSAGES
-        qDebug() << "Unlocking " << m->simIdentifier();
-#endif
         unlockModem(m);
     }
 }
@@ -740,9 +747,7 @@ ManagerImpl::unlockAllModems()
 void
 ManagerImpl::unlockModemByName(const QString &name)
 {
-#ifdef INDICATOR_NETWORK_TRACE_MESSAGES
-    qDebug() << __PRETTY_FUNCTION__ ;
-#endif
+    qDebug() << "Unlock modem:" << name;
     auto it = d->m_ofonoLinks.find(name);
     if (it != d->m_ofonoLinks.cend())
     {

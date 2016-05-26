@@ -80,7 +80,7 @@ void KeyringCredentialStore::save(const QString& uuid,
 			}
 			g_error_free(error);
 		}
-		qCritical() << __PRETTY_FUNCTION__ << message;
+		qCritical() << message;
 	}
 }
 
@@ -146,7 +146,7 @@ void KeyringCredentialStore::clear(const QString& uuid) {
 				message = QString::fromUtf8(error->message);
 			}
 			g_error_free(error);
-			qCritical() << __PRETTY_FUNCTION__ << message;
+			qCritical() << message;
 		}
 	}
 }

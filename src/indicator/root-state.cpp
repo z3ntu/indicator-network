@@ -288,7 +288,7 @@ RootState::Private::updateRootState()
         try {
             state["icon"] = createIcon(m_networkingIcons.first().toStdString());
         } catch (exception &e) {
-            qWarning() << __PRETTY_FUNCTION__ << e.what();
+            qWarning() << e.what();
         }
 
         for (const auto& icon: m_networkingIcons)

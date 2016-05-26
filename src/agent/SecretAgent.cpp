@@ -301,7 +301,7 @@ void SecretAgent::FinishGetSecrets(SecretRequest &request, bool error) {
 	if (error) {
 		d->m_systemConnection.send(
 				request.message().createErrorReply("org.freedesktop.NetworkManager.SecretAgent.NoSecrets",
-						"No password found for this connection."));
+						"No secrets found for this connection."));
 	} else {
 		d->m_systemConnection.send(
 				request.message().createReply(

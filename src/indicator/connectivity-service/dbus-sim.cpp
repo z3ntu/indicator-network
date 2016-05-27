@@ -35,7 +35,7 @@ DBusSim::DBusSim(Sim::Ptr sim,
     m_sim(sim),
     m_connection(connection)
 {
-    m_path.setPath(DBusTypes::simPath(m_sim->imsi()));
+    m_path.setPath(DBusTypes::simPath());
 
     new SimAdaptor(this);
 

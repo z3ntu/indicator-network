@@ -67,7 +67,7 @@ void IndicatorNetworkTestBase::SetUp()
     dbusMock.registerNetworkManager();
     dbusMock.registerNotificationDaemon();
     // By default the ofono mock starts with one modem
-    dbusMock.registerOfono();
+    dbusMock.registerOfono({{"no_modem", true}});
     dbusMock.registerURfkill();
 
     dbusMock.registerCustomMock(
@@ -142,11 +142,8 @@ void IndicatorNetworkTestBase::SetUp()
                         ""
                      ).waitForFinished();
 
-    // mock service creates ril_0 automatically
-    // Initial ConnectionManager properties are insane, fix them here
-    setConnectionManagerProperty(firstModem(), "Bearer", "none");
-    setConnectionManagerProperty(firstModem(), "Powered", false);
-    setConnectionManagerProperty(firstModem(), "Attached", false);
+
+    createModem("ril_0");
 
     // Identify the test when looking at Bustle logs
     QDBusConnection systemConnection = dbusTestRunner.systemConnection();

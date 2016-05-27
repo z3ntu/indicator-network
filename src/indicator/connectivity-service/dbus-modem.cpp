@@ -33,7 +33,7 @@ DBusModem::DBusModem(Modem::Ptr modem,
     m_modem(modem),
     m_connection(connection)
 {
-    m_path.setPath(DBusTypes::modemPath(m_modem->serial()));
+    m_path.setPath(DBusTypes::modemPath());
 
     new ModemAdaptor(this);
 

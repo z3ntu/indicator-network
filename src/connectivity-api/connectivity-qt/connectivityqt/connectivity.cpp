@@ -180,6 +180,7 @@ public Q_SLOTS:
         else if (name == "SimForMobileData")
         {
             auto path = value.value<QDBusObjectPath>();
+            p.sims();
             auto sim = m_simsModel->getSimByPath(path);
             p.setSimForMobileData(sim.get());
         }
@@ -188,6 +189,7 @@ public Q_SLOTS:
     void simsUpdated()
     {
         auto path = m_writePropertyCache->get("SimForMobileData").value<QDBusObjectPath>();
+        p.sims();
         auto sim = m_simsModel->getSimByPath(path);
         p.setSimForMobileData(sim.get());
     }

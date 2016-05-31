@@ -28,7 +28,6 @@
 struct SS {
     QString imsi;
     QString primaryPhoneNumber;
-    QList<QString> phoneNumbers;
     bool locked;
     bool present;
     QString mcc;
@@ -39,9 +38,8 @@ struct SS {
     {
         return imsi == other.imsi
                 && primaryPhoneNumber == other.primaryPhoneNumber
-                && phoneNumbers == other.phoneNumbers && locked == other.locked
-                && present == other.present && mcc == other.mcc
-                && mnc == other.mnc
+                && locked == other.locked && present == other.present
+                && mcc == other.mcc && mnc == other.mnc
                 && preferredLanguages == other.preferredLanguages;
     }
 };
@@ -52,7 +50,6 @@ inline void PrintTo (const SS& simState, std::ostream* os)
 {
     *os << "SS(" << simState.imsi.toStdString () << ", "
             << simState.primaryPhoneNumber.toStdString () << ", "
-            << simState.phoneNumbers.join (",").toStdString () << ", "
             << (simState.locked ? "y" : "n") << ", "
             << (simState.present ? "y" : "n") << ", "
             << simState.mcc.toStdString () << ", "
@@ -86,7 +83,7 @@ protected:
         auto modems = connectivity.modems();
 
         auto sortedModems = make_unique<QSortFilterProxyModel>();
-        sortedModems->setSortRole(VpnConnectionsListModel::Roles::RoleId);
+        sortedModems->setSortRole(ModemsListModel::RoleIndex);
         sortedModems->sort(0);
 
         sortedModems->setSourceModel(modems);
@@ -110,7 +107,6 @@ protected:
             auto sim = qvariant_cast<Sim*>(model.data(idx, ModemsListModel::Roles::RoleSim));
             simState.imsi = sim->imsi().left(6);
             simState.primaryPhoneNumber = sim->primaryPhoneNumber();
-            simState.phoneNumbers = sim->phoneNumbers();
             simState.locked = sim->locked();
             simState.present = sim->present();
             simState.mcc = sim->mcc();
@@ -125,7 +121,7 @@ protected:
     }
 };
 
-TEST_F(TestConnectivityApiModem, Index)
+TEST_F(TestConnectivityApiModem, SingleModemAtStartup)
 {
     // Add a physical device to use for the connection
     setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
@@ -150,7 +146,6 @@ TEST_F(TestConnectivityApiModem, Index)
         {
             "310150",
             "123456789",
-            {"123456789", "234567890"},
             false,
             true,
             "310",
@@ -173,6 +168,51 @@ TEST_F(TestConnectivityApiModem, Index)
 //        rowsInsertedSpy.clear();
 //        dataChangedSpy.clear();
 
+}
+
+TEST_F(TestConnectivityApiModem, TwoModemsAtStartup)
+{
+    createModem("ril_1");
+
+    // Add a physical device to use for the connection
+    setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
+    auto device = createWiFiDevice(NM_DEVICE_STATE_ACTIVATED);
+
+    // Start the indicator
+    ASSERT_NO_THROW(startIndicator());
+
+    // Connect the the service
+    auto connectivity(newConnectivity());
+
+    // Get the modems model
+    auto modems = getSortedModems(*connectivity);
+
+    QSignalSpy rowsAboutToBeRemovedSpy(modems.get(), SIGNAL(rowsAboutToBeRemoved(const QModelIndex &, int, int)));
+    QSignalSpy rowsRemovedSpy(modems.get(), SIGNAL(rowsRemoved(const QModelIndex &, int, int)));
+    QSignalSpy rowsAboutToBeInsertedSpy(modems.get(), SIGNAL(rowsAboutToBeInserted(const QModelIndex &, int, int)));
+    QSignalSpy rowsInsertedSpy(modems.get(), SIGNAL(rowsInserted(const QModelIndex &, int, int)));
+    QSignalSpy dataChangedSpy(modems.get(), SIGNAL(dataChanged(const QModelIndex &, const QModelIndex &, const QVector<int> &)));
+
+    EXPECT_EQ(MSL({
+        MS{1, SS{
+            "310150",
+            "123456789",
+            false,
+            true,
+            "310",
+            "150",
+            {"en"}
+        }},
+        MS{2, SS{
+            "310150",
+            "123456789",
+            false,
+            true,
+            "310",
+            "150",
+            {"en"}
+        }}
+    }), modemList(*modems));
 }
 
 TEST_F(TestConnectivityApiModem, Sim)

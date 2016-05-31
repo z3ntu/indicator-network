@@ -49,7 +49,6 @@ public:
     {
         RoleImsi = Qt::UserRole + 1,
         RolePrimaryPhoneNumber,
-        RolePhoneNumbers,
         RoleLocked,
         RolePresent,
         RoleMcc,
@@ -74,7 +73,6 @@ public:
         QHash<int, QByteArray> roles;
         roles[RoleImsi] = "Imsi";
         roles[RolePrimaryPhoneNumber] = "PrimaryPhoneNumber";
-        roles[RolePhoneNumbers] = "PhoneNumbers";
         roles[RoleLocked] = "Locked";
         roles[RolePresent] = "Present";
         roles[RoleMcc] = "Mcc";

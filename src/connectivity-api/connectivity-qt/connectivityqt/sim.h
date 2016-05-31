@@ -48,9 +48,6 @@ public:
     Q_PROPERTY(QString PrimaryPhoneNumber READ primaryPhoneNumber CONSTANT)
     QString primaryPhoneNumber() const;
 
-    Q_PROPERTY(QList<QString> PhoneNumbers READ phoneNumbers CONSTANT)
-    QList<QString> phoneNumbers() const;
-
     Q_PROPERTY(bool Locked READ locked NOTIFY lockedChanged)
     bool locked() const;
 

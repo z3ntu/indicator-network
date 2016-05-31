@@ -189,9 +189,6 @@ QVariant SimsListModel::data(const QModelIndex &index, int role) const
         case Roles::RolePrimaryPhoneNumber:
             return sim->primaryPhoneNumber();
             break;
-        case Roles::RolePhoneNumbers:
-            return QVariant::fromValue<QStringList>(sim->phoneNumbers());
-            break;
         case RoleLocked:
             return sim->locked();
             break;

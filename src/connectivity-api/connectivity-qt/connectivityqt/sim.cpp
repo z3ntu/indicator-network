@@ -102,11 +102,6 @@ QString Sim::primaryPhoneNumber() const
     return d->m_propertyCache->get("PrimaryPhoneNumber").toString();
 }
 
-QList<QString> Sim::phoneNumbers() const
-{
-    return d->m_propertyCache->get("PhoneNumbers").toStringList();
-}
-
 bool Sim::locked() const
 {
     return d->m_propertyCache->get("Locked").toBool();

@@ -47,7 +47,7 @@ TEST_F(TestIndicator, BasicMenuContents)
             .item(flightModeSwitch())            
             .item(mh::MenuItemMatcher()
                 .section()
-                .item(mobileDataSwitch())
+                .item(mobileDataSwitch(true))
                 .item(modemInfo("", "fake.tel", "gsm-3g-full"))
                 .item(cellularSettings())
             )
@@ -3104,16 +3104,81 @@ TEST_F(TestIndicator, UnlockSIM2_IncorrectPin)
 TEST_F(TestIndicator, CellularData_1)
 {
     /*
-     * - test the visibility of the switch on different modem states
+     * - test the availability of the switch on different modem states
      */
 }
 
 TEST_F(TestIndicator, CellularData_2)
 {
-    /*
-     * - test the effect of the mobile data switch to the connectivity-api
-     *   status
-     */
+    auto con = newConnectivity();
+
+    ASSERT_NO_THROW(startIndicator());
+
+    // Check that Connectivity::mobileDataEnabled follows the indicator switch
+
+    con->setMobileDataEnabled(true);
+    QSignalSpy spy(con.get(), SIGNAL(mobileDataEnabledUpdated(bool)));
+
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .submenu()
+              .item(flightModeSwitch())
+              .item(mh::MenuItemMatcher()
+                  .mode(mh::MenuItemMatcher::Mode::starts_with)
+                  .section()
+                  .item(mobileDataSwitch(true)
+                    .activate()
+                  )
+            )
+        ).match());
+
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .submenu()
+              .item(flightModeSwitch())
+              .item(mh::MenuItemMatcher()
+                  .mode(mh::MenuItemMatcher::Mode::starts_with)
+                  .section()
+                  .item(mobileDataSwitch(false)
+                    .activate()
+                  )
+            )
+        ).match());
+
+    WAIT_FOR_SIGNALS(spy, 2);
+    EXPECT_EQ(spy[0], QVariantList() << QVariant(false));
+    EXPECT_EQ(spy[1], QVariantList() << QVariant(true));
+
+
+    // Check that indicator switch follows the Connectivity::mobileDataEnabled
+
+    con->setMobileDataEnabled(true);
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .submenu()
+              .item(flightModeSwitch())
+              .item(mh::MenuItemMatcher()
+                  .mode(mh::MenuItemMatcher::Mode::starts_with)
+                  .section()
+                  .item(mobileDataSwitch(true))
+            )
+        ).match());
+
+    con->setMobileDataEnabled(false);
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .submenu()
+              .item(flightModeSwitch())
+              .item(mh::MenuItemMatcher()
+                  .mode(mh::MenuItemMatcher::Mode::starts_with)
+                  .section()
+                  .item(mobileDataSwitch(false))
+            )
+        ).match());
 }
 
 } // namespace

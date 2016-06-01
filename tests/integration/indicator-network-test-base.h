@@ -77,9 +77,18 @@ inline void PrintTo(const QList<QDBusObjectPath>& list, std::ostream* os) {
 {\
     while (signalSpy.size() < signalsExpected)\
     {\
-        ASSERT_TRUE(signalSpy.wait());\
+        ASSERT_TRUE(signalSpy.wait()) << "Waiting for " << signalsExpected << " signals, got " << signalSpy.size();\
     }\
-    ASSERT_EQ(signalsExpected, signalSpy.size());\
+    ASSERT_EQ(signalsExpected, signalSpy.size()) << "Waiting for " << signalsExpected << " signals, got " << signalSpy.size();\
+}
+
+#define WAIT_FOR_ROW_COUNT(signalSpy, model, expectedRowCount)\
+{\
+    while (model->rowCount() < expectedRowCount)\
+    {\
+        ASSERT_TRUE(signalSpy.wait()) << "Waiting for model to have " << expectedRowCount << " rows, got " << model->rowCount();\
+    }\
+    ASSERT_EQ(expectedRowCount, model->rowCount()) << "Waiting for model to have " << expectedRowCount << " rows, got " << model->rowCount();\
 }
 
 #define CHECK_METHOD_CALL(signalSpy, signalIndex, methodName, ...)\

@@ -70,7 +70,7 @@ public:
     QString m_mcc;
     QString m_mnc;
     QStringList m_preferredLanguages;
-    bool m_dataRoamingEnabled;
+    bool m_dataRoamingEnabled = false;
     bool m_mobileDataEnabled = false;
 
     bool m_locked = false;

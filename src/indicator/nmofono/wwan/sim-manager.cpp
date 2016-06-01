@@ -55,24 +55,9 @@ public:
 
     ConnectivityServiceSettings::Ptr m_settings;
 
-    Private(SimManager& parent, ConnectivityServiceSettings::Ptr settings)
-        : p(parent),
-          m_settings(settings)
+    Private(SimManager& parent)
+        : p(parent)
     {
-        QStringList imsis = m_settings->knownSims();
-        for(auto imsi : imsis) {
-            auto sim = m_settings->createSimFromSettings(imsi);
-            connect(sim.get(), &Sim::dataRoamingEnabledChanged, this, &Private::simDataRoamingEnabledChanged);
-            if (!sim)
-            {
-                continue;
-            }
-            m_knownSims[sim->imsi()] = sim;
-        }
-
-        m_ofono = make_shared<QOfonoManager>();
-        connect(m_ofono.get(), &QOfonoManager::modemsChanged, this, &Private::modemsChanged);
-        modemsChanged(m_ofono->modems());
     }
 
 public Q_SLOTS:
@@ -228,22 +213,37 @@ public Q_SLOTS:
             Q_ASSERT(0);
             return;
         }
-        auto sim = m_knownSims[sim_raw->imsi()];
-        if (!sim)
+        if (!m_knownSims.contains(sim_raw->imsi()))
         {
             Q_ASSERT(0);
             return;
         }
-        m_settings->saveSimToSettings(sim);
+        m_settings->saveSimToSettings(m_knownSims[sim_raw->imsi()]);
     }
 
 };
 
 
 
-SimManager::SimManager(ConnectivityServiceSettings::Ptr settings)
-    : d{new Private(*this, settings)}
+SimManager::SimManager(shared_ptr<QOfonoManager> ofono, ConnectivityServiceSettings::Ptr settings)
+    : d{new Private(*this)}
 {
+    d->m_ofono = ofono;
+    d->m_settings = settings;
+
+    QStringList imsis = d->m_settings->knownSims();
+    for(auto imsi : imsis) {
+        auto sim = d->m_settings->createSimFromSettings(imsi);
+        connect(sim.get(), &Sim::dataRoamingEnabledChanged, d.get(), &Private::simDataRoamingEnabledChanged);
+        if (!sim)
+        {
+            continue;
+        }
+        d->m_knownSims[sim->imsi()] = sim;
+    }
+
+    connect(d->m_ofono.get(), &QOfonoManager::modemsChanged, d.get(), &Private::modemsChanged);
+    d->modemsChanged(d->m_ofono->modems());
 }
 
 SimManager::~SimManager()

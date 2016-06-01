@@ -27,6 +27,8 @@
 #include "sim.h"
 #include <nmofono/connectivity-service-settings.h>
 
+class QOfonoManager;
+
 namespace nmofono
 {
 namespace wwan
@@ -44,7 +46,7 @@ public:
     typedef std::shared_ptr<SimManager> Ptr;
     typedef std::weak_ptr<SimManager> WeakPtr;
 
-    SimManager(ConnectivityServiceSettings::Ptr settings);
+    SimManager(std::shared_ptr<QOfonoManager> ofono, ConnectivityServiceSettings::Ptr settings);
     ~SimManager();
 
     QList<Sim::Ptr> knownSims() const;

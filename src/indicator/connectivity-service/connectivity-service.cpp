@@ -244,9 +244,15 @@ public Q_SLOTS:
             updateModemSimPath(dbusmodem, m->sim());
             connect(m.get(), &wwan::Modem::simUpdated, this, &Private::modemSimUpdated);
         }
-        notifyPrivateProperties({
-            "Modems"
-        });
+
+
+        if (!toRemove.isEmpty() || !toAdd.isEmpty())
+        {
+            notifyPrivateProperties({
+                "Modems"
+            });
+            flushProperties();
+        }
     }
 
     void modemSimUpdated()
@@ -259,11 +265,20 @@ public Q_SLOTS:
     {
         if (!sim)
         {
-            modem->setSim(QDBusObjectPath("/"));
+            modem->setSim (QDBusObjectPath ("/"));
         }
         else
         {
-            modem->setSim(m_sims[sim->imsi()]->path());
+            if (m_sims.contains (sim->imsi ()))
+            {
+                auto dbusSim = m_sims[sim->imsi ()];
+                modem->setSim (dbusSim->path ());
+            }
+            else
+            {
+                qWarning () << "Could not find SIM with IMSI:"
+                        << sim->imsi ();
+            }
         }
     }
 
@@ -634,8 +649,15 @@ QDBusObjectPath PrivateService::simForMobileData() const
         return QDBusObjectPath("/");
     }
 
-    Q_ASSERT(p.d->m_sims.contains(sim->imsi()));
-    return p.d->m_sims[sim->imsi()]->path();
+    if (p.d->m_sims.contains(sim->imsi()))
+    {
+        return p.d->m_sims[sim->imsi()]->path();
+    }
+    else
+    {
+        qWarning() << "Could not find SIM for IMSI:" << sim->imsi();
+        return QDBusObjectPath("/");
+    }
 }
 
 void PrivateService::setSimForMobileData(const QDBusObjectPath &path)

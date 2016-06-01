@@ -226,4 +226,6 @@ protected:
     QtDBusMock::DBusMock dbusMock;
 
     QtDBusTest::DBusServicePtr indicator;
+
+    QTemporaryDir temporaryDir;
 };

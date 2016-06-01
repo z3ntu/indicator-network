@@ -42,13 +42,15 @@ IndicatorNetworkTestBase::~IndicatorNetworkTestBase()
 
 void IndicatorNetworkTestBase::SetUp()
 {
+    qputenv("INDICATOR_NETWORK_SETTINGS_PATH", temporaryDir.path().toUtf8().constData());
+
     if (qEnvironmentVariableIsSet("TEST_WITH_BUSTLE"))
     {
-        const TestInfo* const test_info =
-                UnitTest::GetInstance()->current_test_info();
-
         QDir::temp().mkpath("indicator-network-tests");
         QDir testDir(QDir::temp().filePath("indicator-network-tests"));
+
+        const TestInfo* const test_info =
+                UnitTest::GetInstance()->current_test_info();
 
         dbusTestRunner.registerService(
                 DBusServicePtr(

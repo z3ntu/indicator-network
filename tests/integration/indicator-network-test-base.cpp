@@ -145,7 +145,7 @@ void IndicatorNetworkTestBase::SetUp()
                      ).waitForFinished();
 
 
-    createModem("ril_0");
+    modem = createModem("ril_0");
 
     // Identify the test when looking at Bustle logs
     QDBusConnection systemConnection = dbusTestRunner.systemConnection();

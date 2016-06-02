@@ -55,7 +55,7 @@ public:
         RoleMnc,
         RolePreferredLanguages,
         RoleDataRoamingEnabled,
-        RoleSimObject
+        RoleSim
     };
 
     SimsListModel(const internal::SimsListModelParameters& parameters);
@@ -79,16 +79,13 @@ public:
         roles[RoleMnc] = "Mnc";
         roles[RolePreferredLanguages] = "PreferredLanguages";
         roles[RoleDataRoamingEnabled] = "DataRoamingEnabled";
-        roles[RoleSimObject] = "SimObject";
+        roles[RoleSim] = "Sim";
         return roles;
     }
 
     Sim::SPtr getSimByPath(const QDBusObjectPath &path) const;
 
-public Q_SLOTS:
-
 Q_SIGNALS:
-
     void simsUpdated();
 
 protected:

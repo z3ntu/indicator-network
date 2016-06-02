@@ -22,8 +22,6 @@
 #include <QTestEventLoop>
 #include <QSignalSpy>
 
-#include <connectivityqt/modems-list-model.h>
-
 using namespace std;
 using namespace testing;
 namespace mh = unity::gmenuharness;
@@ -3105,7 +3103,7 @@ TEST_F(TestIndicator, UnlockSIM2_IncorrectPin)
 
 TEST_F(TestIndicator, CellularData_1)
 {
-    auto con = newConnectivity();
+    auto con = std::shared_ptr<connectivityqt::Connectivity>(std::move(newConnectivity()));
 
     ASSERT_NO_THROW(startIndicator());
 
@@ -3114,7 +3112,7 @@ TEST_F(TestIndicator, CellularData_1)
 
     con->setMobileDataEnabled(true);
     con->setFlightMode(false);
-    con->setSimForMobileData(GET_MODEM_SIM(con, 0));
+    con->setSimForMobileData(getModemSim(con, 0));
 
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()

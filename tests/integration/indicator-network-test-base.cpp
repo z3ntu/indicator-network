@@ -644,3 +644,4 @@ mh::MenuItemMatcher IndicatorNetworkTestBase::vpnConnection(const string& name, 
         .themed_icon("icon", {"network-vpn"})
         .toggled(connected == ConnectionStatus::connected);
 }
+

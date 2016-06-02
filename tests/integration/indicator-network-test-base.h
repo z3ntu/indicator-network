@@ -19,6 +19,8 @@
 #pragma once
 
 #include <connectivityqt/connectivity.h>
+#include <connectivityqt/modems-list-model.h>
+
 
 #include <dbus-types.h>
 
@@ -106,8 +108,6 @@ inline void PrintTo(const QList<QDBusObjectPath>& list, std::ostream* os) {
         }\
     }\
 }
-
-#define GET_MODEM_SIM(con, idx) con->modems()->data(con->modems()->index(idx,0), connectivityqt::ModemsListModel::RoleSim).value<connectivityqt::Sim*>()
 
 class IndicatorNetworkTestBase: public testing::Test
 {
@@ -231,6 +231,13 @@ protected:
     static unity::gmenuharness::MenuItemMatcher vpnSettings();
 
     static unity::gmenuharness::MenuItemMatcher vpnConnection(const std::string& name, ConnectionStatus connected = ConnectionStatus::disconnected);
+
+    static connectivityqt::Sim* getModemSim(connectivityqt::Connectivity::SPtr con, int idx)
+    {
+        return con->modems()->data(con->modems()->index(idx,0),
+                                   connectivityqt::ModemsListModel::RoleSim)
+                .value<connectivityqt::Sim*>();
+    }
 
     QtDBusTest::DBusTestRunner dbusTestRunner;
 

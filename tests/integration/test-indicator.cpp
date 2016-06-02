@@ -22,6 +22,8 @@
 #include <QTestEventLoop>
 #include <QSignalSpy>
 
+#include <connectivityqt/modems-list-model.h>
+
 using namespace std;
 using namespace testing;
 namespace mh = unity::gmenuharness;
@@ -3103,9 +3105,63 @@ TEST_F(TestIndicator, UnlockSIM2_IncorrectPin)
 
 TEST_F(TestIndicator, CellularData_1)
 {
-    /*
-     * - test the availability of the switch on different modem states
-     */
+    auto con = newConnectivity();
+
+    ASSERT_NO_THROW(startIndicator());
+
+    // Check that the indicator switch is enabled when we are not in flightmode
+    // and there is a SIM for mobile data set.
+
+    con->setMobileDataEnabled(true);
+    con->setFlightMode(false);
+    con->setSimForMobileData(GET_MODEM_SIM(con, 0));
+
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .submenu()
+              .item(flightModeSwitch())
+              .item(mh::MenuItemMatcher()
+                  .mode(mh::MenuItemMatcher::Mode::starts_with)
+                  .section()
+                  .item(mobileDataSwitch(true)
+                    .enabled(true)
+                  )
+            )
+        ).match());
+
+    // Check that the indicator switch is disabled when we are in flightmode
+    con->setFlightMode(true);
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .submenu()
+              .item(flightModeSwitch())
+              .item(mh::MenuItemMatcher()
+                  .mode(mh::MenuItemMatcher::Mode::starts_with)
+                  .section()
+                  .item(mobileDataSwitch(true)
+                    .enabled(false)
+                  )
+            )
+        ).match());
+
+    // Check that the indicator switch is disabled when there is no SIM for mobile data set.
+    con->setFlightMode(false);
+    con->setSimForMobileData(nullptr);
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .submenu()
+              .item(flightModeSwitch())
+              .item(mh::MenuItemMatcher()
+                  .mode(mh::MenuItemMatcher::Mode::starts_with)
+                  .section()
+                  .item(mobileDataSwitch(true)
+                    .enabled(false)
+                  )
+            )
+        ).match());
 }
 
 TEST_F(TestIndicator, CellularData_2)

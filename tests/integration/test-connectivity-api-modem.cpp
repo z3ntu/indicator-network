@@ -25,6 +25,20 @@
 #include <QDebug>
 #include <QTestEventLoop>
 
+#define DEFINE_MODEL_LISTENERS \
+    QSignalSpy rowsAboutToBeRemovedSpy(modems.get(), SIGNAL(rowsAboutToBeRemoved(const QModelIndex &, int, int)));\
+    QSignalSpy rowsRemovedSpy(modems.get(), SIGNAL(rowsRemoved(const QModelIndex &, int, int)));\
+    QSignalSpy rowsAboutToBeInsertedSpy(modems.get(), SIGNAL(rowsAboutToBeInserted(const QModelIndex &, int, int)));\
+    QSignalSpy rowsInsertedSpy(modems.get(), SIGNAL(rowsInserted(const QModelIndex &, int, int)));\
+    QSignalSpy dataChangedSpy(modems.get(), SIGNAL(dataChanged(const QModelIndex &, const QModelIndex &, const QVector<int> &)));\
+
+#define CLEAR_MODEL_LISTENERS \
+    rowsAboutToBeRemovedSpy.clear();\
+    rowsRemovedSpy.clear();\
+    rowsAboutToBeInsertedSpy.clear();\
+    rowsInsertedSpy.clear();\
+    dataChangedSpy.clear();
+
 struct SS {
     QString imsi;
     QString primaryPhoneNumber;
@@ -48,13 +62,14 @@ typedef QList<MS> MSL;
 
 inline void PrintTo (const SS& simState, std::ostream* os)
 {
-    *os << "SS(" << simState.imsi.toStdString () << ", "
-            << simState.primaryPhoneNumber.toStdString () << ", "
-            << (simState.locked ? "y" : "n") << ", "
-            << (simState.present ? "y" : "n") << ", "
-            << simState.mcc.toStdString () << ", "
-            << simState.mnc.toStdString () << ", "
-            << simState.preferredLanguages.join (",").toStdString () << ")";
+    *os << "SS("
+            << "IMSI: " << simState.imsi.toStdString () << ", "
+            << "Phone #: " << simState.primaryPhoneNumber.toStdString () << ", "
+            << "Locked: " << (simState.locked ? "y" : "n") << ", "
+            << "Present: " << (simState.present ? "y" : "n") << ", "
+            << "MCC: " << simState.mcc.toStdString () << ", "
+            << "MNC" << simState.mnc.toStdString () << ", "
+            << "Langs: " << simState.preferredLanguages.join (",").toStdString () << ")";
 }
 
 inline void PrintTo(const MS& modemState, std::ostream* os) {
@@ -105,15 +120,23 @@ protected:
 
             SS simState;
             auto sim = qvariant_cast<Sim*>(model.data(idx, ModemsListModel::Roles::RoleSim));
-            simState.imsi = sim->imsi().left(6);
-            simState.primaryPhoneNumber = sim->primaryPhoneNumber();
-            simState.locked = sim->locked();
-            simState.present = sim->present();
-            simState.mcc = sim->mcc();
-            simState.mnc = sim->mnc();
-            simState.preferredLanguages = sim->preferredLanguages();
+            if (sim)
+            {
+                simState.imsi = sim->imsi ().left (6);
+                simState.primaryPhoneNumber = sim->primaryPhoneNumber ();
+                simState.locked = sim->locked ();
+                simState.present = sim->present ();
+                simState.mcc = sim->mcc ();
+                simState.mnc = sim->mnc ();
+                simState.preferredLanguages = sim->preferredLanguages ();
 
-            modemState.second = simState;
+                modemState.second = simState;
+            }
+            else
+            {
+                EXPECT_TRUE(sim) << "Could not get a SIM at index " << i
+                        << " from ModemModel";
+            }
 
             modemStates << modemState;
         }
@@ -136,14 +159,15 @@ TEST_F(TestConnectivityApiModem, SingleModemAtStartup)
     // Get the modems model
     auto modems = getSortedModems(*connectivity);
 
-    QSignalSpy rowsAboutToBeRemovedSpy(modems.get(), SIGNAL(rowsAboutToBeRemoved(const QModelIndex &, int, int)));
-    QSignalSpy rowsRemovedSpy(modems.get(), SIGNAL(rowsRemoved(const QModelIndex &, int, int)));
-    QSignalSpy rowsAboutToBeInsertedSpy(modems.get(), SIGNAL(rowsAboutToBeInserted(const QModelIndex &, int, int)));
-    QSignalSpy rowsInsertedSpy(modems.get(), SIGNAL(rowsInserted(const QModelIndex &, int, int)));
-    QSignalSpy dataChangedSpy(modems.get(), SIGNAL(dataChanged(const QModelIndex &, const QModelIndex &, const QVector<int> &)));
+    DEFINE_MODEL_LISTENERS
 
-    EXPECT_EQ(MSL({MS{1, SS
-        {
+    WAIT_FOR_ROW_COUNT(rowsInsertedSpy, modems, 1)
+    EXPECT_TRUE(rowsAboutToBeRemovedSpy.isEmpty ());
+    EXPECT_TRUE(rowsRemovedSpy.isEmpty ());
+    EXPECT_TRUE(dataChangedSpy.isEmpty ());
+
+    EXPECT_EQ(MSL({
+        MS{1, SS{
             "310150",
             "123456789",
             false,
@@ -151,23 +175,8 @@ TEST_F(TestConnectivityApiModem, SingleModemAtStartup)
             "310",
             "150",
             {"en"}
-        }
-    }}), modemList(*modems));
-
-//    WAIT_FOR_SIGNALS(rowsAboutToBeInsertedSpy, 1);
-//    WAIT_FOR_SIGNALS(rowsInsertedSpy, 1);
-//    EXPECT_TRUE(rowsAboutToBeRemovedSpy.isEmpty());
-//    EXPECT_TRUE(rowsRemovedSpy.isEmpty());
-//    EXPECT_TRUE(dataChangedSpy.isEmpty());
-//
-//    EXPECT_EQ(MSL({1}), modemList(*modems));
-
-//    rowsAboutToBeRemovedSpy.clear();
-//        rowsRemovedSpy.clear();
-//        rowsAboutToBeInsertedSpy.clear();
-//        rowsInsertedSpy.clear();
-//        dataChangedSpy.clear();
-
+        }}
+    }), modemList(*modems));
 }
 
 TEST_F(TestConnectivityApiModem, TwoModemsAtStartup)
@@ -187,11 +196,11 @@ TEST_F(TestConnectivityApiModem, TwoModemsAtStartup)
     // Get the modems model
     auto modems = getSortedModems(*connectivity);
 
-    QSignalSpy rowsAboutToBeRemovedSpy(modems.get(), SIGNAL(rowsAboutToBeRemoved(const QModelIndex &, int, int)));
-    QSignalSpy rowsRemovedSpy(modems.get(), SIGNAL(rowsRemoved(const QModelIndex &, int, int)));
-    QSignalSpy rowsAboutToBeInsertedSpy(modems.get(), SIGNAL(rowsAboutToBeInserted(const QModelIndex &, int, int)));
-    QSignalSpy rowsInsertedSpy(modems.get(), SIGNAL(rowsInserted(const QModelIndex &, int, int)));
-    QSignalSpy dataChangedSpy(modems.get(), SIGNAL(dataChanged(const QModelIndex &, const QModelIndex &, const QVector<int> &)));
+    DEFINE_MODEL_LISTENERS
+
+    WAIT_FOR_ROW_COUNT(rowsInsertedSpy, modems, 2)
+    EXPECT_TRUE(rowsAboutToBeRemovedSpy.isEmpty ());
+    EXPECT_TRUE(rowsRemovedSpy.isEmpty ());
 
     EXPECT_EQ(MSL({
         MS{1, SS{
@@ -215,9 +224,71 @@ TEST_F(TestConnectivityApiModem, TwoModemsAtStartup)
     }), modemList(*modems));
 }
 
-TEST_F(TestConnectivityApiModem, Sim)
+TEST_F(TestConnectivityApiModem, AddAModem)
 {
+    // Add a physical device to use for the connection
+    setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
+    auto device = createWiFiDevice(NM_DEVICE_STATE_ACTIVATED);
 
+    // Start the indicator
+    ASSERT_NO_THROW(startIndicator());
+
+    // Connect the the service
+    auto connectivity(newConnectivity());
+
+    // Get the modems model
+    auto modems = getSortedModems(*connectivity);
+
+    DEFINE_MODEL_LISTENERS
+
+    WAIT_FOR_ROW_COUNT(rowsInsertedSpy, modems, 1)
+    EXPECT_TRUE(rowsAboutToBeRemovedSpy.isEmpty ());
+    EXPECT_TRUE(rowsRemovedSpy.isEmpty ());
+    EXPECT_TRUE(dataChangedSpy.isEmpty ());
+
+    EXPECT_EQ(MSL({
+        MS{1, SS{
+            "310150",
+            "123456789",
+            false,
+            true,
+            "310",
+            "150",
+            {"en"}
+        }}
+    }), modemList(*modems));
+
+    CLEAR_MODEL_LISTENERS
+
+    createModem("ril_1");
+
+    WAIT_FOR_ROW_COUNT(rowsInsertedSpy, modems, 2)
+    EXPECT_TRUE(rowsAboutToBeRemovedSpy.isEmpty ());
+    EXPECT_TRUE(rowsRemovedSpy.isEmpty ());
+    EXPECT_TRUE(dataChangedSpy.isEmpty ());
+
+    EXPECT_EQ(MSL({
+        MS{1, SS{
+            "310150",
+            "123456789",
+            false,
+            true,
+            "310",
+            "150",
+            {"en"}
+        }},
+        MS{2, SS{
+            "310150",
+            "123456789",
+            false,
+            true,
+            "310",
+            "150",
+            {"en"}
+        }}
+    }), modemList(*modems));
+
+    CLEAR_MODEL_LISTENERS
 }
 
 }

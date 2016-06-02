@@ -98,6 +98,8 @@ inline void PrintTo(const QList<QDBusObjectPath>& list, std::ostream* os) {
     }\
 }
 
+#define GET_MODEM_SIM(con, idx) con->modems()->data(con->modems()->index(idx,0), connectivityqt::ModemsListModel::RoleSim).value<connectivityqt::Sim*>()
+
 class IndicatorNetworkTestBase: public testing::Test
 {
 public:

@@ -245,5 +245,7 @@ protected:
 
     QtDBusTest::DBusServicePtr indicator;
 
+    QString modem;
+
     QTemporaryDir temporaryDir;
 };

@@ -206,7 +206,7 @@ QVariant SimsListModel::data(const QModelIndex &index, int role) const
         case Roles::RoleDataRoamingEnabled:
             return sim->dataRoamingEnabled();
             break;
-        case Roles::RoleSimObject:
+        case Roles::RoleSim:
             return QVariant::fromValue<Sim*>(sim.get());
             break;
     }

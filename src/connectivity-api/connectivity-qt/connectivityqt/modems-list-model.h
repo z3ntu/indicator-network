@@ -49,6 +49,7 @@ public:
     {
         RoleIndex = Qt::UserRole + 1,
         RoleSerial,
+        RoleModem,
         RoleSim
     };
 
@@ -67,6 +68,7 @@ public:
         QHash<int, QByteArray> roles;
         roles[RoleIndex] = "Index";
         roles[RoleSerial] = "Serial";
+        roles[RoleModem] = "Modem";
         roles[RoleSim] = "Sim";
         return roles;
     }

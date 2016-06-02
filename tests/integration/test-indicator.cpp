@@ -3103,7 +3103,7 @@ TEST_F(TestIndicator, UnlockSIM2_IncorrectPin)
 
 TEST_F(TestIndicator, CellularData_1)
 {
-    auto con = std::shared_ptr<connectivityqt::Connectivity>(std::move(newConnectivity()));
+    auto con = newConnectivity();
 
     ASSERT_NO_THROW(startIndicator());
 
@@ -3112,7 +3112,7 @@ TEST_F(TestIndicator, CellularData_1)
 
     con->setMobileDataEnabled(true);
     con->setFlightMode(false);
-    con->setSimForMobileData(getModemSim(con, 0));
+    con->setSimForMobileData(getModemSim(con->modems(), 0));
 
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
@@ -3171,6 +3171,9 @@ TEST_F(TestIndicator, CellularData_2)
     // Check that Connectivity::mobileDataEnabled follows the indicator switch
 
     con->setMobileDataEnabled(true);
+    con->setFlightMode(false);
+    con->setSimForMobileData(getModemSim(con->modems(), 0));
+    QTest::qWait(250);
     QSignalSpy spy(con.get(), SIGNAL(mobileDataEnabledUpdated(bool)));
 
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
@@ -3187,6 +3190,10 @@ TEST_F(TestIndicator, CellularData_2)
             )
         ).match());
 
+    WAIT_FOR_SIGNALS(spy, 1);
+    EXPECT_EQ(spy[0], QVariantList() << QVariant(false));
+    spy.clear();
+
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
             .mode(mh::MenuItemMatcher::Mode::starts_with)
@@ -3201,9 +3208,8 @@ TEST_F(TestIndicator, CellularData_2)
             )
         ).match());
 
-    WAIT_FOR_SIGNALS(spy, 2);
-    EXPECT_EQ(spy[0], QVariantList() << QVariant(false));
-    EXPECT_EQ(spy[1], QVariantList() << QVariant(true));
+    WAIT_FOR_SIGNALS(spy, 1);
+    EXPECT_EQ(spy[0], QVariantList() << QVariant(true));
 
 
     // Check that indicator switch follows the Connectivity::mobileDataEnabled

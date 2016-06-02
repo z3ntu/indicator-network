@@ -232,9 +232,9 @@ protected:
 
     static unity::gmenuharness::MenuItemMatcher vpnConnection(const std::string& name, ConnectionStatus connected = ConnectionStatus::disconnected);
 
-    static connectivityqt::Sim* getModemSim(connectivityqt::Connectivity::SPtr con, int idx)
+    static connectivityqt::Sim* getModemSim(QAbstractItemModel* model, int idx)
     {
-        return con->modems()->data(con->modems()->index(idx,0),
+        return model->data(model->index(idx,0),
                                    connectivityqt::ModemsListModel::RoleSim)
                 .value<connectivityqt::Sim*>();
     }

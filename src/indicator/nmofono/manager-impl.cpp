@@ -96,12 +96,62 @@ public:
     Private(Manager& parent) :
         p(parent)
     {
-        m_settings = std::make_shared<ConnectivityServiceSettings>();
+    }
 
-        m_simManager = make_shared<wwan::SimManager>(m_settings);
-        m_sims = m_simManager->knownSims();
-        connect(m_simManager.get(), &wwan::SimManager::simAdded, this, &Private::simAdded);
+    void matchModemsAndSims()
+    {
+        for (wwan::Modem::Ptr modem: m_ofonoLinks)
+        {
+            bool match = false;
+            for(wwan::Sim::Ptr sim : m_sims)
+            {
+                if (sim->ofonoPath() == modem->ofonoPath())
+                {
+                    match = true;
+                    modem->setSim(sim);
+                    break;
+                }
+            }
+            if (!match)
+            {
+                modem->setSim(wwan::Sim::Ptr());
+            }
+        }
+    }
 
+    void simAdded(wwan::Sim::Ptr sim)
+    {
+        m_sims.append(sim);
+        Q_EMIT p.simsChanged();
+        matchModemsAndSims();
+    }
+
+    void modemReady()
+    {
+        wwan::Modem *modem_raw = qobject_cast<wwan::Modem*>(sender());
+        if (!modem_raw)
+        {
+            Q_ASSERT(0);
+            return;
+        }
+        m_modems.append(m_ofonoLinks[modem_raw->name()]);
+        matchModemsAndSims();
+        Q_EMIT p.modemsChanged();
+    }
+
+    void setUnstoppableOperationHappening(bool happening)
+    {
+        if (m_unstoppableOperationHappening == happening)
+        {
+            return;
+        }
+
+        m_unstoppableOperationHappening = happening;
+        Q_EMIT p.unstoppableOperationHappeningUpdated(m_unstoppableOperationHappening);
+    }
+
+    void loadSettings()
+    {
         QVariant ret = m_settings->mobileDataEnabled();
         if (ret.isNull())
         {
@@ -142,59 +192,6 @@ public:
             }
             m_simForMobileData = sim;
         }
-
-    }
-
-    void matchModemsAndSims()
-    {
-        for (wwan::Modem::Ptr modem: m_modems)
-        {
-            bool match = false;
-            for(wwan::Sim::Ptr sim : m_sims)
-            {
-                if (sim->ofonoPath() == modem->ofonoPath())
-                {
-                    match = true;
-                    modem->setSim(sim);
-                    break;
-                }
-            }
-            if (!match)
-            {
-                modem->setSim(wwan::Sim::Ptr());
-            }
-        }
-    }
-
-    void simAdded(wwan::Sim::Ptr sim)
-    {
-        m_sims.append(sim);
-        matchModemsAndSims();
-        Q_EMIT p.simsChanged();
-    }
-
-    void modemReady()
-    {
-        wwan::Modem *modem_raw = qobject_cast<wwan::Modem*>(sender());
-        if (!modem_raw)
-        {
-            Q_ASSERT(0);
-            return;
-        }
-        m_modems.append(m_ofonoLinks[modem_raw->name()]);
-        matchModemsAndSims();
-        Q_EMIT p.modemsChanged();
-    }
-
-    void setUnstoppableOperationHappening(bool happening)
-    {
-        if (m_unstoppableOperationHappening == happening)
-        {
-            return;
-        }
-
-        m_unstoppableOperationHappening = happening;
-        Q_EMIT p.unstoppableOperationHappeningUpdated(m_unstoppableOperationHappening);
     }
 
 public Q_SLOTS:
@@ -428,6 +425,13 @@ ManagerImpl::ManagerImpl(notify::NotificationManager::SPtr notificationManager,
     connect(d->m_unlockDialog.get(), &SimUnlockDialog::ready, d.get(), &Private::sim_unlock_ready);
 
     d->m_ofono = make_shared<QOfonoManager>();
+
+    // Load the SIM manager before we connect to the signals
+    d->m_settings = make_shared<ConnectivityServiceSettings>();
+    d->m_simManager = make_shared<wwan::SimManager>(d->m_ofono, d->m_settings);
+    connect(d->m_simManager.get(), &wwan::SimManager::simAdded, d.get(), &Private::simAdded);
+    d->m_sims = d->m_simManager->knownSims();
+
     connect(d->m_ofono.get(), &QOfonoManager::modemsChanged, d.get(), &Private::modems_changed);
     d->modems_changed(d->m_ofono->modems());
 
@@ -459,6 +463,8 @@ ManagerImpl::ManagerImpl(notify::NotificationManager::SPtr notificationManager,
 
     /// @todo set by the default connections.
     d->m_characteristics = Link::Characteristics::empty;
+
+    d->loadSettings();
 
     d->updateHasWifi();
 }

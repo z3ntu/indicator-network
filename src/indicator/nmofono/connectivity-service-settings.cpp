@@ -19,6 +19,7 @@
 
 #include <nmofono/connectivity-service-settings.h>
 
+using namespace std;
 using namespace nmofono;
 
 class ConnectivityServiceSettings::Private : public QObject
@@ -27,16 +28,11 @@ class ConnectivityServiceSettings::Private : public QObject
 public:
 
     ConnectivityServiceSettings &p;
-    QSettings *m_settings;
+    unique_ptr<QSettings> m_settings;
 
     Private(ConnectivityServiceSettings &parent)
         : p(parent)
     {
-        m_settings = new QSettings(QSettings::IniFormat,
-                                   QSettings::UserScope,
-                                   "Ubuntu",
-                                   "connectivityservice",
-                                   this);
     }
 
     virtual ~Private()
@@ -54,7 +50,18 @@ ConnectivityServiceSettings::ConnectivityServiceSettings(QObject *parent)
     : QObject(parent),
       d{new Private(*this)}
 {
-
+    if (qEnvironmentVariableIsSet("INDICATOR_NETWORK_SETTINGS_PATH"))
+    {
+        // For testing only
+        QString path = QString::fromUtf8(qgetenv("INDICATOR_NETWORK_SETTINGS_PATH")) + "/config.ini";
+        d->m_settings = make_unique<QSettings> (path, QSettings::IniFormat);
+    }
+    else
+    {
+        d->m_settings = make_unique<QSettings> (QSettings::IniFormat,
+                                                QSettings::UserScope,
+                                                "connectivity-service", "config");
+    }
 }
 
 ConnectivityServiceSettings::~ConnectivityServiceSettings()
@@ -69,7 +76,6 @@ QVariant ConnectivityServiceSettings::mobileDataEnabled()
 void ConnectivityServiceSettings::setMobileDataEnabled(bool value)
 {
     d->m_settings->setValue("MobileDataEnabled", value);
-    d->m_settings->sync();
 }
 
 QVariant ConnectivityServiceSettings::simForMobileData()
@@ -79,7 +85,6 @@ QVariant ConnectivityServiceSettings::simForMobileData()
 void ConnectivityServiceSettings::setSimForMobileData(const QString &imsi)
 {
     d->m_settings->setValue("SimForMobileData", imsi);
-    d->m_settings->sync();
 }
 
 QStringList ConnectivityServiceSettings::knownSims()
@@ -100,7 +105,6 @@ QStringList ConnectivityServiceSettings::knownSims()
 void ConnectivityServiceSettings::setKnownSims(const QStringList &list)
 {
     d->m_settings->setValue("KnownSims", QVariant(list));
-    d->m_settings->sync();
 }
 
 wwan::Sim::Ptr ConnectivityServiceSettings::createSimFromSettings(const QString &imsi)
@@ -142,7 +146,6 @@ void ConnectivityServiceSettings::saveSimToSettings(wwan::Sim::Ptr sim)
     d->m_settings->setValue("PreferredLanguages", QVariant(sim->preferredLanguages()));
     d->m_settings->setValue("DataRoamingEnabled", sim->dataRoamingEnabled());
     d->m_settings->endGroup();
-    d->m_settings->sync();
 }
 
 #include "connectivity-service-settings.moc"

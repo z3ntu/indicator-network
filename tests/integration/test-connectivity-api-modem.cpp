@@ -1,4 +1,3 @@
-
 /*
  * Copyright (C) 2016 Canonical, Ltd.
  *
@@ -14,9 +13,12 @@
  * You should have received a copy of the GNU General Public License along
  * with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Author: Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
+ * Authors:
+ *   Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
+ *   Pete Woods <pete.woods@canonical.com>
  */
 
+#include <connectivityqt/modem.h>
 #include <connectivityqt/modems-list-model.h>
 #include <indicator-network-test-base.h>
 #include <dbus-types.h>
@@ -68,7 +70,7 @@ inline void PrintTo (const SS& simState, std::ostream* os)
             << "Locked: " << (simState.locked ? "y" : "n") << ", "
             << "Present: " << (simState.present ? "y" : "n") << ", "
             << "MCC: " << simState.mcc.toStdString () << ", "
-            << "MNC" << simState.mnc.toStdString () << ", "
+            << "MNC: " << simState.mnc.toStdString () << ", "
             << "Langs: " << simState.preferredLanguages.join (",").toStdString () << ")";
 }
 
@@ -115,14 +117,13 @@ protected:
             auto idx = model.index(i, 0);
             MS modemState;
             modemState.first = model.data(idx, ModemsListModel::Roles::RoleIndex).toInt();
-            // Serial is randomly generated, so this is the best we can do
             EXPECT_FALSE(model.data(idx, ModemsListModel::Roles::RoleSerial).toString().isEmpty());
 
             SS simState;
             auto sim = qvariant_cast<Sim*>(model.data(idx, ModemsListModel::Roles::RoleSim));
             if (sim)
             {
-                simState.imsi = sim->imsi ().left (6);
+                simState.imsi = sim->imsi ();
                 simState.primaryPhoneNumber = sim->primaryPhoneNumber ();
                 simState.locked = sim->locked ();
                 simState.present = sim->present ();
@@ -168,7 +169,7 @@ TEST_F(TestConnectivityApiModem, SingleModemAtStartup)
 
     EXPECT_EQ(MSL({
         MS{1, SS{
-            "310150",
+            "310150000000000",
             "123456789",
             false,
             true,
@@ -204,7 +205,7 @@ TEST_F(TestConnectivityApiModem, TwoModemsAtStartup)
 
     EXPECT_EQ(MSL({
         MS{1, SS{
-            "310150",
+            "310150000000000",
             "123456789",
             false,
             true,
@@ -213,7 +214,7 @@ TEST_F(TestConnectivityApiModem, TwoModemsAtStartup)
             {"en"}
         }},
         MS{2, SS{
-            "310150",
+            "310150000000001",
             "123456789",
             false,
             true,
@@ -248,7 +249,7 @@ TEST_F(TestConnectivityApiModem, AddAModem)
 
     EXPECT_EQ(MSL({
         MS{1, SS{
-            "310150",
+            "310150000000000",
             "123456789",
             false,
             true,
@@ -269,7 +270,7 @@ TEST_F(TestConnectivityApiModem, AddAModem)
 
     EXPECT_EQ(MSL({
         MS{1, SS{
-            "310150",
+            "310150000000000",
             "123456789",
             false,
             true,
@@ -278,7 +279,7 @@ TEST_F(TestConnectivityApiModem, AddAModem)
             {"en"}
         }},
         MS{2, SS{
-            "310150",
+            "310150000000001",
             "123456789",
             false,
             true,
@@ -289,6 +290,34 @@ TEST_F(TestConnectivityApiModem, AddAModem)
     }), modemList(*modems));
 
     CLEAR_MODEL_LISTENERS
+}
+
+TEST_F(TestConnectivityApiModem, ModemProperties)
+{
+    // Add a physical device to use for the connection
+    setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
+    auto device = createWiFiDevice(NM_DEVICE_STATE_ACTIVATED);
+
+    // Start the indicator
+    ASSERT_NO_THROW(startIndicator());
+
+    // Connect the the service
+    auto connectivity(newConnectivity());
+
+    // Get the modems model
+    auto modems = getSortedModems(*connectivity);
+
+    DEFINE_MODEL_LISTENERS
+
+    WAIT_FOR_ROW_COUNT(rowsInsertedSpy, modems, 1)
+    EXPECT_TRUE(rowsAboutToBeRemovedSpy.isEmpty ());
+    EXPECT_TRUE(rowsRemovedSpy.isEmpty ());
+
+    auto modem = qvariant_cast<Modem*>(modems->data(modems->index(0, 0), ModemsListModel::Roles::RoleModem));
+
+    EXPECT_EQ(1, modem->index());
+    EXPECT_EQ("ed752c5f-f723-437e-bc6c-000000000000", modem->serial().toStdString());
+    EXPECT_TRUE(modem->sim());
 }
 
 }

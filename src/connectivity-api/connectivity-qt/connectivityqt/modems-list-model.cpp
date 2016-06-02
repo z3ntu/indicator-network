@@ -178,6 +178,9 @@ QVariant ModemsListModel::data(const QModelIndex &index, int role) const
         case Roles::RoleSerial:
             return modem->serial();
             break;
+        case Roles::RoleModem:
+            return QVariant::fromValue<Modem*>(modem.get());
+            break;
         case Roles::RoleSim:
             return QVariant::fromValue<Sim*>(modem->sim());
             break;

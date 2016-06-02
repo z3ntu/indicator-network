@@ -24,6 +24,7 @@
 
 using namespace std;
 using namespace testing;
+using namespace connectivityqt;
 namespace mh = unity::gmenuharness;
 
 namespace
@@ -3103,7 +3104,7 @@ TEST_F(TestIndicator, UnlockSIM2_IncorrectPin)
 
 TEST_F(TestIndicator, CellularData_1)
 {
-    auto con = std::shared_ptr<connectivityqt::Connectivity>(std::move(newConnectivity()));
+    Connectivity::SPtr con(newConnectivity());
 
     ASSERT_NO_THROW(startIndicator());
 

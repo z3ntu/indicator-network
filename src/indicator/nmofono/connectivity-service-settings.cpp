@@ -73,6 +73,7 @@ QVariant ConnectivityServiceSettings::mobileDataEnabled()
 {
     return d->m_settings->value("MobileDataEnabled");
 }
+
 void ConnectivityServiceSettings::setMobileDataEnabled(bool value)
 {
     d->m_settings->setValue("MobileDataEnabled", value);
@@ -82,6 +83,7 @@ QVariant ConnectivityServiceSettings::simForMobileData()
 {
     return d->m_settings->value("SimForMobileData");
 }
+
 void ConnectivityServiceSettings::setSimForMobileData(const QString &imsi)
 {
     d->m_settings->setValue("SimForMobileData", imsi);

@@ -179,6 +179,8 @@ protected:
 
     void setConnectionManagerProperty(const QString& path, const QString& propertyName, const QVariant& value);
 
+    QVariantMap getConnectionManagerProperties(const QString& path);
+
     void setNetworkRegistrationProperty(const QString& path, const QString& propertyName, const QVariant& value);
 
     OrgFreedesktopDBusMockInterface& notificationsMockInterface();

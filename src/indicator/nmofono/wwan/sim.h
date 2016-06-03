@@ -105,6 +105,9 @@ public:
 
     QString ofonoPath() const;
 
+    bool initialDataOn() const;
+
+
 public Q_SLOTS:
     void unlock();
 

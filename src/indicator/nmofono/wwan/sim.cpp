@@ -75,6 +75,9 @@ public:
 
     bool m_locked = false;
 
+    bool m_initialData;
+    bool m_initialDataSet;
+
     Private(Sim &parent)
         : p(parent)
     {
@@ -109,6 +112,17 @@ public Q_SLOTS:
         Q_EMIT p.presentChanged(m_simManager.get() != nullptr);
     }
 
+    void poweredChanged()
+    {
+        if (!m_initialDataSet)
+        {
+            m_initialDataSet = true;
+            m_initialData = m_connManager->powered();
+            m_connManager->setPowered(m_mobileDataEnabled);
+        }
+        update();
+    }
+
     void connManagerChanged(shared_ptr<QOfonoConnectionManager> connmgr)
     {
         if (m_connManager == connmgr)
@@ -121,12 +135,11 @@ public Q_SLOTS:
         {
             connect(m_connManager.get(),
                     &QOfonoConnectionManager::poweredChanged, this,
-                    &Private::update);
+                    &Private::poweredChanged);
             connect(m_connManager.get(),
                     &QOfonoConnectionManager::roamingAllowedChanged, this,
                     &Private::update);
 
-            m_connManager->setPowered(m_mobileDataEnabled);
             m_connManager->setRoamingAllowed(m_dataRoamingEnabled);
         }
 
@@ -300,6 +313,11 @@ QString Sim::ofonoPath() const
 void Sim::setOfonoSimManager(std::shared_ptr<QOfonoSimManager> simmgr)
 {
     d->setOfono(simmgr);
+}
+
+bool Sim::initialDataOn() const
+{
+    return d->m_initialData;
 }
 
 

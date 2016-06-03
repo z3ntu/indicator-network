@@ -421,6 +421,17 @@ void IndicatorNetworkTestBase::setConnectionManagerProperty(const QString& path,
     }
 }
 
+QVariantMap IndicatorNetworkTestBase::getConnectionManagerProperties(const QString& path)
+{
+    auto& ofono(dbusMock.ofonoConnectionManagerInterface(path));
+    auto reply = ofono.GetProperties();
+    reply.waitForFinished();
+    if (reply.isError()) {
+        EXPECT_FALSE(reply.isError()) << reply.error().message().toStdString();
+    }
+    return reply;
+}
+
 void IndicatorNetworkTestBase::setNetworkRegistrationProperty(const QString& path, const QString& propertyName, const QVariant& value)
 {
     auto& ofono(dbusMock.ofonoNetworkRegistrationInterface(path));

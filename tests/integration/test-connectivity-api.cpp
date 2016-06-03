@@ -765,24 +765,66 @@ TEST_F(TestConnectivityApi, HotspotModemAvailable)
     EXPECT_TRUE(connectivity->modemAvailable());
 }
 
-TEST_F(TestConnectivityApi, MobileDataEnabled)
+TEST_F(TestConnectivityApi, MobileDataDisablePowersOffAllSims)
 {
+    auto modem2 = createModem("ril_1");
+    setConnectionManagerProperty(modem2, "Powered", true);
 
+    setGlobalConnectedState(NM_STATE_DISCONNECTED);
+    auto device = createWiFiDevice(NM_DEVICE_STATE_DISCONNECTED);
+
+    // Start the indicator
+    ASSERT_NO_THROW(startIndicator());
+
+    // Connect the the service
+    auto connectivity(newConnectivity());
+
+    // One of the modems was started and we had no settings.
+    // So we start by assuming mobile data was enabled.
+    EXPECT_TRUE(connectivity->mobileDataEnabled());
+
+    auto simForMobileData = connectivity->simForMobileData();
+    auto secondSim = getModemSim(connectivity->modems(), 1);
+
+    // These should be the exact same object.
+    EXPECT_EQ(simForMobileData, secondSim);
+
+    // Only the second modem should be powered
+    EXPECT_FALSE(getConnectionManagerProperties(modem)["Powered"].toBool());
+    EXPECT_TRUE(getConnectionManagerProperties(modem2)["Powered"].toBool());
+
+    auto& connectionManager(dbusMock.ofonoConnectionManagerInterface(modem2));
+    QSignalSpy connectionManagerPropertyChangedSpy(
+                               &connectionManager,
+                               SIGNAL(PropertyChanged(const QString &, const QDBusVariant &)));
+
+    // Disable all mobile data.
+    connectivity->setMobileDataEnabled(false);
+    WAIT_FOR_SIGNALS(connectionManagerPropertyChangedSpy, 1)
+
+    // Both modems should by un-powered
+    EXPECT_FALSE(getConnectionManagerProperties(modem)["Powered"].toBool());
+    EXPECT_FALSE(getConnectionManagerProperties(modem2)["Powered"].toBool());
+
+    EXPECT_FALSE(connectivity->mobileDataEnabled());
 }
 
 TEST_F(TestConnectivityApi, SimForMobileData)
 {
-
+//    con->setSim(sim1);
+//    assert(mock sim1 active);
 }
 
-TEST_F(TestConnectivityApi, Modems)
+TEST_F(TestConnectivityApi, SimForMobileDataSaved)
 {
-
-}
-
-TEST_F(TestConnectivityApi, Sims)
-{
-
+//    start indicator
+//    con->setSim(sim1);
+//    assert(mock sim1 active);
+//
+//    stop indicator
+//
+//    start indicator
+//    assert(sim);
 }
 
 }

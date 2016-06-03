@@ -126,6 +126,35 @@ public:
         matchModemsAndSims();
     }
 
+    void resolvePendingMobileDataAndSim()
+    {
+        wwan::Modem *modem_raw = qobject_cast<wwan::Modem*>(sender());
+        if (!modem_raw)
+        {
+            Q_ASSERT(0);
+            return;
+        }
+        auto modem = m_ofonoLinks[modem_raw->name()];
+
+        if (!m_mobileDataEnabledPending && !m_simForMobileDataPending)
+        {
+            return;
+        }
+
+        if (modem->simStatus() == wwan::Modem::SimStatus::ready &&
+                (modem->modemStatus() == wwan::Modem::ModemStatus::registered ||
+                 modem->modemStatus() == wwan::Modem::ModemStatus::roaming)
+                )
+        {
+            Q_ASSERT(modem->sim());
+            if (modem->sim()->initialDataOn()) {
+                setMobileDataEnabled(true);
+                setSimForMobileData(modem->sim());
+            }
+        }
+
+    }
+
     void modemReady()
     {
         wwan::Modem *modem_raw = qobject_cast<wwan::Modem*>(sender());
@@ -134,8 +163,28 @@ public:
             Q_ASSERT(0);
             return;
         }
-        m_modems.append(m_ofonoLinks[modem_raw->name()]);
-        matchModemsAndSims();
+        auto modem = m_ofonoLinks[modem_raw->name()];
+
+        if (m_mobileDataEnabledPending || m_simForMobileDataPending)
+        {
+            if (modem->simStatus() == wwan::Modem::SimStatus::ready &&
+                    (modem->modemStatus() == wwan::Modem::ModemStatus::registered ||
+                     modem->modemStatus() == wwan::Modem::ModemStatus::roaming)
+                    )
+            {
+                Q_ASSERT(modem->sim());
+                if (modem->sim()->initialDataOn()) {
+                    setMobileDataEnabled(true);
+                    setSimForMobileData(modem->sim());
+                }
+            }
+            else
+            {
+                connect(modem.get(), &wwan::Modem::simStatusUpdated, this, &Private::resolvePendingMobileDataAndSim);
+                connect(modem.get(), &wwan::Modem::modemStatusUpdated, this, &Private::resolvePendingMobileDataAndSim);
+            }
+        }
+        m_modems.append(modem);
         Q_EMIT p.modemsChanged();
     }
 
@@ -323,10 +372,11 @@ public Q_SLOTS:
     }
 
     void setMobileDataEnabled(bool value) {
-        if (m_mobileDataEnabled == value)
+        if (m_mobileDataEnabled == value && !m_mobileDataEnabledPending)
         {
             return;
         }
+        m_mobileDataEnabledPending = false;
 
         m_settings->setMobileDataEnabled(value);
         m_mobileDataEnabled = value;
@@ -354,9 +404,13 @@ public Q_SLOTS:
     }
 
     void setSimForMobileData(wwan::Sim::Ptr sim) {
-        if (m_simForMobileData == sim)
+        if (m_simForMobileData == sim && !m_simForMobileDataPending)
         {
             return;
+        }
+        if (m_simForMobileDataPending) {
+            m_simForMobileDataPending = false;
+            setMobileDataEnabled(m_mobileDataEnabled);
         }
 
         if (m_simForMobileData)
@@ -377,7 +431,7 @@ public Q_SLOTS:
         m_simForMobileData = sim;
         if (m_simForMobileData)
         {
-            m_simForMobileData->setMobileDataEnabled(p.mobileDataEnabled());
+            m_simForMobileData->setMobileDataEnabled(m_mobileDataEnabled);
         }
 
         Q_EMIT p.simForMobileDataChanged();

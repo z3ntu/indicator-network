@@ -182,6 +182,7 @@ public Q_SLOTS:
             auto path = value.value<QDBusObjectPath>();
             p.sims();
             auto sim = m_simsModel->getSimByPath(path);
+            qDebug() << "SIM FOR MOBILE DATA UPDATED " << path.path() << sim.get();
             p.setSimForMobileData(sim.get());
         }
     }
@@ -426,6 +427,7 @@ void Connectivity::setMobileDataEnabled(bool enabled)
 
 Sim *Connectivity::simForMobileData() const
 {
+    sims();
     return d->m_simForMobileData.get();
 }
 

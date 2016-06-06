@@ -181,6 +181,7 @@ public Q_SLOTS:
 
     void simForMobileDataUpdated()
     {
+        qDebug() << "FIRING UPDATE";
         notifyPrivateProperties({
             "SimForMobileData"
         });
@@ -646,11 +647,13 @@ QDBusObjectPath PrivateService::simForMobileData() const
     wwan::Sim::Ptr sim = p.d->m_manager->simForMobileData();
     if (!sim)
     {
+        qDebug() << "FOO";
         return QDBusObjectPath("/");
     }
 
     if (p.d->m_sims.contains(sim->imsi()))
     {
+        qDebug() << "BAR" << p.d->m_sims[sim->imsi()]->path().path();
         return p.d->m_sims[sim->imsi()]->path();
     }
     else

@@ -75,8 +75,8 @@ public:
 
     bool m_locked = false;
 
-    bool m_initialData;
-    bool m_initialDataSet;
+    bool m_initialData = false;
+    bool m_initialDataSet = false;
 
     Private(Sim &parent)
         : p(parent)
@@ -114,17 +114,23 @@ public Q_SLOTS:
 
     void poweredChanged()
     {
+        qDebug() << "KKKKKKKKKKKKKKKKKKKKKKKKKK2 " << m_connManager->powered();
+
         if (!m_initialDataSet)
         {
+            qDebug() << "KKKKKKKKKKKKKKKKKKKKKKKKKK " << m_connManager->powered();
             m_initialDataSet = true;
             m_initialData = m_connManager->powered();
+            Q_EMIT p.initialDataOnSet();
             m_connManager->setPowered(m_mobileDataEnabled);
         }
         update();
     }
 
-    void connManagerChanged(shared_ptr<QOfonoConnectionManager> connmgr)
+    void setConnManager(shared_ptr<QOfonoConnectionManager> connmgr)
     {
+        qDebug() << "HHHHHHHHHHHHHHHHHHHHHH1" << connmgr.get();
+
         if (m_connManager == connmgr)
         {
             return;
@@ -140,6 +146,7 @@ public Q_SLOTS:
                     &QOfonoConnectionManager::roamingAllowedChanged, this,
                     &Private::update);
 
+            qDebug() << "HHHHHHHHHHHHHHHHHHHHHH" << m_connManager->powered();
             m_connManager->setRoamingAllowed(m_dataRoamingEnabled);
         }
 
@@ -183,19 +190,18 @@ public Q_SLOTS:
         Q_EMIT p.simIdentifierUpdated(m_simIdentifier);
     }
 
-    void setOfono(std::shared_ptr<QOfonoSimManager> simmgr)
+    void setOfono(shared_ptr<QOfonoSimManager> simmgr)
     {
         simManagerChanged(simmgr);
         if (simmgr)
         {
-            m_connManager = std::make_shared<QOfonoConnectionManager>(this);
-            m_connManager->setModemPath(simmgr->modemPath());
-            connManagerChanged(m_connManager);
+            auto connManager = make_shared<QOfonoConnectionManager>(this);
+            connManager->setModemPath(simmgr->modemPath());
+            setConnManager(connManager);
         }
         else
         {
-            m_connManager = std::shared_ptr<QOfonoConnectionManager>();
-            connManagerChanged(m_connManager);
+            setConnManager(shared_ptr<QOfonoConnectionManager>());
         }
     }
 
@@ -317,6 +323,7 @@ void Sim::setOfonoSimManager(std::shared_ptr<QOfonoSimManager> simmgr)
 
 bool Sim::initialDataOn() const
 {
+    //Q_ASSERT(d->m_initialDataSet);
     return d->m_initialData;
 }
 

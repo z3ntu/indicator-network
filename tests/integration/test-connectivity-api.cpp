@@ -779,15 +779,28 @@ TEST_F(TestConnectivityApi, MobileDataDisablePowersOffAllSims)
     // Connect the the service
     auto connectivity(newConnectivity());
 
+    QSignalSpy mobileDataEnabledSpy(connectivity.get(), SIGNAL(mobileDataEnabledUpdated(bool)));
+    QSignalSpy simForMobileDataSpy(connectivity.get(), SIGNAL(simForMobileDataUpdated(Sim*)));
+
     // One of the modems was started and we had no settings.
     // So we start by assuming mobile data was enabled.
     EXPECT_TRUE(connectivity->mobileDataEnabled());
 
-    auto simForMobileData = connectivity->simForMobileData();
-    auto secondSim = getModemSim(connectivity->modems(), 1);
+    if (!connectivity->simForMobileData())
+    {
+        WAIT_FOR_SIGNALS(simForMobileDataSpy, 1)
+    }
 
+    auto modems = getSortedModems(*connectivity);
+    auto simForMobileData = connectivity->simForMobileData();
+    auto secondSim = getModemSim(*modems, 1);
+
+    ASSERT_TRUE(simForMobileData);
+    ASSERT_TRUE(secondSim);
     // These should be the exact same object.
-    EXPECT_EQ(simForMobileData, secondSim);
+    EXPECT_TRUE(simForMobileData == secondSim);
+    qDebug() << "SIM FOR MOBILE DATA INDEX " << simForMobileData->path().path();
+    qDebug() << "SECOND SIM INDEX " << secondSim->path().path();
 
     // Only the second modem should be powered
     EXPECT_FALSE(getConnectionManagerProperties(modem)["Powered"].toBool());
@@ -800,12 +813,18 @@ TEST_F(TestConnectivityApi, MobileDataDisablePowersOffAllSims)
 
     // Disable all mobile data.
     connectivity->setMobileDataEnabled(false);
+    if (connectivity->mobileDataEnabled())
+    {
+        WAIT_FOR_SIGNALS(mobileDataEnabledSpy, 1)
+    }
     WAIT_FOR_SIGNALS(connectionManagerPropertyChangedSpy, 1)
 
     // Both modems should by un-powered
     EXPECT_FALSE(getConnectionManagerProperties(modem)["Powered"].toBool());
     EXPECT_FALSE(getConnectionManagerProperties(modem2)["Powered"].toBool());
 
+    WAIT_FOR_SIGNALS(mobileDataEnabledSpy, 1);
+    qDebug() << "SPY:" << mobileDataEnabledSpy.first().first().toBool() << mobileDataEnabledSpy.count();
     EXPECT_FALSE(connectivity->mobileDataEnabled());
 }
 

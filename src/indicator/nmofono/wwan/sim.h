@@ -41,7 +41,7 @@ class ConnectivityServiceSettings;
 namespace wwan
 {
 
-class Sim : public QObject
+class Sim : public QObject, public std::enable_shared_from_this<Sim>
 {
     Q_OBJECT
 
@@ -107,7 +107,6 @@ public:
 
     bool initialDataOn() const;
 
-
 public Q_SLOTS:
     void unlock();
 
@@ -122,6 +121,8 @@ Q_SIGNALS:
     void dataRoamingEnabledChanged(bool value);
 
     void mobileDataEnabledChanged(bool value);
+
+    void initialDataOnSet();
 };
 
 }

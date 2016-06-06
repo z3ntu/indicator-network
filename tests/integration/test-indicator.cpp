@@ -3113,7 +3113,7 @@ TEST_F(TestIndicator, CellularData_1)
 
     con->setMobileDataEnabled(true);
     con->setFlightMode(false);
-    con->setSimForMobileData(getModemSim(con->modems(), 0));
+    con->setSimForMobileData(getModemSim(*con->modems(), 0));
 
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
@@ -3173,7 +3173,7 @@ TEST_F(TestIndicator, CellularData_2)
 
     con->setMobileDataEnabled(true);
     con->setFlightMode(false);
-    con->setSimForMobileData(getModemSim(con->modems(), 0));
+    con->setSimForMobileData(getModemSim(*con->modems(), 0));
     QTest::qWait(250);
     QSignalSpy spy(con.get(), SIGNAL(mobileDataEnabledUpdated(bool)));
 

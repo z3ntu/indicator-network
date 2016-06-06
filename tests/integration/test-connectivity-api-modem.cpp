@@ -95,19 +95,6 @@ protected:
         Connectivity::registerMetaTypes();
     }
 
-    unique_ptr<QSortFilterProxyModel> getSortedModems(Connectivity& connectivity)
-    {
-        auto modems = connectivity.modems();
-
-        auto sortedModems = make_unique<QSortFilterProxyModel>();
-        sortedModems->setSortRole(ModemsListModel::RoleIndex);
-        sortedModems->sort(0);
-
-        sortedModems->setSourceModel(modems);
-
-        return sortedModems;
-    }
-
     MSL modemList(QAbstractItemModel& model)
     {
         MSL modemStates;

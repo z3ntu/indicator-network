@@ -656,3 +656,15 @@ mh::MenuItemMatcher IndicatorNetworkTestBase::vpnConnection(const string& name, 
         .toggled(connected == ConnectionStatus::connected);
 }
 
+unique_ptr<QSortFilterProxyModel> IndicatorNetworkTestBase::getSortedModems(Connectivity& connectivity)
+{
+    auto modems = connectivity.modems();
+
+    auto sortedModems = make_unique<QSortFilterProxyModel>();
+    sortedModems->setSortRole(ModemsListModel::RoleIndex);
+    sortedModems->sort(0);
+
+    sortedModems->setSourceModel(modems);
+
+    return sortedModems;
+}

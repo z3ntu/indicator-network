@@ -234,12 +234,14 @@ protected:
 
     static unity::gmenuharness::MenuItemMatcher vpnConnection(const std::string& name, ConnectionStatus connected = ConnectionStatus::disconnected);
 
-    static connectivityqt::Sim* getModemSim(QAbstractItemModel* model, int idx)
+    static connectivityqt::Sim* getModemSim(const QAbstractItemModel& model, int idx)
     {
-        return model->data(model->index(idx,0),
-                                   connectivityqt::ModemsListModel::RoleSim)
+        return model.data(model.index(idx,0),
+                          connectivityqt::ModemsListModel::RoleSim)
                 .value<connectivityqt::Sim*>();
     }
+
+    static std::unique_ptr<QSortFilterProxyModel> getSortedModems(connectivityqt::Connectivity& connectivity);
 
     QtDBusTest::DBusTestRunner dbusTestRunner;
 

@@ -192,10 +192,7 @@ public:
 
         if (m_mobileDataEnabledPending || m_simForMobileDataPending)
         {
-            if (modem->simStatus() == wwan::Modem::SimStatus::ready &&
-                    (modem->modemStatus() == wwan::Modem::ModemStatus::registered ||
-                     modem->modemStatus() == wwan::Modem::ModemStatus::roaming)
-                    )
+            if (modem->sim()->initialDataOn())
             {
 //                Q_ASSERT(modem->sim());
 //                if (modem->sim()->initialDataOnSet()) {
@@ -209,6 +206,7 @@ public:
 //                else
 //                {
                     connect(modem->sim().get(), &wwan::Sim::initialDataOnSet, this, &Private::initialDataOnSet);
+                    modem->sim()->initialDataOnSet();
 //                }
             }
             else

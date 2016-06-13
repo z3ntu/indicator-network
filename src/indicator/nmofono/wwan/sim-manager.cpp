@@ -84,9 +84,9 @@ public Q_SLOTS:
             if (m_wrappers.contains(path))
             {
                 auto wrapper = m_wrappers[path];
-                if (m_knownSims.contains(wrapper->imsi()))
+                if (m_knownSims.contains(wrapper->iccid()))
                 {
-                    auto sim = m_knownSims[wrapper->imsi()];
+                    auto sim = m_knownSims[wrapper->iccid()];
                     sim->setOfonoSimManager(std::shared_ptr<QOfonoSimManager>());
                 }
                 m_wrappers.remove(path);
@@ -138,9 +138,9 @@ public Q_SLOTS:
             if (m_wrappers.contains(modem->modemPath()))
             {
                 auto wrapper = m_wrappers[modem->modemPath()];
-                if (m_knownSims.contains(wrapper->imsi()))
+                if (m_knownSims.contains(wrapper->iccid()))
                 {
-                    auto sim = m_knownSims[wrapper->imsi()];
+                    auto sim = m_knownSims[wrapper->iccid()];
                     sim->setOfonoSimManager(std::shared_ptr<QOfonoSimManager>());
                 }
                 m_wrappers.remove(modem->modemPath());
@@ -159,9 +159,9 @@ public Q_SLOTS:
 
         if (!present)
         {
-            if (m_knownSims.contains(wrapper->imsi()))
+            if (m_knownSims.contains(wrapper->iccid()))
             {
-                auto sim = m_knownSims[wrapper->imsi()];
+                auto sim = m_knownSims[wrapper->iccid()];
                 sim->setOfonoSimManager(std::shared_ptr<QOfonoSimManager>());
             }
         }
@@ -185,7 +185,7 @@ public Q_SLOTS:
         bool found = false;
         for (auto i : m_knownSims.values())
         {
-            if (wrapper->imsi() == i->imsi())
+            if (wrapper->iccid() == i->iccid())
             {
                 found = true;
                 i->setOfonoSimManager(wrapper->ofonoSimManager());
@@ -197,7 +197,7 @@ public Q_SLOTS:
             auto sim = Sim::fromQOfonoSimWrapper(wrapper);
             connect(sim.get(), &Sim::dataRoamingEnabledChanged, this, &Private::simDataRoamingEnabledChanged);
             m_settings->saveSimToSettings(sim);
-            m_knownSims[sim->imsi()] = sim;
+            m_knownSims[sim->iccid()] = sim;
             m_settings->setKnownSims(m_knownSims.keys());
             Q_EMIT p.simAdded(sim);
         }
@@ -213,12 +213,12 @@ public Q_SLOTS:
             Q_ASSERT(0);
             return;
         }
-        if (!m_knownSims.contains(sim_raw->imsi()))
+        if (!m_knownSims.contains(sim_raw->iccid()))
         {
             Q_ASSERT(0);
             return;
         }
-        m_settings->saveSimToSettings(m_knownSims[sim_raw->imsi()]);
+        m_settings->saveSimToSettings(m_knownSims[sim_raw->iccid()]);
     }
 
 };
@@ -231,15 +231,15 @@ SimManager::SimManager(shared_ptr<QOfonoManager> ofono, ConnectivityServiceSetti
     d->m_ofono = ofono;
     d->m_settings = settings;
 
-    QStringList imsis = d->m_settings->knownSims();
-    for(auto imsi : imsis) {
-        auto sim = d->m_settings->createSimFromSettings(imsi);
+    QStringList iccids = d->m_settings->knownSims();
+    for(auto iccid : iccids) {
+        auto sim = d->m_settings->createSimFromSettings(iccid);
         connect(sim.get(), &Sim::dataRoamingEnabledChanged, d.get(), &Private::simDataRoamingEnabledChanged);
         if (!sim)
         {
             continue;
         }
-        d->m_knownSims[sim->imsi()] = sim;
+        d->m_knownSims[sim->iccid()] = sim;
     }
 
     connect(d->m_ofono.get(), &QOfonoManager::modemsChanged, d.get(), &Private::modemsChanged);

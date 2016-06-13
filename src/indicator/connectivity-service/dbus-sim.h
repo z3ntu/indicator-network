@@ -48,8 +48,8 @@ public:
 
     virtual ~DBusSim();
 
-    Q_PROPERTY(QString Imsi READ imsi)
-    QString imsi() const;
+    Q_PROPERTY(QString Iccid READ iccid)
+    QString iccid() const;
 
     Q_PROPERTY(QString PrimaryPhoneNumber READ primaryPhoneNumber)
     QString primaryPhoneNumber() const;

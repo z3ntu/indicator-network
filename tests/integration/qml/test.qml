@@ -152,7 +152,7 @@ MainView {
                 model: Connectivity.sims
                 selectedIndex: -1
                 delegate: OptionSelectorDelegate {
-                    text: model.Imsi + ": " + model.PrimaryPhoneNumber
+                    text: model.Iccid + ": " + model.PrimaryPhoneNumber
 
                 }
                 onSelectedIndexChanged: {

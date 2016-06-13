@@ -42,7 +42,7 @@
     dataChangedSpy.clear();
 
 struct SS {
-    QString imsi;
+    QString iccid;
     QString primaryPhoneNumber;
     bool locked;
     bool present;
@@ -52,7 +52,7 @@ struct SS {
 
     bool operator==(const SS& other) const
     {
-        return imsi == other.imsi
+        return iccid == other.iccid
                 && primaryPhoneNumber == other.primaryPhoneNumber
                 && locked == other.locked && present == other.present
                 && mcc == other.mcc && mnc == other.mnc
@@ -65,7 +65,7 @@ typedef QList<MS> MSL;
 inline void PrintTo (const SS& simState, std::ostream* os)
 {
     *os << "SS("
-            << "IMSI: " << simState.imsi.toStdString () << ", "
+            << "ICCID: " << simState.iccid.toStdString () << ", "
             << "Phone #: " << simState.primaryPhoneNumber.toStdString () << ", "
             << "Locked: " << (simState.locked ? "y" : "n") << ", "
             << "Present: " << (simState.present ? "y" : "n") << ", "
@@ -110,7 +110,7 @@ protected:
             auto sim = qvariant_cast<Sim*>(model.data(idx, ModemsListModel::Roles::RoleSim));
             if (sim)
             {
-                simState.imsi = sim->imsi ();
+                simState.iccid = sim->iccid ();
                 simState.primaryPhoneNumber = sim->primaryPhoneNumber ();
                 simState.locked = sim->locked ();
                 simState.present = sim->present ();
@@ -156,7 +156,7 @@ TEST_F(TestConnectivityApiModem, SingleModemAtStartup)
 
     EXPECT_EQ(MSL({
         MS{1, SS{
-            "310150000000000",
+            "893581234000000000000",
             "123456789",
             false,
             true,
@@ -192,7 +192,7 @@ TEST_F(TestConnectivityApiModem, TwoModemsAtStartup)
 
     EXPECT_EQ(MSL({
         MS{1, SS{
-            "310150000000000",
+            "893581234000000000000",
             "123456789",
             false,
             true,
@@ -201,7 +201,7 @@ TEST_F(TestConnectivityApiModem, TwoModemsAtStartup)
             {"en"}
         }},
         MS{2, SS{
-            "310150000000001",
+            "893581234000000000001",
             "123456789",
             false,
             true,
@@ -236,7 +236,7 @@ TEST_F(TestConnectivityApiModem, AddAModem)
 
     EXPECT_EQ(MSL({
         MS{1, SS{
-            "310150000000000",
+            "893581234000000000000",
             "123456789",
             false,
             true,
@@ -257,7 +257,7 @@ TEST_F(TestConnectivityApiModem, AddAModem)
 
     EXPECT_EQ(MSL({
         MS{1, SS{
-            "310150000000000",
+            "893581234000000000000",
             "123456789",
             false,
             true,
@@ -266,7 +266,7 @@ TEST_F(TestConnectivityApiModem, AddAModem)
             {"en"}
         }},
         MS{2, SS{
-            "310150000000001",
+            "893581234000000000001",
             "123456789",
             false,
             true,
@@ -303,7 +303,7 @@ TEST_F(TestConnectivityApiModem, ModemProperties)
     auto modem = qvariant_cast<Modem*>(modems->data(modems->index(0, 0), ModemsListModel::Roles::RoleModem));
 
     EXPECT_EQ(1, modem->index());
-    EXPECT_EQ("ed752c5f-f723-437e-bc6c-000000000000", modem->serial().toStdString());
+    EXPECT_EQ("12345678-1234-1234-1234-000000000000", modem->serial().toStdString());
     EXPECT_TRUE(modem->sim());
 }
 

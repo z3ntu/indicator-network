@@ -47,7 +47,7 @@ public:
 
     enum Roles
     {
-        RoleImsi = Qt::UserRole + 1,
+        RoleIccid = Qt::UserRole + 1,
         RolePrimaryPhoneNumber,
         RoleLocked,
         RolePresent,
@@ -71,7 +71,7 @@ public:
     QHash<int, QByteArray> roleNames() const override
     {
         QHash<int, QByteArray> roles;
-        roles[RoleImsi] = "Imsi";
+        roles[RoleIccid] = "Iccid";
         roles[RolePrimaryPhoneNumber] = "PrimaryPhoneNumber";
         roles[RoleLocked] = "Locked";
         roles[RolePresent] = "Present";

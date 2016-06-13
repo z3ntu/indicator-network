@@ -41,7 +41,7 @@ public:
     QOfonoSimWrapper& p;
     shared_ptr<QOfonoSimManager> m_simManager;
 
-    QString m_imsi;
+    QString m_iccid;
     QStringList m_phoneNumbers;
     QString m_mcc;
     QString m_mnc;
@@ -49,7 +49,7 @@ public:
 
     bool m_present = false;
 
-    bool m_imsiSet = false;
+    bool m_iccidSet = false;
     bool m_phoneNumbersSet = false;
     bool m_mccSet = false;
     bool m_mncSet = false;
@@ -60,7 +60,7 @@ public:
         : p(parent), m_simManager{simmgr}
     {
         connect(simmgr.get(), &QOfonoSimManager::presenceChanged, this, &Private::presentChanged);
-        connect(simmgr.get(), &QOfonoSimManager::subscriberIdentityChanged, this, &Private::imsiChanged);
+        connect(simmgr.get(), &QOfonoSimManager::cardIdentifierChanged, this, &Private::iccidChanged);
         connect(simmgr.get(), &QOfonoSimManager::mobileCountryCodeChanged, this, &Private::mccChanged);
         connect(simmgr.get(), &QOfonoSimManager::mobileNetworkCodeChanged, this, &Private::mncChanged);
         connect(simmgr.get(), &QOfonoSimManager::subscriberNumbersChanged, this, &Private::phoneNumbersChanged);
@@ -78,7 +78,7 @@ public Q_SLOTS:
         m_present = value;
         if (!m_present)
         {
-            m_imsiSet = false;
+            m_iccidSet = false;
             m_phoneNumbersSet = false;
             m_mccSet = false;
             m_mncSet = false;
@@ -88,20 +88,20 @@ public Q_SLOTS:
         Q_EMIT p.presentChanged(value);
     }
 
-    void imsiChanged(const QString &value)
+    void iccidChanged(const QString &value)
     {
         if (value.isEmpty())
         {
             return;
         }
 
-        if (m_imsiSet)
+        if (m_iccidSet)
         {
-            qWarning() << "Unexpected update on IMSI: " << m_imsi << ", " << value;
+            qWarning() << "Unexpected update on ICCID: " << m_iccid << ", " << value;
         }
 
-        m_imsi = value;
-        m_imsiSet = true;
+        m_iccid = value;
+        m_iccidSet = true;
         if (p.ready())
         {
             Q_EMIT p.readyChanged(true);
@@ -202,9 +202,9 @@ QOfonoSimWrapper::QOfonoSimWrapper(std::shared_ptr<QOfonoSimManager> simmgr)
 QOfonoSimWrapper::~QOfonoSimWrapper()
 {}
 
-QString QOfonoSimWrapper::imsi() const
+QString QOfonoSimWrapper::iccid() const
 {
-    return d->m_imsi;
+    return d->m_iccid;
 }
 
 bool QOfonoSimWrapper::present() const
@@ -233,7 +233,7 @@ QStringList QOfonoSimWrapper::preferredLanguages() const
 }
 
 bool QOfonoSimWrapper::ready() const {
-    return d->m_imsiSet &&
+    return d->m_iccidSet &&
             d->m_phoneNumbersSet &&
             d->m_mccSet &&
             d->m_mncSet &&

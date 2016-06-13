@@ -184,8 +184,8 @@ QVariant SimsListModel::data(const QModelIndex &index, int role) const
 
     switch (role)
     {
-        case Roles::RoleImsi:
-            return sim->imsi();
+        case Roles::RoleIccid:
+            return sim->iccid();
             break;
         case Roles::RolePrimaryPhoneNumber:
             return sim->primaryPhoneNumber();

@@ -92,9 +92,9 @@ QDBusObjectPath Sim::path() const
     return QDBusObjectPath(d->m_simInterface->path());
 }
 
-QString Sim::imsi() const
+QString Sim::iccid() const
 {
-    return d->m_propertyCache->get("Imsi").toString();
+    return d->m_propertyCache->get("Iccid").toString();
 }
 
 QString Sim::primaryPhoneNumber() const

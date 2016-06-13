@@ -38,7 +38,7 @@ namespace
 
 Sim::Ptr Sim::fromQOfonoSimWrapper(const QOfonoSimWrapper *wrapper)
 {
-    auto sim = Sim::Ptr(new Sim(wrapper->imsi(),
+    auto sim = Sim::Ptr(new Sim(wrapper->iccid(),
                                 wrapper->phoneNumbers().first(), // default to the first number
                                 wrapper->mcc(),
                                 wrapper->mnc(),
@@ -65,7 +65,7 @@ public:
 
     QSet<QString> m_interfaces;
 
-    QString m_imsi;
+    QString m_iccid;
     QString m_primaryPhoneNumber;
     QString m_mcc;
     QString m_mnc;
@@ -208,7 +208,7 @@ public Q_SLOTS:
 
 };
 
-Sim::Sim(const QString &imsi,
+Sim::Sim(const QString &iccid,
          const QString &primaryPhoneNumber,
          const QString &mcc,
          const QString &mnc,
@@ -216,7 +216,7 @@ Sim::Sim(const QString &imsi,
          bool dataRoamingEnabled)
     : d{new Private(*this)}
 {
-    d->m_imsi = imsi;
+    d->m_iccid = iccid;
     d->m_primaryPhoneNumber = primaryPhoneNumber;
     d->m_mcc = mcc;
     d->m_mnc = mnc;
@@ -233,9 +233,9 @@ Sim::simIdentifier() const
     return d->m_simIdentifier;
 }
 
-QString Sim::imsi() const
+QString Sim::iccid() const
 {
-    return d->m_imsi;
+    return d->m_iccid;
 }
 
 QString Sim::primaryPhoneNumber() const

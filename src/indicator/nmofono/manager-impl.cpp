@@ -261,11 +261,11 @@ public:
         }
         else
         {
-            QString imsi = ret.toString();
+            QString iccid = ret.toString();
             wwan::Sim::Ptr sim;
             for(auto i = m_sims.begin(); i != m_sims.end(); i++)
             {
-                if ((*i)->imsi() == imsi) {
+                if ((*i)->iccid() == iccid) {
                     sim = *i;
                     break;
                 }
@@ -456,7 +456,7 @@ public Q_SLOTS:
         }
         else
         {
-            m_settings->setSimForMobileData(sim->imsi());
+            m_settings->setSimForMobileData(sim->iccid());
         }
 
 

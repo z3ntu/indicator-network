@@ -42,8 +42,8 @@ public:
     Q_PROPERTY(QDBusObjectPath path READ path)
     QDBusObjectPath path() const;
 
-    Q_PROPERTY(QString Imsi READ imsi CONSTANT)
-    QString imsi() const;
+    Q_PROPERTY(QString Iccid READ iccid CONSTANT)
+    QString iccid() const;
 
     Q_PROPERTY(QString PrimaryPhoneNumber READ primaryPhoneNumber CONSTANT)
     QString primaryPhoneNumber() const;

@@ -84,9 +84,9 @@ QVariant ConnectivityServiceSettings::simForMobileData()
     return d->m_settings->value("SimForMobileData");
 }
 
-void ConnectivityServiceSettings::setSimForMobileData(const QString &imsi)
+void ConnectivityServiceSettings::setSimForMobileData(const QString &iccid)
 {
-    d->m_settings->setValue("SimForMobileData", imsi);
+    d->m_settings->setValue("SimForMobileData", iccid);
 }
 
 QStringList ConnectivityServiceSettings::knownSims()
@@ -109,9 +109,9 @@ void ConnectivityServiceSettings::setKnownSims(const QStringList &list)
     d->m_settings->setValue("KnownSims", QVariant(list));
 }
 
-wwan::Sim::Ptr ConnectivityServiceSettings::createSimFromSettings(const QString &imsi)
+wwan::Sim::Ptr ConnectivityServiceSettings::createSimFromSettings(const QString &iccid)
 {
-    d->m_settings->beginGroup(QString("Sims/%1/").arg(imsi));
+    d->m_settings->beginGroup(QString("Sims/%1/").arg(iccid));
     QVariant primaryPhoneNumber_var = d->m_settings->value("PrimaryPhoneNumber");
     QVariant mcc_var = d->m_settings->value("Mcc");
     QVariant mnc_var = d->m_settings->value("Mnc");
@@ -119,19 +119,19 @@ wwan::Sim::Ptr ConnectivityServiceSettings::createSimFromSettings(const QString 
     QVariant dataRoamingEnabled_var = d->m_settings->value("DataRoamingEnabled");
     d->m_settings->endGroup();
 
-    if (imsi.isNull() ||
+    if (iccid.isNull() ||
             primaryPhoneNumber_var.isNull() ||
             mcc_var.isNull() ||
             mnc_var.isNull() ||
             preferredLanguages_var.isNull() ||
             dataRoamingEnabled_var.isNull())
     {
-        qWarning() << "Corrupt settings for SIM: " << imsi;
-        d->m_settings->remove(QString("Sims/%1/").arg(imsi));
+        qWarning() << "Corrupt settings for SIM: " << iccid;
+        d->m_settings->remove(QString("Sims/%1/").arg(iccid));
         return wwan::Sim::Ptr();
     }
 
-    return wwan::Sim::Ptr(new wwan::Sim(imsi,
+    return wwan::Sim::Ptr(new wwan::Sim(iccid,
                                         primaryPhoneNumber_var.toString(),
                                         mcc_var.toString(),
                                         mnc_var.toString(),
@@ -141,7 +141,7 @@ wwan::Sim::Ptr ConnectivityServiceSettings::createSimFromSettings(const QString 
 
 void ConnectivityServiceSettings::saveSimToSettings(wwan::Sim::Ptr sim)
 {
-    d->m_settings->beginGroup(QString("Sims/%1/").arg(sim->imsi()));
+    d->m_settings->beginGroup(QString("Sims/%1/").arg(sim->iccid()));
     d->m_settings->setValue("PrimaryPhoneNumber", QVariant(sim->primaryPhoneNumber()));
     d->m_settings->setValue("Mcc", sim->mcc());
     d->m_settings->setValue("Mnc", sim->mnc());

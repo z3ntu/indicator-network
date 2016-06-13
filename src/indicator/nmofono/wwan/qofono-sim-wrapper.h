@@ -56,7 +56,7 @@ public:
     QOfonoSimWrapper(std::shared_ptr<QOfonoSimManager> simmgr);
     ~QOfonoSimWrapper();
 
-    QString imsi() const;
+    QString iccid() const;
     bool present() const;
     QString mcc() const;
     QString mnc() const;

@@ -74,9 +74,9 @@ void DBusSim::notifyProperties(const QStringList& propertyNames)
     );
 }
 
-QString DBusSim::imsi() const
+QString DBusSim::iccid() const
 {
-    return m_sim->imsi();
+    return m_sim->iccid();
 }
 
 QString DBusSim::primaryPhoneNumber() const

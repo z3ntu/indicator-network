@@ -60,7 +60,7 @@ public:
     static Sim::Ptr fromQOfonoSimWrapper(const QOfonoSimWrapper *wrapper);
 
 private:
-    Sim(const QString &imsi,
+    Sim(const QString &iccid,
         const QString &primaryPhoneNumber,
         const QString &mcc,
         const QString &mnc,
@@ -74,8 +74,8 @@ public:
     Q_PROPERTY(QString simIdentifier READ simIdentifier NOTIFY simIdentifierUpdated)
     const QString &simIdentifier() const;
 
-    Q_PROPERTY(QString imsi READ imsi CONSTANT)
-    QString imsi() const;
+    Q_PROPERTY(QString iccid READ iccid CONSTANT)
+    QString iccid() const;
 
     Q_PROPERTY(QString primaryPhoneNumber READ primaryPhoneNumber CONSTANT)
     QString primaryPhoneNumber() const;

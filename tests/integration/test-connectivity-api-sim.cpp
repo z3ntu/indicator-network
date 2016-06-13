@@ -42,7 +42,7 @@
     dataChangedSpy.clear();
 
 struct SS {
-    QString imsi;
+    QString iccid;
     QString primaryPhoneNumber;
     bool locked;
     bool present;
@@ -53,7 +53,7 @@ struct SS {
 
     bool operator==(const SS& other) const
     {
-        return imsi == other.imsi
+        return iccid == other.iccid
                 && primaryPhoneNumber == other.primaryPhoneNumber
                 && locked == other.locked && present == other.present
                 && mcc == other.mcc && mnc == other.mnc
@@ -66,7 +66,7 @@ typedef QList<SS> SSL;
 inline void PrintTo (const SS& simState, std::ostream* os)
 {
     *os << "SS("
-            << "IMSI: " << simState.imsi.toStdString () << ", "
+            << "ICCID: " << simState.iccid.toStdString () << ", "
             << "Phone #: " << simState.primaryPhoneNumber.toStdString () << ", "
             << "Locked: " << (simState.locked ? "y" : "n") << ", "
             << "Present: " << (simState.present ? "y" : "n") << ", "
@@ -97,7 +97,7 @@ protected:
         auto sims = connectivity.sims();
 
         auto sortedSims = make_unique<QSortFilterProxyModel>();
-        sortedSims->setSortRole(SimsListModel::RoleImsi);
+        sortedSims->setSortRole(SimsListModel::RoleIccid);
         sortedSims->sort(0);
 
         sortedSims->setSourceModel(sims);
@@ -114,7 +114,7 @@ protected:
             auto idx = model.index(i, 0);
 
             SS simState;
-            simState.imsi = model.data(idx, SimsListModel::RoleImsi).toString();
+            simState.iccid = model.data(idx, SimsListModel::RoleIccid).toString();
             simState.primaryPhoneNumber = model.data(idx, SimsListModel::RolePrimaryPhoneNumber).toString();
             simState.locked = model.data(idx, SimsListModel::RoleLocked).toBool();
             simState.present = model.data(idx, SimsListModel::RolePresent).toBool();
@@ -153,7 +153,7 @@ TEST_F(TestConnectivityApiSim, SingleSimAtStartup)
 
     EXPECT_EQ(SSL({
         SS{
-            "310150000000000",
+            "893581234000000000000",
             "123456789",
             false,
             true,
@@ -191,7 +191,7 @@ TEST_F(TestConnectivityApiSim, TwoSimsAtStartup)
 
     EXPECT_EQ(SSL({
         SS{
-            "310150000000000",
+            "893581234000000000000",
             "123456789",
             false,
             true,
@@ -201,7 +201,7 @@ TEST_F(TestConnectivityApiSim, TwoSimsAtStartup)
             false
         },
         SS{
-            "310150000000001",
+            "893581234000000000001",
             "123456789",
             false,
             true,
@@ -237,7 +237,7 @@ TEST_F(TestConnectivityApiSim, AddASim)
 
     EXPECT_EQ(SSL({
         SS{
-            "310150000000000",
+            "893581234000000000000",
             "123456789",
             false,
             true,
@@ -259,7 +259,7 @@ TEST_F(TestConnectivityApiSim, AddASim)
 
     EXPECT_EQ(SSL({
         SS{
-            "310150000000000",
+            "893581234000000000000",
             "123456789",
             false,
             true,
@@ -269,7 +269,7 @@ TEST_F(TestConnectivityApiSim, AddASim)
             false
         },
         SS{
-            "310150000000001",
+            "893581234000000000001",
             "123456789",
             false,
             true,
@@ -305,7 +305,7 @@ TEST_F(TestConnectivityApiSim, SimProperties)
 
     auto sim = qvariant_cast<Sim*>(sims->data(sims->index(0, 0), SimsListModel::Roles::RoleSim));
 
-    EXPECT_EQ("310150000000000", sim->imsi().toStdString());
+    EXPECT_EQ("893581234000000000000", sim->iccid().toStdString());
     EXPECT_EQ("123456789", sim->primaryPhoneNumber().toStdString());
     EXPECT_FALSE(sim->locked());
     EXPECT_TRUE(sim->present());

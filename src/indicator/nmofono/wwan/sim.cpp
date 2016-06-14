@@ -39,7 +39,8 @@ namespace
 Sim::Ptr Sim::fromQOfonoSimWrapper(const QOfonoSimWrapper *wrapper)
 {
     auto sim = Sim::Ptr(new Sim(wrapper->iccid(),
-                                wrapper->phoneNumbers().first(), // default to the first number
+                                "",
+                                "",
                                 wrapper->mcc(),
                                 wrapper->mnc(),
                                 wrapper->preferredLanguages(),
@@ -66,6 +67,8 @@ public:
     QSet<QString> m_interfaces;
 
     QString m_iccid;
+    QString m_imsi;
+    QStringList m_phoneNumbers;
     QString m_primaryPhoneNumber;
     QString m_mcc;
     QString m_mnc;
@@ -107,9 +110,34 @@ public Q_SLOTS:
         }
 
         m_simManager = simmgr;
+        connect(simmgr.get(), &QOfonoSimManager::subscriberIdentityChanged, this, &Private::imsiChanged);
+        connect(simmgr.get(), &QOfonoSimManager::subscriberNumbersChanged, this, &Private::phoneNumbersChanged);
         update();
 
         Q_EMIT p.presentChanged(m_simManager.get() != nullptr);
+    }
+
+    void phoneNumbersChanged(const QStringList &value)
+    {
+        if (value.isEmpty())
+        {
+            return;
+        }
+
+        m_phoneNumbers = value;
+        m_primaryPhoneNumber = value[0];
+        Q_EMIT p.primaryPhoneNumberChanged(m_primaryPhoneNumber);
+    }
+
+    void imsiChanged(const QString &value)
+    {
+        if (value.isEmpty())
+        {
+            return;
+        }
+
+        m_imsi = value;
+        Q_EMIT p.imsiChanged(m_imsi);
     }
 
     void poweredChanged()
@@ -209,6 +237,7 @@ public Q_SLOTS:
 };
 
 Sim::Sim(const QString &iccid,
+         const QString &imsi,
          const QString &primaryPhoneNumber,
          const QString &mcc,
          const QString &mnc,
@@ -217,6 +246,7 @@ Sim::Sim(const QString &iccid,
     : d{new Private(*this)}
 {
     d->m_iccid = iccid;
+    d->m_imsi = imsi;
     d->m_primaryPhoneNumber = primaryPhoneNumber;
     d->m_mcc = mcc;
     d->m_mnc = mnc;
@@ -236,6 +266,11 @@ Sim::simIdentifier() const
 QString Sim::iccid() const
 {
     return d->m_iccid;
+}
+
+QString Sim::imsi() const
+{
+    return d->m_imsi;
 }
 
 QString Sim::primaryPhoneNumber() const

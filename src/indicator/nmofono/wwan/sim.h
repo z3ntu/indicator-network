@@ -61,6 +61,7 @@ public:
 
 private:
     Sim(const QString &iccid,
+        const QString &imsi,
         const QString &primaryPhoneNumber,
         const QString &mcc,
         const QString &mnc,
@@ -77,7 +78,10 @@ public:
     Q_PROPERTY(QString iccid READ iccid CONSTANT)
     QString iccid() const;
 
-    Q_PROPERTY(QString primaryPhoneNumber READ primaryPhoneNumber CONSTANT)
+    Q_PROPERTY(QString imsi READ imsi NOTIFY imsiChanged)
+    QString imsi() const;
+
+    Q_PROPERTY(QString primaryPhoneNumber READ primaryPhoneNumber NOTIFY primaryPhoneNumberChanged)
     QString primaryPhoneNumber() const;
 
     Q_PROPERTY(bool locked READ locked NOTIFY lockedChanged)
@@ -113,6 +117,10 @@ public Q_SLOTS:
 Q_SIGNALS:
 
     void simIdentifierUpdated(const QString &);
+
+    void imsiChanged(const QString &);
+
+    void primaryPhoneNumberChanged(const QString &);
 
     void lockedChanged(bool value);
 

@@ -45,7 +45,10 @@ public:
     Q_PROPERTY(QString Iccid READ iccid CONSTANT)
     QString iccid() const;
 
-    Q_PROPERTY(QString PrimaryPhoneNumber READ primaryPhoneNumber CONSTANT)
+    Q_PROPERTY(QString Imsi READ imsi NOTIFY imsiChanged)
+    QString imsi() const;
+
+    Q_PROPERTY(QString PrimaryPhoneNumber READ primaryPhoneNumber NOTIFY primaryPhoneNumberChanged)
     QString primaryPhoneNumber() const;
 
     Q_PROPERTY(bool Locked READ locked NOTIFY lockedChanged)
@@ -75,7 +78,8 @@ Q_SIGNALS:
     void lockedChanged(bool value);
     void presentChanged(bool value);
     void dataRoamingEnabledChanged(bool value);
-
+    void imsiChanged(const QString &value);
+    void primaryPhoneNumberChanged(const QString &value);
 
 protected:
     class Priv;

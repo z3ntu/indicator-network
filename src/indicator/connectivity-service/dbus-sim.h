@@ -51,6 +51,9 @@ public:
     Q_PROPERTY(QString Iccid READ iccid)
     QString iccid() const;
 
+    Q_PROPERTY(QString Imsi READ imsi)
+    QString imsi() const;
+
     Q_PROPERTY(QString PrimaryPhoneNumber READ primaryPhoneNumber)
     QString primaryPhoneNumber() const;
 
@@ -86,6 +89,8 @@ protected Q_SLOTS:
     void lockedChanged();
     void presentChanged();
     void dataRoamingEnabledChanged();
+    void imsiChanged();
+    void primaryPhoneNumberChanged();
 
 private:
     void notifyProperties(const QStringList& propertyNames);

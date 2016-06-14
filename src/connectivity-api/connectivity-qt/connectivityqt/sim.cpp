@@ -50,11 +50,16 @@ public Q_SLOTS:
         } else if (name == "DataRoamingEnabled")
         {
             Q_EMIT p.dataRoamingEnabledChanged(value.toBool());
+        } else if (name == "Imsi")
+        {
+            Q_EMIT p.imsiChanged(value.toString());
+        } else if (name == "PrimaryPhoneNumber")
+        {
+            Q_EMIT p.primaryPhoneNumberChanged(value.toString());
         } else {
             qWarning() << "connectivityqt::Sim::Priv::propertyChanged(): "
                        << "Unexpected property: " << name;
         }
-
     }
 
 public:
@@ -95,6 +100,11 @@ QDBusObjectPath Sim::path() const
 QString Sim::iccid() const
 {
     return d->m_propertyCache->get("Iccid").toString();
+}
+
+QString Sim::imsi() const
+{
+    return d->m_propertyCache->get("Imsi").toString();
 }
 
 QString Sim::primaryPhoneNumber() const

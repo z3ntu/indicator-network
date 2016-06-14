@@ -60,7 +60,6 @@ public:
     bool present() const;
     QString mcc() const;
     QString mnc() const;
-    QStringList phoneNumbers() const;
     QStringList preferredLanguages() const;
     bool ready() const;
 

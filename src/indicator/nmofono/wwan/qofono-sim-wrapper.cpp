@@ -42,7 +42,6 @@ public:
     shared_ptr<QOfonoSimManager> m_simManager;
 
     QString m_iccid;
-    QStringList m_phoneNumbers;
     QString m_mcc;
     QString m_mnc;
     QStringList m_preferredLanguages;
@@ -50,7 +49,6 @@ public:
     bool m_present = false;
 
     bool m_iccidSet = false;
-    bool m_phoneNumbersSet = false;
     bool m_mccSet = false;
     bool m_mncSet = false;
     bool m_preferredLanguagesSet = false;
@@ -63,7 +61,6 @@ public:
         connect(simmgr.get(), &QOfonoSimManager::cardIdentifierChanged, this, &Private::iccidChanged);
         connect(simmgr.get(), &QOfonoSimManager::mobileCountryCodeChanged, this, &Private::mccChanged);
         connect(simmgr.get(), &QOfonoSimManager::mobileNetworkCodeChanged, this, &Private::mncChanged);
-        connect(simmgr.get(), &QOfonoSimManager::subscriberNumbersChanged, this, &Private::phoneNumbersChanged);
         connect(simmgr.get(), &QOfonoSimManager::preferredLanguagesChanged, this, &Private::preferredLanguagesChanged);
     }
 
@@ -79,7 +76,6 @@ public Q_SLOTS:
         if (!m_present)
         {
             m_iccidSet = false;
-            m_phoneNumbersSet = false;
             m_mccSet = false;
             m_mncSet = false;
             m_preferredLanguagesSet = false;
@@ -149,27 +145,6 @@ public Q_SLOTS:
         }
     }
 
-    void phoneNumbersChanged(const QStringList &value)
-    {
-        if (value.isEmpty())
-        {
-            return;
-        }
-
-        if (m_phoneNumbersSet)
-        {
-            qWarning() << "Unexpected update on Phone Numbers: " << m_phoneNumbers << ", " << value;
-        }
-
-
-        m_phoneNumbers = value;
-        m_phoneNumbersSet = true;
-        if (p.ready())
-        {
-            Q_EMIT p.readyChanged(true);
-        }
-    }
-
     void preferredLanguagesChanged(const QStringList &value)
     {
         if (value.isEmpty())
@@ -222,10 +197,6 @@ QString QOfonoSimWrapper::mnc() const
     return d->m_mnc;
 }
 
-QStringList QOfonoSimWrapper::phoneNumbers() const
-{
-    return d->m_phoneNumbers;
-}
 
 QStringList QOfonoSimWrapper::preferredLanguages() const
 {
@@ -234,7 +205,6 @@ QStringList QOfonoSimWrapper::preferredLanguages() const
 
 bool QOfonoSimWrapper::ready() const {
     return d->m_iccidSet &&
-            d->m_phoneNumbersSet &&
             d->m_mccSet &&
             d->m_mncSet &&
             d->m_preferredLanguagesSet;

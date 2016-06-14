@@ -44,6 +44,8 @@ DBusSim::DBusSim(Sim::Ptr sim,
     connect(sim.get(), &Sim::lockedChanged, this, &DBusSim::lockedChanged);
     connect(sim.get(), &Sim::presentChanged, this, &DBusSim::presentChanged);
     connect(sim.get(), &Sim::dataRoamingEnabledChanged, this, &DBusSim::dataRoamingEnabledChanged);
+    connect(sim.get(), &Sim::imsiChanged, this, &DBusSim::imsiChanged);
+    connect(sim.get(), &Sim::primaryPhoneNumberChanged, this, &DBusSim::primaryPhoneNumberChanged);
 }
 
 DBusSim::~DBusSim()
@@ -77,6 +79,11 @@ void DBusSim::notifyProperties(const QStringList& propertyNames)
 QString DBusSim::iccid() const
 {
     return m_sim->iccid();
+}
+
+QString DBusSim::imsi() const
+{
+    return m_sim->imsi();
 }
 
 QString DBusSim::primaryPhoneNumber() const
@@ -138,6 +145,17 @@ void DBusSim::dataRoamingEnabledChanged()
 {
     notifyProperties({"DataRoamingEnabled"});
 }
+
+void DBusSim::imsiChanged()
+{
+    notifyProperties({"Imsi"});
+}
+
+void DBusSim::primaryPhoneNumberChanged()
+{
+    notifyProperties({"PrimaryPhoneNumber"});
+}
+
 
 nmofono::wwan::Sim::Ptr DBusSim::sim() const
 {

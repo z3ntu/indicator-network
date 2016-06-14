@@ -83,6 +83,8 @@ public:
                 connect(sim.get(), &Sim::lockedChanged, this, &Priv::lockedChanged);
                 connect(sim.get(), &Sim::presentChanged, this, &Priv::presentChanged);
                 connect(sim.get(), &Sim::dataRoamingEnabledChanged, this, &Priv::dataRoamingEnabledChanged);
+                connect(sim.get(), &Sim::imsiChanged, this, &Priv::imsiChanged);
+                connect(sim.get(), &Sim::primaryPhoneNumberChanged, this, &Priv::primaryPhoneNumberChanged);
             }
             p.endInsertRows();
         }
@@ -119,6 +121,16 @@ public Q_SLOTS:
     {
         auto idx = findSim(sender());
         p.dataChanged(idx, idx, {SimsListModel::Roles::RoleDataRoamingEnabled});
+    }
+    void imsiChanged()
+    {
+        auto idx = findSim(sender());
+        p.dataChanged(idx, idx, {SimsListModel::Roles::RoleImsi});
+    }
+    void primaryPhoneNumberChanged()
+    {
+        auto idx = findSim(sender());
+        p.dataChanged(idx, idx, {SimsListModel::Roles::RolePrimaryPhoneNumber});
     }
 
     void propertyChanged(const QString& name, const QVariant& value)
@@ -186,6 +198,9 @@ QVariant SimsListModel::data(const QModelIndex &index, int role) const
     {
         case Roles::RoleIccid:
             return sim->iccid();
+            break;
+        case Roles::RoleImsi:
+            return sim->imsi();
             break;
         case Roles::RolePrimaryPhoneNumber:
             return sim->primaryPhoneNumber();

@@ -182,6 +182,7 @@ public:
 
     void modemReady()
     {
+        qDebug() << "";
         wwan::Modem *modem_raw = qobject_cast<wwan::Modem*>(sender());
         if (!modem_raw)
         {
@@ -189,6 +190,10 @@ public:
             return;
         }
         auto modem = m_ofonoLinks[modem_raw->name()];
+        if (!modem->sim())
+        {
+            matchModemsAndSims();
+        }
 
         if (m_mobileDataEnabledPending || m_simForMobileDataPending)
         {
@@ -393,7 +398,6 @@ public Q_SLOTS:
             m_ofonoLinks[path] = modem;
             connect(modem.get(), &wwan::Modem::readyToUnlock, this, &Private::modemReadyToUnlock);
             connect(modem.get(), &wwan::Modem::ready, this, &Private::modemReady);
-            matchModemsAndSims();
         }
 
         Q_EMIT p.linksUpdated();

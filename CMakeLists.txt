@@ -113,30 +113,30 @@ if(NOT REMOTE_BUILD)
 add_subdirectory(po)
 add_subdirectory(doc)
 
-enable_testing()
-add_subdirectory(tests)
+#enable_testing()
+#add_subdirectory(tests)
 
-ADD_CUSTOM_TARGET(
-        check
-        ${CMAKE_CTEST_COMMAND} --force-new-ctest-process --output-on-failure
-)
+#ADD_CUSTOM_TARGET(
+#        check
+#        ${CMAKE_CTEST_COMMAND} --force-new-ctest-process --output-on-failure
+#)
 
-enable_coverage_report(
-  TARGETS
-    indicator-network-service
-    menumodel_cpp
-    notify_cpp
-    qdbus-stubs
-    i-n-sniffer
-    url_dispatcher_cpp
-  TESTS
-    unit-tests
-    integration-tests
-    secret-agent-test-bin
-  FILTER
-    ${CMAKE_SOURCE_DIR}/tests/*
-    ${CMAKE_BINARY_DIR}/*
-)
+#enable_coverage_report(
+#  TARGETS
+#    indicator-network-service
+#    menumodel_cpp
+#    notify_cpp
+#    qdbus-stubs
+#    i-n-sniffer
+#    url_dispatcher_cpp
+#  TESTS
+#    unit-tests
+#    integration-tests
+#    secret-agent-test-bin
+#  FILTER
+#    ${CMAKE_SOURCE_DIR}/tests/*
+#    ${CMAKE_BINARY_DIR}/*
+#)
 
 endif()
 

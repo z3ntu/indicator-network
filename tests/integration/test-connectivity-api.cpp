@@ -838,22 +838,9 @@ TEST_F(TestConnectivityApi, MobileDataDisablePowersOffAllSims)
     EXPECT_FALSE(connectivity->mobileDataEnabled());
 }
 
-TEST_F(TestConnectivityApi, SimForMobileData)
+TEST_F(TestConnectivityApi, SettingsRestored)
 {
-//    con->setSim(sim1);
-//    assert(mock sim1 active);
-}
-
-TEST_F(TestConnectivityApi, SimForMobileDataSaved)
-{
-//    start indicator
-//    con->setSim(sim1);
-//    assert(mock sim1 active);
-//
-//    stop indicator
-//
-//    start indicator
-//    assert(sim);
+    // Check that settings are restored on startup
 }
 
 }

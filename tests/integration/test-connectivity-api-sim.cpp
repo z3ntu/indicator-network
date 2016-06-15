@@ -314,4 +314,10 @@ TEST_F(TestConnectivityApiSim, SimProperties)
     EXPECT_EQ(QStringList{"en"}, sim->preferredLanguages());
 }
 
+TEST_F(TestConnectivityApiSim, RoamingAllowed)
+{
+//   test that roaming allowed has an effect.
+}
+
+
 }

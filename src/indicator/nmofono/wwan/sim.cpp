@@ -175,6 +175,7 @@ public Q_SLOTS:
                     &Private::update);
 
             qDebug() << "HHHHHHHHHHHHHHHHHHHHHH" << m_connManager->powered();
+            m_connManager->setPowered(m_mobileDataEnabled);
             m_connManager->setRoamingAllowed(m_dataRoamingEnabled);
         }
 
@@ -315,6 +316,10 @@ void Sim::setDataRoamingEnabled(bool value)
         return;
     }
     d->m_dataRoamingEnabled = value;
+    if (d->m_connManager)
+    {
+        d->m_connManager->setRoamingAllowed(d->dataRoamingEnabled);
+    }
     Q_EMIT dataRoamingEnabledChanged(value);
 }
 

@@ -318,7 +318,7 @@ void Sim::setDataRoamingEnabled(bool value)
     d->m_dataRoamingEnabled = value;
     if (d->m_connManager)
     {
-        d->m_connManager->setRoamingAllowed(d->dataRoamingEnabled);
+        d->m_connManager->setRoamingAllowed(d->m_dataRoamingEnabled);
     }
     Q_EMIT dataRoamingEnabledChanged(value);
 }

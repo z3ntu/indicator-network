@@ -128,7 +128,6 @@ public:
     Private(Modem& parent, shared_ptr<QOfonoModem> ofonoModem)
         : p(parent), m_ofonoModem{ofonoModem}
     {
-                qDebug() << "";
         connect(m_ofonoModem.get(), &QOfonoModem::onlineChanged, this, &Private::update);
         setOnline(m_ofonoModem->online());
 
@@ -183,11 +182,6 @@ public Q_SLOTS:
                 {
                     return;
                 }
-
-//                if (m_present)
-//                {
-//                    return;
-//                }
             }
 
             m_readyFired = true;
@@ -196,7 +190,6 @@ public Q_SLOTS:
     }
 
     void serialChanged(const QString &value) {
-        qDebug() << value;
         if (m_serial == value)
         {
             return;
@@ -808,7 +801,6 @@ Sim::Ptr Modem::sim() const
 void
 Modem::setSim(Sim::Ptr sim)
 {
-    qDebug() << sim.get();
     if (d->m_sim == sim)
     {
         return;

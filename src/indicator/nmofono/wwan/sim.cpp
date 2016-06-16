@@ -142,11 +142,8 @@ public Q_SLOTS:
 
     void poweredChanged()
     {
-        qDebug() << "KKKKKKKKKKKKKKKKKKKKKKKKKK2 " << m_connManager->powered();
-
         if (!m_initialDataSet)
         {
-            qDebug() << "KKKKKKKKKKKKKKKKKKKKKKKKKK " << m_connManager->powered();
             m_initialDataSet = true;
             m_initialData = m_connManager->powered();
             Q_EMIT p.initialDataOnSet();
@@ -157,8 +154,6 @@ public Q_SLOTS:
 
     void setConnManager(shared_ptr<QOfonoConnectionManager> connmgr)
     {
-        qDebug() << "HHHHHHHHHHHHHHHHHHHHHH1" << connmgr.get();
-
         if (m_connManager == connmgr)
         {
             return;
@@ -174,7 +169,6 @@ public Q_SLOTS:
                     &QOfonoConnectionManager::roamingAllowedChanged, this,
                     &Private::update);
 
-            qDebug() << "HHHHHHHHHHHHHHHHHHHHHH" << m_connManager->powered();
             m_connManager->setPowered(m_mobileDataEnabled);
             m_connManager->setRoamingAllowed(m_dataRoamingEnabled);
         }

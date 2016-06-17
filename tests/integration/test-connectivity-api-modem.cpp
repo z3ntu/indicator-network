@@ -43,6 +43,7 @@
 
 struct SS {
     QString iccid;
+    QString imsi;
     QString primaryPhoneNumber;
     bool locked;
     bool present;
@@ -53,6 +54,7 @@ struct SS {
     bool operator==(const SS& other) const
     {
         return iccid == other.iccid
+                && imsi == other.imsi
                 && primaryPhoneNumber == other.primaryPhoneNumber
                 && locked == other.locked && present == other.present
                 && mcc == other.mcc && mnc == other.mnc
@@ -66,6 +68,7 @@ inline void PrintTo (const SS& simState, std::ostream* os)
 {
     *os << "SS("
             << "ICCID: " << simState.iccid.toStdString () << ", "
+            << "IMSI: " << simState.imsi.toStdString () << ", "
             << "Phone #: " << simState.primaryPhoneNumber.toStdString () << ", "
             << "Locked: " << (simState.locked ? "y" : "n") << ", "
             << "Present: " << (simState.present ? "y" : "n") << ", "
@@ -108,9 +111,11 @@ protected:
 
             SS simState;
             auto sim = qvariant_cast<Sim*>(model.data(idx, ModemsListModel::Roles::RoleSim));
+
             if (sim)
             {
                 simState.iccid = sim->iccid ();
+                simState.imsi = sim->imsi();
                 simState.primaryPhoneNumber = sim->primaryPhoneNumber ();
                 simState.locked = sim->locked ();
                 simState.present = sim->present ();
@@ -136,7 +141,7 @@ TEST_F(TestConnectivityApiModem, SingleModemAtStartup)
 {
     // Add a physical device to use for the connection
     setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
-    auto device = createWiFiDevice(NM_DEVICE_STATE_ACTIVATED);
+    createWiFiDevice(NM_DEVICE_STATE_ACTIVATED);
 
     // Start the indicator
     ASSERT_NO_THROW(startIndicator());
@@ -157,6 +162,7 @@ TEST_F(TestConnectivityApiModem, SingleModemAtStartup)
     EXPECT_EQ(MSL({
         MS{1, SS{
             "893581234000000000000",
+            "310150000000000",
             "123456789",
             false,
             true,
@@ -173,7 +179,7 @@ TEST_F(TestConnectivityApiModem, TwoModemsAtStartup)
 
     // Add a physical device to use for the connection
     setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
-    auto device = createWiFiDevice(NM_DEVICE_STATE_ACTIVATED);
+    createWiFiDevice(NM_DEVICE_STATE_ACTIVATED);
 
     // Start the indicator
     ASSERT_NO_THROW(startIndicator());
@@ -189,10 +195,12 @@ TEST_F(TestConnectivityApiModem, TwoModemsAtStartup)
     WAIT_FOR_ROW_COUNT(rowsInsertedSpy, modems, 2)
     EXPECT_TRUE(rowsAboutToBeRemovedSpy.isEmpty ());
     EXPECT_TRUE(rowsRemovedSpy.isEmpty ());
+    EXPECT_TRUE(dataChangedSpy.isEmpty ());
 
     EXPECT_EQ(MSL({
         MS{1, SS{
             "893581234000000000000",
+            "310150000000000",
             "123456789",
             false,
             true,
@@ -202,6 +210,7 @@ TEST_F(TestConnectivityApiModem, TwoModemsAtStartup)
         }},
         MS{2, SS{
             "893581234000000000001",
+            "310150000000001",
             "123456789",
             false,
             true,
@@ -216,7 +225,7 @@ TEST_F(TestConnectivityApiModem, AddAModem)
 {
     // Add a physical device to use for the connection
     setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
-    auto device = createWiFiDevice(NM_DEVICE_STATE_ACTIVATED);
+    createWiFiDevice(NM_DEVICE_STATE_ACTIVATED);
 
     // Start the indicator
     ASSERT_NO_THROW(startIndicator());
@@ -237,6 +246,7 @@ TEST_F(TestConnectivityApiModem, AddAModem)
     EXPECT_EQ(MSL({
         MS{1, SS{
             "893581234000000000000",
+            "310150000000000",
             "123456789",
             false,
             true,
@@ -258,6 +268,7 @@ TEST_F(TestConnectivityApiModem, AddAModem)
     EXPECT_EQ(MSL({
         MS{1, SS{
             "893581234000000000000",
+            "310150000000000",
             "123456789",
             false,
             true,
@@ -267,6 +278,7 @@ TEST_F(TestConnectivityApiModem, AddAModem)
         }},
         MS{2, SS{
             "893581234000000000001",
+            "310150000000001",
             "123456789",
             false,
             true,
@@ -283,7 +295,7 @@ TEST_F(TestConnectivityApiModem, ModemProperties)
 {
     // Add a physical device to use for the connection
     setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
-    auto device = createWiFiDevice(NM_DEVICE_STATE_ACTIVATED);
+    createWiFiDevice(NM_DEVICE_STATE_ACTIVATED);
 
     // Start the indicator
     ASSERT_NO_THROW(startIndicator());

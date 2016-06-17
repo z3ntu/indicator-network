@@ -357,7 +357,6 @@ void Sim::setOfonoSimManager(std::shared_ptr<QOfonoSimManager> simmgr)
 
 bool Sim::initialDataOn() const
 {
-    //Q_ASSERT(d->m_initialDataSet);
     return d->m_initialData;
 }
 

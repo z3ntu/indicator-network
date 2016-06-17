@@ -114,7 +114,7 @@ add_subdirectory(po)
 add_subdirectory(doc)
 
 #enable_testing()
-#add_subdirectory(tests)
+add_subdirectory(tests)
 
 #ADD_CUSTOM_TARGET(
 #        check

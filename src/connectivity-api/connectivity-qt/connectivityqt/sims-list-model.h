@@ -73,7 +73,7 @@ public:
     {
         QHash<int, QByteArray> roles;
         roles[RoleIccid] = "Iccid";
-        roles[RoleIccid] = "Imsi";
+        roles[RoleImsi] = "Imsi";
         roles[RolePrimaryPhoneNumber] = "PrimaryPhoneNumber";
         roles[RoleLocked] = "Locked";
         roles[RolePresent] = "Present";

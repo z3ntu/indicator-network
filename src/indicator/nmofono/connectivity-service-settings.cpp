@@ -54,13 +54,14 @@ ConnectivityServiceSettings::ConnectivityServiceSettings(QObject *parent)
     {
         // For testing only
         QString path = QString::fromUtf8(qgetenv("INDICATOR_NETWORK_SETTINGS_PATH")) + "/config.ini";
-        d->m_settings = make_unique<QSettings> (path, QSettings::IniFormat);
+        d->m_settings = make_unique<QSettings>(path, QSettings::IniFormat);
     }
     else
     {
-        d->m_settings = make_unique<QSettings> (QSettings::IniFormat,
-                                                QSettings::UserScope,
-                                                "connectivity-service", "config");
+        d->m_settings = make_unique<QSettings>(QSettings::IniFormat,
+                                               QSettings::UserScope,
+                                               "connectivity-service",
+                                               "config");
     }
 }
 

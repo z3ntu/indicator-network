@@ -236,9 +236,11 @@ protected:
 
     static connectivityqt::Sim* getModemSim(const QAbstractItemModel& model, int idx)
     {
-        return model.data(model.index(idx,0),
-                          connectivityqt::ModemsListModel::RoleSim)
+        auto sim = model.data(model.index(idx,0),
+                              connectivityqt::ModemsListModel::RoleSim)
                 .value<connectivityqt::Sim*>();
+        EXPECT_TRUE(sim);
+        return sim;
     }
 
     static std::unique_ptr<QSortFilterProxyModel> getSortedModems(connectivityqt::Connectivity& connectivity);

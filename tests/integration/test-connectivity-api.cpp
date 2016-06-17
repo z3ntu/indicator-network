@@ -838,9 +838,54 @@ TEST_F(TestConnectivityApi, MobileDataDisablePowersOffAllSims)
     EXPECT_FALSE(connectivity->mobileDataEnabled());
 }
 
-TEST_F(TestConnectivityApi, SettingsRestored)
+TEST_F(TestConnectivityApi, SettingsRestoredOnStartup)
 {
+
+    QString path = temporaryDir.path() + "/config.ini";
+    auto settings = make_unique<QSettings>(path, QSettings::IniFormat);
+
+    settings->beginGroup("Sims/893581234000000000000/");
+    settings->setValue("Imsi", "310150000000000");
+    settings->setValue("PrimaryPhoneNumber", "123456789");
+    settings->setValue("Mcc", "310");
+    settings->setValue("Mnc", "150");
+    settings->setValue("PreferredLanguages", QVariant(QList<QString>({"en"})));
+    settings->setValue("DataRoamingEnabled", true);
+    settings->endGroup();
+
+    settings->beginGroup("Sims/893581234000000000001/");
+    settings->setValue("Imsi", "310150000000001");
+    settings->setValue("PrimaryPhoneNumber", "123456789");
+    settings->setValue("Mcc", "310");
+    settings->setValue("Mnc", "150");
+    settings->setValue("PreferredLanguages", QVariant(QList<QString>({"en"})));
+    settings->setValue("DataRoamingEnabled", false);
+    settings->endGroup();
+
+    settings->setValue("KnownSims", QVariant(QList<QString>({"893581234000000000000", "893581234000000000001"})));
+    settings->setValue("SimForMobileData", "893581234000000000001");
+    settings->setValue("MobileDataEnabled", true);
+    settings->sync();
+
+    setConnectionManagerProperty(modem, "Powered", true);
+    setConnectionManagerProperty(modem, "RoamingAllowed", false);
+
+    auto modem2 = createModem("ril_1");
+    setConnectionManagerProperty(modem2, "Powered", false);
+    setConnectionManagerProperty(modem2, "RoamingAllowed", true);
+
+
+    // Start the indicator
+    ASSERT_NO_THROW(startIndicator());
+
+
     // Check that settings are restored on startup
+
+    EXPECT_FALSE(getConnectionManagerProperties(modem)["Powered"].toBool());
+    EXPECT_TRUE(getConnectionManagerProperties(modem)["RoamingAllowed"].toBool());
+
+    EXPECT_TRUE(getConnectionManagerProperties(modem2)["Powered"].toBool());
+    EXPECT_FALSE(getConnectionManagerProperties(modem2)["RoamingAllowed"].toBool());
 }
 
 }

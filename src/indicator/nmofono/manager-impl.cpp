@@ -200,7 +200,7 @@ public:
         }
         else
         {
-            m_mobileDataEnabled = ret.toBool();
+            setMobileDataEnabled(ret.toBool());
         }
 
         ret = m_settings->simForMobileData();
@@ -225,7 +225,7 @@ public:
                     break;
                 }
             }
-            m_simForMobileData = sim;
+            setSimForMobileData(sim);
         }
     }
 

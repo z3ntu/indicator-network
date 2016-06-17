@@ -43,6 +43,7 @@
 
 struct SS {
     QString iccid;
+    QString imsi;
     QString primaryPhoneNumber;
     bool locked;
     bool present;
@@ -54,6 +55,7 @@ struct SS {
     bool operator==(const SS& other) const
     {
         return iccid == other.iccid
+                && imsi == other.imsi
                 && primaryPhoneNumber == other.primaryPhoneNumber
                 && locked == other.locked && present == other.present
                 && mcc == other.mcc && mnc == other.mnc
@@ -67,6 +69,7 @@ inline void PrintTo (const SS& simState, std::ostream* os)
 {
     *os << "SS("
             << "ICCID: " << simState.iccid.toStdString () << ", "
+            << "IMSI: " << simState.imsi.toStdString () << ", "
             << "Phone #: " << simState.primaryPhoneNumber.toStdString () << ", "
             << "Locked: " << (simState.locked ? "y" : "n") << ", "
             << "Present: " << (simState.present ? "y" : "n") << ", "
@@ -105,6 +108,15 @@ protected:
         return sortedSims;
     }
 
+    connectivityqt::Sim* getSim(const QAbstractItemModel& model, int idx)
+    {
+        auto sim = model.data(model.index(idx,0),
+                              connectivityqt::SimsListModel::RoleSim)
+                .value<connectivityqt::Sim*>();
+        EXPECT_TRUE(sim);
+        return sim;
+    }
+
     SSL simList(QAbstractItemModel& model)
     {
         SSL simStates;
@@ -115,6 +127,7 @@ protected:
 
             SS simState;
             simState.iccid = model.data(idx, SimsListModel::RoleIccid).toString();
+            simState.imsi = model.data(idx, SimsListModel::RoleImsi).toString();
             simState.primaryPhoneNumber = model.data(idx, SimsListModel::RolePrimaryPhoneNumber).toString();
             simState.locked = model.data(idx, SimsListModel::RoleLocked).toBool();
             simState.present = model.data(idx, SimsListModel::RolePresent).toBool();
@@ -149,11 +162,17 @@ TEST_F(TestConnectivityApiSim, SingleSimAtStartup)
     WAIT_FOR_ROW_COUNT(rowsInsertedSpy, sims, 1)
     EXPECT_TRUE(rowsAboutToBeRemovedSpy.isEmpty ());
     EXPECT_TRUE(rowsRemovedSpy.isEmpty ());
-    EXPECT_TRUE(dataChangedSpy.isEmpty ());
+
+    auto sim = getSim(*sims, 0);
+    while (sim->imsi().isEmpty() || sim->primaryPhoneNumber().isEmpty())
+    {
+        EXPECT_TRUE(dataChangedSpy.wait());
+    }
 
     EXPECT_EQ(SSL({
         SS{
             "893581234000000000000",
+            "310150000000000",
             "123456789",
             false,
             true,
@@ -189,9 +208,21 @@ TEST_F(TestConnectivityApiSim, TwoSimsAtStartup)
     EXPECT_TRUE(rowsRemovedSpy.isEmpty ());
     EXPECT_TRUE(dataChangedSpy.isEmpty ());
 
+    auto sim = getSim(*sims, 0);
+    while (sim->imsi().isEmpty() || sim->primaryPhoneNumber().isEmpty())
+    {
+        EXPECT_TRUE(dataChangedSpy.wait());
+    }
+    auto sim2 = getSim(*sims, 1);
+    while (sim2->imsi().isEmpty() || sim2->primaryPhoneNumber().isEmpty())
+    {
+        EXPECT_TRUE(dataChangedSpy.wait());
+    }
+
     EXPECT_EQ(SSL({
         SS{
             "893581234000000000000",
+            "310150000000000",
             "123456789",
             false,
             true,
@@ -202,6 +233,7 @@ TEST_F(TestConnectivityApiSim, TwoSimsAtStartup)
         },
         SS{
             "893581234000000000001",
+            "310150000000001",
             "123456789",
             false,
             true,
@@ -235,9 +267,16 @@ TEST_F(TestConnectivityApiSim, AddASim)
     EXPECT_TRUE(rowsRemovedSpy.isEmpty ());
     EXPECT_TRUE(dataChangedSpy.isEmpty ());
 
+    auto sim = getSim(*sims, 0);
+    while (sim->imsi().isEmpty() || sim->primaryPhoneNumber().isEmpty())
+    {
+        EXPECT_TRUE(dataChangedSpy.wait());
+    }
+
     EXPECT_EQ(SSL({
         SS{
             "893581234000000000000",
+            "310150000000000",
             "123456789",
             false,
             true,
@@ -255,11 +294,17 @@ TEST_F(TestConnectivityApiSim, AddASim)
     WAIT_FOR_ROW_COUNT(rowsInsertedSpy, sims, 2)
     EXPECT_TRUE(rowsAboutToBeRemovedSpy.isEmpty ());
     EXPECT_TRUE(rowsRemovedSpy.isEmpty ());
-    EXPECT_TRUE(dataChangedSpy.isEmpty ());
+
+    auto sim2 = getSim(*sims, 1);
+    while (sim2->imsi().isEmpty() || sim2->primaryPhoneNumber().isEmpty())
+    {
+        EXPECT_TRUE(dataChangedSpy.wait());
+    }
 
     EXPECT_EQ(SSL({
         SS{
             "893581234000000000000",
+            "310150000000000",
             "123456789",
             false,
             true,
@@ -270,6 +315,7 @@ TEST_F(TestConnectivityApiSim, AddASim)
         },
         SS{
             "893581234000000000001",
+            "310150000000001",
             "123456789",
             false,
             true,
@@ -304,8 +350,14 @@ TEST_F(TestConnectivityApiSim, SimProperties)
     EXPECT_TRUE(dataChangedSpy.isEmpty ());
 
     auto sim = qvariant_cast<Sim*>(sims->data(sims->index(0, 0), SimsListModel::Roles::RoleSim));
+    ASSERT_TRUE(sim);
+    while (sim->imsi().isEmpty() || sim->primaryPhoneNumber().isEmpty())
+    {
+        EXPECT_TRUE(dataChangedSpy.wait());
+    }
 
     EXPECT_EQ("893581234000000000000", sim->iccid().toStdString());
+    EXPECT_EQ("310150000000000", sim->imsi().toStdString());
     EXPECT_EQ("123456789", sim->primaryPhoneNumber().toStdString());
     EXPECT_FALSE(sim->locked());
     EXPECT_TRUE(sim->present());

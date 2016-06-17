@@ -39,7 +39,7 @@ public:
     }
 
 public Q_SLOTS:
-    void propertyChanged(const QString& name, const QVariant&)
+    void propertyChanged(const QString& name, const QVariant& value)
     {
         if (name == "Sim")
         {

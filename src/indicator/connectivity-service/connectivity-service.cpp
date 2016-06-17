@@ -189,6 +189,7 @@ public Q_SLOTS:
     void updateSims()
     {
         auto current_iccids = m_sims.keys().toSet();
+
         QMap<QString, nmofono::wwan::Sim::Ptr> sims;
         for (auto i : m_manager->sims())
         {
@@ -211,9 +212,13 @@ public Q_SLOTS:
             m_sims[iccid] = dbussim;
         }
 
-        notifyPrivateProperties({
-            "Sims"
-        });
+        if (!toRemove.isEmpty() || !toAdd.isEmpty())
+        {
+            notifyPrivateProperties({
+                "Sims"
+            });
+            flushProperties();
+        }
     }
 
     void updateModems()
@@ -245,7 +250,6 @@ public Q_SLOTS:
             connect(m.get(), &wwan::Modem::simUpdated, this, &Private::modemSimUpdated);
         }
 
-
         if (!toRemove.isEmpty() || !toAdd.isEmpty())
         {
             notifyPrivateProperties({
@@ -265,19 +269,19 @@ public Q_SLOTS:
     {
         if (!sim)
         {
-            modem->setSim (QDBusObjectPath ("/"));
+            modem->setSim(QDBusObjectPath ("/"));
         }
         else
         {
-            if (m_sims.contains (sim->iccid ()))
+            if (m_sims.contains (sim->iccid()))
             {
-                auto dbusSim = m_sims[sim->iccid ()];
-                modem->setSim (dbusSim->path ());
+                auto dbusSim = m_sims[sim->iccid()];
+                modem->setSim(dbusSim->path());
             }
             else
             {
-                qWarning () << "Could not find SIM with ICCID:"
-                        << sim->iccid ();
+                qWarning() << "Could not find SIM with ICCID:"
+                           << sim->iccid();
             }
         }
     }

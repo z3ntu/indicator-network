@@ -122,6 +122,7 @@ public:
     void simAdded(wwan::Sim::Ptr sim)
     {
         m_sims.append(sim);
+        connect(sim.get(), &wwan::Sim::presentChanged, this, &Private::matchModemsAndSims);
         Q_EMIT p.simsChanged();
         matchModemsAndSims();
     }
@@ -470,6 +471,10 @@ ManagerImpl::ManagerImpl(notify::NotificationManager::SPtr notificationManager,
     d->m_simManager = make_shared<wwan::SimManager>(d->m_ofono, d->m_settings);
     connect(d->m_simManager.get(), &wwan::SimManager::simAdded, d.get(), &Private::simAdded);
     d->m_sims = d->m_simManager->knownSims();
+    for (auto sim : d->m_sims)
+    {
+        connect(sim.get(), &wwan::Sim::presentChanged, d.get(), &Private::matchModemsAndSims);
+    }
 
     connect(d->m_ofono.get(), &QOfonoManager::modemsChanged, d.get(), &Private::modems_changed);
     d->modems_changed(d->m_ofono->modems());

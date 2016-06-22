@@ -19,7 +19,9 @@
  */
 
 #include <nmofono/manager-impl.h>
+#include <nmofono/connectivity-service-settings.h>
 #include <nmofono/wifi/wifi-link-impl.h>
+#include <nmofono/wwan/sim-manager.h>
 #include <NetworkManagerActiveConnectionInterface.h>
 #include <NetworkManagerDeviceInterface.h>
 #include <NetworkManagerInterface.h>
@@ -30,6 +32,7 @@
 #include <qofono-qt5/qofonomanager.h>
 #include <qofono-qt5/qofonomodem.h>
 #undef slots
+#include <ofono/dbus.h>
 
 #include <notify-cpp/notification-manager.h>
 #include <notify-cpp/snapdecision/sim-unlock.h>
@@ -39,6 +42,7 @@
 #include <QMap>
 #include <QList>
 #include <QRegularExpression>
+#include <QSettings>
 #include <NetworkManager.h>
 #include <QDebug>
 #include <algorithm>
@@ -76,9 +80,110 @@ public:
 
     HotspotManager::SPtr m_hotspotManager;
 
+    bool m_mobileDataEnabled = false;
+    bool m_mobileDataEnabledPending = false;
+
+    wwan::Sim::Ptr m_simForMobileData;
+    bool m_simForMobileDataPending = false;
+
+    QList<wwan::Modem::Ptr> m_modems;
+    QList<wwan::Sim::Ptr> m_sims;
+
+    wwan::SimManager::Ptr m_simManager;
+
+    ConnectivityServiceSettings::Ptr m_settings;
+
     Private(Manager& parent) :
         p(parent)
     {
+        m_settings = std::make_shared<ConnectivityServiceSettings>();
+
+        m_simManager = make_shared<wwan::SimManager>(m_settings);
+        m_sims = m_simManager->knownSims();
+        connect(m_simManager.get(), &wwan::SimManager::simAdded, this, &Private::simAdded);
+
+        QVariant ret = m_settings->mobileDataEnabled();
+        if (ret.isNull())
+        {
+            /* This is the first time we are running on a system.
+             *
+             * We need to figure out the status of mobile data from looking
+             * at the individual modems.
+             */
+            m_mobileDataEnabledPending = true;
+            m_settings->setMobileDataEnabled(false);
+        }
+        else
+        {
+            m_mobileDataEnabled = ret.toBool();
+        }
+
+        ret = m_settings->simForMobileData();
+        if (ret.isNull())
+        {
+            /* This is the first time we are running on a system.
+             *
+             * We need to figure out the SIM used for mobile data
+             * from the individual modems.
+             */
+            m_simForMobileDataPending = true;
+            m_settings->setSimForMobileData(QString());
+        }
+        else
+        {
+            QString imsi = ret.toString();
+            wwan::Sim::Ptr sim;
+            for(auto i = m_sims.begin(); i != m_sims.end(); i++)
+            {
+                if ((*i)->imsi() == imsi) {
+                    sim = *i;
+                    break;
+                }
+            }
+            m_simForMobileData = sim;
+        }
+
+    }
+
+    void matchModemsAndSims()
+    {
+        for (wwan::Modem::Ptr modem: m_modems)
+        {
+            bool match = false;
+            for(wwan::Sim::Ptr sim : m_sims)
+            {
+                if (sim->ofonoPath() == modem->ofonoPath())
+                {
+                    match = true;
+                    modem->setSim(sim);
+                    break;
+                }
+            }
+            if (!match)
+            {
+                modem->setSim(wwan::Sim::Ptr());
+            }
+        }
+    }
+
+    void simAdded(wwan::Sim::Ptr sim)
+    {
+        m_sims.append(sim);
+        matchModemsAndSims();
+        Q_EMIT p.simsChanged();
+    }
+
+    void modemReady()
+    {
+        wwan::Modem *modem_raw = qobject_cast<wwan::Modem*>(sender());
+        if (!modem_raw)
+        {
+            Q_ASSERT(0);
+            return;
+        }
+        m_modems.append(m_ofonoLinks[modem_raw->name()]);
+        matchModemsAndSims();
+        Q_EMIT p.modemsChanged();
     }
 
     void setUnstoppableOperationHappening(bool happening)
@@ -192,6 +297,8 @@ public Q_SLOTS:
                 m_pendingUnlocks.removeOne(modem);
                 disconnect(modem.get(), &wwan::Modem::readyToUnlock, this, &Private::modemReadyToUnlock);
             }
+            m_modems.removeAll(modem);
+            Q_EMIT p.modemsChanged();
         }
 
         for (const auto& path : toAdd)
@@ -202,12 +309,74 @@ public Q_SLOTS:
             auto modem = make_shared<wwan::Modem>(modemInterface);
             m_ofonoLinks[path] = modem;
             connect(modem.get(), &wwan::Modem::readyToUnlock, this, &Private::modemReadyToUnlock);
+            connect(modem.get(), &wwan::Modem::ready, this, &Private::modemReady);
         }
 
         Q_EMIT p.linksUpdated();
         m_unlockDialog->setShowSimIdentifiers(m_ofonoLinks.size() > 1);
 
         updateModemAvailable();
+    }
+
+    void setMobileDataEnabled(bool value) {
+        if (m_mobileDataEnabled == value)
+        {
+            return;
+        }
+
+        m_settings->setMobileDataEnabled(value);
+        m_mobileDataEnabled = value;
+        Q_EMIT p.mobileDataEnabledChanged(value);
+
+        if (m_mobileDataEnabled)
+        {
+            for (wwan::Modem::Ptr modem : m_modems)
+            {
+                if (modem->sim() && modem->sim() == m_simForMobileData)
+                {
+                    modem->sim()->setMobileDataEnabled(true);
+                }
+            }
+        }
+        else
+        {
+            for (wwan::Modem::Ptr modem : m_modems)
+            {
+                if (modem->sim()) {
+                    modem->sim()->setMobileDataEnabled(false);
+                }
+            }
+        }
+    }
+
+    void setSimForMobileData(wwan::Sim::Ptr sim) {
+        if (m_simForMobileData == sim)
+        {
+            return;
+        }
+
+        if (m_simForMobileData)
+        {
+            m_simForMobileData->setMobileDataEnabled(false);
+        }
+
+        if (!sim)
+        {
+            m_settings->setSimForMobileData("");
+        }
+        else
+        {
+            m_settings->setSimForMobileData(sim->imsi());
+        }
+
+
+        m_simForMobileData = sim;
+        if (m_simForMobileData)
+        {
+            m_simForMobileData->setMobileDataEnabled(p.mobileDataEnabled());
+        }
+
+        Q_EMIT p.simForMobileDataChanged();
     }
 };
 
@@ -506,7 +675,8 @@ ManagerImpl::hasWifi() const
 bool
 ManagerImpl::roaming() const
 {
-    for (auto modem : d->m_ofonoLinks) {
+    for (auto modem : d->m_ofonoLinks)
+    {
         if (modem->modemStatus() == wwan::Modem::ModemStatus::roaming) {
             return true;
         }
@@ -522,7 +692,9 @@ ManagerImpl::unlockModem(wwan::Modem::Ptr modem)
         if (!d->m_ofonoLinks.values().contains(modem)
                 || d->m_unlockDialog->modem() == modem
                 || count(d->m_pendingUnlocks.begin(), d->m_pendingUnlocks.end(), modem) != 0)
+        {
             return;
+        }
 
         if (d->m_unlockDialog->state() == SimUnlockDialog::State::ready
                 && (d->m_pendingUnlocks.size() == 0))
@@ -651,6 +823,43 @@ ManagerImpl::setHotspotAuth(const QString& auth)
 {
     d->m_hotspotManager->setAuth(auth);
 }
+
+bool
+ManagerImpl::mobileDataEnabled() const
+{
+    return d->m_mobileDataEnabled;
+}
+
+void
+ManagerImpl::setMobileDataEnabled(bool value)
+{
+    d->setMobileDataEnabled(value);
+}
+
+wwan::Sim::Ptr
+ManagerImpl::simForMobileData() const
+{
+    return d->m_simForMobileData;
+}
+
+void
+ManagerImpl::setSimForMobileData(wwan::Sim::Ptr sim)
+{
+    d->setSimForMobileData(sim);
+}
+
+QList<wwan::Modem::Ptr>
+ManagerImpl::modems() const
+{
+    return d->m_modems;
+}
+
+QList<wwan::Sim::Ptr>
+ManagerImpl::sims() const
+{
+    return d->m_sims;
+}
+
 
 }
 

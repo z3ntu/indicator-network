@@ -155,9 +155,9 @@ unique_ptr<QuickAccessSection> Factory::newQuickAccessSection(SwitchItem::Ptr fl
     return make_unique<QuickAccessSection>(d->singletonNmofono(), flightModeSwitch);
 }
 
-unique_ptr<WwanSection> Factory::newWwanSection(SwitchItem::Ptr hotspotSwitch)
+unique_ptr<WwanSection> Factory::newWwanSection(SwitchItem::Ptr mobileDataSwitch, SwitchItem::Ptr hotspotSwitch)
 {
-    return make_unique<WwanSection>(d->singletonNmofono(), hotspotSwitch);
+    return make_unique<WwanSection>(d->singletonNmofono(), mobileDataSwitch, hotspotSwitch);
 }
 
 unique_ptr<VpnSection> Factory::newVpnSection()
@@ -206,6 +206,22 @@ SwitchItem::UPtr Factory::newFlightModeSwitch()
 SwitchItem::UPtr Factory::newMobileDataSwitch()
 {
     auto s = make_unique<SwitchItem>(_("Cellular data"), "mobiledata", "enabled");
+    auto manager = d->singletonNmofono();
+
+    s->setState(manager->mobileDataEnabled());
+    QObject::connect(manager.get(), &nmofono::Manager::mobileDataEnabledChanged, s.get(), &SwitchItem::setState);
+    QObject::connect(s.get(), &SwitchItem::stateUpdated, manager.get(), &nmofono::Manager::setMobileDataEnabled);
+
+    s->setEnabled(!manager->flightMode() && manager->simForMobileData());
+    auto switch_r = s.get();
+    auto manager_r = manager.get();
+    QObject::connect(manager_r, &nmofono::Manager::flightModeUpdated, switch_r, [manager_r, switch_r](bool value) {
+        switch_r->setEnabled(!value && manager_r->simForMobileData());
+    });
+    QObject::connect(manager_r, &nmofono::Manager::simForMobileDataChanged, switch_r, [manager_r, switch_r]() {
+        switch_r->setEnabled(!manager_r->flightMode() && manager_r->simForMobileData());
+    });
+
     return s;
 }
 

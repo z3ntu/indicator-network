@@ -8,15 +8,15 @@ msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-04-29 12:38+0300\n"
-"PO-Revision-Date: 2016-02-15 17:40+0000\n"
+"PO-Revision-Date: 2016-06-22 04:58+0000\n"
 "Last-Translator: Danial Behzadi <dani.behzi@gmail.com>\n"
 "Language-Team: Persian <fa@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Launchpad-Export-Date: 2016-05-01 05:55+0000\n"
-"X-Generator: Launchpad (build 17995)\n"
+"X-Launchpad-Export-Date: 2016-06-22 06:21+0000\n"
+"X-Generator: Launchpad (build 18111)\n"
 "Language: fa\n"
 
 #: ../src/agent/SecretRequest.cpp:61
@@ -92,7 +92,7 @@ msgstr "حالت هواپیما"
 
 #: ../src/indicator/factory.cpp:208
 msgid "Cellular data"
-msgstr ""
+msgstr "دادهٔ سلّولی"
 
 #. TODO Move this into a new class
 #: ../src/indicator/factory.cpp:215
@@ -192,52 +192,56 @@ msgstr "کدهای PIN مطابقت نداشت."
 
 #: ../src/indicator/vpn-status-notifier.cpp:48
 msgid "The VPN connection '%1' failed."
-msgstr ""
+msgstr "اتّصال وی‌پی‌ان %1 شکست خورد."
 
 #: ../src/indicator/vpn-status-notifier.cpp:50
 msgid ""
 "The VPN connection '%1' failed because the network connection was "
 "interrupted."
-msgstr ""
+msgstr "اتّصال وی‌پی‌ان %1 به دلیل وقفه در اتّصال شبکه شکست خورد."
 
 #: ../src/indicator/vpn-status-notifier.cpp:51
 msgid ""
 "The VPN connection '%1' failed because the VPN service stopped unexpectedly."
 msgstr ""
+"اتّصال وی‌پی‌ان %1 به دلیل توقّف غیر منتظرهٔ خدمت وی‌پی‌ان شکست خورد."
 
 #: ../src/indicator/vpn-status-notifier.cpp:52
 msgid ""
 "The VPN connection '%1' failed because the VPN service returned invalid "
 "configuration."
 msgstr ""
+"اتّصال وی‌پی‌ان %1 به دلیل برگرداندن پیکربندی نامعتبر از سوی خدمت وی‌پی‌ان "
+"شکست خورد."
 
 #: ../src/indicator/vpn-status-notifier.cpp:53
 msgid ""
 "The VPN connection '%1' failed because the connection attempt timed out."
-msgstr ""
+msgstr "اتّصال وی‌پی‌ان %1 به دلیل تمام شدن مهات زمانی اتّصال شکست خورد."
 
 #: ../src/indicator/vpn-status-notifier.cpp:54
 msgid ""
 "The VPN connection '%1' failed because the VPN service did not start in time."
 msgstr ""
+"اتّصال وی‌پی‌ان %1 به دلیل شروع نشدن به موقع خدمت وی‌پی‌ان شکست خورد."
 
 #: ../src/indicator/vpn-status-notifier.cpp:55
 msgid ""
 "The VPN connection '%1' failed because the VPN service failed to start."
-msgstr ""
+msgstr "اتّصال وی‌پی‌ان %1 به دلیل شکست در شروع خدمت وی‌پی‌ان شکست خورد."
 
 #: ../src/indicator/vpn-status-notifier.cpp:56
 msgid ""
 "The VPN connection '%1' failed because there were no valid VPN secrets."
-msgstr ""
+msgstr "اتّصال وی‌پی‌ان %1 به دلیل نبودن هیچ رمز وی‌پی‌ان معتبری شکست خورد."
 
 #: ../src/indicator/vpn-status-notifier.cpp:57
 msgid "The VPN connection '%1' failed because of invalid VPN secrets."
-msgstr ""
+msgstr "اتّصال وی‌پی‌ان %1 به دلیل رمزهای نامعتبر وی‌پی‌ان شکست خورد."
 
 #: ../src/indicator/vpn-status-notifier.cpp:68
 msgid "VPN Connection Failed"
-msgstr ""
+msgstr "اتّصال وی‌پی‌ان شکست خورد."
 
 #: ../src/indicator/sections/wwan-section.cpp:99
 msgid "Cellular settings…"
@@ -258,4 +262,4 @@ msgstr "شبکه"
 
 #: ../src/indicator/nmofono/vpn/vpn-manager.cpp:81
 msgid "VPN connection %1"
-msgstr ""
+msgstr "اتّصال وی‌پی‌ان %1"

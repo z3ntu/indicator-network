@@ -25,6 +25,8 @@
 
 #include <libqtdbusmock/DBusMock.h>
 
+#include <util/logging.h>
+
 using namespace QtDBusMock;
 
 class Runner: public QObject
@@ -39,6 +41,8 @@ public Q_SLOTS:
 
 int main(int argc, char **argv)
 {
+    qInstallMessageHandler(util::loggingFunction);
+
     qputenv("LANG", "C.UTF-8");
     unsetenv("LC_ALL");
     unsetenv("GDM_LANG");

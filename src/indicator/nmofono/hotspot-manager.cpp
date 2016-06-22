@@ -62,7 +62,7 @@ public:
 
     void addConnection()
     {
-        qDebug() << __PRETTY_FUNCTION__ << "Adding new hotspot connection";
+        qDebug() << "Adding new hotspot connection";
         QVariantDictMap connection = createConnectionSettings(m_ssid, m_password,
                                                               m_mode, m_auth);
 
@@ -91,7 +91,7 @@ public:
 
     void updateConnection()
     {
-        qDebug() << __PRETTY_FUNCTION__ << "Updating hotspot connection";
+        qDebug() << "Updating hotspot connection";
         // Get new settings
         QVariantDictMap new_settings = createConnectionSettings(m_ssid,
                                                                 m_password,
@@ -129,7 +129,7 @@ public:
         // Wait for connection to activate
         while (count < 20 && activeConnection.state() != NM_ACTIVE_CONNECTION_STATE_ACTIVATED)
         {
-            qDebug() << __PRETTY_FUNCTION__ << "Waiting for hotspot to connect";
+            qDebug() << "Waiting for hotspot to connect";
             QThread::msleep(100);
             ++count;
         }
@@ -144,11 +144,11 @@ public:
     {
         if (!m_hotspot)
         {
-            qWarning() << __PRETTY_FUNCTION__ <<  "Could not find a hotspot setup to enable";
+            qWarning() << "Could not find a hotspot setup to enable";
             return;
         }
 
-        qDebug() << __PRETTY_FUNCTION__ << "Activating hotspot on device" << device.path();
+        qDebug() << "Activating hotspot on device" << device.path();
         bool success = activateConnection(device);
         setEnable(success);
         if (success)
@@ -332,7 +332,7 @@ public:
                 continue;
             }
 
-            qDebug() << __PRETTY_FUNCTION__ << "Using AP interface " << interface;
+            qDebug() << "Using AP interface " << interface;
             m_device = make_unique<ApDevice>(*path, interface);
             break;
         }
@@ -350,7 +350,7 @@ public:
         {
             QThread::msleep(100);
             findApDevice();
-            qDebug() << __PRETTY_FUNCTION__ << "Searching for AP device";
+            qDebug() << "Searching for AP device";
             ++count;
         }
     }
@@ -546,7 +546,7 @@ public Q_SLOTS:
     {
         if (!m_hotspot)
         {
-            qWarning() << __PRETTY_FUNCTION__ <<  "Could not find a hotspot setup to enable";
+            qWarning() << "Could not find a hotspot setup to enable";
             return;
         }
 
@@ -561,12 +561,12 @@ public Q_SLOTS:
 
         if (m_device)
         {
-            qDebug() << __PRETTY_FUNCTION__ << "Reactivating hotspot connection on device" << m_device->m_path.path();
+            qDebug() << "Reactivating hotspot connection on device" << m_device->m_path.path();
             activateConnection(m_device->m_path);
         }
         else
         {
-            qWarning() << __PRETTY_FUNCTION__ << "Could not get device when reactivating hotspot connection";
+            qWarning() << "Could not get device when reactivating hotspot connection";
         }
     }
 
@@ -649,7 +649,7 @@ void HotspotManager::setEnabled(bool value)
         // If the SSID is empty, we report an error.
         if (d->m_ssid.isEmpty())
         {
-            qWarning() << __PRETTY_FUNCTION__ << "  SSID was empty";
+            qWarning() << "  SSID was empty";
             Q_EMIT reportError(1);
             d->setEnable(false);
             return;
@@ -662,7 +662,7 @@ void HotspotManager::setEnabled(bool value)
 
         if (!d->m_device)
         {
-            qWarning() << __PRETTY_FUNCTION__ << "Failed to create AP device";
+            qWarning() << "Failed to create AP device";
             Q_EMIT reportError(1);
             d->setDisconnectWifi(false);
             return;

@@ -122,7 +122,7 @@ public Q_SLOTS:
         QDBusPendingReply<QDBusObjectPath> reply = *call;
         if (reply.isError())
         {
-            qWarning() << __PRETTY_FUNCTION__ << reply.error().message();
+            qWarning() << reply.error().message();
         }
         call->deleteLater();
     }

@@ -32,6 +32,34 @@
 
 using namespace std;
 
+class DummyCredentialStore : public agent::CredentialStore
+{
+public:
+    DummyCredentialStore() {
+    }
+
+    ~DummyCredentialStore() {
+    }
+
+    void
+    save (const QString&, const QString&, const QString&, const QString&,
+          const QString&)
+    {
+    }
+
+    QMap<QString, QString>
+    get (const QString&, const QString&)
+    {
+        return QMap<QString, QString> ();
+    }
+
+    void
+    clear (const QString&)
+    {
+    }
+
+};
+
 int main(int argc, char *argv[]) {
     QCoreApplication application(argc, argv);
     DBusTypes::registerMetaTypes();
@@ -49,7 +77,7 @@ int main(int argc, char *argv[]) {
 
     auto secretAgent = make_unique<agent::SecretAgent>(
                 make_shared<notify::NotificationManager>(GETTEXT_PACKAGE),
-				make_shared<agent::KeyringCredentialStore>(),
+                make_shared<DummyCredentialStore>(),
                 QDBusConnection::systemBus(), QDBusConnection::sessionBus());
 
     if (argc == 2 && QString("--print-address") == argv[1]) {

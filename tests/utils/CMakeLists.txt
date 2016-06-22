@@ -8,7 +8,8 @@ add_library(
     action-utils.cpp
 )
 
-qt5_use_modules(
+target_link_libraries(
     test-utils
-    Core
+    Qt5::Core
+    util
 )

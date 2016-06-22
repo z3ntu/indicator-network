@@ -35,7 +35,7 @@ DBusSim::DBusSim(Sim::Ptr sim,
     m_sim(sim),
     m_connection(connection)
 {
-    m_path.setPath(DBusTypes::simPath(m_sim->imsi()));
+    m_path.setPath(DBusTypes::simPath());
 
     new SimAdaptor(this);
 
@@ -44,6 +44,10 @@ DBusSim::DBusSim(Sim::Ptr sim,
     connect(sim.get(), &Sim::lockedChanged, this, &DBusSim::lockedChanged);
     connect(sim.get(), &Sim::presentChanged, this, &DBusSim::presentChanged);
     connect(sim.get(), &Sim::dataRoamingEnabledChanged, this, &DBusSim::dataRoamingEnabledChanged);
+    connect(sim.get(), &Sim::imsiChanged, this, &DBusSim::imsiChanged);
+    connect(sim.get(), &Sim::primaryPhoneNumberChanged, this, &DBusSim::primaryPhoneNumberChanged);
+    connect(sim.get(), &Sim::mccChanged, this, &DBusSim::mccChanged);
+    connect(sim.get(), &Sim::mncChanged, this, &DBusSim::mncChanged);
 }
 
 DBusSim::~DBusSim()
@@ -72,6 +76,11 @@ void DBusSim::notifyProperties(const QStringList& propertyNames)
         SimAdaptor::staticMetaObject.classInfo(SimAdaptor::staticMetaObject.indexOfClassInfo("D-Bus Interface")).value(),
         propertyNames
     );
+}
+
+QString DBusSim::iccid() const
+{
+    return m_sim->iccid();
 }
 
 QString DBusSim::imsi() const
@@ -137,6 +146,26 @@ void DBusSim::presentChanged()
 void DBusSim::dataRoamingEnabledChanged()
 {
     notifyProperties({"DataRoamingEnabled"});
+}
+
+void DBusSim::imsiChanged()
+{
+    notifyProperties({"Imsi"});
+}
+
+void DBusSim::primaryPhoneNumberChanged()
+{
+    notifyProperties({"PrimaryPhoneNumber"});
+}
+
+void DBusSim::mccChanged()
+{
+    notifyProperties({"Mcc"});
+}
+
+void DBusSim::mncChanged()
+{
+    notifyProperties({"Mnc"});
 }
 
 nmofono::wwan::Sim::Ptr DBusSim::sim() const

@@ -77,7 +77,7 @@ public:
             p.beginInsertRows(QModelIndex(), m_modems.size(), m_modems.size() + toAdd.size() - 1);
             for (const auto& path: toAdd)
             {
-                auto modem = std::make_shared<Modem>(path, m_propertyCache->connection(), m_sims, nullptr);
+                auto modem = std::make_shared<Modem>(path, m_propertyCache->connection(), m_sims);
                 m_objectOwner(modem.get());
                 m_modems << modem;
                 connect(modem.get(), &Modem::simChanged, this, &Priv::simChanged);
@@ -177,6 +177,9 @@ QVariant ModemsListModel::data(const QModelIndex &index, int role) const
             break;
         case Roles::RoleSerial:
             return modem->serial();
+            break;
+        case Roles::RoleModem:
+            return QVariant::fromValue<Modem*>(modem.get());
             break;
         case Roles::RoleSim:
             return QVariant::fromValue<Sim*>(modem->sim());

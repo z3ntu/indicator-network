@@ -764,4 +764,128 @@ TEST_F(TestConnectivityApi, HotspotModemAvailable)
 
     EXPECT_TRUE(connectivity->modemAvailable());
 }
+
+TEST_F(TestConnectivityApi, MobileDataDisablePowersOffAllSims)
+{
+    auto modem2 = createModem("ril_1");
+    setConnectionManagerProperty(modem2, "Powered", true);
+
+    setGlobalConnectedState(NM_STATE_DISCONNECTED);
+    auto device = createWiFiDevice(NM_DEVICE_STATE_DISCONNECTED);
+
+    // Start the indicator
+    ASSERT_NO_THROW(startIndicator());
+
+    // Connect the the service
+    auto connectivity(newConnectivity());
+
+    QSignalSpy mobileDataEnabledSpy(connectivity.get(), SIGNAL(mobileDataEnabledUpdated(bool)));
+    QSignalSpy simForMobileDataSpy(connectivity.get(), SIGNAL(simForMobileDataUpdated(Sim*)));
+
+    // One of the modems was started and we had no settings.
+    // So we start by assuming mobile data was enabled.
+    if (!connectivity->mobileDataEnabled())
+    {
+        WAIT_FOR_SIGNALS(mobileDataEnabledSpy, 1)
+    }
+    mobileDataEnabledSpy.clear();
+    EXPECT_TRUE(connectivity->mobileDataEnabled());
+
+    if (!connectivity->simForMobileData())
+    {
+        WAIT_FOR_SIGNALS(simForMobileDataSpy, 1)
+    }
+    simForMobileDataSpy.clear();
+    EXPECT_TRUE(connectivity->simForMobileData() != nullptr);
+
+
+    QSignalSpy simsModelRowsInsertedSpy(connectivity->sims(), SIGNAL(rowsInserted(const QModelIndex &, int, int)));
+    QSignalSpy modemsModelRowsInsertedSpy(connectivity->modems(), SIGNAL(rowsInserted(const QModelIndex &, int, int)));
+    WAIT_FOR_ROW_COUNT(simsModelRowsInsertedSpy, connectivity->sims(), 2)
+    WAIT_FOR_ROW_COUNT(modemsModelRowsInsertedSpy, connectivity->modems(), 2)
+
+    auto modems = getSortedModems(*connectivity);
+    auto simForMobileData = connectivity->simForMobileData();
+    auto secondSim = getModemSim(*modems, 1);
+
+    ASSERT_TRUE(simForMobileData);
+    ASSERT_TRUE(secondSim);
+    // These should be the exact same object.
+    EXPECT_TRUE(simForMobileData == secondSim);
+
+    // Only the second modem should be powered
+    EXPECT_FALSE(getConnectionManagerProperties(modem)["Powered"].toBool());
+    EXPECT_TRUE(getConnectionManagerProperties(modem2)["Powered"].toBool());
+
+    auto& connectionManager(dbusMock.ofonoConnectionManagerInterface(modem2));
+    QSignalSpy connectionManagerPropertyChangedSpy(
+                               &connectionManager,
+                               SIGNAL(PropertyChanged(const QString &, const QDBusVariant &)));
+
+    // Disable all mobile data.
+    connectivity->setMobileDataEnabled(false);
+
+    WAIT_FOR_SIGNALS(connectionManagerPropertyChangedSpy, 1)
+
+    // Both modems should by un-powered
+    EXPECT_FALSE(getConnectionManagerProperties(modem)["Powered"].toBool());
+    EXPECT_FALSE(getConnectionManagerProperties(modem2)["Powered"].toBool());
+
+    if (connectivity->mobileDataEnabled())
+    {
+        WAIT_FOR_SIGNALS(mobileDataEnabledSpy, 1)
+    }
+    EXPECT_FALSE(connectivity->mobileDataEnabled());
+}
+
+TEST_F(TestConnectivityApi, SettingsRestoredOnStartup)
+{
+
+    QString path = temporaryDir.path() + "/config.ini";
+    auto settings = make_unique<QSettings>(path, QSettings::IniFormat);
+
+    settings->beginGroup("Sims/893581234000000000000/");
+    settings->setValue("Imsi", "310150000000000");
+    settings->setValue("PrimaryPhoneNumber", "123456789");
+    settings->setValue("Mcc", "310");
+    settings->setValue("Mnc", "150");
+    settings->setValue("PreferredLanguages", QVariant(QList<QString>({"en"})));
+    settings->setValue("DataRoamingEnabled", true);
+    settings->endGroup();
+
+    settings->beginGroup("Sims/893581234000000000001/");
+    settings->setValue("Imsi", "310150000000001");
+    settings->setValue("PrimaryPhoneNumber", "123456789");
+    settings->setValue("Mcc", "310");
+    settings->setValue("Mnc", "150");
+    settings->setValue("PreferredLanguages", QVariant(QList<QString>({"en"})));
+    settings->setValue("DataRoamingEnabled", false);
+    settings->endGroup();
+
+    settings->setValue("KnownSims", QVariant(QList<QString>({"893581234000000000000", "893581234000000000001"})));
+    settings->setValue("SimForMobileData", "893581234000000000001");
+    settings->setValue("MobileDataEnabled", true);
+    settings->sync();
+
+    setConnectionManagerProperty(modem, "Powered", true);
+    setConnectionManagerProperty(modem, "RoamingAllowed", false);
+
+    auto modem2 = createModem("ril_1");
+    setConnectionManagerProperty(modem2, "Powered", false);
+    setConnectionManagerProperty(modem2, "RoamingAllowed", true);
+
+
+    // Start the indicator
+    ASSERT_NO_THROW(startIndicator());
+
+
+    // Check that settings are restored on startup
+
+    EXPECT_FALSE(getConnectionManagerProperties(modem)["Powered"].toBool());
+    EXPECT_TRUE(getConnectionManagerProperties(modem)["RoamingAllowed"].toBool());
+
+    EXPECT_TRUE(getConnectionManagerProperties(modem2)["Powered"].toBool());
+    EXPECT_FALSE(getConnectionManagerProperties(modem2)["RoamingAllowed"].toBool());
+}
+
 }

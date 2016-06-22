@@ -99,6 +99,8 @@ public:
 
     QString m_serial;
     bool m_serialSet = false;
+    bool m_presentSet = false;
+    bool m_present = false;
     bool m_readyFired = false;
 
     QString m_operatorName;
@@ -169,6 +171,19 @@ public Q_SLOTS:
 
         if (m_serialSet && !m_readyFired)
         {
+            if (!m_simManager)
+            {
+                return;
+            }
+
+            if (!m_sim)
+            {
+                if (!m_presentSet)
+                {
+                    return;
+                }
+            }
+
             m_readyFired = true;
             Q_EMIT p.ready();
         }
@@ -267,8 +282,19 @@ public Q_SLOTS:
             connect(m_simManager.get(),
                     &QOfonoSimManager::resetPinComplete, this,
                     &Private::resetPinComplete);
+
+            connect(m_simManager.get(),
+                    &QOfonoSimManager::presenceChanged, this,
+                    &Private::presentChanged);
         }
 
+        update();
+    }
+
+    void presentChanged()
+    {
+        m_presentSet = true;
+        m_present = m_simManager->present();
         update();
     }
 
@@ -781,6 +807,7 @@ Modem::setSim(Sim::Ptr sim)
     }
     d->m_sim = sim;
     Q_EMIT simUpdated();
+    d->update();
 }
 
 QString

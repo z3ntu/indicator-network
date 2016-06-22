@@ -188,32 +188,37 @@ public Q_SLOTS:
 
     void updateSims()
     {
-        auto current_imsis = m_sims.keys().toSet();
+        auto current_iccids = m_sims.keys().toSet();
+
         QMap<QString, nmofono::wwan::Sim::Ptr> sims;
         for (auto i : m_manager->sims())
         {
-            sims[i->imsi()] = i;
+            sims[i->iccid()] = i;
         }
         auto toAdd(sims.keys().toSet());
-        toAdd.subtract(current_imsis);
+        toAdd.subtract(current_iccids);
 
-        auto toRemove(current_imsis);
+        auto toRemove(current_iccids);
         toRemove.subtract(sims.keys().toSet());
 
-        for (auto imsi : toRemove)
+        for (auto iccid : toRemove)
         {
-            m_sims.remove(imsi);
+            m_sims.remove(iccid);
         }
 
-        for (auto imsi : toAdd)
+        for (auto iccid : toAdd)
         {
-            DBusSim::SPtr dbussim = make_shared<DBusSim>(sims[imsi], m_connection);
-            m_sims[imsi] = dbussim;
+            DBusSim::SPtr dbussim = make_shared<DBusSim>(sims[iccid], m_connection);
+            m_sims[iccid] = dbussim;
         }
 
-        notifyPrivateProperties({
-            "Sims"
-        });
+        if (!toRemove.isEmpty() || !toAdd.isEmpty())
+        {
+            notifyPrivateProperties({
+                "Sims"
+            });
+            flushProperties();
+        }
     }
 
     void updateModems()
@@ -244,9 +249,14 @@ public Q_SLOTS:
             updateModemSimPath(dbusmodem, m->sim());
             connect(m.get(), &wwan::Modem::simUpdated, this, &Private::modemSimUpdated);
         }
-        notifyPrivateProperties({
-            "Modems"
-        });
+
+        if (!toRemove.isEmpty() || !toAdd.isEmpty())
+        {
+            notifyPrivateProperties({
+                "Modems"
+            });
+            flushProperties();
+        }
     }
 
     void modemSimUpdated()
@@ -259,11 +269,20 @@ public Q_SLOTS:
     {
         if (!sim)
         {
-            modem->setSim(QDBusObjectPath("/"));
+            modem->setSim(QDBusObjectPath ("/"));
         }
         else
         {
-            modem->setSim(m_sims[sim->imsi()]->path());
+            if (m_sims.contains (sim->iccid()))
+            {
+                auto dbusSim = m_sims[sim->iccid()];
+                modem->setSim(dbusSim->path());
+            }
+            else
+            {
+                qWarning() << "Could not find SIM with ICCID:"
+                           << sim->iccid();
+            }
         }
     }
 
@@ -634,8 +653,15 @@ QDBusObjectPath PrivateService::simForMobileData() const
         return QDBusObjectPath("/");
     }
 
-    Q_ASSERT(p.d->m_sims.contains(sim->imsi()));
-    return p.d->m_sims[sim->imsi()]->path();
+    if (p.d->m_sims.contains(sim->iccid()))
+    {
+        return p.d->m_sims[sim->iccid()]->path();
+    }
+    else
+    {
+        qWarning() << "Could not find SIM for ICCID:" << sim->iccid();
+        return QDBusObjectPath("/");
+    }
 }
 
 void PrivateService::setSimForMobileData(const QDBusObjectPath &path)

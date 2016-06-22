@@ -82,6 +82,10 @@ public:
                 connect(sim.get(), &Sim::lockedChanged, this, &Priv::lockedChanged);
                 connect(sim.get(), &Sim::presentChanged, this, &Priv::presentChanged);
                 connect(sim.get(), &Sim::dataRoamingEnabledChanged, this, &Priv::dataRoamingEnabledChanged);
+                connect(sim.get(), &Sim::imsiChanged, this, &Priv::imsiChanged);
+                connect(sim.get(), &Sim::primaryPhoneNumberChanged, this, &Priv::primaryPhoneNumberChanged);
+                connect(sim.get(), &Sim::mccChanged, this, &Priv::mccChanged);
+                connect(sim.get(), &Sim::mncChanged, this, &Priv::mncChanged);
             }
             p.endInsertRows();
         }
@@ -118,6 +122,26 @@ public Q_SLOTS:
     {
         auto idx = findSim(sender());
         p.dataChanged(idx, idx, {SimsListModel::Roles::RoleDataRoamingEnabled});
+    }
+    void imsiChanged()
+    {
+        auto idx = findSim(sender());
+        p.dataChanged(idx, idx, {SimsListModel::Roles::RoleImsi});
+    }
+    void primaryPhoneNumberChanged()
+    {
+        auto idx = findSim(sender());
+        p.dataChanged(idx, idx, {SimsListModel::Roles::RolePrimaryPhoneNumber});
+    }
+    void mccChanged()
+    {
+        auto idx = findSim(sender());
+        p.dataChanged(idx, idx, {SimsListModel::Roles::RoleMcc});
+    }
+    void mncChanged()
+    {
+        auto idx = findSim(sender());
+        p.dataChanged(idx, idx, {SimsListModel::Roles::RoleMnc});
     }
 
     void propertyChanged(const QString& name, const QVariant& value)
@@ -183,14 +207,14 @@ QVariant SimsListModel::data(const QModelIndex &index, int role) const
 
     switch (role)
     {
+        case Roles::RoleIccid:
+            return sim->iccid();
+            break;
         case Roles::RoleImsi:
             return sim->imsi();
             break;
         case Roles::RolePrimaryPhoneNumber:
             return sim->primaryPhoneNumber();
-            break;
-        case Roles::RolePhoneNumbers:
-            return QVariant::fromValue<QStringList>(sim->phoneNumbers());
             break;
         case RoleLocked:
             return sim->locked();
@@ -209,7 +233,7 @@ QVariant SimsListModel::data(const QModelIndex &index, int role) const
         case Roles::RoleDataRoamingEnabled:
             return sim->dataRoamingEnabled();
             break;
-        case Roles::RoleSimObject:
+        case Roles::RoleSim:
             return QVariant::fromValue<Sim*>(sim.get());
             break;
     }

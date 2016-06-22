@@ -19,6 +19,8 @@
 #pragma once
 
 #include <connectivityqt/connectivity.h>
+#include <connectivityqt/modems-list-model.h>
+
 
 #include <dbus-types.h>
 
@@ -77,9 +79,18 @@ inline void PrintTo(const QList<QDBusObjectPath>& list, std::ostream* os) {
 {\
     while (signalSpy.size() < signalsExpected)\
     {\
-        ASSERT_TRUE(signalSpy.wait());\
+        ASSERT_TRUE(signalSpy.wait()) << "Waiting for " << signalsExpected << " signals, got " << signalSpy.size();\
     }\
-    ASSERT_EQ(signalsExpected, signalSpy.size());\
+    ASSERT_EQ(signalsExpected, signalSpy.size()) << "Waiting for " << signalsExpected << " signals, got " << signalSpy.size();\
+}
+
+#define WAIT_FOR_ROW_COUNT(signalSpy, model, expectedRowCount)\
+{\
+    while (model->rowCount() < expectedRowCount)\
+    {\
+        ASSERT_TRUE(signalSpy.wait()) << "Waiting for model to have " << expectedRowCount << " rows, got " << model->rowCount();\
+    }\
+    ASSERT_EQ(expectedRowCount, model->rowCount()) << "Waiting for model to have " << expectedRowCount << " rows, got " << model->rowCount();\
 }
 
 #define CHECK_METHOD_CALL(signalSpy, signalIndex, methodName, ...)\
@@ -168,6 +179,8 @@ protected:
 
     void setConnectionManagerProperty(const QString& path, const QString& propertyName, const QVariant& value);
 
+    QVariantMap getConnectionManagerProperties(const QString& path);
+
     void setNetworkRegistrationProperty(const QString& path, const QString& propertyName, const QVariant& value);
 
     OrgFreedesktopDBusMockInterface& notificationsMockInterface();
@@ -200,6 +213,7 @@ protected:
     static QString firstModem();
 
     static unity::gmenuharness::MenuItemMatcher flightModeSwitch(bool toggled = false);
+    static unity::gmenuharness::MenuItemMatcher mobileDataSwitch(bool toggled = false);
 
     static unity::gmenuharness::MenuItemMatcher accessPoint(const std::string& ssid, Secure secure,
                 ApMode apMode, ConnectionStatus connectionStatus, uchar strength = 100);
@@ -220,9 +234,24 @@ protected:
 
     static unity::gmenuharness::MenuItemMatcher vpnConnection(const std::string& name, ConnectionStatus connected = ConnectionStatus::disconnected);
 
+    static connectivityqt::Sim* getModemSim(const QAbstractItemModel& model, int idx)
+    {
+        auto sim = model.data(model.index(idx,0),
+                              connectivityqt::ModemsListModel::RoleSim)
+                .value<connectivityqt::Sim*>();
+        EXPECT_TRUE(sim);
+        return sim;
+    }
+
+    static std::unique_ptr<QSortFilterProxyModel> getSortedModems(connectivityqt::Connectivity& connectivity);
+
     QtDBusTest::DBusTestRunner dbusTestRunner;
 
     QtDBusMock::DBusMock dbusMock;
 
     QtDBusTest::DBusServicePtr indicator;
+
+    QString modem;
+
+    QTemporaryDir temporaryDir;
 };

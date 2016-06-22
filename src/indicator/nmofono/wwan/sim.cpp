@@ -110,8 +110,14 @@ public Q_SLOTS:
         }
 
         m_simManager = simmgr;
-        connect(simmgr.get(), &QOfonoSimManager::subscriberIdentityChanged, this, &Private::imsiChanged);
-        connect(simmgr.get(), &QOfonoSimManager::subscriberNumbersChanged, this, &Private::phoneNumbersChanged);
+
+        if (simmgr)
+        {
+            connect(simmgr.get(), &QOfonoSimManager::subscriberIdentityChanged, this, &Private::imsiChanged);
+            connect(simmgr.get(), &QOfonoSimManager::subscriberNumbersChanged, this, &Private::phoneNumbersChanged);
+            imsiChanged(simmgr->subscriberIdentity());
+            phoneNumbersChanged(simmgr->subscriberNumbers());
+        }
         update();
 
         Q_EMIT p.presentChanged(m_simManager.get() != nullptr);

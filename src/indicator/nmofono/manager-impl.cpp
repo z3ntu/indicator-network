@@ -310,6 +310,7 @@ public Q_SLOTS:
             m_ofonoLinks[path] = modem;
             connect(modem.get(), &wwan::Modem::readyToUnlock, this, &Private::modemReadyToUnlock);
             connect(modem.get(), &wwan::Modem::ready, this, &Private::modemReady);
+            matchModemsAndSims();
         }
 
         Q_EMIT p.linksUpdated();

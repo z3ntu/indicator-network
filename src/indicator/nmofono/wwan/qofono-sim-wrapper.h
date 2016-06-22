@@ -58,8 +58,6 @@ public:
 
     QString iccid() const;
     bool present() const;
-    QString mcc() const;
-    QString mnc() const;
     QStringList preferredLanguages() const;
     bool ready() const;
 

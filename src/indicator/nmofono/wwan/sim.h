@@ -90,10 +90,10 @@ public:
     Q_PROPERTY(bool present READ present NOTIFY presentChanged)
     bool present() const;
 
-    Q_PROPERTY(QString mcc READ mcc CONSTANT)
+    Q_PROPERTY(QString mcc READ mcc NOTIFY mccChanged)
     QString mcc() const;
 
-    Q_PROPERTY(QString mnc READ mnc CONSTANT)
+    Q_PROPERTY(QString mnc READ mnc NOTIFY mncChanged)
     QString mnc() const;
 
     Q_PROPERTY(QList<QString> preferredLanguages READ preferredLanguages CONSTANT)
@@ -121,6 +121,10 @@ Q_SIGNALS:
     void imsiChanged(const QString &);
 
     void primaryPhoneNumberChanged(const QString &);
+
+    void mccChanged(const QString &);
+
+    void mncChanged(const QString &);
 
     void lockedChanged(bool value);
 

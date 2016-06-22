@@ -41,8 +41,8 @@ Sim::Ptr Sim::fromQOfonoSimWrapper(const QOfonoSimWrapper *wrapper)
     auto sim = Sim::Ptr(new Sim(wrapper->iccid(),
                                 "",
                                 "",
-                                wrapper->mcc(),
-                                wrapper->mnc(),
+                                "",
+                                "",
                                 wrapper->preferredLanguages(),
                                 false));
     sim->setOfonoSimManager(wrapper->ofonoSimManager());
@@ -115,8 +115,12 @@ public Q_SLOTS:
         {
             connect(simmgr.get(), &QOfonoSimManager::subscriberIdentityChanged, this, &Private::imsiChanged);
             connect(simmgr.get(), &QOfonoSimManager::subscriberNumbersChanged, this, &Private::phoneNumbersChanged);
+            connect(simmgr.get(), &QOfonoSimManager::mobileCountryCodeChanged, this, &Private::mccChanged);
+            connect(simmgr.get(), &QOfonoSimManager::mobileNetworkCodeChanged, this, &Private::mncChanged);
             imsiChanged(simmgr->subscriberIdentity());
             phoneNumbersChanged(simmgr->subscriberNumbers());
+            mccChanged(simmgr->mobileCountryCode());
+            mncChanged(simmgr->mobileNetworkCode());
         }
         update();
 
@@ -144,6 +148,28 @@ public Q_SLOTS:
 
         m_imsi = value;
         Q_EMIT p.imsiChanged(m_imsi);
+    }
+
+    void mccChanged(const QString &value)
+    {
+        if (value.isEmpty())
+        {
+            return;
+        }
+
+        m_mcc = value;
+        Q_EMIT p.mccChanged(m_mcc);
+    }
+
+    void mncChanged(const QString &value)
+    {
+        if (value.isEmpty())
+        {
+            return;
+        }
+
+        m_mnc = value;
+        Q_EMIT p.mncChanged(m_mnc);
     }
 
     void poweredChanged()

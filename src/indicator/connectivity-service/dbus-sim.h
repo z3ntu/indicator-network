@@ -91,6 +91,8 @@ protected Q_SLOTS:
     void dataRoamingEnabledChanged();
     void imsiChanged();
     void primaryPhoneNumberChanged();
+    void mccChanged();
+    void mncChanged();
 
 private:
     void notifyProperties(const QStringList& propertyNames);

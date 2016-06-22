@@ -95,12 +95,12 @@ Notification::~Notification()
 {
     if (d->m_id > 0 && d->m_open && d->m_expireTimeout <= 0)
     {
-        qDebug() << __PRETTY_FUNCTION__ << "Closing notification:" << d->m_id;
+        qDebug() << "Closing notification:" << d->m_id;
         auto reply = d->m_notificationsInterface->CloseNotification(d->m_id);
         reply.waitForFinished();
         if (reply.isError())
         {
-            qCritical() << __PRETTY_FUNCTION__ << reply.error().message();
+            qCritical() << reply.error().message();
         }
     }
 }
@@ -221,7 +221,7 @@ Notification::show()
         reply.waitForFinished();
         if (reply.isError())
         {
-            qCritical() << __PRETTY_FUNCTION__ << reply.error().message();
+            qCritical() << reply.error().message();
         }
         else
         {
@@ -241,7 +241,7 @@ Notification::close()
         reply.waitForFinished();
         if (reply.isError())
         {
-            qCritical() << __PRETTY_FUNCTION__ << reply.error().message();
+            qCritical() << reply.error().message();
         }
         else
         {

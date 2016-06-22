@@ -118,7 +118,7 @@ KillSwitch::setBlock(bool block)
 {
     if (!block && state() == State::hard_blocked)
     {
-        qCritical() << __PRETTY_FUNCTION__ << "Killswitch is hard blocked.";
+        qCritical() << "Killswitch is hard blocked.";
         return;
     }
 
@@ -141,7 +141,7 @@ KillSwitch::setBlock(bool block)
     }
     catch (std::exception &e)
     {
-        qCritical() << __PRETTY_FUNCTION__ << e.what();
+        qCritical() << e.what();
     }
 }
 
@@ -163,7 +163,7 @@ bool KillSwitch::flightMode(bool enable)
     }
     catch (std::runtime_error& e)
     {
-        qWarning() << __PRETTY_FUNCTION__ << ": " << QString::fromStdString(e.what());
+        qWarning() << e.what();
         return false;
     }
 }

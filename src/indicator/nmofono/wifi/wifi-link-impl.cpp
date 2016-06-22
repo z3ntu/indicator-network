@@ -242,7 +242,7 @@ public Q_SLOTS:
                         NM_DBUS_SERVICE, path.path(), m_dev->connection());
                 shap = make_shared<AccessPointImpl>(ap);
             } catch(const exception &e) {
-                qWarning() << __PRETTY_FUNCTION__ << ": failed to create AccessPoint proxy for "<< path.path() << ": ";
+                qWarning() << "Failed to create AccessPoint proxy for "<< path.path() << ": ";
                 qWarning() << "\t" << QString::fromStdString(e.what());
                 qWarning() << "\tIgnoring.";
                 return;
@@ -261,7 +261,7 @@ public Q_SLOTS:
             /// @bug dbus-cpp internal logic exploded
             // If this happens, indicator-network is in an unknown state with no clear way of
             // recovering. The only reasonable way out is a graceful exit.
-            cerr << __PRETTY_FUNCTION__ << " Failed to run dbus service: " << e.what() << endl;
+            cerr << " Failed to run dbus service: " << e.what() << endl;
         }
     }
 
@@ -278,7 +278,7 @@ public Q_SLOTS:
             }
         }
         if (!shap) {
-            qWarning() << __PRETTY_FUNCTION__ << ": Tried to remove access point " << path.path() << " that has not been added.";
+            qWarning() << "Tried to remove access point " << path.path() << " that has not been added.";
             return;
         }
         m_rawAccessPoints = list;
@@ -449,6 +449,8 @@ WifiLinkImpl::accessPoints() const {
 void
 WifiLinkImpl::connect_to(AccessPoint::Ptr accessPoint)
 {
+    qDebug() << "Connecting to:" << accessPoint->ssid();
+
     try {
         d->m_connecting = true;
         QByteArray ssid = accessPoint->raw_ssid();
@@ -479,11 +481,13 @@ WifiLinkImpl::connect_to(AccessPoint::Ptr accessPoint)
 
         QDBusObjectPath ac("/");
         if (found) {
+            qDebug() << "Connecting to known access point";
             ac = d->m_nm->ActivateConnection(QDBusObjectPath(found->path()),
                                            QDBusObjectPath(d->m_dev->path()),
                                            accessPoint->object_path());
         } else {
             if (accessPoint->enterprise()) {
+                qDebug() << "New connection to enterprise access point";
                 // activate system settings URI
                 QUrlQuery q;
                 q.addQueryItem("ssid", accessPoint->raw_ssid());
@@ -496,6 +500,7 @@ WifiLinkImpl::connect_to(AccessPoint::Ptr accessPoint)
                     }
                 });
             } else {
+                qDebug() << "New connection to regular access point";
                 QVariantDictMap conf;
 
                 /// @todo getting the ssid multiple times over dbus is stupid.
@@ -519,7 +524,7 @@ WifiLinkImpl::connect_to(AccessPoint::Ptr accessPoint)
         // @bug default timeout expired: LP(#1361642)
         // If this happens, indicator-network is in an unknown state with no clear way of
         // recovering. The only reasonable way out is a graceful exit.
-        qWarning() << __PRETTY_FUNCTION__ << " Failed to activate connection: " << e.what();
+        qWarning() << " Failed to activate connection: " << e.what();
     }
 }
 

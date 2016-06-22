@@ -83,7 +83,7 @@ void MenuItem::setIcon(const QString &icon)
     auto gicon = shared_ptr<GIcon>(g_icon_new_for_string(m_icon.toUtf8().constData(), &error), GObjectDeleter());
     if (error)
     {
-        qWarning() << __PRETTY_FUNCTION__ << error->message;
+        qWarning() << error->message;
         g_error_free(error);
         return;
     }

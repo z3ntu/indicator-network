@@ -20,6 +20,7 @@
 #include <nmofono/wwan/modem.h>
 
 #include <ofono/dbus.h>
+#include <QDebug>
 
 #define slots
 #include <qofono-qt5/qofonomodem.h>
@@ -52,7 +53,7 @@ static Modem::ModemStatus str2status(const QString& str)
     if (str == "roaming")
         return Modem::ModemStatus::roaming;
 
-    qWarning() << __PRETTY_FUNCTION__ << ": Unknown status" << str;
+    qWarning() << ": Unknown status" << str;
     return Modem::ModemStatus::unknown;
 }
 
@@ -73,7 +74,7 @@ static Modem::Bearer str2technology(const QString& str)
     if (str == "lte")
         return Modem::Bearer::lte;
 
-    qWarning() << __PRETTY_FUNCTION__  << ": Unknown techonology" << str;
+    qWarning() << "Unknown technology" << str;
     return Modem::Bearer::notAvailable;
 }
 }
@@ -160,6 +161,8 @@ public Q_SLOTS:
 
         if (p.isReadyToUnlock() && m_shouldTriggerUnlock)
         {
+
+            qDebug() << "SIM ready to unlock:" << p.simIdentifier();
             m_shouldTriggerUnlock = false;
             Q_EMIT p.readyToUnlock(p.name());
         }
@@ -760,6 +763,7 @@ Modem::isReadyToUnlock() const
 void
 Modem::notifyWhenReadyToUnlock()
 {
+    qDebug() << "Notify when ready to unlock" << simIdentifier();
     d->m_shouldTriggerUnlock = true;
 }
 

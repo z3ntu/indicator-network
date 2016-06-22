@@ -47,16 +47,18 @@ namespace DBusTypes
         return path.arg(counter++);
     }
 
-    inline QString modemPath(const QString &serial)
+    inline QString modemPath()
     {
+        static int counter {0};
         static QString path{"/com/ubuntu/connectivity1/modem/%1"};
-        return path.arg(serial);
+        return path.arg(counter++);
     }
 
-    inline QString simPath(const QString &imsi)
+    inline QString simPath()
     {
+        static int counter {0};
         static QString path{"/com/ubuntu/connectivity1/sim/%1"};
-        return path.arg(imsi);
+        return path.arg(counter++);
     }
 
 

@@ -42,14 +42,14 @@ public:
     Q_PROPERTY(QDBusObjectPath path READ path)
     QDBusObjectPath path() const;
 
-    Q_PROPERTY(QString Imsi READ imsi CONSTANT)
+    Q_PROPERTY(QString Iccid READ iccid CONSTANT)
+    QString iccid() const;
+
+    Q_PROPERTY(QString Imsi READ imsi NOTIFY imsiChanged)
     QString imsi() const;
 
-    Q_PROPERTY(QString PrimaryPhoneNumber READ primaryPhoneNumber CONSTANT)
+    Q_PROPERTY(QString PrimaryPhoneNumber READ primaryPhoneNumber NOTIFY primaryPhoneNumberChanged)
     QString primaryPhoneNumber() const;
-
-    Q_PROPERTY(QList<QString> PhoneNumbers READ phoneNumbers CONSTANT)
-    QList<QString> phoneNumbers() const;
 
     Q_PROPERTY(bool Locked READ locked NOTIFY lockedChanged)
     bool locked() const;
@@ -57,10 +57,10 @@ public:
     Q_PROPERTY(bool Present READ present NOTIFY presentChanged)
     bool present() const;
 
-    Q_PROPERTY(QString Mcc READ mcc CONSTANT)
+    Q_PROPERTY(QString Mcc READ mcc NOTIFY mccChanged)
     QString mcc() const;
 
-    Q_PROPERTY(QString Mnc READ mnc CONSTANT)
+    Q_PROPERTY(QString Mnc READ mnc NOTIFY mncChanged)
     QString mnc() const;
 
     Q_PROPERTY(QList<QString> PreferredLanguages READ preferredLanguages CONSTANT)
@@ -78,7 +78,10 @@ Q_SIGNALS:
     void lockedChanged(bool value);
     void presentChanged(bool value);
     void dataRoamingEnabledChanged(bool value);
-
+    void imsiChanged(const QString &value);
+    void primaryPhoneNumberChanged(const QString &value);
+    void mccChanged(const QString &value);
+    void mncChanged(const QString &value);
 
 protected:
     class Priv;

@@ -38,10 +38,11 @@ namespace
 
 Sim::Ptr Sim::fromQOfonoSimWrapper(const QOfonoSimWrapper *wrapper)
 {
-    auto sim = Sim::Ptr(new Sim(wrapper->imsi(),
-                                wrapper->phoneNumbers().first(), // default to the first number
-                                wrapper->mcc(),
-                                wrapper->mnc(),
+    auto sim = Sim::Ptr(new Sim(wrapper->iccid(),
+                                "",
+                                "",
+                                "",
+                                "",
                                 wrapper->preferredLanguages(),
                                 false));
     sim->setOfonoSimManager(wrapper->ofonoSimManager());
@@ -65,15 +66,20 @@ public:
 
     QSet<QString> m_interfaces;
 
+    QString m_iccid;
     QString m_imsi;
+    QStringList m_phoneNumbers;
     QString m_primaryPhoneNumber;
     QString m_mcc;
     QString m_mnc;
     QStringList m_preferredLanguages;
-    bool m_dataRoamingEnabled;
+    bool m_dataRoamingEnabled = false;
     bool m_mobileDataEnabled = false;
 
     bool m_locked = false;
+
+    bool m_initialData = false;
+    bool m_initialDataSet = false;
 
     Private(Sim &parent)
         : p(parent)
@@ -104,12 +110,81 @@ public Q_SLOTS:
         }
 
         m_simManager = simmgr;
+
+        if (simmgr)
+        {
+            connect(simmgr.get(), &QOfonoSimManager::subscriberIdentityChanged, this, &Private::imsiChanged);
+            connect(simmgr.get(), &QOfonoSimManager::subscriberNumbersChanged, this, &Private::phoneNumbersChanged);
+            connect(simmgr.get(), &QOfonoSimManager::mobileCountryCodeChanged, this, &Private::mccChanged);
+            connect(simmgr.get(), &QOfonoSimManager::mobileNetworkCodeChanged, this, &Private::mncChanged);
+            imsiChanged(simmgr->subscriberIdentity());
+            phoneNumbersChanged(simmgr->subscriberNumbers());
+            mccChanged(simmgr->mobileCountryCode());
+            mncChanged(simmgr->mobileNetworkCode());
+        }
         update();
 
         Q_EMIT p.presentChanged(m_simManager.get() != nullptr);
     }
 
-    void connManagerChanged(shared_ptr<QOfonoConnectionManager> connmgr)
+    void phoneNumbersChanged(const QStringList &value)
+    {
+        if (value.isEmpty())
+        {
+            return;
+        }
+
+        m_phoneNumbers = value;
+        m_primaryPhoneNumber = value[0];
+        Q_EMIT p.primaryPhoneNumberChanged(m_primaryPhoneNumber);
+    }
+
+    void imsiChanged(const QString &value)
+    {
+        if (value.isEmpty())
+        {
+            return;
+        }
+
+        m_imsi = value;
+        Q_EMIT p.imsiChanged(m_imsi);
+    }
+
+    void mccChanged(const QString &value)
+    {
+        if (value.isEmpty())
+        {
+            return;
+        }
+
+        m_mcc = value;
+        Q_EMIT p.mccChanged(m_mcc);
+    }
+
+    void mncChanged(const QString &value)
+    {
+        if (value.isEmpty())
+        {
+            return;
+        }
+
+        m_mnc = value;
+        Q_EMIT p.mncChanged(m_mnc);
+    }
+
+    void poweredChanged()
+    {
+        if (!m_initialDataSet)
+        {
+            m_initialDataSet = true;
+            m_initialData = m_connManager->powered();
+            Q_EMIT p.initialDataOnSet();
+            m_connManager->setPowered(m_mobileDataEnabled);
+        }
+        update();
+    }
+
+    void setConnManager(shared_ptr<QOfonoConnectionManager> connmgr)
     {
         if (m_connManager == connmgr)
         {
@@ -121,7 +196,7 @@ public Q_SLOTS:
         {
             connect(m_connManager.get(),
                     &QOfonoConnectionManager::poweredChanged, this,
-                    &Private::update);
+                    &Private::poweredChanged);
             connect(m_connManager.get(),
                     &QOfonoConnectionManager::roamingAllowedChanged, this,
                     &Private::update);
@@ -170,26 +245,26 @@ public Q_SLOTS:
         Q_EMIT p.simIdentifierUpdated(m_simIdentifier);
     }
 
-    void setOfono(std::shared_ptr<QOfonoSimManager> simmgr)
+    void setOfono(shared_ptr<QOfonoSimManager> simmgr)
     {
         simManagerChanged(simmgr);
         if (simmgr)
         {
-            m_connManager = std::make_shared<QOfonoConnectionManager>(this);
-            m_connManager->setModemPath(simmgr->modemPath());
-            connManagerChanged(m_connManager);
+            auto connManager = make_shared<QOfonoConnectionManager>(this);
+            connManager->setModemPath(simmgr->modemPath());
+            setConnManager(connManager);
         }
         else
         {
-            m_connManager = std::shared_ptr<QOfonoConnectionManager>();
-            connManagerChanged(m_connManager);
+            setConnManager(shared_ptr<QOfonoConnectionManager>());
         }
     }
 
 
 };
 
-Sim::Sim(const QString &imsi,
+Sim::Sim(const QString &iccid,
+         const QString &imsi,
          const QString &primaryPhoneNumber,
          const QString &mcc,
          const QString &mnc,
@@ -197,6 +272,7 @@ Sim::Sim(const QString &imsi,
          bool dataRoamingEnabled)
     : d{new Private(*this)}
 {
+    d->m_iccid = iccid;
     d->m_imsi = imsi;
     d->m_primaryPhoneNumber = primaryPhoneNumber;
     d->m_mcc = mcc;
@@ -212,6 +288,11 @@ const QString&
 Sim::simIdentifier() const
 {
     return d->m_simIdentifier;
+}
+
+QString Sim::iccid() const
+{
+    return d->m_iccid;
 }
 
 QString Sim::imsi() const
@@ -261,6 +342,10 @@ void Sim::setDataRoamingEnabled(bool value)
         return;
     }
     d->m_dataRoamingEnabled = value;
+    if (d->m_connManager)
+    {
+        d->m_connManager->setRoamingAllowed(d->m_dataRoamingEnabled);
+    }
     Q_EMIT dataRoamingEnabledChanged(value);
 }
 
@@ -300,6 +385,11 @@ QString Sim::ofonoPath() const
 void Sim::setOfonoSimManager(std::shared_ptr<QOfonoSimManager> simmgr)
 {
     d->setOfono(simmgr);
+}
+
+bool Sim::initialDataOn() const
+{
+    return d->m_initialData;
 }
 
 

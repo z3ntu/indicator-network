@@ -48,6 +48,9 @@ public:
 
     virtual ~DBusSim();
 
+    Q_PROPERTY(QString Iccid READ iccid)
+    QString iccid() const;
+
     Q_PROPERTY(QString Imsi READ imsi)
     QString imsi() const;
 
@@ -86,6 +89,10 @@ protected Q_SLOTS:
     void lockedChanged();
     void presentChanged();
     void dataRoamingEnabledChanged();
+    void imsiChanged();
+    void primaryPhoneNumberChanged();
+    void mccChanged();
+    void mncChanged();
 
 private:
     void notifyProperties(const QStringList& propertyNames);

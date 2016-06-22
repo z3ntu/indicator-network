@@ -42,13 +42,15 @@ IndicatorNetworkTestBase::~IndicatorNetworkTestBase()
 
 void IndicatorNetworkTestBase::SetUp()
 {
+    qputenv("INDICATOR_NETWORK_SETTINGS_PATH", temporaryDir.path().toUtf8().constData());
+
     if (qEnvironmentVariableIsSet("TEST_WITH_BUSTLE"))
     {
-        const TestInfo* const test_info =
-                UnitTest::GetInstance()->current_test_info();
-
         QDir::temp().mkpath("indicator-network-tests");
         QDir testDir(QDir::temp().filePath("indicator-network-tests"));
+
+        const TestInfo* const test_info =
+                UnitTest::GetInstance()->current_test_info();
 
         dbusTestRunner.registerService(
                 DBusServicePtr(
@@ -67,7 +69,7 @@ void IndicatorNetworkTestBase::SetUp()
     dbusMock.registerNetworkManager();
     dbusMock.registerNotificationDaemon();
     // By default the ofono mock starts with one modem
-    dbusMock.registerOfono();
+    dbusMock.registerOfono({{"no_modem", true}});
     dbusMock.registerURfkill();
 
     dbusMock.registerCustomMock(
@@ -142,11 +144,8 @@ void IndicatorNetworkTestBase::SetUp()
                         ""
                      ).waitForFinished();
 
-    // mock service creates ril_0 automatically
-    // Initial ConnectionManager properties are insane, fix them here
-    setConnectionManagerProperty(firstModem(), "Bearer", "none");
-    setConnectionManagerProperty(firstModem(), "Powered", false);
-    setConnectionManagerProperty(firstModem(), "Attached", false);
+
+    modem = createModem("ril_0");
 
     // Identify the test when looking at Bustle logs
     QDBusConnection systemConnection = dbusTestRunner.systemConnection();
@@ -422,6 +421,17 @@ void IndicatorNetworkTestBase::setConnectionManagerProperty(const QString& path,
     }
 }
 
+QVariantMap IndicatorNetworkTestBase::getConnectionManagerProperties(const QString& path)
+{
+    auto& ofono(dbusMock.ofonoConnectionManagerInterface(path));
+    auto reply = ofono.GetProperties();
+    reply.waitForFinished();
+    if (reply.isError()) {
+        EXPECT_FALSE(reply.isError()) << reply.error().message().toStdString();
+    }
+    return reply;
+}
+
 void IndicatorNetworkTestBase::setNetworkRegistrationProperty(const QString& path, const QString& propertyName, const QVariant& value)
 {
     auto& ofono(dbusMock.ofonoNetworkRegistrationInterface(path));
@@ -480,6 +490,14 @@ mh::MenuItemMatcher IndicatorNetworkTestBase::flightModeSwitch(bool toggled)
     return mh::MenuItemMatcher::checkbox()
         .label("Flight Mode")
         .action("indicator.airplane.enabled")
+        .toggled(toggled);
+}
+
+mh::MenuItemMatcher IndicatorNetworkTestBase::mobileDataSwitch(bool toggled)
+{
+    return mh::MenuItemMatcher::checkbox()
+        .label("Cellular data")
+        .action("indicator.mobiledata.enabled")
         .toggled(toggled);
 }
 
@@ -636,4 +654,17 @@ mh::MenuItemMatcher IndicatorNetworkTestBase::vpnConnection(const string& name, 
         .label(name)
         .themed_icon("icon", {"network-vpn"})
         .toggled(connected == ConnectionStatus::connected);
+}
+
+unique_ptr<QSortFilterProxyModel> IndicatorNetworkTestBase::getSortedModems(Connectivity& connectivity)
+{
+    auto modems = connectivity.modems();
+
+    auto sortedModems = make_unique<QSortFilterProxyModel>();
+    sortedModems->setSortRole(ModemsListModel::RoleIndex);
+    sortedModems->sort(0);
+
+    sortedModems->setSourceModel(modems);
+
+    return sortedModems;
 }

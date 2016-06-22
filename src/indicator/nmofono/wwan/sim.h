@@ -41,7 +41,7 @@ class ConnectivityServiceSettings;
 namespace wwan
 {
 
-class Sim : public QObject
+class Sim : public QObject, public std::enable_shared_from_this<Sim>
 {
     Q_OBJECT
 
@@ -60,7 +60,8 @@ public:
     static Sim::Ptr fromQOfonoSimWrapper(const QOfonoSimWrapper *wrapper);
 
 private:
-    Sim(const QString &imsi,
+    Sim(const QString &iccid,
+        const QString &imsi,
         const QString &primaryPhoneNumber,
         const QString &mcc,
         const QString &mnc,
@@ -74,10 +75,13 @@ public:
     Q_PROPERTY(QString simIdentifier READ simIdentifier NOTIFY simIdentifierUpdated)
     const QString &simIdentifier() const;
 
-    Q_PROPERTY(QString imsi READ imsi CONSTANT)
+    Q_PROPERTY(QString iccid READ iccid CONSTANT)
+    QString iccid() const;
+
+    Q_PROPERTY(QString imsi READ imsi NOTIFY imsiChanged)
     QString imsi() const;
 
-    Q_PROPERTY(QString primaryPhoneNumber READ primaryPhoneNumber CONSTANT)
+    Q_PROPERTY(QString primaryPhoneNumber READ primaryPhoneNumber NOTIFY primaryPhoneNumberChanged)
     QString primaryPhoneNumber() const;
 
     Q_PROPERTY(bool locked READ locked NOTIFY lockedChanged)
@@ -86,10 +90,10 @@ public:
     Q_PROPERTY(bool present READ present NOTIFY presentChanged)
     bool present() const;
 
-    Q_PROPERTY(QString mcc READ mcc CONSTANT)
+    Q_PROPERTY(QString mcc READ mcc NOTIFY mccChanged)
     QString mcc() const;
 
-    Q_PROPERTY(QString mnc READ mnc CONSTANT)
+    Q_PROPERTY(QString mnc READ mnc NOTIFY mncChanged)
     QString mnc() const;
 
     Q_PROPERTY(QList<QString> preferredLanguages READ preferredLanguages CONSTANT)
@@ -105,12 +109,22 @@ public:
 
     QString ofonoPath() const;
 
+    bool initialDataOn() const;
+
 public Q_SLOTS:
     void unlock();
 
 Q_SIGNALS:
 
     void simIdentifierUpdated(const QString &);
+
+    void imsiChanged(const QString &);
+
+    void primaryPhoneNumberChanged(const QString &);
+
+    void mccChanged(const QString &);
+
+    void mncChanged(const QString &);
 
     void lockedChanged(bool value);
 
@@ -119,6 +133,8 @@ Q_SIGNALS:
     void dataRoamingEnabledChanged(bool value);
 
     void mobileDataEnabledChanged(bool value);
+
+    void initialDataOnSet();
 };
 
 }

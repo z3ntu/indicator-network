@@ -47,16 +47,16 @@ public:
 
     enum Roles
     {
-        RoleImsi = Qt::UserRole + 1,
+        RoleIccid = Qt::UserRole + 1,
+        RoleImsi,
         RolePrimaryPhoneNumber,
-        RolePhoneNumbers,
         RoleLocked,
         RolePresent,
         RoleMcc,
         RoleMnc,
         RolePreferredLanguages,
         RoleDataRoamingEnabled,
-        RoleSimObject
+        RoleSim
     };
 
     SimsListModel(const internal::SimsListModelParameters& parameters);
@@ -72,25 +72,22 @@ public:
     QHash<int, QByteArray> roleNames() const override
     {
         QHash<int, QByteArray> roles;
+        roles[RoleIccid] = "Iccid";
         roles[RoleImsi] = "Imsi";
         roles[RolePrimaryPhoneNumber] = "PrimaryPhoneNumber";
-        roles[RolePhoneNumbers] = "PhoneNumbers";
         roles[RoleLocked] = "Locked";
         roles[RolePresent] = "Present";
         roles[RoleMcc] = "Mcc";
         roles[RoleMnc] = "Mnc";
         roles[RolePreferredLanguages] = "PreferredLanguages";
         roles[RoleDataRoamingEnabled] = "DataRoamingEnabled";
-        roles[RoleSimObject] = "SimObject";
+        roles[RoleSim] = "Sim";
         return roles;
     }
 
     Sim::SPtr getSimByPath(const QDBusObjectPath &path) const;
 
-public Q_SLOTS:
-
 Q_SIGNALS:
-
     void simsUpdated();
 
 protected:

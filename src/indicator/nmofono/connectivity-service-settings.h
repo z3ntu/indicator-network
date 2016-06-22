@@ -50,12 +50,12 @@ public:
     void setMobileDataEnabled(bool value);
 
     QVariant simForMobileData();
-    void setSimForMobileData(const QString &imsi);
+    void setSimForMobileData(const QString &iccid);
 
     QStringList knownSims();
     void setKnownSims(const QStringList &list);
 
-    wwan::Sim::Ptr createSimFromSettings(const QString &imsi);
+    wwan::Sim::Ptr createSimFromSettings(const QString &iccid);
     void saveSimToSettings(wwan::Sim::Ptr sim);
 
 public Q_SLOTS:

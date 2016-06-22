@@ -46,6 +46,8 @@ DBusSim::DBusSim(Sim::Ptr sim,
     connect(sim.get(), &Sim::dataRoamingEnabledChanged, this, &DBusSim::dataRoamingEnabledChanged);
     connect(sim.get(), &Sim::imsiChanged, this, &DBusSim::imsiChanged);
     connect(sim.get(), &Sim::primaryPhoneNumberChanged, this, &DBusSim::primaryPhoneNumberChanged);
+    connect(sim.get(), &Sim::mccChanged, this, &DBusSim::mccChanged);
+    connect(sim.get(), &Sim::mncChanged, this, &DBusSim::mncChanged);
 }
 
 DBusSim::~DBusSim()
@@ -156,6 +158,15 @@ void DBusSim::primaryPhoneNumberChanged()
     notifyProperties({"PrimaryPhoneNumber"});
 }
 
+void DBusSim::mccChanged()
+{
+    notifyProperties({"Mcc"});
+}
+
+void DBusSim::mncChanged()
+{
+    notifyProperties({"Mnc"});
+}
 
 nmofono::wwan::Sim::Ptr DBusSim::sim() const
 {

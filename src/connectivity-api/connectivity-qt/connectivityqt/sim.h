@@ -57,10 +57,10 @@ public:
     Q_PROPERTY(bool Present READ present NOTIFY presentChanged)
     bool present() const;
 
-    Q_PROPERTY(QString Mcc READ mcc CONSTANT)
+    Q_PROPERTY(QString Mcc READ mcc NOTIFY mccChanged)
     QString mcc() const;
 
-    Q_PROPERTY(QString Mnc READ mnc CONSTANT)
+    Q_PROPERTY(QString Mnc READ mnc NOTIFY mncChanged)
     QString mnc() const;
 
     Q_PROPERTY(QList<QString> PreferredLanguages READ preferredLanguages CONSTANT)
@@ -80,6 +80,8 @@ Q_SIGNALS:
     void dataRoamingEnabledChanged(bool value);
     void imsiChanged(const QString &value);
     void primaryPhoneNumberChanged(const QString &value);
+    void mccChanged(const QString &value);
+    void mncChanged(const QString &value);
 
 protected:
     class Priv;

@@ -42,15 +42,11 @@ public:
     shared_ptr<QOfonoSimManager> m_simManager;
 
     QString m_iccid;
-    QString m_mcc;
-    QString m_mnc;
     QStringList m_preferredLanguages;
 
     bool m_present = false;
 
     bool m_iccidSet = false;
-    bool m_mccSet = false;
-    bool m_mncSet = false;
     bool m_preferredLanguagesSet = false;
 
 
@@ -59,8 +55,6 @@ public:
     {
         connect(simmgr.get(), &QOfonoSimManager::presenceChanged, this, &Private::presentChanged);
         connect(simmgr.get(), &QOfonoSimManager::cardIdentifierChanged, this, &Private::iccidChanged);
-        connect(simmgr.get(), &QOfonoSimManager::mobileCountryCodeChanged, this, &Private::mccChanged);
-        connect(simmgr.get(), &QOfonoSimManager::mobileNetworkCodeChanged, this, &Private::mncChanged);
         connect(simmgr.get(), &QOfonoSimManager::preferredLanguagesChanged, this, &Private::preferredLanguagesChanged);
     }
 
@@ -76,8 +70,6 @@ public Q_SLOTS:
         if (!m_present)
         {
             m_iccidSet = false;
-            m_mccSet = false;
-            m_mncSet = false;
             m_preferredLanguagesSet = false;
             Q_EMIT p.readyChanged(false);
         }
@@ -98,47 +90,6 @@ public Q_SLOTS:
 
         m_iccid = value;
         m_iccidSet = true;
-        if (p.ready())
-        {
-            Q_EMIT p.readyChanged(true);
-        }
-    }
-
-    void mccChanged(const QString &value)
-    {
-        if (value.isEmpty())
-        {
-            return;
-        }
-
-        if (m_mccSet)
-        {
-            qWarning() << "Unexpected update on MCC: " << m_mcc << ", " << value;
-        }
-
-
-        m_mcc = value;
-        m_mccSet = true;
-        if (p.ready())
-        {
-            Q_EMIT p.readyChanged(true);
-        }
-    }
-
-    void mncChanged(const QString &value)
-    {
-        if (value.isEmpty())
-        {
-            return;
-        }
-
-        if (m_mncSet)
-        {
-            qWarning() << "Unexpected update on MNC: " << m_mnc << ", " << value;
-        }
-
-        m_mnc = value;
-        m_mncSet = true;
         if (p.ready())
         {
             Q_EMIT p.readyChanged(true);
@@ -187,16 +138,6 @@ bool QOfonoSimWrapper::present() const
     return d->m_present;
 }
 
-QString QOfonoSimWrapper::mcc() const
-{
-    return d->m_mcc;
-}
-
-QString QOfonoSimWrapper::mnc() const
-{
-    return d->m_mnc;
-}
-
 
 QStringList QOfonoSimWrapper::preferredLanguages() const
 {
@@ -205,8 +146,6 @@ QStringList QOfonoSimWrapper::preferredLanguages() const
 
 bool QOfonoSimWrapper::ready() const {
     return d->m_iccidSet &&
-            d->m_mccSet &&
-            d->m_mncSet &&
             d->m_preferredLanguagesSet;
 }
 

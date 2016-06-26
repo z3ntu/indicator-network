@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Launchpad-Export-Date: 2016-06-23 05:45+0000\n"
+"X-Launchpad-Export-Date: 2016-06-26 06:31+0000\n"
 "X-Generator: Launchpad (build 18111)\n"
 "Language: fa\n"
 
@@ -95,7 +95,7 @@ msgid "Cellular data"
 msgstr "دادهٔ سلّولی"
 
 #. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:215
+#: ../src/indicator/factory.cpp:231
 msgid "Hotspot"
 msgstr "نقطهٔ داغ"
 
@@ -243,7 +243,7 @@ msgstr "اتّصال وی‌پی‌ان %1 به دلیل رمزهای نامعت
 msgid "VPN Connection Failed"
 msgstr "اتّصال وی‌پی‌ان شکست خورد."
 
-#: ../src/indicator/sections/wwan-section.cpp:99
+#: ../src/indicator/sections/wwan-section.cpp:103
 msgid "Cellular settings…"
 msgstr "تنظیمات سلّولی…"
 

@@ -77,6 +77,7 @@ public Q_SLOTS:
         m_flightModeSwitch->setEnabled(!happening);
         m_wifiSwitch->setEnabled(!happening);
         updateHotspotSwitch();
+        updateMobileDataSwitch();
 
         if (happening)
         {
@@ -90,6 +91,25 @@ public Q_SLOTS:
         m_hotspotSwitch->setEnabled(
             !m_manager->unstoppableOperationHappening()
             && !m_manager->flightMode());
+    }
+
+    void updateMobileDataSwitch()
+    {
+        m_mobileDataSwitch->setEnabled(!m_manager->flightMode() &&
+                                        m_manager->simForMobileData() &&
+                                        m_manager->simForMobileData()->present() &&
+                                       !m_manager->unstoppableOperationHappening());
+    }
+
+    void updateSimForMobileData()
+    {
+        auto sim = m_manager->simForMobileData();
+        if (sim)
+        {
+            QObject::connect(sim.get(), &nmofono::wwan::Sim::presentChanged,
+                             this, &Priv::updateMobileDataSwitch);
+        }
+        updateMobileDataSwitch();
     }
 };
 
@@ -125,6 +145,14 @@ MenuBuilder::MenuBuilder(nmofono::Manager::Ptr manager, Factory& factory) :
             d.get(), &Priv::updateHotspotSwitch);
     connect(d->m_manager.get(), &nmofono::Manager::wifiEnabledUpdated,
             d.get(), &Priv::updateHotspotSwitch);
+
+    // mobile data enabled depend on these properties
+    connect(d->m_manager.get(), &nmofono::Manager::flightModeUpdated,
+            d.get(), &Priv::updateMobileDataSwitch);
+    connect(d->m_manager.get(), &nmofono::Manager::simForMobileDataChanged,
+            d.get(), &Priv::updateSimForMobileData);
+    // call updateSimForMobileData to also connect to the Sim::presentChanged()
+    d->updateSimForMobileData();
 
     d->m_quickAccessSection = factory.newQuickAccessSection(d->m_flightModeSwitch);
     d->m_wwanSection = factory.newWwanSection(d->m_mobileDataSwitch, d->m_hotspotSwitch);

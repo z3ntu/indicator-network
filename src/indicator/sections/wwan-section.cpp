@@ -92,7 +92,6 @@ WwanSection::Private::Private(Manager::Ptr modemManager, SwitchItem::Ptr mobileD
     m_menuMerger->append(m_linkMenuMerger);
     m_menuMerger->append(m_bottomMenu);
 
-    m_upperMenu->append(m_mobileDataSwitch->menuItem());
     m_actionGroupMerger->add(m_mobileDataSwitch->actionGroup());
 
     // have the modem list in their own section.
@@ -154,9 +153,17 @@ WwanSection::Private::modemsChanged()
     if (modems.size() == 0)
     {
         m_bottomMenu->clear();
+        m_upperMenu->clear();
     }
     else
     {
+        // Check if the switch is already present
+        if (m_upperMenu->find(m_mobileDataSwitch->menuItem()) == m_upperMenu->end())
+        {
+            // If not, add it
+            m_upperMenu->insert(m_mobileDataSwitch->menuItem(), m_upperMenu->begin());
+        }
+
         // Add the hotspot button if we have configuration stored
         if (m_manager->hotspotStored())
         {

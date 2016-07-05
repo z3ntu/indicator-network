@@ -157,7 +157,6 @@ WwanSection::Private::modemsChanged()
     }
     else
     {
-        m_upperMenu->append(m_mobileDataSwitch->menuItem());
         // Check if the switch is already present
         if (m_upperMenu->find(m_mobileDataSwitch->menuItem()) == m_upperMenu->end())
         {

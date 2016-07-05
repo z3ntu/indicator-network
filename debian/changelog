@@ -1,3 +1,22 @@
+indicator-network (0.8.0+16.10.20160622.1-0ubuntu1) yakkety; urgency=medium
+
+  [ Pete ]
+  * Add SIM management API.
+
+  [ Antti Kaijanmäki ]
+  * New Connectivity Service Private API for managing mobile data and
+    SIM cards. (LP: #1373463)
+
+  [ Pete Woods ]
+  * Improve logging (LP: #1580908)
+  * add mobile data switch (LP: #1373463)
+
+  [ Antti Kaijanmäki, Pete Woods ]
+  * New Connectivity Service Private API for managing mobile data and
+    SIM cards. Tests. (LP: #1373463)
+
+ -- Antti Kaijanmäki <antti@kaijanmaki.net>  Wed, 22 Jun 2016 09:49:15 +0000
+
 indicator-network (0.7.1+16.04.20160511-0ubuntu1) xenial; urgency=medium
 
   [ Pete Woods ]

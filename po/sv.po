@@ -15,8 +15,8 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2016-05-01 05:55+0000\n"
-"X-Generator: Launchpad (build 17995)\n"
+"X-Launchpad-Export-Date: 2016-07-13 05:45+0000\n"
+"X-Generator: Launchpad (build 18115)\n"
 "Language: sv\n"
 
 #: ../src/agent/SecretRequest.cpp:61
@@ -92,10 +92,10 @@ msgstr "Flygläge"
 
 #: ../src/indicator/factory.cpp:208
 msgid "Cellular data"
-msgstr ""
+msgstr "Mobildata"
 
 #. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:215
+#: ../src/indicator/factory.cpp:221
 msgid "Hotspot"
 msgstr "Surfzon"
 
@@ -240,16 +240,19 @@ msgstr ""
 msgid ""
 "The VPN connection '%1' failed because there were no valid VPN secrets."
 msgstr ""
+"VPN-anslutningen ”%1” misslyckades eftersom det inte fanns några giltiga VPN-"
+"hemligheter."
 
 #: ../src/indicator/vpn-status-notifier.cpp:57
 msgid "The VPN connection '%1' failed because of invalid VPN secrets."
 msgstr ""
+"VPN-anslutningen ”%s” misslyckades på grund av ogiltiga VPN-hemligheter."
 
 #: ../src/indicator/vpn-status-notifier.cpp:68
 msgid "VPN Connection Failed"
 msgstr "VPN-anslutningen misslyckades"
 
-#: ../src/indicator/sections/wwan-section.cpp:99
+#: ../src/indicator/sections/wwan-section.cpp:102
 msgid "Cellular settings…"
 msgstr "Mobilinställningar…"
 

@@ -15,8 +15,8 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Launchpad-Export-Date: 2016-05-01 05:55+0000\n"
-"X-Generator: Launchpad (build 17995)\n"
+"X-Launchpad-Export-Date: 2016-07-13 05:45+0000\n"
+"X-Generator: Launchpad (build 18115)\n"
 "Language: ko\n"
 
 #: ../src/agent/SecretRequest.cpp:61
@@ -95,7 +95,7 @@ msgid "Cellular data"
 msgstr ""
 
 #. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:215
+#: ../src/indicator/factory.cpp:221
 msgid "Hotspot"
 msgstr "핫스팟"
 
@@ -236,7 +236,7 @@ msgstr "유효하지 않은 가상 사설망 비밀 정보 때문에 가상 사�
 msgid "VPN Connection Failed"
 msgstr "가상 사설망 연결 실패"
 
-#: ../src/indicator/sections/wwan-section.cpp:99
+#: ../src/indicator/sections/wwan-section.cpp:102
 msgid "Cellular settings…"
 msgstr "셀룰러 네트워크 설정..."
 

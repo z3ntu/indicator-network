@@ -15,8 +15,8 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Launchpad-Export-Date: 2016-05-01 05:55+0000\n"
-"X-Generator: Launchpad (build 17995)\n"
+"X-Launchpad-Export-Date: 2016-07-13 05:45+0000\n"
+"X-Generator: Launchpad (build 18115)\n"
 "Language: \n"
 
 #: ../src/agent/SecretRequest.cpp:61
@@ -83,7 +83,7 @@ msgstr "离线"
 #. TODO Move this into a new class
 #: ../src/indicator/factory.cpp:187
 msgid "Wi-Fi"
-msgstr "Wi-Fi"
+msgstr "WLAN"
 
 #. TODO Move this into a new class
 #: ../src/indicator/factory.cpp:198
@@ -92,10 +92,10 @@ msgstr "飞行模式"
 
 #: ../src/indicator/factory.cpp:208
 msgid "Cellular data"
-msgstr ""
+msgstr "蜂窝数据"
 
 #. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:215
+#: ../src/indicator/factory.cpp:221
 msgid "Hotspot"
 msgstr "热点"
 
@@ -235,7 +235,7 @@ msgstr "VPN连接'%1'因VPN密钥无效而失败。"
 msgid "VPN Connection Failed"
 msgstr "VPN 连接失败"
 
-#: ../src/indicator/sections/wwan-section.cpp:99
+#: ../src/indicator/sections/wwan-section.cpp:102
 msgid "Cellular settings…"
 msgstr "蜂窝移动网络设置..."
 
@@ -245,7 +245,7 @@ msgstr "VPN设置..."
 
 #: ../src/indicator/sections/wifi-section.cpp:65
 msgid "Wi-Fi settings…"
-msgstr "Wi-Fi 设置..."
+msgstr "WLAN 设置..."
 
 #. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
 #: ../src/indicator/root-state.cpp:306

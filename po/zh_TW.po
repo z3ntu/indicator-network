@@ -15,8 +15,8 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Launchpad-Export-Date: 2016-05-01 05:55+0000\n"
-"X-Generator: Launchpad (build 17995)\n"
+"X-Launchpad-Export-Date: 2016-07-13 05:45+0000\n"
+"X-Generator: Launchpad (build 18115)\n"
 "Language: \n"
 
 #: ../src/agent/SecretRequest.cpp:61
@@ -92,10 +92,10 @@ msgstr "飛安模式"
 
 #: ../src/indicator/factory.cpp:208
 msgid "Cellular data"
-msgstr ""
+msgstr "行動數據"
 
 #. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:215
+#: ../src/indicator/factory.cpp:221
 msgid "Hotspot"
 msgstr "熱點"
 
@@ -188,7 +188,7 @@ msgstr "PIN 碼不符。"
 
 #: ../src/indicator/vpn-status-notifier.cpp:48
 msgid "The VPN connection '%1' failed."
-msgstr ""
+msgstr "VPN 連線 '%1' 失敗。"
 
 #: ../src/indicator/vpn-status-notifier.cpp:50
 msgid ""
@@ -233,9 +233,9 @@ msgstr ""
 
 #: ../src/indicator/vpn-status-notifier.cpp:68
 msgid "VPN Connection Failed"
-msgstr ""
+msgstr "VPN 連線失敗"
 
-#: ../src/indicator/sections/wwan-section.cpp:99
+#: ../src/indicator/sections/wwan-section.cpp:102
 msgid "Cellular settings…"
 msgstr "行動網路設定…"
 
@@ -254,4 +254,4 @@ msgstr "網路"
 
 #: ../src/indicator/nmofono/vpn/vpn-manager.cpp:81
 msgid "VPN connection %1"
-msgstr ""
+msgstr "VPN 連線 %1"

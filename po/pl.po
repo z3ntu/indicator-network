@@ -16,8 +16,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2;\n"
-"X-Launchpad-Export-Date: 2016-05-01 05:55+0000\n"
-"X-Generator: Launchpad (build 17995)\n"
+"X-Launchpad-Export-Date: 2016-07-13 05:45+0000\n"
+"X-Generator: Launchpad (build 18115)\n"
 "Language: pl\n"
 
 #: ../src/agent/SecretRequest.cpp:61
@@ -93,10 +93,10 @@ msgstr "Tryb samolotowy"
 
 #: ../src/indicator/factory.cpp:208
 msgid "Cellular data"
-msgstr ""
+msgstr "Dane sieci komórkowych"
 
 #. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:215
+#: ../src/indicator/factory.cpp:221
 msgid "Hotspot"
 msgstr "Hotspot"
 
@@ -256,7 +256,7 @@ msgstr ""
 msgid "VPN Connection Failed"
 msgstr "Połączenie VPN się nie powiodło"
 
-#: ../src/indicator/sections/wwan-section.cpp:99
+#: ../src/indicator/sections/wwan-section.cpp:102
 msgid "Cellular settings…"
 msgstr "Ustawienia komórkowe…"
 

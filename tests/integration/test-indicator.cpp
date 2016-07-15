@@ -280,11 +280,11 @@ TEST_F(TestIndicator, SimStates_NoSIM)
     // start the indicator
     ASSERT_NO_THROW(startIndicator());
 
-    // check indicator is just a 0-bar wifi icon
+    // check indicator is just a no-simcard and 0-bar wifi icon
     // check sim status shows “No SIM” with crossed sim card icon
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
-            .state_icons({"nm-no-connection"})
+            .state_icons({"no-simcard", "nm-no-connection"})
             .mode(mh::MenuItemMatcher::Mode::starts_with)
             .item(flightModeSwitch())
             .item(mh::MenuItemMatcher()
@@ -308,11 +308,11 @@ TEST_F(TestIndicator, SimStates_NoSIM2)
     // start the indicator
     ASSERT_NO_THROW(startIndicator());
 
-    // check indicator is a 4-bar signal icon and a 0-bar wifi icon
+    // check indicator is a 4-bar signal icon, no-simcard, and a 0-bar wifi icon
     // check sim 2 status shows “No SIM” with crossed sim card icon
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
-            .state_icons({"gsm-3g-full", "nm-no-connection"})
+            .state_icons({"gsm-3g-full", "no-simcard", "nm-no-connection"})
             .mode(mh::MenuItemMatcher::Mode::starts_with)
             .item(flightModeSwitch())
             .item(mh::MenuItemMatcher()
@@ -723,11 +723,11 @@ TEST_F(TestIndicator, FlightMode_NoSIM)
     // set no sim
     setSimManagerProperty(firstModem(), "Present", false);
 
-    // check indicator is just a 2-bar wifi icon
+    // check indicator is just no-simcard and a 2-bar wifi icon
     // check sim status shows “No SIM” with crossed sim card icon.
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
-            .state_icons({"nm-signal-50"})
+            .state_icons({"no-simcard", "nm-signal-50"})
             .mode(mh::MenuItemMatcher::Mode::starts_with)
             .item(flightModeSwitch(false))
             .item(mh::MenuItemMatcher()
@@ -765,11 +765,11 @@ TEST_F(TestIndicator, FlightMode_NoSIM)
     removeAccessPoint(device, ap);
 
     // check that the wifi switch turns off
-    // check indicator is a plane icon and a 0-bar wifi icon
+    // check indicator is a plane icon, no-simcard, and a 0-bar wifi icon
     // check sim status shows “No SIM” with crossed sim card icon (unchanged).
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
-            .state_icons({"airplane-mode", "nm-no-connection"})
+            .state_icons({"airplane-mode", "no-simcard", "nm-no-connection"})
             .mode(mh::MenuItemMatcher::Mode::starts_with)
             .item(flightModeSwitch(true))
             .item(mh::MenuItemMatcher()
@@ -800,11 +800,11 @@ TEST_F(TestIndicator, FlightMode_NoSIM)
     setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
 
     // check that the wifi switch turns back on
-    // check indicator is just a 2-bar wifi icon
+    // check indicator is no-simcard and a 2-bar wifi icon
     // check sim status shows “No SIM” with crossed sim card icon.
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
-            .state_icons({"nm-signal-50"})
+            .state_icons({"no-simcard", "nm-signal-50"})
             .mode(mh::MenuItemMatcher::Mode::starts_with)
             .item(flightModeSwitch(false))
             .item(mh::MenuItemMatcher()
@@ -1457,11 +1457,11 @@ TEST_F(TestIndicator, WifiStates_Connect1AP)
     // set no sim
     setSimManagerProperty(firstModem(), "Present", false);
 
-    // check indicator is just a 0-bar wifi icon
+    // check indicator is no-simcard and a 0-bar wifi icon
     // check that AP list is empty
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
-            .state_icons({"nm-no-connection"})
+            .state_icons({"no-simcard", "nm-no-connection"})
             .mode(mh::MenuItemMatcher::Mode::starts_with)
             .item(flightModeSwitch(false))
             .item(mh::MenuItemMatcher()
@@ -1530,11 +1530,11 @@ TEST_F(TestIndicator, WifiStates_Connect1AP)
     auto active_connection = createActiveConnection("6", device, connection, ap6);
     setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
 
-    // check indicator is just a 1-bar wifi icon
+    // check indicator is a 1-bar wifi icon
     // check that AP list contains the connected AP highlighted at top then other APs underneath in alphabetical order.
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
-            .state_icons({"nm-signal-25"})
+            .state_icons({"no-simcard", "nm-signal-25"})
             .mode(mh::MenuItemMatcher::Mode::starts_with)
             .item(flightModeSwitch(false)).item(mh::MenuItemMatcher()).item(wifiEnableSwitch(true))
             .item(mh::MenuItemMatcher()
@@ -1557,7 +1557,7 @@ TEST_F(TestIndicator, WifiStates_Connect1AP)
     auto ap_item = mh::MenuItemMatcher::checkbox();
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
-            .state_icons({"nm-signal-00"})
+            .state_icons({"no-simcard", "nm-signal-00"})
             .mode(mh::MenuItemMatcher::Mode::starts_with)
             .item(flightModeSwitch(false)).item(mh::MenuItemMatcher()).item(wifiEnableSwitch(true))
             .item(mh::MenuItemMatcher()
@@ -1573,7 +1573,7 @@ TEST_F(TestIndicator, WifiStates_Connect1AP)
     // check that AP signal icon also updates accordingly.
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
-            .state_icons({"nm-signal-50"})
+            .state_icons({"no-simcard", "nm-signal-50"})
             .mode(mh::MenuItemMatcher::Mode::starts_with)
             .item(flightModeSwitch(false)).item(mh::MenuItemMatcher()).item(wifiEnableSwitch(true))
             .item(mh::MenuItemMatcher()
@@ -1589,7 +1589,7 @@ TEST_F(TestIndicator, WifiStates_Connect1AP)
     // check that AP signal icon also updates accordingly.
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
-            .state_icons({"nm-signal-75"})
+            .state_icons({"no-simcard", "nm-signal-75"})
             .mode(mh::MenuItemMatcher::Mode::starts_with)
             .item(flightModeSwitch(false)).item(mh::MenuItemMatcher()).item(wifiEnableSwitch(true))
             .item(mh::MenuItemMatcher()
@@ -1605,7 +1605,7 @@ TEST_F(TestIndicator, WifiStates_Connect1AP)
     // check that AP signal icon also updates accordingly.
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
-            .state_icons({"nm-signal-100"})
+            .state_icons({"no-simcard", "nm-signal-100"})
             .mode(mh::MenuItemMatcher::Mode::starts_with)
             .item(flightModeSwitch(false)).item(mh::MenuItemMatcher()).item(wifiEnableSwitch(true))
             .item(mh::MenuItemMatcher()
@@ -1641,7 +1641,7 @@ TEST_F(TestIndicator, WifiStates_Connect1AP)
     // check that AP list is empty
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
-            .state_icons({"nm-no-connection"})
+            .state_icons({"no-simcard", "nm-no-connection"})
             .mode(mh::MenuItemMatcher::Mode::starts_with)
             .item(flightModeSwitch(false)).item(mh::MenuItemMatcher()).item(wifiEnableSwitch(false))
             .item(mh::MenuItemMatcher()
@@ -1680,7 +1680,7 @@ TEST_F(TestIndicator, WifiStates_Connect2APs)
     // check that AP list contains the connected AP highlighted at top then other APs underneath in alphabetical order.
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
-            .state_icons({"nm-signal-100-secure"})
+            .state_icons({"no-simcard", "nm-signal-100-secure"})
             .mode(mh::MenuItemMatcher::Mode::starts_with)
             .item(flightModeSwitch(false))
             .item(mh::MenuItemMatcher()
@@ -1715,7 +1715,7 @@ TEST_F(TestIndicator, WifiStates_Connect2APs)
     // check that AP list contains the connected AP highlighted at top then other APs underneath in alphabetical order.
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
-            .state_icons({"nm-signal-50"})
+            .state_icons({"no-simcard", "nm-signal-50"})
             .mode(mh::MenuItemMatcher::Mode::starts_with)
             .item(flightModeSwitch(false)).item(mh::MenuItemMatcher()).item(wifiEnableSwitch(true))
             .item(mh::MenuItemMatcher()
@@ -1757,7 +1757,7 @@ TEST_F(TestIndicator, WifiStates_Connect2APs)
     // check that AP list is empty
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
-            .state_icons({"nm-no-connection"})
+            .state_icons({"no-simcard", "nm-no-connection"})
             .mode(mh::MenuItemMatcher::Mode::starts_with)
             .item(flightModeSwitch(false)).item(mh::MenuItemMatcher()).item(wifiEnableSwitch(false))
             .item(mh::MenuItemMatcher()
@@ -1796,7 +1796,7 @@ TEST_F(TestIndicator, WifiStates_Connect2APs)
     // check that AP list contains the connected AP highlighted at top then other APs underneath in alphabetical order.
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
-            .state_icons({"nm-signal-100-secure"})
+            .state_icons({"no-simcard", "nm-signal-100-secure"})
             .mode(mh::MenuItemMatcher::Mode::starts_with)
             .item(flightModeSwitch(false)).item(mh::MenuItemMatcher()).item(wifiEnableSwitch(true))
             .item(mh::MenuItemMatcher()
@@ -1839,7 +1839,7 @@ TEST_F(TestIndicator, WifiStates_AddAndActivate)
     // activate the "SCE" AP (AddAndActivateConnection)
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
-            .state_icons({"nm-no-connection"})
+            .state_icons({"no-simcard", "nm-no-connection"})
             .mode(mh::MenuItemMatcher::Mode::starts_with)
             .item(flightModeSwitch(false))
             .item(mh::MenuItemMatcher()
@@ -1869,7 +1869,7 @@ TEST_F(TestIndicator, WifiStates_AddAndActivate)
     // activate the "NSD" AP (AddAndActivateConnection)
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
-            .state_icons({"nm-signal-25"})
+            .state_icons({"no-simcard", "nm-signal-25"})
             .mode(mh::MenuItemMatcher::Mode::starts_with)
             .item(flightModeSwitch(false))
             .item(mh::MenuItemMatcher()
@@ -1900,7 +1900,7 @@ TEST_F(TestIndicator, WifiStates_AddAndActivate)
     // re-activate the "SCE" AP (ActivateConnection)
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
-            .state_icons({"nm-signal-50-secure"})
+            .state_icons({"no-simcard", "nm-signal-50-secure"})
             .mode(mh::MenuItemMatcher::Mode::starts_with)
             .item(flightModeSwitch(false))
             .item(mh::MenuItemMatcher()
@@ -1930,7 +1930,7 @@ TEST_F(TestIndicator, WifiStates_AddAndActivate)
     // check that AP list contains the connected AP highlighted at top then other APs underneath in alphabetical order.
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
-            .state_icons({"nm-signal-25"})
+            .state_icons({"no-simcard", "nm-signal-25"})
             .mode(mh::MenuItemMatcher::Mode::starts_with)
             .item(flightModeSwitch(false))
             .item(mh::MenuItemMatcher()
@@ -1980,7 +1980,7 @@ TEST_F(TestIndicator, EnterpriseWifiConnect)
 
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
-            .state_icons({"nm-no-connection"})
+            .state_icons({"no-simcard", "nm-no-connection"})
             .mode(mh::MenuItemMatcher::Mode::starts_with)
             .item(flightModeSwitch(false))
             .item(mh::MenuItemMatcher()

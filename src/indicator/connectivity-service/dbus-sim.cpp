@@ -48,6 +48,7 @@ DBusSim::DBusSim(Sim::Ptr sim,
     connect(sim.get(), &Sim::primaryPhoneNumberChanged, this, &DBusSim::primaryPhoneNumberChanged);
     connect(sim.get(), &Sim::mccChanged, this, &DBusSim::mccChanged);
     connect(sim.get(), &Sim::mncChanged, this, &DBusSim::mncChanged);
+    connect(sim.get(), &Sim::preferredLanguagesChanged, this, &DBusSim::preferredLanguagesChanged);
 }
 
 DBusSim::~DBusSim()
@@ -166,6 +167,11 @@ void DBusSim::mccChanged()
 void DBusSim::mncChanged()
 {
     notifyProperties({"Mnc"});
+}
+
+void DBusSim::preferredLanguagesChanged()
+{
+    notifyProperties({"PreferredLanguages"});
 }
 
 nmofono::wwan::Sim::Ptr DBusSim::sim() const

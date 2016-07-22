@@ -93,6 +93,7 @@ protected Q_SLOTS:
     void primaryPhoneNumberChanged();
     void mccChanged();
     void mncChanged();
+    void preferredLanguagesChanged();
 
 private:
     void notifyProperties(const QStringList& propertyNames);

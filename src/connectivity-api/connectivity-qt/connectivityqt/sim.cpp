@@ -56,6 +56,9 @@ public Q_SLOTS:
         } else if (name == "PrimaryPhoneNumber")
         {
             Q_EMIT p.primaryPhoneNumberChanged(value.toString());
+        } else if (name == "PreferredLanguages")
+        {
+            Q_EMIT p.preferredLanguagesChanged();
         } else {
             qWarning() << "connectivityqt::Sim::Priv::propertyChanged(): "
                        << "Unexpected property: " << name;

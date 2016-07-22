@@ -86,6 +86,7 @@ public:
                 connect(sim.get(), &Sim::primaryPhoneNumberChanged, this, &Priv::primaryPhoneNumberChanged);
                 connect(sim.get(), &Sim::mccChanged, this, &Priv::mccChanged);
                 connect(sim.get(), &Sim::mncChanged, this, &Priv::mncChanged);
+                connect(sim.get(), &Sim::preferredLanguagesChanged, this, &Priv::preferredLanguagesChanged);
             }
             p.endInsertRows();
         }
@@ -142,6 +143,12 @@ public Q_SLOTS:
     {
         auto idx = findSim(sender());
         p.dataChanged(idx, idx, {SimsListModel::Roles::RoleMnc});
+    }
+
+    void preferredLanguagesChanged()
+    {
+        auto idx = findSim(sender());
+        p.dataChanged(idx, idx, {SimsListModel::Roles::RolePreferredLanguages});
     }
 
     void propertyChanged(const QString& name, const QVariant& value)

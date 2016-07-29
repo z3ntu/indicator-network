@@ -58,7 +58,6 @@ public:
 
     QString iccid() const;
     bool present() const;
-    QStringList preferredLanguages() const;
     bool ready() const;
 
     std::shared_ptr<QOfonoSimManager> ofonoSimManager() const;

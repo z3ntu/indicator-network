@@ -1,3 +1,9 @@
+indicator-network (0.8.0+16.10.20160722-0ubuntu1) yakkety; urgency=medium
+
+  * Don't expect to have PreferredLanguages on a SIM.
+
+ -- Antti Kaijanmäki <antti@kaijanmaki.net>  Fri, 22 Jul 2016 13:14:05 +0000
+
 indicator-network (0.8.0+16.10.20160718-0ubuntu1) yakkety; urgency=medium
 
   * Show no-simcard icon on the panel when SIM card is missing.

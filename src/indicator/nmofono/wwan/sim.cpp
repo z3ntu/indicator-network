@@ -43,7 +43,7 @@ Sim::Ptr Sim::fromQOfonoSimWrapper(const QOfonoSimWrapper *wrapper)
                                 "",
                                 "",
                                 "",
-                                wrapper->preferredLanguages(),
+                                {},
                                 false));
     sim->setOfonoSimManager(wrapper->ofonoSimManager());
     return sim;
@@ -117,6 +117,7 @@ public Q_SLOTS:
             connect(simmgr.get(), &QOfonoSimManager::subscriberNumbersChanged, this, &Private::phoneNumbersChanged);
             connect(simmgr.get(), &QOfonoSimManager::mobileCountryCodeChanged, this, &Private::mccChanged);
             connect(simmgr.get(), &QOfonoSimManager::mobileNetworkCodeChanged, this, &Private::mncChanged);
+            connect(simmgr.get(), &QOfonoSimManager::preferredLanguagesChanged, this, &Private::preferredLanguagesChanged);
             imsiChanged(simmgr->subscriberIdentity());
             phoneNumbersChanged(simmgr->subscriberNumbers());
             mccChanged(simmgr->mobileCountryCode());
@@ -170,6 +171,17 @@ public Q_SLOTS:
 
         m_mnc = value;
         Q_EMIT p.mncChanged(m_mnc);
+    }
+
+    void preferredLanguagesChanged(const QStringList &value)
+    {
+        if (value.isEmpty())
+        {
+            return;
+        }
+
+        m_preferredLanguages = value;
+        Q_EMIT p.preferredLanguagesChanged();
     }
 
     void poweredChanged()

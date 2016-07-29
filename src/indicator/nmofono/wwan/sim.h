@@ -96,7 +96,7 @@ public:
     Q_PROPERTY(QString mnc READ mnc NOTIFY mncChanged)
     QString mnc() const;
 
-    Q_PROPERTY(QList<QString> preferredLanguages READ preferredLanguages CONSTANT)
+    Q_PROPERTY(QList<QString> preferredLanguages READ preferredLanguages NOTIFY preferredLanguagesChanged)
     QList<QString> preferredLanguages() const;
 
     Q_PROPERTY(bool dataRoamingEnabled READ dataRoamingEnabled WRITE setDataRoamingEnabled NOTIFY dataRoamingEnabledChanged)
@@ -125,6 +125,8 @@ Q_SIGNALS:
     void mccChanged(const QString &);
 
     void mncChanged(const QString &);
+
+    void preferredLanguagesChanged();
 
     void lockedChanged(bool value);
 

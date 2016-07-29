@@ -42,12 +42,10 @@ public:
     shared_ptr<QOfonoSimManager> m_simManager;
 
     QString m_iccid;
-    QStringList m_preferredLanguages;
 
     bool m_present = false;
 
     bool m_iccidSet = false;
-    bool m_preferredLanguagesSet = false;
 
 
     Private(QOfonoSimWrapper& parent, shared_ptr<QOfonoSimManager> simmgr)
@@ -55,7 +53,6 @@ public:
     {
         connect(simmgr.get(), &QOfonoSimManager::presenceChanged, this, &Private::presentChanged);
         connect(simmgr.get(), &QOfonoSimManager::cardIdentifierChanged, this, &Private::iccidChanged);
-        connect(simmgr.get(), &QOfonoSimManager::preferredLanguagesChanged, this, &Private::preferredLanguagesChanged);
     }
 
 public Q_SLOTS:
@@ -70,7 +67,6 @@ public Q_SLOTS:
         if (!m_present)
         {
             m_iccidSet = false;
-            m_preferredLanguagesSet = false;
             Q_EMIT p.readyChanged(false);
         }
         Q_EMIT p.presentChanged(value);
@@ -90,27 +86,6 @@ public Q_SLOTS:
 
         m_iccid = value;
         m_iccidSet = true;
-        if (p.ready())
-        {
-            Q_EMIT p.readyChanged(true);
-        }
-    }
-
-    void preferredLanguagesChanged(const QStringList &value)
-    {
-        if (value.isEmpty())
-        {
-            return;
-        }
-
-        if (m_preferredLanguagesSet)
-        {
-            qWarning() << "Unexpected update on Preferred Languages: " << m_preferredLanguages << ", " << value;
-        }
-
-
-        m_preferredLanguages = value;
-        m_preferredLanguagesSet = true;
         if (p.ready())
         {
             Q_EMIT p.readyChanged(true);
@@ -139,14 +114,8 @@ bool QOfonoSimWrapper::present() const
 }
 
 
-QStringList QOfonoSimWrapper::preferredLanguages() const
-{
-    return d->m_preferredLanguages;
-}
-
 bool QOfonoSimWrapper::ready() const {
-    return d->m_iccidSet &&
-            d->m_preferredLanguagesSet;
+    return d->m_iccidSet;
 }
 
 std::shared_ptr<QOfonoSimManager> QOfonoSimWrapper::ofonoSimManager() const

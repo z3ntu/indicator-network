@@ -770,6 +770,8 @@ TEST_F(TestConnectivityApi, MobileDataDisablePowersOffAllSims)
     auto modem2 = createModem("ril_1");
     setConnectionManagerProperty(modem2, "Powered", true);
 
+    setSimManagerProperty(modem2, "CardIdentifier", "");
+
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
     auto device = createWiFiDevice(NM_DEVICE_STATE_DISCONNECTED);
 
@@ -778,6 +780,8 @@ TEST_F(TestConnectivityApi, MobileDataDisablePowersOffAllSims)
 
     // Connect the the service
     auto connectivity(newConnectivity());
+
+    setSimManagerProperty(modem2, "CardIdentifier", "893581234000000000001");
 
     QSignalSpy mobileDataEnabledSpy(connectivity.get(), SIGNAL(mobileDataEnabledUpdated(bool)));
     QSignalSpy simForMobileDataSpy(connectivity.get(), SIGNAL(simForMobileDataUpdated(Sim*)));
@@ -880,6 +884,8 @@ TEST_F(TestConnectivityApi, SettingsRestoredOnStartup)
 
 
     // Check that settings are restored on startup
+
+    sleep(1);
 
     EXPECT_FALSE(getConnectionManagerProperties(modem)["Powered"].toBool());
     EXPECT_TRUE(getConnectionManagerProperties(modem)["RoamingAllowed"].toBool());

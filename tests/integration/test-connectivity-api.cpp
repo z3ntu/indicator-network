@@ -878,14 +878,39 @@ TEST_F(TestConnectivityApi, SettingsRestoredOnStartup)
     setConnectionManagerProperty(modem2, "Powered", false);
     setConnectionManagerProperty(modem2, "RoamingAllowed", true);
 
+    auto& connectionManager(dbusMock.ofonoConnectionManagerInterface(modem));
+    QSignalSpy connectionManagerPropertyChangedSpy(
+                &connectionManager,
+                SIGNAL(PropertyChanged(const QString &, const QDBusVariant &)));
+
+    auto& connectionManager2(dbusMock.ofonoConnectionManagerInterface(modem2));
+    QSignalSpy connectionManager2PropertyChangedSpy(
+                &connectionManager2,
+                SIGNAL(PropertyChanged(const QString &, const QDBusVariant &)));
 
     // Start the indicator
     ASSERT_NO_THROW(startIndicator());
 
+    // make sure the ofono mock has updated it's values
+    while (getConnectionManagerProperties(modem)["Powered"].toBool() == true)
+    {
+        ASSERT_TRUE(connectionManagerPropertyChangedSpy.wait());
+    }
+    while (getConnectionManagerProperties(modem)["RoamingAllowed"].toBool() == false)
+    {
+        ASSERT_TRUE(connectionManagerPropertyChangedSpy.wait());
+    }
+    while (getConnectionManagerProperties(modem2)["Powered"].toBool() == false)
+    {
+        ASSERT_TRUE(connectionManager2PropertyChangedSpy.wait());
+    }
+    while (getConnectionManagerProperties(modem2)["RoamingAllowed"].toBool() == true)
+    {
+        ASSERT_TRUE(connectionManager2PropertyChangedSpy.wait());
+    }
+
 
     // Check that settings are restored on startup
-
-    sleep(1);
 
     EXPECT_FALSE(getConnectionManagerProperties(modem)["Powered"].toBool());
     EXPECT_TRUE(getConnectionManagerProperties(modem)["RoamingAllowed"].toBool());

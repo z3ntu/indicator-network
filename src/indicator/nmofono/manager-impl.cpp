@@ -109,6 +109,15 @@ public:
                 {
                     match = true;
                     modem->setSim(sim);
+
+                    if (m_mobileDataEnabledPending || m_simForMobileDataPending)
+                    {
+                        connect(modem->sim().get(), &wwan::Sim::initialDataOnSet, this, &Private::initialDataOnSet);
+                        if (modem->sim()->initialDataOn())
+                        {
+                            modem->sim()->initialDataOnSet();
+                        }
+                    }
                     break;
                 }
             }
@@ -124,6 +133,15 @@ public:
         m_sims.append(sim);
         connect(sim.get(), &wwan::Sim::presentChanged, this, &Private::matchModemsAndSims);
         Q_EMIT p.simsChanged();
+
+        QString iccid = m_settings->simForMobileData().toString();
+        if (!iccid.isEmpty())
+        {
+            if (sim->iccid() == iccid) {
+                setSimForMobileData(sim);
+            }
+        }
+
         matchModemsAndSims();
     }
 
@@ -163,14 +181,6 @@ public:
             matchModemsAndSims();
         }
 
-        if (m_mobileDataEnabledPending || m_simForMobileDataPending)
-        {
-            connect(modem->sim().get(), &wwan::Sim::initialDataOnSet, this, &Private::initialDataOnSet);
-            if (modem->sim()->initialDataOn())
-            {
-                modem->sim()->initialDataOnSet();
-            }
-        }
         m_modems.append(modem);
         Q_EMIT p.modemsChanged();
     }

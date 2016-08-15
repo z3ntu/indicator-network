@@ -3193,12 +3193,21 @@ TEST_F(TestIndicator, CellularData_1)
 
     ASSERT_NO_THROW(startIndicator());
 
+
+    auto modems = con->modems();
+    QSignalSpy rowsInsertedSpy(modems, SIGNAL(rowsInserted(const QModelIndex &, int, int)));
+    if (modems->rowCount() == 0) {
+        ASSERT_TRUE(rowsInsertedSpy.wait());
+    }
+
+    ASSERT_EQ(1, modems->rowCount());
+
     // Check that the indicator switch is enabled when we are not in flightmode
     // and there is a SIM for mobile data set.
 
     con->setMobileDataEnabled(true);
     con->setFlightMode(false);
-    con->setSimForMobileData(getModemSim(*con->modems(), 0));
+    con->setSimForMobileData(getModemSim(*modems, 0));
 
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
@@ -3254,11 +3263,19 @@ TEST_F(TestIndicator, CellularData_2)
 
     ASSERT_NO_THROW(startIndicator());
 
+    auto modems = con->modems();
+    QSignalSpy rowsInsertedSpy(modems, SIGNAL(rowsInserted(const QModelIndex &, int, int)));
+    if (modems->rowCount() == 0) {
+        ASSERT_TRUE(rowsInsertedSpy.wait());
+    }
+
+    ASSERT_EQ(1, modems->rowCount());
+
     // Check that Connectivity::mobileDataEnabled follows the indicator switch
 
     con->setMobileDataEnabled(true);
     con->setFlightMode(false);
-    con->setSimForMobileData(getModemSim(*con->modems(), 0));
+    con->setSimForMobileData(getModemSim(*modems, 0));
     QTest::qWait(250);
     QSignalSpy spy(con.get(), SIGNAL(mobileDataEnabledUpdated(bool)));
 

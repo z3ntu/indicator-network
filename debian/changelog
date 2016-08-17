@@ -1,3 +1,14 @@
+indicator-network (0.8.0+16.10.20160817.2-0ubuntu1) yakkety; urgency=medium
+
+  [ Antti Kaijanmäki ]
+  * Use a timer to set the sim for mobile data if only one sim exists.
+    (LP: #1598010)
+
+  [ Pete Woods ]
+  * Re-enable tests on all architectures (LP: #1612619)
+
+ -- Pete Woods <pete.woods@canonical.com>  Wed, 17 Aug 2016 11:50:15 +0000
+
 indicator-network (0.8.0+16.10.20160804-0ubuntu1) yakkety; urgency=medium
 
   [ Antti Kaijanmäki ]

@@ -113,6 +113,7 @@ if(NOT REMOTE_BUILD)
 add_subdirectory(po)
 add_subdirectory(doc)
 
+if(ENABLE_TESTS)
 enable_testing()
 add_subdirectory(tests)
 
@@ -137,6 +138,13 @@ enable_coverage_report(
     ${CMAKE_SOURCE_DIR}/tests/*
     ${CMAKE_BINARY_DIR}/*
 )
+
+else()
+
+# The autopilot tests need this fixture
+add_subdirectory(tests/data)
+
+endif()
 
 endif()
 

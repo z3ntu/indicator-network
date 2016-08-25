@@ -54,7 +54,7 @@ Depends: ${misc:Depends},
 # For apport hook
          python3-xdg,
          urfkill,
-Recommends: ofono
+Suggests: ofono
 Conflicts: chewie,
            indicators-client-plugin-network,
 Description: Systems settings menu service - Network indicator
@@ -65,25 +65,9 @@ Package: indicator-network-autopilot
 Architecture: all
 Depends: ${misc:Depends},
          indicator-network (>= ${source:Version}),
-         libautopilot-qt (>= 1.4),
-         ofono-phonesim-autostart,
-         unity8-autopilot,
-         python-dbus,
-         python-pkg-resources,	 
 Description: Autopilot tests for the network indicator for Ubuntu
  The Indicator-network service is responsible for exporting the system settings
  menu through dbus.  This package contains its autopilot tests.
-
-Package: indicator-network-tools
-Architecture: any
-Depends: ${misc:Depends},
-         ${shlibs:Depends},
-         network-manager,
-         ofono,
-         urfkill,
-Description: tools for working with indicator-network
- This package provides developer tools to aid in debugging
- and development of indicator-network.
 
 Package: libconnectivity-qt1
 Architecture: any

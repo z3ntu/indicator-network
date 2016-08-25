@@ -18,6 +18,5 @@ include_directories(
 )
 
 add_subdirectory(integration)
-add_subdirectory(data)
 add_subdirectory(unit)
 add_subdirectory(utils)

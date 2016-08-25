@@ -17,7 +17,6 @@ include_directories(
   ${TEST_DEPENDENCIES_INCLUDE_DIRS}
 )
 
-add_subdirectory(autopilot)
 add_subdirectory(integration)
 add_subdirectory(data)
 add_subdirectory(unit)

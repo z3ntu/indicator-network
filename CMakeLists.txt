@@ -139,11 +139,6 @@ enable_coverage_report(
     ${CMAKE_BINARY_DIR}/*
 )
 
-else()
-
-# The autopilot tests need this fixture
-add_subdirectory(tests/data)
-
 endif()
 
 endif()

@@ -1,6 +1,5 @@
 
 find_package(GMock REQUIRED)
-find_package(Valgrind REQUIRED)
 find_package(Qt5Test REQUIRED)
 
 pkg_check_modules(TEST_DEPENDENCIES

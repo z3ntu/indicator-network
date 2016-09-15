@@ -79,7 +79,7 @@ target_link_libraries(
     ${GMOCK_LIBRARIES}
 )
 
-add_valgrind_test(
+add_test(
     unit-tests
     unit-tests
 )

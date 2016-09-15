@@ -1,6 +1,5 @@
 
 find_package(GMock REQUIRED)
-find_package(Valgrind REQUIRED)
 find_package(Qt5Test REQUIRED)
 
 pkg_check_modules(TEST_DEPENDENCIES
@@ -17,8 +16,6 @@ include_directories(
   ${TEST_DEPENDENCIES_INCLUDE_DIRS}
 )
 
-add_subdirectory(autopilot)
 add_subdirectory(integration)
-add_subdirectory(data)
 add_subdirectory(unit)
 add_subdirectory(utils)

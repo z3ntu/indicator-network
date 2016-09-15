@@ -3,8 +3,6 @@ cmake_minimum_required(VERSION 2.8.9)
 
 string(TOLOWER "${CMAKE_BUILD_TYPE}" build_type_lower)
 
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" "${CMAKE_MODULE_PATH}")
-
 if("${build_type_lower}" STREQUAL debug)
   set(TRACE_DEFAULT TRUE)
 else()
@@ -138,11 +136,6 @@ enable_coverage_report(
     ${CMAKE_SOURCE_DIR}/tests/*
     ${CMAKE_BINARY_DIR}/*
 )
-
-else()
-
-# The autopilot tests need this fixture
-add_subdirectory(tests/data)
 
 endif()
 

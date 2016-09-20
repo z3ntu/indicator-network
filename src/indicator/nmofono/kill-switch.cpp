@@ -105,6 +105,7 @@ KillSwitch::KillSwitch(const QDBusConnection& systemBus)
     d = make_unique<Private>(*this, urfkill, killSwitch);
     auto reply = urfkill->IsFlightMode();
     reply.waitForFinished();
+    qDebug() << Q_FUNC_INFO << "reply.isValid()" << reply.isValid() << "reply.value()" << reply.value() << "reply.error()" << reply.error();
     d->setFlightMode(reply.isValid() ? reply.value() : false);
     d->stateChanged();
 

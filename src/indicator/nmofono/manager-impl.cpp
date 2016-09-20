@@ -331,6 +331,8 @@ public Q_SLOTS:
 
     void setFlightMode(bool newStatus)
     {
+        qDebug() << Q_FUNC_INFO << "new flight mode is" << newStatus;
+
         if (m_flightMode == newStatus)
         {
             return;
@@ -555,6 +557,7 @@ ManagerImpl::ManagerImpl(notify::NotificationManager::SPtr notificationManager,
     connect(d->nm.get(), &OrgFreedesktopNetworkManagerInterface::PropertiesChanged, this, &ManagerImpl::nm_properties_changed);
 
     connect(d->m_killSwitch.get(), &KillSwitch::flightModeChanged, d.get(), &Private::setFlightMode);
+    qDebug() << Q_FUNC_INFO << "init flightmode from killswitch";
     d->setFlightMode(d->m_killSwitch->isFlightMode());
 
     /// @todo set by the default connections.
@@ -650,7 +653,7 @@ ManagerImpl::setHotspotEnabled(bool enabled)
 void
 ManagerImpl::setFlightMode(bool enabled)
 {
-    qDebug() << "Setting flight mode enabled =" << enabled;
+    qDebug() << Q_FUNC_INFO << "Setting flight mode enabled =" << enabled;
 
     if (enabled == d->m_killSwitch->isFlightMode())
     {

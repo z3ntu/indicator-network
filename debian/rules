@@ -7,22 +7,15 @@ include /usr/share/dpkg/default.mk
 
 export DPKG_GENSYMBOLS_CHECK_LEVEL = 4
 
+ifneq (,$(filter $(DEB_HOST_ARCH),arm64 s390x powerpc))
+        ENABLE_TESTS = OFF
+else
+        ENABLE_TESTS = ON
+endif
+
 %:
 	dh $@ --parallel --fail-missing --with python3
 
-ifneq (,filter(s390x ,$(DEB_HOST_ARCH)))
-override_dh_auto_test:
-	dh_auto_test || true
-endif
+override_dh_auto_configure:
+	dh_auto_configure -- -DENABLE_TESTS=${ENABLE_TESTS}
 
-override_dh_install:
-	cd tests/autopilot; \
-	set -ex; for python in $(shell py3versions -r); do \
-	    $$python setup.py install --root=$(CURDIR)/debian/tmp --install-layout=deb; \
-	done; \
-	cd $(CURDIR)
-	mkdir -p debian/indicator-network/etc/apport/crashdb.conf.d
-	cp debian/indicator-network-crashdb.conf debian/indicator-network/etc/apport/crashdb.conf.d
-	mkdir -p debian/indicator-network/usr/share/apport/package-hooks
-	cp debian/source_indicator-network.py debian/indicator-network/usr/share/apport/package-hooks
-	dh_install -X'*.pyc' -X'__pycache__' --fail-missing

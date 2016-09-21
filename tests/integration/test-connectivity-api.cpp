@@ -770,6 +770,8 @@ TEST_F(TestConnectivityApi, MobileDataDisablePowersOffAllSims)
     auto modem2 = createModem("ril_1");
     setConnectionManagerProperty(modem2, "Powered", true);
 
+    setSimManagerProperty(modem2, "CardIdentifier", "");
+
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
     auto device = createWiFiDevice(NM_DEVICE_STATE_DISCONNECTED);
 
@@ -778,6 +780,8 @@ TEST_F(TestConnectivityApi, MobileDataDisablePowersOffAllSims)
 
     // Connect the the service
     auto connectivity(newConnectivity());
+
+    setSimManagerProperty(modem2, "CardIdentifier", "893581234000000000001");
 
     QSignalSpy mobileDataEnabledSpy(connectivity.get(), SIGNAL(mobileDataEnabledUpdated(bool)));
     QSignalSpy simForMobileDataSpy(connectivity.get(), SIGNAL(simForMobileDataUpdated(Sim*)));
@@ -874,9 +878,36 @@ TEST_F(TestConnectivityApi, SettingsRestoredOnStartup)
     setConnectionManagerProperty(modem2, "Powered", false);
     setConnectionManagerProperty(modem2, "RoamingAllowed", true);
 
+    auto& connectionManager(dbusMock.ofonoConnectionManagerInterface(modem));
+    QSignalSpy connectionManagerPropertyChangedSpy(
+                &connectionManager,
+                SIGNAL(PropertyChanged(const QString &, const QDBusVariant &)));
+
+    auto& connectionManager2(dbusMock.ofonoConnectionManagerInterface(modem2));
+    QSignalSpy connectionManager2PropertyChangedSpy(
+                &connectionManager2,
+                SIGNAL(PropertyChanged(const QString &, const QDBusVariant &)));
 
     // Start the indicator
     ASSERT_NO_THROW(startIndicator());
+
+    // make sure the ofono mock has updated it's values
+    while (getConnectionManagerProperties(modem)["Powered"].toBool() == true)
+    {
+        ASSERT_TRUE(connectionManagerPropertyChangedSpy.wait());
+    }
+    while (getConnectionManagerProperties(modem)["RoamingAllowed"].toBool() == false)
+    {
+        ASSERT_TRUE(connectionManagerPropertyChangedSpy.wait());
+    }
+    while (getConnectionManagerProperties(modem2)["Powered"].toBool() == false)
+    {
+        ASSERT_TRUE(connectionManager2PropertyChangedSpy.wait());
+    }
+    while (getConnectionManagerProperties(modem2)["RoamingAllowed"].toBool() == true)
+    {
+        ASSERT_TRUE(connectionManager2PropertyChangedSpy.wait());
+    }
 
 
     // Check that settings are restored on startup

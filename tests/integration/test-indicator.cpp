@@ -2908,7 +2908,7 @@ TEST_F(TestIndicator, UnlockSIM_IncorrectPin)
     notificationsSpy.clear();
 }
 
-TEST_F(TestIndicator, UnlockSIM2_IncorrectPin)
+TEST_F(TestIndicator, DISABLED_UnlockSIM2_IncorrectPin)
 {
     // set flight mode off, wifi off, and cell data off, and sim in
     setGlobalConnectedState(NM_STATE_DISCONNECTED);

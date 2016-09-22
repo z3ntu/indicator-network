@@ -60,7 +60,7 @@ TEST_F(TestIndicator, BasicMenuContents)
         ).match());
 }
 
-TEST_F(TestIndicator, OneDisconnectedAccessPointAtStartup)
+TEST_F(TestIndicator, DISABLED_OneDisconnectedAccessPointAtStartup)
 {
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
     auto device = createWiFiDevice(NM_DEVICE_STATE_DISCONNECTED);

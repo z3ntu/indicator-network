@@ -7,11 +7,11 @@ include /usr/share/dpkg/default.mk
 
 export DPKG_GENSYMBOLS_CHECK_LEVEL = 4
 
-ifneq (,$(filter $(DEB_HOST_ARCH),arm64 s390x powerpc))
+#ifneq (,$(filter $(DEB_HOST_ARCH),arm64 s390x powerpc))
         ENABLE_TESTS = OFF
-else
-        ENABLE_TESTS = ON
-endif
+#else
+#        ENABLE_TESTS = ON
+#endif
 
 %:
 	dh $@ --parallel --fail-missing --with python3

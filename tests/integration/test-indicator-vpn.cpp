@@ -122,8 +122,7 @@ TEST_F(TestIndicatorVpn, FollowStateChanges)
         ).match());
 }
 
-//FIXME: this test should be re-enabled and fixed
-TEST_F(TestIndicatorVpn, DISABLED_ActivatesConnection)
+TEST_F(TestIndicatorVpn, ActivatesConnection)
 {
     // Add VPN configurations
     auto appleConnection = createVpnConnection("apple");

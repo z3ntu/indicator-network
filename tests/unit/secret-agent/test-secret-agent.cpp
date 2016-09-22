@@ -162,7 +162,7 @@ static void transform(QVariantList &list) {
 	}
 }
 
-TEST_P(TestSecretAgentGetSecrets, ProvidesPasswordForWpaPsk) {
+TEST_P(TestSecretAgentGetSecrets, DISABLED_ProvidesPasswordForWpaPsk) {
 	QDBusPendingReply<QVariantDictMap> reply(
 			agentInterface->GetSecrets(connection(GetParam().keyManagement),
 					QDBusObjectPath("/connection/foo"),

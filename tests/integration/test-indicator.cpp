@@ -2407,7 +2407,7 @@ TEST_F(TestIndicator, DISABLED_UnlockSIM_Cancel)
     notificationsSpy.clear();
 }
 
-TEST_F(TestIndicator, UnlockSIM_CancelFirstUnlockSecond)
+TEST_F(TestIndicator, DISABLED_UnlockSIM_CancelFirstUnlockSecond)
 {
     // set flight mode off, wifi off, and cell data off, and sim in
     setGlobalConnectedState(NM_STATE_DISCONNECTED);

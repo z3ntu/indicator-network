@@ -60,7 +60,7 @@ TEST_F(TestIndicator, BasicMenuContents)
         ).match());
 }
 
-TEST_F(TestIndicator, DISABLED_OneDisconnectedAccessPointAtStartup)
+TEST_F(TestIndicator, OneDisconnectedAccessPointAtStartup)
 {
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
     auto device = createWiFiDevice(NM_DEVICE_STATE_DISCONNECTED);
@@ -186,8 +186,7 @@ TEST_F(TestIndicator, AddOneConnectedAccessPointAfterStartup)
         ).match());
 }
 
-//FIXME: this test should be re-enabled and fixed
-TEST_F(TestIndicator, DISABLED_SecondModem)
+TEST_F(TestIndicator, SecondModem)
 {
     createModem("ril_1"); // ril_0 already exists
     ASSERT_NO_THROW(startIndicator());
@@ -374,8 +373,7 @@ TEST_F(TestIndicator, SimStates_LockedSIM)
         ).match());
 }
 
-//FIXME: this test should be re-enabled and fixed
-TEST_F(TestIndicator, DISABLED_SimStates_LockedSIM2)
+TEST_F(TestIndicator, SimStates_LockedSIM2)
 {
     // set flight mode off, wifi off, and cell data off, and sim in
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
@@ -562,8 +560,7 @@ TEST_F(TestIndicator, SimStates_UnlockedSIM)
         ).match());
 }
 
-//FIXME: this test should be re-enabled and fixed
-TEST_F(TestIndicator, DISABLED_SimStates_UnlockedSIM2)
+TEST_F(TestIndicator, SimStates_UnlockedSIM2)
 {
     // set flight mode off, wifi off, cell data off, sim in, and sim unlocked
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
@@ -1098,8 +1095,7 @@ TEST_F(TestIndicator, FlightMode_WifiOff)
         ).match());
 }
 
-//FIXME: this test should be re-enabled and fixed
-TEST_F(TestIndicator, DISABLED_FlightMode_WifiOn)
+TEST_F(TestIndicator, FlightMode_WifiOn)
 {
     // set wifi on, flight mode off
     setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
@@ -2098,8 +2094,7 @@ TEST_F(TestIndicator, CellDataEnabled)
             ).match());
 }
 
-//FIXME: this test should be re-enabled and fixed
-TEST_F(TestIndicator, DISABLED_CellDataDisabled)
+TEST_F(TestIndicator, CellDataDisabled)
 {
     // We are disconnected
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
@@ -2288,8 +2283,7 @@ TEST_F(TestIndicator, UnlockSIM_MenuContents)
         ).match());
 }
 
-//FIXME: this test should be re-enabled and fixed
-TEST_F(TestIndicator, DISABLED_UnlockSIM_Cancel)
+TEST_F(TestIndicator, UnlockSIM_Cancel)
 {
     // set flight mode off, wifi off, and cell data off, and sim in
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
@@ -2407,7 +2401,7 @@ TEST_F(TestIndicator, DISABLED_UnlockSIM_Cancel)
     notificationsSpy.clear();
 }
 
-TEST_F(TestIndicator, DISABLED_UnlockSIM_CancelFirstUnlockSecond)
+TEST_F(TestIndicator, UnlockSIM_CancelFirstUnlockSecond)
 {
     // set flight mode off, wifi off, and cell data off, and sim in
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
@@ -2908,7 +2902,7 @@ TEST_F(TestIndicator, UnlockSIM_IncorrectPin)
     notificationsSpy.clear();
 }
 
-TEST_F(TestIndicator, DISABLED_UnlockSIM2_IncorrectPin)
+TEST_F(TestIndicator, UnlockSIM2_IncorrectPin)
 {
     // set flight mode off, wifi off, and cell data off, and sim in
     setGlobalConnectedState(NM_STATE_DISCONNECTED);

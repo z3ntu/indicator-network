@@ -15,8 +15,8 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Launchpad-Export-Date: 2016-08-25 06:10+0000\n"
-"X-Generator: Launchpad (build 18179)\n"
+"X-Launchpad-Export-Date: 2016-09-23 06:51+0000\n"
+"X-Generator: Launchpad (build 18204)\n"
 "Language: br\n"
 
 #: ../src/agent/SecretRequest.cpp:61
@@ -196,7 +196,7 @@ msgstr "Ar c'hodoù PIN ne glotont ket an eil gant egile."
 
 #: ../src/indicator/vpn-status-notifier.cpp:48
 msgid "The VPN connection '%1' failed."
-msgstr ""
+msgstr "C'hwitet eo ar c'hevreañ ouzh ar rouedad prevez galloudel « %1 »."
 
 #: ../src/indicator/vpn-status-notifier.cpp:50
 msgid ""
@@ -241,7 +241,7 @@ msgstr ""
 
 #: ../src/indicator/vpn-status-notifier.cpp:68
 msgid "VPN Connection Failed"
-msgstr ""
+msgstr "C'hwitet eo ar c'hevreañ ouzh ar rouedad prevez galloudel"
 
 #: ../src/indicator/sections/wwan-section.cpp:102
 msgid "Cellular settings…"

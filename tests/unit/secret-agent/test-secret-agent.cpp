@@ -172,9 +172,9 @@ TEST_P(TestSecretAgentGetSecrets, ProvidesPasswordForWpaPsk) {
 	QSignalSpy notificationSpy(notificationsInterface.data(),
 	SIGNAL(MethodCalled(const QString &, const QVariantList &)));
 	if (notificationSpy.empty())
-    {
-        ASSERT_TRUE(notificationSpy.wait());
-    }
+	{
+		ASSERT_TRUE(notificationSpy.wait());
+	}
 
 	ASSERT_EQ(1, notificationSpy.size());
 	const QVariantList &call(notificationSpy.at(0));
@@ -293,7 +293,7 @@ TEST_F(TestSecretAgent, CancelGetSecrets) {
 
 	if (notificationSpy.empty())
 	{
-	    ASSERT_TRUE(notificationSpy.wait());
+		ASSERT_TRUE(notificationSpy.wait());
 	}
 
 	ASSERT_EQ(1, notificationSpy.size());
@@ -313,8 +313,8 @@ TEST_F(TestSecretAgent, MultiSecrets) {
 			5);
 
 	if (notificationSpy.empty())
-    {
-        ASSERT_TRUE(notificationSpy.wait());
+	{
+		ASSERT_TRUE(notificationSpy.wait());
     }
 
 	ASSERT_EQ(1, notificationSpy.size());
@@ -330,12 +330,12 @@ TEST_F(TestSecretAgent, MultiSecrets) {
 			5);
 
 	if (notificationSpy.empty())
-    {
-        ASSERT_TRUE(notificationSpy.wait());
+	{
+		ASSERT_TRUE(notificationSpy.wait());
     }
 	if (notificationSpy.size() == 1)
 	{
-        ASSERT_TRUE(notificationSpy.wait());
+		ASSERT_TRUE(notificationSpy.wait());
 	}
 
 	ASSERT_EQ(2, notificationSpy.size());

@@ -46,7 +46,7 @@ protected:
 		DBusTypes::registerMetaTypes();
 
 		dbusMock.registerNotificationDaemon();
-		dbusMock.registerNetworkManager();
+		dbusMock.registerTemplate(NM_DBUS_SERVICE, NETWORK_MANAGER_TEMPLATE_PATH, {}, QDBusConnection::SystemBus);
 		dbusTestRunner.startServices();
 
 		QProcessEnvironment env(QProcessEnvironment::systemEnvironment());

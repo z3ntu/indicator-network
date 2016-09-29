@@ -11,6 +11,7 @@ endif()
 
 option(trace_messages "Print debug trace messages." ${TRACE_DEFAULT})
 option(REMOTE_BUILD "Remote build (skip docs, translations, tests)." FALSE)
+option(ENABLE_TESTS "Enable tests" TRUE)
 
 if(${trace_messages})
   add_definitions(-DINDICATOR_NETWORK_TRACE_MESSAGES)

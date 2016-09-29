@@ -171,7 +171,10 @@ TEST_P(TestSecretAgentGetSecrets, ProvidesPasswordForWpaPsk) {
 
 	QSignalSpy notificationSpy(notificationsInterface.data(),
 	SIGNAL(MethodCalled(const QString &, const QVariantList &)));
-	notificationSpy.wait();
+	if (notificationSpy.empty())
+    {
+        ASSERT_TRUE(notificationSpy.wait());
+    }
 
 	ASSERT_EQ(1, notificationSpy.size());
 	const QVariantList &call(notificationSpy.at(0));
@@ -288,7 +291,10 @@ TEST_F(TestSecretAgent, CancelGetSecrets) {
 	agentInterface->CancelGetSecrets(QDBusObjectPath("/connection/foo"),
 			SecretAgent::NM_WIRELESS_SECURITY_SETTING_NAME);
 
-	notificationSpy.wait();
+	if (notificationSpy.empty())
+	{
+	    ASSERT_TRUE(notificationSpy.wait());
+	}
 
 	ASSERT_EQ(1, notificationSpy.size());
 	const QVariantList &closecall(notificationSpy.at(0));
@@ -306,7 +312,10 @@ TEST_F(TestSecretAgent, MultiSecrets) {
 			SecretAgent::NM_WIRELESS_SECURITY_SETTING_NAME, QStringList(),
 			5);
 
-	notificationSpy.wait();
+	if (notificationSpy.empty())
+    {
+        ASSERT_TRUE(notificationSpy.wait());
+    }
 
 	ASSERT_EQ(1, notificationSpy.size());
 	const QVariantList &call(notificationSpy.at(0));
@@ -320,8 +329,14 @@ TEST_F(TestSecretAgent, MultiSecrets) {
 			SecretAgent::NM_WIRELESS_SECURITY_SETTING_NAME, QStringList(),
 			5);
 
-	notificationSpy.wait();
-	notificationSpy.wait();
+	if (notificationSpy.empty())
+    {
+        ASSERT_TRUE(notificationSpy.wait());
+    }
+	if (notificationSpy.size() == 1)
+	{
+        ASSERT_TRUE(notificationSpy.wait());
+	}
 
 	ASSERT_EQ(2, notificationSpy.size());
 	const QVariantList &closecall(notificationSpy.at(1));

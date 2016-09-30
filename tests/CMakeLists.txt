@@ -16,6 +16,10 @@ include_directories(
   ${TEST_DEPENDENCIES_INCLUDE_DIRS}
 )
 
+add_definitions(
+-DNETWORK_MANAGER_TEMPLATE_PATH="${CMAKE_CURRENT_SOURCE_DIR}/data/networkmanager.py"
+)
+
 add_subdirectory(integration)
 add_subdirectory(unit)
 add_subdirectory(utils)

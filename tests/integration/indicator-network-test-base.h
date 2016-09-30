@@ -38,29 +38,6 @@
 #include <QSignalSpy>
 #include <QTest>
 
-/**
-***  Redefine EXPECT_MATCHRESULT to wait
-**/
-
-#undef EXPECT_MATCHRESULT
-
-#define EXPECT_MATCHRESULT(statement) \
-do {\
-    static constexpr double timeout_secs = 10.0; \
-    auto timer = g_timer_new(); \
-    unity::gmenuharness::MatchResult result; \
-    for (;;) { \
-        result = (statement); \
-        if (result.success() || (g_timer_elapsed(timer, nullptr) > timeout_secs)) \
-            break; \
-        g_usleep(G_USEC_PER_SEC/10); \
-    } \
-    GTEST_TEST_BOOLEAN_(result.success(), #statement, false, true, \
-                        GTEST_NONFATAL_FAILURE_) << result.concat_failures().c_str(); \
-    g_timer_destroy(timer); \
-} while (0)
-
-
 inline QString qVariantToString(const QVariant& variant) {
     QString output;
     QDebug dbg(&output);

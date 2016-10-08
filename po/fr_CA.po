@@ -15,8 +15,8 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Launchpad-Export-Date: 2016-09-23 06:51+0000\n"
-"X-Generator: Launchpad (build 18204)\n"
+"X-Launchpad-Export-Date: 2016-10-08 06:56+0000\n"
+"X-Generator: Launchpad (build 18227)\n"
 "Language: \n"
 
 #: ../src/agent/SecretRequest.cpp:61
@@ -92,12 +92,12 @@ msgstr "Mode avion"
 
 #: ../src/indicator/factory.cpp:208
 msgid "Cellular data"
-msgstr ""
+msgstr "Données cellulaires"
 
 #. TODO Move this into a new class
 #: ../src/indicator/factory.cpp:221
 msgid "Hotspot"
-msgstr ""
+msgstr "Point d'accès"
 
 #: ../src/indicator/sim-unlock-dialog.cpp:144
 msgid "Sorry, incorrect %{1} PIN."
@@ -197,52 +197,64 @@ msgstr "Les NIP ne correspondent pas."
 
 #: ../src/indicator/vpn-status-notifier.cpp:48
 msgid "The VPN connection '%1' failed."
-msgstr ""
+msgstr "La connexion RPV « %1 » a échoué."
 
 #: ../src/indicator/vpn-status-notifier.cpp:50
 msgid ""
 "The VPN connection '%1' failed because the network connection was "
 "interrupted."
 msgstr ""
+"La connexion RPV « %1 » a échoué, car la connexion au réseau a été "
+"interrompue."
 
 #: ../src/indicator/vpn-status-notifier.cpp:51
 msgid ""
 "The VPN connection '%1' failed because the VPN service stopped unexpectedly."
 msgstr ""
+"La connexion RPV « %1 » a échoué, car le service RPV s'est arrêté de manière "
+"inattendue."
 
 #: ../src/indicator/vpn-status-notifier.cpp:52
 msgid ""
 "The VPN connection '%1' failed because the VPN service returned invalid "
 "configuration."
 msgstr ""
+"La connexion RPV « %1 » a échoué, car le service RPV a renvoyé une "
+"configuration invalide."
 
 #: ../src/indicator/vpn-status-notifier.cpp:53
 msgid ""
 "The VPN connection '%1' failed because the connection attempt timed out."
 msgstr ""
+"La connexion RPV « %1 » a échoué, car la connexion est arrivée au bout de "
+"son délai."
 
 #: ../src/indicator/vpn-status-notifier.cpp:54
 msgid ""
 "The VPN connection '%1' failed because the VPN service did not start in time."
 msgstr ""
+"La connexion RPV « %1 » a échoué, car le service RPV n'a pas démarré à temps."
 
 #: ../src/indicator/vpn-status-notifier.cpp:55
 msgid ""
 "The VPN connection '%1' failed because the VPN service failed to start."
 msgstr ""
+"La connexion RPV « %1 » a échoué, car le service RPV n'a pas réussi à "
+"démarrer."
 
 #: ../src/indicator/vpn-status-notifier.cpp:56
 msgid ""
 "The VPN connection '%1' failed because there were no valid VPN secrets."
 msgstr ""
+"La connexion RPV « %1 » a échoué, car il n'y avait aucun secrets RPV valides."
 
 #: ../src/indicator/vpn-status-notifier.cpp:57
 msgid "The VPN connection '%1' failed because of invalid VPN secrets."
-msgstr ""
+msgstr "La connexion RPV « %1 » a échoué en raison de secrets RPV invalides."
 
 #: ../src/indicator/vpn-status-notifier.cpp:68
 msgid "VPN Connection Failed"
-msgstr ""
+msgstr "La connexion RPV a échoué"
 
 #: ../src/indicator/sections/wwan-section.cpp:102
 msgid "Cellular settings…"
@@ -250,7 +262,7 @@ msgstr "Paramètres celluaires…"
 
 #: ../src/indicator/sections/vpn-section.cpp:140
 msgid "VPN settings…"
-msgstr ""
+msgstr "Paramètres RPV..."
 
 #: ../src/indicator/sections/wifi-section.cpp:65
 msgid "Wi-Fi settings…"
@@ -263,4 +275,4 @@ msgstr "Réseau"
 
 #: ../src/indicator/nmofono/vpn/vpn-manager.cpp:81
 msgid "VPN connection %1"
-msgstr ""
+msgstr "Connexion RPV « %1 »"

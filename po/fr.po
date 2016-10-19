@@ -8,15 +8,15 @@ msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-04-29 12:38+0300\n"
-"PO-Revision-Date: 2016-05-01 09:09+0000\n"
-"Last-Translator: Anne <anneonyme017@gmail.com>\n"
+"PO-Revision-Date: 2016-10-10 16:05+0000\n"
+"Last-Translator: Anne017 <anneonyme017@openmailbox.org>\n"
 "Language-Team: French <fr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Launchpad-Export-Date: 2016-08-25 06:10+0000\n"
-"X-Generator: Launchpad (build 18179)\n"
+"X-Launchpad-Export-Date: 2016-10-11 07:43+0000\n"
+"X-Generator: Launchpad (build 18227)\n"
 "Language: fr\n"
 
 #: ../src/agent/SecretRequest.cpp:61
@@ -197,68 +197,67 @@ msgstr "Les codes PIN ne correspondent pas."
 
 #: ../src/indicator/vpn-status-notifier.cpp:48
 msgid "The VPN connection '%1' failed."
-msgstr "La connexion au réseau privé virtuel « %1 » a échoué."
+msgstr "La connexion au RPV « %1 » a échoué."
 
 #: ../src/indicator/vpn-status-notifier.cpp:50
 msgid ""
 "The VPN connection '%1' failed because the network connection was "
 "interrupted."
 msgstr ""
-"La connexion au réseau privé virtuel « %1 » a échoué car la connexion au "
-"réseau a été interrompue."
+"La connexion au RPV « %1 » a échoué car la connexion au réseau a été "
+"interrompue."
 
 #: ../src/indicator/vpn-status-notifier.cpp:51
 msgid ""
 "The VPN connection '%1' failed because the VPN service stopped unexpectedly."
 msgstr ""
-"La connexion au réseau privé virtuel « %1 » a échoué car le service de "
-"réseau privé virtuel s'est arrêté de manière impromptue."
+"La connexion au RPV « %1 » a échoué, car le service du RPV s'est arrêté de "
+"manière inattendue."
 
 #: ../src/indicator/vpn-status-notifier.cpp:52
 msgid ""
 "The VPN connection '%1' failed because the VPN service returned invalid "
 "configuration."
 msgstr ""
-"La connexion au réseau privé virtuel « %1 » a échoué car le service de "
-"réseau privé virtuel a renvoyé une configuration non valide."
+"La connexion au RPV « %1 » a échoué car le service du RPV a renvoyé une "
+"configuration invalide."
 
 #: ../src/indicator/vpn-status-notifier.cpp:53
 msgid ""
 "The VPN connection '%1' failed because the connection attempt timed out."
 msgstr ""
-"La connexion au réseau privé virtuel « %1 » a échoué car la connexion a "
-"expiré."
+"La connexion au RPV « %1 » a échoué car la connexion est arrivée au bout de "
+"son délai ."
 
 #: ../src/indicator/vpn-status-notifier.cpp:54
 msgid ""
 "The VPN connection '%1' failed because the VPN service did not start in time."
 msgstr ""
-"La connexion au réseau privé virtuel « %1 » a échoué car le service de "
-"réseau privé virtuel n'a pas démarré à temps."
+"La connexion au RPV « %1 » a échoué car le service du RPV n'a pas démarré à "
+"temps."
 
 #: ../src/indicator/vpn-status-notifier.cpp:55
 msgid ""
 "The VPN connection '%1' failed because the VPN service failed to start."
 msgstr ""
-"La connexion au réseau privé virtuel « %1 » a échoué car le service de "
-"réseau privé virtuel n'a pas réussi à démarrer."
+"La connexion au RPV « %1 » a échoué car le service du RPV n'a pas réussi à "
+"démarrer."
 
 #: ../src/indicator/vpn-status-notifier.cpp:56
 msgid ""
 "The VPN connection '%1' failed because there were no valid VPN secrets."
 msgstr ""
-"La connexion au réseau privé virtuel « %1 » a échoué car il n'y avait aucun "
-"identifiant valide."
+"La connexion au RPV « %1 » a échoué car il n'y avait aucun identifiant "
+"valide."
 
 #: ../src/indicator/vpn-status-notifier.cpp:57
 msgid "The VPN connection '%1' failed because of invalid VPN secrets."
 msgstr ""
-"La connexion au réseau privé virtuel « %1 » a échoué car les identifiants "
-"sont invalides."
+"La connexion au RPV « %1 » a échoué car les identifiants sont invalides."
 
 #: ../src/indicator/vpn-status-notifier.cpp:68
 msgid "VPN Connection Failed"
-msgstr "La connexion au réseau privé virtuel a échoué"
+msgstr "La connexion au RPV a échoué"
 
 #: ../src/indicator/sections/wwan-section.cpp:102
 msgid "Cellular settings…"
@@ -266,7 +265,7 @@ msgstr "Paramètres mobile…"
 
 #: ../src/indicator/sections/vpn-section.cpp:140
 msgid "VPN settings…"
-msgstr "Paramètres VPN..."
+msgstr "Paramètres du RPV..."
 
 #: ../src/indicator/sections/wifi-section.cpp:65
 msgid "Wi-Fi settings…"
@@ -279,4 +278,4 @@ msgstr "Réseau"
 
 #: ../src/indicator/nmofono/vpn/vpn-manager.cpp:81
 msgid "VPN connection %1"
-msgstr "Connexion au réseau privé virtuel « %1 »"
+msgstr "Connexion au RPV « %1 »"

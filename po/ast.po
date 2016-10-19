@@ -15,8 +15,8 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2016-08-25 06:10+0000\n"
-"X-Generator: Launchpad (build 18179)\n"
+"X-Launchpad-Export-Date: 2016-10-08 06:55+0000\n"
+"X-Generator: Launchpad (build 18227)\n"
 "Language: ast\n"
 
 #: ../src/agent/SecretRequest.cpp:61
@@ -92,12 +92,12 @@ msgstr "Mou avión"
 
 #: ../src/indicator/factory.cpp:208
 msgid "Cellular data"
-msgstr ""
+msgstr "Datos de celular"
 
 #. TODO Move this into a new class
 #: ../src/indicator/factory.cpp:221
 msgid "Hotspot"
-msgstr ""
+msgstr "Puntu d'accesu"
 
 #: ../src/indicator/sim-unlock-dialog.cpp:144
 msgid "Sorry, incorrect %{1} PIN."
@@ -219,6 +219,7 @@ msgstr ""
 msgid ""
 "The VPN connection '%1' failed because the connection attempt timed out."
 msgstr ""
+"Falló la conexón VPN «%1» porque escosó'l tiempu pa tentar la conexón."
 
 #: ../src/indicator/vpn-status-notifier.cpp:54
 msgid ""
@@ -263,4 +264,4 @@ msgstr "Rede"
 
 #: ../src/indicator/nmofono/vpn/vpn-manager.cpp:81
 msgid "VPN connection %1"
-msgstr ""
+msgstr "Conexón VPN %1"

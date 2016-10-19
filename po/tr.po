@@ -15,8 +15,8 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2016-08-25 06:10+0000\n"
-"X-Generator: Launchpad (build 18179)\n"
+"X-Launchpad-Export-Date: 2016-10-08 06:56+0000\n"
+"X-Generator: Launchpad (build 18227)\n"
 "Language: tr\n"
 
 #: ../src/agent/SecretRequest.cpp:61
@@ -92,12 +92,12 @@ msgstr "Uçuş Kipi"
 
 #: ../src/indicator/factory.cpp:208
 msgid "Cellular data"
-msgstr ""
+msgstr "Hücresel veri"
 
 #. TODO Move this into a new class
 #: ../src/indicator/factory.cpp:221
 msgid "Hotspot"
-msgstr ""
+msgstr "Taşınabilir Nokta"
 
 #: ../src/indicator/sim-unlock-dialog.cpp:144
 msgid "Sorry, incorrect %{1} PIN."
@@ -212,6 +212,8 @@ msgid ""
 "The VPN connection '%1' failed because the VPN service returned invalid "
 "configuration."
 msgstr ""
+"VPN hizmeti geçersiz yapılandırmasından ötütü VPN bağlantısı '% 1' başarısız "
+"oldu."
 
 #: ../src/indicator/vpn-status-notifier.cpp:53
 msgid ""
@@ -223,24 +225,26 @@ msgstr ""
 msgid ""
 "The VPN connection '%1' failed because the VPN service did not start in time."
 msgstr ""
+"VPN hizmeti zamanında başlamadığından VPN bağlantısı '% 1' başarısız oldu."
 
 #: ../src/indicator/vpn-status-notifier.cpp:55
 msgid ""
 "The VPN connection '%1' failed because the VPN service failed to start."
-msgstr ""
+msgstr "VPN hizmeti başlatılamadığından VPN bağlantısı '% 1' başarısız oldu."
 
 #: ../src/indicator/vpn-status-notifier.cpp:56
 msgid ""
 "The VPN connection '%1' failed because there were no valid VPN secrets."
 msgstr ""
+"Geçerli VPN sırları olmadığından VPN bağlantısı '% 1' başarısız oldu."
 
 #: ../src/indicator/vpn-status-notifier.cpp:57
 msgid "The VPN connection '%1' failed because of invalid VPN secrets."
-msgstr ""
+msgstr "'% 1' VPN bağlantısı nedeniyle geçersiz VPN sırları başarısız oldu."
 
 #: ../src/indicator/vpn-status-notifier.cpp:68
 msgid "VPN Connection Failed"
-msgstr ""
+msgstr "VPN Bağlantısı Başarısız"
 
 #: ../src/indicator/sections/wwan-section.cpp:102
 msgid "Cellular settings…"
@@ -261,4 +265,4 @@ msgstr "Ağ"
 
 #: ../src/indicator/nmofono/vpn/vpn-manager.cpp:81
 msgid "VPN connection %1"
-msgstr ""
+msgstr "VPN bağlantısı %1"

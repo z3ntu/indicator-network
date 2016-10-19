@@ -46,7 +46,7 @@ protected:
 		DBusTypes::registerMetaTypes();
 
 		dbusMock.registerNotificationDaemon();
-		dbusMock.registerNetworkManager();
+		dbusMock.registerTemplate(NM_DBUS_SERVICE, NETWORK_MANAGER_TEMPLATE_PATH, {}, QDBusConnection::SystemBus);
 		dbusTestRunner.startServices();
 
 		QProcessEnvironment env(QProcessEnvironment::systemEnvironment());
@@ -171,17 +171,20 @@ TEST_P(TestSecretAgentGetSecrets, ProvidesPasswordForWpaPsk) {
 
 	QSignalSpy notificationSpy(notificationsInterface.data(),
 	SIGNAL(MethodCalled(const QString &, const QVariantList &)));
-	notificationSpy.wait();
+	if (notificationSpy.empty())
+	{
+		ASSERT_TRUE(notificationSpy.wait());
+	}
 
 	ASSERT_EQ(1, notificationSpy.size());
 	const QVariantList &call(notificationSpy.at(0));
-	ASSERT_EQ("Notify", call.at(0));
+	EXPECT_EQ("Notify", call.at(0).toString().toStdString());
 
 	QVariantList args(call.at(1).toList());
 	transform(args);
 
 	ASSERT_EQ(8, args.size());
-	EXPECT_EQ("indicator-network", args.at(0));
+	EXPECT_EQ("indicator-network", args.at(0).toString().toStdString());
 	EXPECT_EQ("Connect to “the ssid”", args.at(3).toString().toStdString());
 
 	QVariantMap hints(args.at(6).toMap());
@@ -215,7 +218,7 @@ TEST_P(TestSecretAgentGetSecrets, ProvidesPasswordForWpaPsk) {
 		shared_ptr<GSimpleAction> o(g_simple_action_new("a", NULL), &mh::g_object_deleter);
 		mh::waitForCore(G_OBJECT(o.get()), "activate", 100);
 
-		ASSERT_EQ("Password received", secretAgent.readAll().trimmed());
+		EXPECT_EQ("Password received", secretAgent.readAll().trimmed().toStdString());
 	}
 
 	notificationsInterface->EmitSignal(
@@ -281,18 +284,21 @@ TEST_F(TestSecretAgent, CancelGetSecrets) {
 
 	ASSERT_EQ(1, notificationSpy.size());
 	const QVariantList &call(notificationSpy.at(0));
-	ASSERT_EQ("Notify", call.at(0));
+	EXPECT_EQ("Notify", call.at(0).toString().toStdString());
 
 	notificationSpy.clear();
 
 	agentInterface->CancelGetSecrets(QDBusObjectPath("/connection/foo"),
 			SecretAgent::NM_WIRELESS_SECURITY_SETTING_NAME);
 
-	notificationSpy.wait();
+	if (notificationSpy.empty())
+	{
+		ASSERT_TRUE(notificationSpy.wait());
+	}
 
 	ASSERT_EQ(1, notificationSpy.size());
 	const QVariantList &closecall(notificationSpy.at(0));
-	ASSERT_EQ("CloseNotification", closecall.at(0));
+	EXPECT_EQ("CloseNotification", closecall.at(0).toString().toStdString());
 }
 
 /* Ensures that if we request secrets twice we close the notification
@@ -306,11 +312,14 @@ TEST_F(TestSecretAgent, MultiSecrets) {
 			SecretAgent::NM_WIRELESS_SECURITY_SETTING_NAME, QStringList(),
 			5);
 
-	notificationSpy.wait();
+	if (notificationSpy.empty())
+	{
+		ASSERT_TRUE(notificationSpy.wait());
+	}
 
 	ASSERT_EQ(1, notificationSpy.size());
 	const QVariantList &call(notificationSpy.at(0));
-	ASSERT_EQ("Notify", call.at(0));
+	EXPECT_EQ("Notify", call.at(0).toString().toStdString());
 
 	notificationSpy.clear();
 
@@ -320,15 +329,21 @@ TEST_F(TestSecretAgent, MultiSecrets) {
 			SecretAgent::NM_WIRELESS_SECURITY_SETTING_NAME, QStringList(),
 			5);
 
-	notificationSpy.wait();
-	notificationSpy.wait();
+	if (notificationSpy.empty())
+	{
+		ASSERT_TRUE(notificationSpy.wait());
+	}
+	if (notificationSpy.size() == 1)
+	{
+		ASSERT_TRUE(notificationSpy.wait());
+	}
 
 	ASSERT_EQ(2, notificationSpy.size());
 	const QVariantList &closecall(notificationSpy.at(1));
-	ASSERT_EQ("CloseNotification", closecall.at(0));
+	EXPECT_EQ("CloseNotification", closecall.at(0).toString().toStdString());
 
 	const QVariantList &newnotify(notificationSpy.at(0));
-	ASSERT_EQ("Notify", newnotify.at(0));
+	EXPECT_EQ("Notify", newnotify.at(0).toString().toStdString());
 }
 
 TEST_F(TestSecretAgent, SaveSecrets) {

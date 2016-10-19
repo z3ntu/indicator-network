@@ -66,7 +66,8 @@ void IndicatorNetworkTestBase::SetUp()
                                 QStringList{"-y", testDir.filePath(QString("%1-%2").arg(test_info->name(), "system.log"))})));
     }
 
-    dbusMock.registerNetworkManager();
+    qDebug() << NETWORK_MANAGER_TEMPLATE_PATH;
+    dbusMock.registerTemplate(NM_DBUS_SERVICE, NETWORK_MANAGER_TEMPLATE_PATH, {}, QDBusConnection::SystemBus);
     dbusMock.registerNotificationDaemon();
     // By default the ofono mock starts with one modem
     dbusMock.registerOfono({{"no_modem", true}});

@@ -47,15 +47,15 @@ add_test(
 
 set(INDICATOR_NETWORK_TEST_GSETTINGS_SCHEMA_DIR ${CMAKE_BINARY_DIR}/foo/bar) #need this somewhere higher up in the hierarchy
 
-set_tests_properties(
-    integration-tests
-    PROPERTIES ENVIRONMENT
-        GSETTINGS_BACKEND="memory"
-        GSETTINGS_SCHEMA_DIR="${INDICATOR_NETWORK_TEST_GSETTINGS_SCHEMA_DIR}"
-)
+#set_tests_properties(
+#    integration-tests
+#    PROPERTIES ENVIRONMENT
+#        GSETTINGS_BACKEND="memory"
+#        GSETTINGS_SCHEMA_DIR="${INDICATOR_NETWORK_TEST_GSETTINGS_SCHEMA_DIR}"
+#)
 
-add_custom_command(OUTPUT ${INDICATOR_NETWORK_TEST_GSETTINGS_SCHEMA_DIR}/gschemas.compiled
-                   COMMAND glib-compile-schemas --targetdir=${INDICATOR_NETWORK_TEST_GSETTINGS_SCHEMA_DIR} --strict --dry-run ${CMAKE_SOURCE_DIR}/data)
-add_custom_target(gschemas_compiled DEPENDS ${INDICATOR_NETWORK_TEST_GSETTINGS_SCHEMA_DIR}/gschemas.compiled)
+#add_custom_command(OUTPUT ${INDICATOR_NETWORK_TEST_GSETTINGS_SCHEMA_DIR}/gschemas.compiled
+#                   COMMAND glib-compile-schemas --targetdir=${INDICATOR_NETWORK_TEST_GSETTINGS_SCHEMA_DIR} --strict --dry-run ${CMAKE_SOURCE_DIR}/data)
+#add_custom_target(gschemas_compiled DEPENDS ${INDICATOR_NETWORK_TEST_GSETTINGS_SCHEMA_DIR}/gschemas.compiled)
 
-add_dependencies(integration-tests gschemas_compiled)
+#add_dependencies(integration-tests gschemas_compiled)

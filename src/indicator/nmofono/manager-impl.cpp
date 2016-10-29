@@ -48,6 +48,8 @@
 #include <algorithm>
 #include <iostream>
 
+#include "nm-device-statistics-monitor.h"
+
 using namespace std;
 
 namespace nmofono {
@@ -94,6 +96,8 @@ public:
     ConnectivityServiceSettings::Ptr m_settings;
 
     QTimer m_checkSimForMobileDataTimer;
+
+    NMDeviceStatisticsMonitor::Ptr m_statisticsMonitor;
 
     Private(Manager& parent) :
         p(parent)
@@ -401,6 +405,17 @@ public Q_SLOTS:
             m_ofonoLinks[path] = modem;
             connect(modem.get(), &wwan::Modem::readyToUnlock, this, &Private::modemReadyToUnlock);
             connect(modem.get(), &wwan::Modem::ready, this, &Private::modemReady);
+
+
+            for (const auto &dev : m_nmLinks)
+            {
+                auto wifiLink = dynamic_pointer_cast<wifi::WifiLinkImpl>(dev);
+                if (wifiLink && wifiLink->device_udi() == path) {
+                    modem->setNmPath(wifiLink->device_path().path());
+                    m_statisticsMonitor->addLink(modem);
+                    break;
+                }
+            }
         }
 
         Q_EMIT p.linksUpdated();
@@ -516,6 +531,12 @@ ManagerImpl::ManagerImpl(notify::NotificationManager::SPtr notificationManager,
     d->m_unlockDialog = make_shared<SimUnlockDialog>(notificationManager);
     connect(d->m_unlockDialog.get(), &SimUnlockDialog::ready, d.get(), &Private::sim_unlock_ready);
 
+    d->m_statisticsMonitor = make_shared<NMDeviceStatisticsMonitor>();
+
+    connect(d->m_statisticsMonitor.get(), &NMDeviceStatisticsMonitor::txChanged, this, &ManagerImpl::txChanged);
+    connect(d->m_statisticsMonitor.get(), &NMDeviceStatisticsMonitor::rxChanged, this, &ManagerImpl::rxChanged);
+
+
     d->m_ofono = make_shared<QOfonoManager>();
 
     // Load the SIM manager before we connect to the signals
@@ -570,7 +591,7 @@ ManagerImpl::ManagerImpl(notify::NotificationManager::SPtr notificationManager,
     for(auto sim : d->m_sims) {
         connect(sim.get(), &wwan::Sim::presentChanged, d.get(), &Private::startCheckSimForMobileDataTimer);
     }
-    d->m_checkSimForMobileDataTimer.start();
+    d->m_checkSimForMobileDataTimer.start();    
 }
 
 bool
@@ -690,6 +711,9 @@ void
 ManagerImpl::device_removed(const QDBusObjectPath &path)
 {
     qDebug() << "Device Removed:" << path.path();
+
+    d->m_statisticsMonitor->remove(path.path());
+
     Link::Ptr toRemove;
     for (auto dev : d->m_nmLinks)
     {
@@ -740,6 +764,22 @@ ManagerImpl::device_added(const QDBusObjectPath &path)
                 link = tmp;
             }
         }
+        else if (dev->deviceType() == NM_DEVICE_TYPE_MODEM)
+        {
+            if (dev->driver() == "ofono")
+            {
+                for (const auto &modem : d->m_modems)
+                {
+                    if (modem->ofonoPath() == dev->udi())
+                    {
+                        modem->setNmPath(path.path());
+                        d->m_statisticsMonitor->addLink(modem);
+                        break;
+                    }
+                }
+            }
+        }
+
     } catch (const exception &e) {
         qDebug() << ": failed to create Device proxy for "<< path.path() << ": ";
         qDebug() << "\t" << e.what();
@@ -750,6 +790,8 @@ ManagerImpl::device_added(const QDBusObjectPath &path)
     if (link) {
         d->m_nmLinks.insert(link);
         Q_EMIT linksUpdated();
+
+        d->m_statisticsMonitor->addLink(link);
     }
 
     d->updateHasWifi();
@@ -974,6 +1016,18 @@ QList<wwan::Sim::Ptr>
 ManagerImpl::sims() const
 {
     return d->m_sims;
+}
+
+bool
+ManagerImpl::tx() const
+{
+    return d->m_statisticsMonitor->tx();
+}
+
+bool
+ManagerImpl::rx() const
+{
+    return d->m_statisticsMonitor->rx();
 }
 
 

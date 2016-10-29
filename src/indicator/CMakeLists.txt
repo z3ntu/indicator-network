@@ -5,9 +5,12 @@ pkg_check_modules(
 )
 include_directories(${QOFONO_INCLUDE_DIRS})
 
-include_directories("${CMAKE_SOURCE_DIR}/src")
-include_directories("${CMAKE_BINARY_DIR}/src/qdbus-stubs")
-include_directories("${CMAKE_SOURCE_DIR}/src/qdbus-stubs")
+pkg_check_modules(
+    GSETTINGSQT REQUIRED
+    gsettings-qt
+)
+include_directories(${GSETTINGSQT_INCLUDE_DIRS})
+
 
 # list these here to have them visible in Qt Creator
 file(
@@ -25,6 +28,7 @@ set(NETWORK_SERVICE_SOURCES
     nmofono/kill-switch.cpp
     nmofono/manager.cpp
     nmofono/manager-impl.cpp
+    nmofono/nm-device-statistics-monitor.cpp
     nmofono/connection/active-connection.cpp
     nmofono/connection/active-connection-manager.cpp
     nmofono/connection/active-vpn-connection.cpp
@@ -141,6 +145,7 @@ target_link_libraries(
     util
     ${GLIB_LDFLAGS}
     ${QOFONO_LDFLAGS}
+    ${GSETTINGSQT_LDFLAGS}
     Qt5::Core
     Qt5::DBus
 )

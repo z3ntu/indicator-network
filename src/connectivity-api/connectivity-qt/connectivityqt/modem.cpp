@@ -41,6 +41,7 @@ public:
 public Q_SLOTS:
     void propertyChanged(const QString& name, const QVariant& value)
     {
+        Q_UNUSED(value);
         if (name == "Sim")
         {
             simsUpdated();

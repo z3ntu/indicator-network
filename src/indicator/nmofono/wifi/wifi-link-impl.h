@@ -55,7 +55,6 @@ public:
     AccessPoint::Ptr activeAccessPoint() override;
 
     QDBusObjectPath device_path() const;
-    QString device_udi() const;
 
     void setDisconnectWifi(bool) override;
 

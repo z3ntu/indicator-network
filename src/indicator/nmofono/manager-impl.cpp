@@ -74,6 +74,8 @@ public:
 
     bool m_modemAvailable = false;
 
+    QList<QDBusObjectPath> m_nmDevices;
+
     QSet<Link::Ptr> m_nmLinks;
     QMap<QString, wwan::Modem::Ptr> m_ofonoLinks;
 
@@ -406,12 +408,14 @@ public Q_SLOTS:
             connect(modem.get(), &wwan::Modem::readyToUnlock, this, &Private::modemReadyToUnlock);
             connect(modem.get(), &wwan::Modem::ready, this, &Private::modemReady);
 
-
-            for (const auto &dev : m_nmLinks)
+            for (const auto &nmobjpath : m_nmDevices)
             {
-                auto wifiLink = dynamic_pointer_cast<wifi::WifiLinkImpl>(dev);
-                if (wifiLink && wifiLink->device_udi() == path) {
-                    modem->setNmPath(wifiLink->device_path().path());
+                auto dev = make_shared<OrgFreedesktopNetworkManagerDeviceInterface>(
+                            NM_DBUS_SERVICE,
+                            nmobjpath.path(),
+                            nm->connection());
+                if (dev->udi() == path) {
+                    modem->setNmPath(nmobjpath.path());
                     m_statisticsMonitor->addLink(modem);
                     break;
                 }
@@ -566,7 +570,7 @@ ManagerImpl::ManagerImpl(notify::NotificationManager::SPtr notificationManager,
     connect(d->m_hotspotManager.get(), &HotspotManager::reportError, this, &Manager::reportError);
 
     connect(d->nm.get(), &OrgFreedesktopNetworkManagerInterface::DeviceAdded, this, &ManagerImpl::device_added);
-    QList<QDBusObjectPath> devices(d->nm->GetDevices());
+    QList<QDBusObjectPath> devices = d->nm->GetDevices();
     for(const auto &path : devices) {
         device_added(path);
     }
@@ -712,6 +716,8 @@ ManagerImpl::device_removed(const QDBusObjectPath &path)
 {
     qDebug() << "Device Removed:" << path.path();
 
+    d->m_nmDevices.removeAll(path);
+
     d->m_statisticsMonitor->remove(path.path());
 
     Link::Ptr toRemove;
@@ -736,6 +742,9 @@ void
 ManagerImpl::device_added(const QDBusObjectPath &path)
 {
     qDebug() << "Device Added:" << path.path();
+
+    d->m_nmDevices.append(path);
+
     for (const auto &dev : d->m_nmLinks)
     {
         auto wifiLink = dynamic_pointer_cast<wifi::WifiLinkImpl>(dev);
@@ -768,7 +777,7 @@ ManagerImpl::device_added(const QDBusObjectPath &path)
         {
             if (dev->driver() == "ofono")
             {
-                for (const auto &modem : d->m_modems)
+                for (const auto &modem : d->m_ofonoLinks)
                 {
                     if (modem->ofonoPath() == dev->udi())
                     {

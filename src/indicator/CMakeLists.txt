@@ -5,13 +5,6 @@ pkg_check_modules(
 )
 include_directories(${QOFONO_INCLUDE_DIRS})
 
-pkg_check_modules(
-    GSETTINGSQT REQUIRED
-    gsettings-qt
-)
-include_directories(${GSETTINGSQT_INCLUDE_DIRS})
-
-
 # list these here to have them visible in Qt Creator
 file(
         GLOB_RECURSE NETWORK_SERVICE_HEADERS
@@ -145,7 +138,6 @@ target_link_libraries(
     util
     ${GLIB_LDFLAGS}
     ${QOFONO_LDFLAGS}
-    ${GSETTINGSQT_LDFLAGS}
     Qt5::Core
     Qt5::DBus
 )

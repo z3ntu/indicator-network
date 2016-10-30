@@ -21,7 +21,6 @@
 
 #include <NetworkManager.h>
 
-#include <QGSettings>
 #include <QDBusInterface>
 
 #include <QMap>
@@ -80,39 +79,30 @@ public:
     Private(NMDeviceStatisticsMonitor& parent)
         : p(parent)
     {
-        if (qgetenv("GSETTINGS_BACKEND") == "memory")
+        GSettings *settings{nullptr};
+        if (qEnvironmentVariableIsSet("INDICATOR_NETWORK_UNDER_TESTING"))
         {
-            GSettingsBackend *backend = g_settings_backend_get_default();
+            Q_ASSERT(qEnvironmentVariableIsSet("INDICATOR_NETWOR_TESTING_GSETTINGS_INI"));
+            Q_ASSERT(qEnvironmentVariableIsSet("GSETTINGS_SCHEMA_DIR"));
 
-            GError *error = NULL;
-            GSettingsSchemaSource *schema_source;
-            schema_source = g_settings_schema_source_new_from_directory (qgetenv("INDICATOR_NETWORK_TEST_GSETTINGS_SCHEMA_DIR").constData(),
-                                                                         NULL,
-                                                                         TRUE,
-                                                                         &error);
-            if (error) {
-                qWarning("%s", error->message);
-                g_error_free(error);
-            }
+            GSettingsBackend *backend = g_keyfile_settings_backend_new(qgetenv("INDICATOR_NETWOR_TESTING_GSETTINGS_INI"),
+                                                                       "/com/canonical/indicator/network/",
+                                                                       "root");
 
-            GSettingsSchema *schema;
-            schema = g_settings_schema_source_lookup (schema_source,
-                                                      "com.canonical.indicator.network", FALSE);
-
-            GSettings *settings = g_settings_new_full (schema, backend, NULL);
-
-            g_settings_set_value (settings,
-                                  "data-usage-indication",
-                                  g_variant_new_boolean(true));
-
+            settings = g_settings_new_with_backend("com.canonical.indicator.network",
+                                                   backend);
             g_object_unref(backend);
-            g_settings_schema_source_unref(schema_source);
-            g_settings_schema_unref(schema);
-            g_object_unref(settings);
         }
-
-        QGSettings settings{"com.canonical.indicator.network"};
-        m_enabled = settings.get("dataUsageIndication").toBool();
+        else
+        {
+            settings = g_settings_new("com.canonical.indicator.network");
+        }
+        m_enabled = g_settings_get_boolean(settings,
+                                           "data-usage-indication");
+        g_object_unref(settings);
+#ifdef INDICATOR_NETWORK_TRACE_MESSAGES
+        qDebug() << "enabled:" << m_enabled;
+#endif
 
         m_unityScreen.connection().connect(QStringLiteral("com.canonical.Unity.Screen"),
                                            QStringLiteral("/com/canonical/Unity/Screen"),
@@ -163,6 +153,10 @@ public:
 
     void setUpInterface(const QString &path)
     {
+#ifdef INDICATOR_NETWORK_TRACE_MESSAGES
+        qDebug() << path;
+#endif
+
         if (!m_interfaces.contains(path))
         {
             return;
@@ -181,6 +175,9 @@ public:
 
     void resetInterface(const QString &path)
     {
+#ifdef INDICATOR_NETWORK_TRACE_MESSAGES
+        qDebug() << path;
+#endif
         if (!m_interfaces.contains(path))
         {
             return;
@@ -192,6 +189,9 @@ public:
 
     void connectAllInterfaces()
     {
+#ifdef INDICATOR_NETWORK_TRACE_MESSAGES
+        qDebug() << "";
+#endif
         for (auto path : m_interfaces.keys())
         {
             setUpInterface(path);
@@ -200,6 +200,9 @@ public:
 
     void disconnectAllInterfaces()
     {
+#ifdef INDICATOR_NETWORK_TRACE_MESSAGES
+        qDebug() << "";
+#endif
         for (auto path : m_interfaces.keys())
         {
             resetInterface(path);
@@ -212,6 +215,9 @@ public Q_SLOTS:
     void handleDisplayPowerStateChange(int status, int reason)
     {
         Q_UNUSED(reason)
+#ifdef INDICATOR_NETWORK_TRACE_MESSAGES
+        qDebug() << status;
+#endif
 
         if (m_status != (Status)status) {
             m_status = (Status)status;
@@ -220,9 +226,11 @@ public Q_SLOTS:
             case Status::On:
             {
                 connectAllInterfaces();
+                break;
             }
             case Status::Off:
                 disconnectAllInterfaces();
+                break;
             }
         }
     }
@@ -231,12 +239,20 @@ public Q_SLOTS:
     {
         if (properties.contains("TxBytes"))
         {
+#ifdef INDICATOR_NETWORK_TRACE_MESSAGES
+            OrgFreedesktopNetworkManagerDeviceStatisticsInterface *iface = qobject_cast<OrgFreedesktopNetworkManagerDeviceStatisticsInterface*>(sender());
+            qDebug() << "TxBytes updated on" << iface->path();
+#endif
                setTx(true);
                m_txTimer.start();
         }
 
         if (properties.contains("RxBytes"))\
         {
+#ifdef INDICATOR_NETWORK_TRACE_MESSAGES
+            OrgFreedesktopNetworkManagerDeviceStatisticsInterface *iface = qobject_cast<OrgFreedesktopNetworkManagerDeviceStatisticsInterface*>(sender());
+            qDebug() << "RxBytes updated on" << iface->path();
+#endif
             setRx(true);
             m_rxTimer.start();
         }
@@ -244,11 +260,17 @@ public Q_SLOTS:
 
     void txShot()
     {
+#ifdef INDICATOR_NETWORK_TRACE_MESSAGES
+        qDebug() << "";
+#endif
         setTx(false);
     }
 
     void rxShot()
     {
+#ifdef INDICATOR_NETWORK_TRACE_MESSAGES
+        qDebug() << "";
+#endif
         setRx(false);
     }
 
@@ -269,14 +291,24 @@ NMDeviceStatisticsMonitor::~NMDeviceStatisticsMonitor()
 void
 NMDeviceStatisticsMonitor::addLink(Link::Ptr link)
 {
+#ifdef INDICATOR_NETWORK_TRACE_MESSAGES
+    qDebug() << "adding" << link->name();
+#endif
+
     QString path;
 
     if (std::dynamic_pointer_cast<wifi::WifiLinkImpl>(link))
     {
+#ifdef INDICATOR_NETWORK_TRACE_MESSAGES
+        qDebug() << "   it's a WiFi link";
+#endif
         path = std::dynamic_pointer_cast<wifi::WifiLinkImpl>(link)->device_path().path();
     }
     else if (std::dynamic_pointer_cast<wwan::Modem>(link))
     {
+#ifdef INDICATOR_NETWORK_TRACE_MESSAGES
+        qDebug() << "   it's a modem link";
+#endif
         path = std::dynamic_pointer_cast<wwan::Modem>(link)->nmPath();
     }
     else
@@ -303,6 +335,9 @@ NMDeviceStatisticsMonitor::addLink(Link::Ptr link)
 void
 NMDeviceStatisticsMonitor::remove(const QString &nmPath)
 {
+#ifdef INDICATOR_NETWORK_TRACE_MESSAGES
+    qDebug() << "removing" << nmPath;
+#endif
 
     if (d->m_interfaces.contains(nmPath))
     {

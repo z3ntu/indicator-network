@@ -1,3 +1,9 @@
+indicator-network (0.8.0+17.04.20161031.4-0ubuntu1) zesty; urgency=medium
+
+  * Show network data usage indication. (LP: #1470852)
+
+ -- Antti Kaijanmäki <antti@kaijanmaki.net>  Mon, 31 Oct 2016 11:08:29 +0000
+
 indicator-network (0.8.0+17.04.20161021-0ubuntu1) zesty; urgency=medium
 
   [ Martin Pitt, Ted Gould ]

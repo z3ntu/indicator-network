@@ -534,7 +534,8 @@ WifiLinkImpl::activeAccessPoint()
     return d->m_activeAccessPoint;
 }
 
-QDBusObjectPath WifiLinkImpl::device_path() const {
+QDBusObjectPath
+WifiLinkImpl::device_path() const {
     return QDBusObjectPath(d->m_dev->path());
 }
 

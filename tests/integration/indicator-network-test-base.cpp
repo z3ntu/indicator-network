@@ -48,14 +48,15 @@ IndicatorNetworkTestBase::~IndicatorNetworkTestBase()
 void IndicatorNetworkTestBase::SetUp()
 {
     qputenv("INDICATOR_NETWORK_SETTINGS_PATH", temporaryDir.path().toUtf8().constData());
+    qputenv("INDICATOR_NETWORK_UNDER_TESTING", "1");
+    qputenv("GSETTINGS_SCHEMA_DIR", INDICATOR_NETWORK_TESTING_GSETTINGS_SCHEMA_DIR);
+    qputenv("INDICATOR_NETWORK_TESTING_GSETTINGS_INI", INDICATOR_NETWORK_TESTING_GSETTINGS_INI);
 
-    Q_ASSERT(qEnvironmentVariableIsSet("INDICATOR_NETWOR_TESTING_GSETTINGS_INI"));
-    QString inipath = qgetenv("INDICATOR_NETWOR_TESTING_GSETTINGS_INI");
-    if (QFile::exists(inipath))
+    if (QFile::exists(INDICATOR_NETWORK_TESTING_GSETTINGS_INI))
     {
-        QFile::remove(inipath);
+        QFile::remove(INDICATOR_NETWORK_TESTING_GSETTINGS_INI);
     }
-    QFile inifile(inipath);
+    QFile inifile(INDICATOR_NETWORK_TESTING_GSETTINGS_INI);
     inifile.open(QIODevice::WriteOnly | QIODevice::Text);
     QTextStream out(&inifile);
     out << "[root]\ndata-usage-indication=false\n";
@@ -83,7 +84,6 @@ void IndicatorNetworkTestBase::SetUp()
                                 QStringList{"-y", testDir.filePath(QString("%1-%2").arg(test_info->name(), "system.log"))})));
     }
 
-    qDebug() << NETWORK_MANAGER_TEMPLATE_PATH;
     dbusMock.registerTemplate(NM_DBUS_SERVICE, NETWORK_MANAGER_TEMPLATE_PATH, {}, QDBusConnection::SystemBus);
     dbusMock.registerNotificationDaemon();
     // By default the ofono mock starts with one modem
@@ -179,19 +179,15 @@ void IndicatorNetworkTestBase::SetUp()
 
 void IndicatorNetworkTestBase::TearDown()
 {
-    Q_ASSERT(qEnvironmentVariableIsSet("INDICATOR_NETWOR_TESTING_GSETTINGS_INI"));
-    QString inipath = qgetenv("INDICATOR_NETWOR_TESTING_GSETTINGS_INI");
-    if (QFile::exists(inipath))
+    if (QFile::exists(INDICATOR_NETWORK_TESTING_GSETTINGS_INI))
     {
-        QFile::remove(inipath);
+        QFile::remove(INDICATOR_NETWORK_TESTING_GSETTINGS_INI);
     }
 }
 
 void IndicatorNetworkTestBase::setDataUsageIndicationSetting(bool value)
 {
-    Q_ASSERT(qEnvironmentVariableIsSet("INDICATOR_NETWOR_TESTING_GSETTINGS_INI"));
-
-    GSettingsBackend *backend = g_keyfile_settings_backend_new(qgetenv("INDICATOR_NETWOR_TESTING_GSETTINGS_INI"),
+    GSettingsBackend *backend = g_keyfile_settings_backend_new(INDICATOR_NETWORK_TESTING_GSETTINGS_INI,
                                                                "/com/canonical/indicator/network/",
                                                                "root");
     GSettings *settings = g_settings_new_with_backend("com.canonical.indicator.network",

@@ -3348,9 +3348,6 @@ TEST_F(TestIndicator, CellularData_2)
  * Disabled by default because containst sleeps and what not other horrible things.
  * There are timers involved, so this will be flaky
  * To manually run, do following inside ${CMAKE_BINARY_DIR}
- *     $ export INDICATOR_NETWORK_UNDER_TESTING=1
- *     $ export INDICATOR_NETWOR_TESTING_GSETTINGS_INI=./data/test_gsettings.ini
- *     $ export GSETTINGS_SCHEMA_DIR=./data
  *     $ tests/integration/integration-tests --gtest_filter=TestIndicator.DISABLED_DataUsageIndication_enabled --gtest_also_run_disabled_tests
  */
 TEST_F(TestIndicator, DISABLED_DataUsageIndication_enabled)

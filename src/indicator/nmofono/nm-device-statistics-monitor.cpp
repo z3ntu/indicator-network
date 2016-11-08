@@ -82,10 +82,10 @@ public:
         GSettings *settings{nullptr};
         if (qEnvironmentVariableIsSet("INDICATOR_NETWORK_UNDER_TESTING"))
         {
-            Q_ASSERT(qEnvironmentVariableIsSet("INDICATOR_NETWOR_TESTING_GSETTINGS_INI"));
+            Q_ASSERT(qEnvironmentVariableIsSet("INDICATOR_NETWORK_TESTING_GSETTINGS_INI"));
             Q_ASSERT(qEnvironmentVariableIsSet("GSETTINGS_SCHEMA_DIR"));
 
-            GSettingsBackend *backend = g_keyfile_settings_backend_new(qgetenv("INDICATOR_NETWOR_TESTING_GSETTINGS_INI"),
+            GSettingsBackend *backend = g_keyfile_settings_backend_new(qgetenv("INDICATOR_NETWORK_TESTING_GSETTINGS_INI"),
                                                                        "/com/canonical/indicator/network/",
                                                                        "root");
 

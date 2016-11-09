@@ -591,7 +591,7 @@ def AddWiFiConnection(self, dev_path, connection_name, ssid_name, key_mgmt):
     main_connections.append(connection_path)
     settings_obj.Set(SETTINGS_IFACE, 'Connections', main_connections)
 
-    settings_obj.EmitSignal(SETTINGS_IFACE, 'NewConnection', 'o', [ap_path])
+    settings_obj.EmitSignal(SETTINGS_IFACE, 'NewConnection', 'o', [connection_path])
 
     return connection_path
 
@@ -621,6 +621,7 @@ def AddActiveConnection(self, devices, connection_device, specific_object, name,
     self.AddObject(active_connection_path,
                    ACTIVE_CONNECTION_IFACE,
                    {
+                       'Id': name,
                        'Devices': device_objects,
                        'Default6': False,
                        'Default': True,

@@ -179,20 +179,6 @@ MenuBuilder::MenuBuilder(nmofono::Manager::Ptr manager, Factory& factory) :
     d->m_phoneMenu->addSection(d->m_vpnSection);
     d->m_phoneGreeterMenu->addSection(d->m_vpnSection);
 
-    d->m_desktopMenuExporter = factory.newMenuExporter("/com/canonical/indicator/network/desktop", d->m_desktopMenu->menu());
-    d->m_desktopGreeterMenuExporter = factory.newMenuExporter("/com/canonical/indicator/network/desktop_greeter", d->m_desktopGreeterMenu->menu());
-    d->m_desktopWifiSettingsMenuExporter = factory.newMenuExporter("/com/canonical/indicator/network/desktop_wifi_settings", d->m_wifiSection->settingsModel());
-
-    d->m_tabletpMenuExporter = factory.newMenuExporter("/com/canonical/indicator/network/tablet", d->m_tabletMenu->menu());
-    d->m_tabletGreeterMenuExporter = factory.newMenuExporter("/com/canonical/indicator/network/tablet_greeter", d->m_tabletGreeterMenu->menu());
-    d->m_tabletWifiSettingsMenuExporter = factory.newMenuExporter("/com/canonical/indicator/network/tablet_wifi_settings", d->m_wifiSection->settingsModel());
-
-    d->m_phoneMenuExporter = factory.newMenuExporter("/com/canonical/indicator/network/phone", d->m_phoneMenu->menu());
-    d->m_phoneGreeterMenuExporter = factory.newMenuExporter("/com/canonical/indicator/network/phone_greeter", d->m_phoneGreeterMenu->menu());
-    d->m_phoneWifiSettingsMenuExporter = factory.newMenuExporter("/com/canonical/indicator/network/phone_wifi_settings", d->m_wifiSection->settingsModel());
-
-    d->m_ubiquityMenuExporter = factory.newMenuExporter("/com/canonical/indicator/network/ubiquity", d->m_ubiquityMenu->menu());
-
     // we have a single actiongroup for all the menus.
     d->m_actionGroupMerger = factory.newActionGroupMerger();
     d->m_actionGroupMerger->add(d->m_flightModeSwitch->actionGroup());
@@ -204,6 +190,20 @@ MenuBuilder::MenuBuilder(nmofono::Manager::Ptr manager, Factory& factory) :
     d->m_actionGroupMerger->add(d->m_phoneGreeterMenu->actionGroup());
     d->m_actionGroupExporter = factory.newActionGroupExporter(d->m_actionGroupMerger->actionGroup(),
                                                         "/com/canonical/indicator/network");
+
+    d->m_desktopMenuExporter = factory.newMenuExporter("/com/canonical/indicator/network/desktop", d->m_desktopMenu->menu());
+	d->m_desktopGreeterMenuExporter = factory.newMenuExporter("/com/canonical/indicator/network/desktop_greeter", d->m_desktopGreeterMenu->menu());
+	d->m_desktopWifiSettingsMenuExporter = factory.newMenuExporter("/com/canonical/indicator/network/desktop_wifi_settings", d->m_wifiSection->settingsModel());
+
+	d->m_tabletpMenuExporter = factory.newMenuExporter("/com/canonical/indicator/network/tablet", d->m_tabletMenu->menu());
+	d->m_tabletGreeterMenuExporter = factory.newMenuExporter("/com/canonical/indicator/network/tablet_greeter", d->m_tabletGreeterMenu->menu());
+	d->m_tabletWifiSettingsMenuExporter = factory.newMenuExporter("/com/canonical/indicator/network/tablet_wifi_settings", d->m_wifiSection->settingsModel());
+
+	d->m_phoneMenuExporter = factory.newMenuExporter("/com/canonical/indicator/network/phone", d->m_phoneMenu->menu());
+	d->m_phoneGreeterMenuExporter = factory.newMenuExporter("/com/canonical/indicator/network/phone_greeter", d->m_phoneGreeterMenu->menu());
+	d->m_phoneWifiSettingsMenuExporter = factory.newMenuExporter("/com/canonical/indicator/network/phone_wifi_settings", d->m_wifiSection->settingsModel());
+
+	d->m_ubiquityMenuExporter = factory.newMenuExporter("/com/canonical/indicator/network/ubiquity", d->m_ubiquityMenu->menu());
 
     d->m_busName = factory.newBusName("com.canonical.indicator.network",
                                 [](std::string) {

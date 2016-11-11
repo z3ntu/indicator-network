@@ -1,3 +1,11 @@
+indicator-network (0.8.0+17.04.20161111-0ubuntu1) zesty; urgency=medium
+
+  * Fix memory corruption inside unix signal handler (LP: #1632275)
+  * Add main exception handler to avoid crashes during startup (LP:
+    #1629703)
+
+ -- Pete Woods <pete.woods@canonical.com>  Fri, 11 Nov 2016 11:09:08 +0000
+
 indicator-network (0.8.0+17.04.20161109-0ubuntu1) zesty; urgency=medium
 
   * Try again to make the tests more reliable (LP: #1632275)

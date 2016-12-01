@@ -32,14 +32,14 @@ public:
     MenuItem::Ptr m_item;
 };
 
-ModemInfoItem::ModemInfoItem()
+ModemInfoItem::ModemInfoItem(const QString& prefix)
 {
     d.reset(new Private);
 
     static int id = 0;
     ++id; /// @todo guard me.
 
-    QString actionIdBase = "modem." + QString::number(id);
+    QString actionIdBase = prefix + "." + QString::number(id);
 
     QString statusLabelActionId = actionIdBase + "::status-label";
     QString statusIconActionId = actionIdBase + "::status-icon";

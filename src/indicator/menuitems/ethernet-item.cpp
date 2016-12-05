@@ -30,8 +30,9 @@ public Q_SLOTS:
     void
     actionActivated(const Variant&)
     {
-        bool foo = !(m_actionConnected->state().as<bool>());
-        Q_EMIT p.autoConnectChanged(foo);
+        // Remember that the GAction was only activated, and hasn't had its state changed.
+        bool newAutoConnectState = !(m_actionConnected->state().as<bool>());
+        Q_EMIT p.autoConnectChanged(newAutoConnectState);
     }
 
 public:

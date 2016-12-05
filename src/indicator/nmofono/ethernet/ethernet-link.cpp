@@ -72,8 +72,6 @@ public Q_SLOTS:
                 status = Status::connecting;
                 break;
             case NM_DEVICE_STATE_SECONDARIES:
-                status = Status::connected;
-                break;
             case NM_DEVICE_STATE_ACTIVATED:
                 status = Status::connected;
                 break;
@@ -246,10 +244,9 @@ EthernetLink::EthernetLink(shared_ptr<OrgFreedesktopNetworkManagerDeviceInterfac
     d->m_devicePropertyCache = make_shared<util::DBusPropertyCache>(NM_DBUS_SERVICE, NM_DBUS_INTERFACE_DEVICE, dev->path(), dev->connection());
     connect(d->m_devicePropertyCache.get(), &util::DBusPropertyCache::propertyChanged, d.get(), &Private::devicePropertyChanged);
 
-    d->m_wired = make_shared<OrgFreedesktopNetworkManagerDeviceWiredInterface>(
-    NM_DBUS_SERVICE,
-                                                                               dev->path(), dev->connection());
+    d->m_wired = make_shared<OrgFreedesktopNetworkManagerDeviceWiredInterface>(NM_DBUS_SERVICE, dev->path(), dev->connection());
 
+    // This regular expression extracts the number from the end of the DBus path
     static QRegularExpression re("^[^\\d]+(\\d+)$");
     auto match = re.match(d->m_dev->path());
     d->m_id = match.captured(1).toUInt();
@@ -359,7 +356,12 @@ EthernetLink::setPreferredConnection(AvailableConnection::SPtr preferredConnecti
 
     if (d->m_autoConnect && preferredConnection)
     {
-        d->m_nm->ActivateConnection(d->m_preferredConnection->path(), QDBusObjectPath(d->m_dev->path()), QDBusObjectPath("/"));
+        auto reply = d->m_nm->ActivateConnection(d->m_preferredConnection->path(), QDBusObjectPath(d->m_dev->path()), QDBusObjectPath("/"));
+        reply.waitForFinished();
+        if (reply.isError())
+        {
+            qWarning() << reply.error().message();
+        }
     }
 
     Q_EMIT preferredConnectionChanged(preferredConnection);

@@ -37,7 +37,7 @@ class ModemInfoItem : public Item
 public:
     typedef std::shared_ptr<ModemInfoItem> Ptr;
 
-    ModemInfoItem(const QString& prefix = "modem");
+    ModemInfoItem();
     virtual ~ModemInfoItem();
 
     virtual MenuItem::Ptr menuItem();

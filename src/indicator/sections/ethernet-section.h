@@ -32,12 +32,11 @@ public:
 
     ~EthernetSection();
 
-    // from Section
-    virtual ActionGroup::Ptr
-    actionGroup();
+    ActionGroup::Ptr
+    actionGroup() override;
 
-    virtual MenuModel::Ptr
-    menuModel();
+    MenuModel::Ptr
+    menuModel() override;
 
 protected:
     class Private;

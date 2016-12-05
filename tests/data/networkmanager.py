@@ -323,7 +323,7 @@ def AddEthernetDevice(self, device_name, iface_name, state):
              'Interface': iface_name,
              'ActiveConnection': dbus.ObjectPath('/'),
              'AvailableConnections': dbus.Array([], signature='o'),
-             'Autoconnect': False, # Different capitalization is intentional
+             'Autoconnect': False, # Network Manager captializes this differently than other properties
              'Managed': True,
              'Driver': 'dbusmock',
              'IpInterface': ''}
@@ -362,7 +362,7 @@ def AddOfonoModemDevice(self, device_name, ofono_path):
              'Interface': ofono_path[1:],
              'ActiveConnection': dbus.ObjectPath('/'),
              'AvailableConnections': dbus.Array([], signature='o'),
-             'Autoconnect': False, # Different capitalization is intentional
+             'Autoconnect': False, # Network Manager captializes this differently than other properties
              'Managed': True,
              'Driver': 'ofono',
              'Udi': ofono_path,
@@ -435,7 +435,7 @@ def AddWiFiDevice(self, device_name, iface_name, state):
                           {
                               'ActiveConnection': dbus.ObjectPath('/'),
                               'AvailableConnections': dbus.Array([], signature='o'),
-                              'Autoconnect': False, # Different capitalization is intentional
+                              'Autoconnect': False, # Network Manager captializes this differently than other properties
                               'Managed': True,
                               'Driver': 'dbusmock',
                               'DeviceType': dbus.UInt32(2),

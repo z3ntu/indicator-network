@@ -51,7 +51,7 @@ Depends: ${misc:Depends},
          network-manager,
          network-manager-openvpn,
          network-manager-pptp,
-         ubuntu-mobile-icons (>= 13.04+13.10.20131014),
+         ubuntu-mobile-icons (>= 16.10+16.04.20161205),
 Suggests: ofono,
           urfkill
 Conflicts: chewie,

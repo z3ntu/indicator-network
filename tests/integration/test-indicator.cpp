@@ -137,7 +137,7 @@ TEST_F(TestIndicator, TwoEthernetAtStartupConnectedAndDisconnected)
 
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
-            .state_icons({"gsm-3g-full", "network-wired-connected", "network-wired-disabled"})
+            .state_icons({"gsm-3g-full", "network-wired-connected", "network-wired-offline"})
             .submenu()
             .item(flightModeSwitch())
             .item(mh::MenuItemMatcher()) // <-- modems are under here
@@ -242,7 +242,7 @@ TEST_F(TestIndicator, TwoEthernetAfterStartupConnectedAndDisconnected)
 
     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
         .item(mh::MenuItemMatcher()
-            .state_icons({"gsm-3g-full", "network-wired-connected", "network-wired-disabled"})
+            .state_icons({"gsm-3g-full", "network-wired-connected", "network-wired-offline"})
             .submenu()
             .item(flightModeSwitch())
             .item(mh::MenuItemMatcher()) // <-- modems are under here

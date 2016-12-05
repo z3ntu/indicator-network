@@ -97,15 +97,15 @@ QString Icons::ethernetIcon(nmofono::Link::Status status)
     case Link::Status::connected:
         return "network-wired-connected";
     case Link::Status::connecting:
-        return "network-wired-connected";
+        return "network-wired-connecting";
     case Link::Status::disabled:
         return "network-wired-disabled";
     case Link::Status::offline:
-        return "network-wired-disabled";
+        return "network-wired-offline";
     case Link::Status::online:
         return "network-wired-active";
     case Link::Status::failed:
-        return "network-wired-failed";
+        return "network-wired-error";
     }
     // shouldn't be reached
     return QString();

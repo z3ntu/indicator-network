@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-04-29 12:38+0300\n"
+"POT-Creation-Date: 2016-11-30 16:30+0000\n"
 "PO-Revision-Date: 2016-02-15 17:40+0000\n"
 "Last-Translator: Marcos Lans <Unknown>\n"
 "Language-Team: Galician <gl@li.org>\n"
@@ -15,8 +15,8 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2016-11-18 06:44+0000\n"
-"X-Generator: Launchpad (build 18269)\n"
+"X-Launchpad-Export-Date: 2016-12-10 05:53+0000\n"
+"X-Generator: Launchpad (build 18292)\n"
 "Language: gl\n"
 
 #: ../src/agent/SecretRequest.cpp:61
@@ -39,65 +39,70 @@ msgstr "Conectar"
 msgid "Cancel"
 msgstr "Cancelar"
 
-#: ../src/indicator/menuitems/wifi-link-item.cpp:109
-msgid "Other network…"
-msgstr "Outra rede..."
+#: ../src/indicator/vpn-status-notifier.cpp:48
+msgid "The VPN connection '%1' failed."
+msgstr "A conexión VPN «%1» fallou."
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:90
-msgid "No SIM"
-msgstr "Sen SIM"
+#: ../src/indicator/vpn-status-notifier.cpp:50
+msgid ""
+"The VPN connection '%1' failed because the network connection was "
+"interrupted."
+msgstr ""
+"Produciuse un fallo na conexión VPN «%1» porque a conexión de rede foi "
+"interrompida."
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:97
-msgid "SIM Error"
-msgstr "Erro da SIM"
+#: ../src/indicator/vpn-status-notifier.cpp:51
+msgid ""
+"The VPN connection '%1' failed because the VPN service stopped unexpectedly."
+msgstr ""
+"Produciuse un fallo na conexión VPN «%1» porque o servizo VPN detívose "
+"inesperadamente."
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:105
-msgid "SIM Locked"
-msgstr "SIM bloqueada"
+#: ../src/indicator/vpn-status-notifier.cpp:52
+msgid ""
+"The VPN connection '%1' failed because the VPN service returned invalid "
+"configuration."
+msgstr ""
+"Produciuse un fallo na conexión VPN «%1» porque o servizo VPN devolveu unha "
+"configuración incorrecta."
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:118
-msgid "Unregistered"
-msgstr "Non rexistrado"
+#: ../src/indicator/vpn-status-notifier.cpp:53
+msgid ""
+"The VPN connection '%1' failed because the connection attempt timed out."
+msgstr ""
+"Produciuse un fallo na conexión VPN «%1» porque o intento de conexión "
+"excedeu o límite de tempo."
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:123
-msgid "Unknown"
-msgstr "Descoñecido"
+#: ../src/indicator/vpn-status-notifier.cpp:54
+msgid ""
+"The VPN connection '%1' failed because the VPN service did not start in time."
+msgstr ""
+"Produciuse un fallo na conexión VPN «%1» porque o servizo VPN non se iniciou "
+"a tempo."
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:128
-msgid "Denied"
-msgstr "Rexeitado"
+#: ../src/indicator/vpn-status-notifier.cpp:55
+msgid ""
+"The VPN connection '%1' failed because the VPN service failed to start."
+msgstr ""
+"Produciuse un fallo na conexión VPN «%1» porque o servizo VPN non se iniciou "
+"correctamente."
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:133
-msgid "Searching"
-msgstr "Buscando"
+#: ../src/indicator/vpn-status-notifier.cpp:56
+msgid ""
+"The VPN connection '%1' failed because there were no valid VPN secrets."
+msgstr ""
+"Produciuse un fallo na conexión VPN «%1» porque non houbo secretos correctos "
+"para a VPN."
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:145
-msgid "No Signal"
-msgstr "Sen sinal"
+#: ../src/indicator/vpn-status-notifier.cpp:57
+msgid "The VPN connection '%1' failed because of invalid VPN secrets."
+msgstr ""
+"Produciuse un fallo na conexión VPN «%1» porque os secretos da VPN eran "
+"incorrectos."
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:157
-#: ../src/indicator/menuitems/wwan-link-item.cpp:164
-msgid "Offline"
-msgstr "Desconectado"
-
-#. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:187
-msgid "Wi-Fi"
-msgstr "Wifi"
-
-#. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:198
-msgid "Flight Mode"
-msgstr "Modo avión"
-
-#: ../src/indicator/factory.cpp:208
-msgid "Cellular data"
-msgstr "Datos do móbil"
-
-#. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:221
-msgid "Hotspot"
-msgstr "Punto de conexión"
+#: ../src/indicator/vpn-status-notifier.cpp:68
+msgid "VPN Connection Failed"
+msgstr "Fallou a conexión VPN"
 
 #: ../src/indicator/sim-unlock-dialog.cpp:144
 msgid "Sorry, incorrect %{1} PIN."
@@ -192,88 +197,119 @@ msgstr "Confirme o PIN da %{1}"
 msgid "PIN codes did not match."
 msgstr "Os códigos PIN non coinciden"
 
-#: ../src/indicator/vpn-status-notifier.cpp:48
-msgid "The VPN connection '%1' failed."
-msgstr "A conexión VPN «%1» fallou."
+#: ../src/indicator/nmofono/vpn/vpn-manager.cpp:81
+msgid "VPN connection %1"
+msgstr "Conexión VPN %1"
 
-#: ../src/indicator/vpn-status-notifier.cpp:50
-msgid ""
-"The VPN connection '%1' failed because the network connection was "
-"interrupted."
+#: ../src/indicator/menuitems/wifi-link-item.cpp:109
+msgid "Other network…"
+msgstr "Outra rede..."
+
+#: ../src/indicator/menuitems/ethernet-link-item.cpp:39
+msgid "Connected"
+msgstr "Conectado"
+
+#: ../src/indicator/menuitems/ethernet-link-item.cpp:40
+msgid "Connecting"
+msgstr "Conexión"
+
+#: ../src/indicator/menuitems/ethernet-link-item.cpp:41
+msgid "Disabled"
 msgstr ""
-"Produciuse un fallo na conexión VPN «%1» porque a conexión de rede foi "
-"interrompida."
 
-#: ../src/indicator/vpn-status-notifier.cpp:51
-msgid ""
-"The VPN connection '%1' failed because the VPN service stopped unexpectedly."
+#: ../src/indicator/menuitems/ethernet-link-item.cpp:42
+msgid "Disconnected"
+msgstr "Desconectado"
+
+#: ../src/indicator/menuitems/ethernet-link-item.cpp:43
+msgid "Online"
 msgstr ""
-"Produciuse un fallo na conexión VPN «%1» porque o servizo VPN detívose "
-"inesperadamente."
 
-#: ../src/indicator/vpn-status-notifier.cpp:52
-msgid ""
-"The VPN connection '%1' failed because the VPN service returned invalid "
-"configuration."
+#: ../src/indicator/menuitems/ethernet-link-item.cpp:44
+msgid "Failed"
 msgstr ""
-"Produciuse un fallo na conexión VPN «%1» porque o servizo VPN devolveu unha "
-"configuración incorrecta."
 
-#: ../src/indicator/vpn-status-notifier.cpp:53
-msgid ""
-"The VPN connection '%1' failed because the connection attempt timed out."
+#: ../src/indicator/menuitems/ethernet-link-item.cpp:56
+msgid "Ethernet (%1)"
 msgstr ""
-"Produciuse un fallo na conexión VPN «%1» porque o intento de conexión "
-"excedeu o límite de tempo."
 
-#: ../src/indicator/vpn-status-notifier.cpp:54
-msgid ""
-"The VPN connection '%1' failed because the VPN service did not start in time."
+#: ../src/indicator/menuitems/ethernet-link-item.cpp:60
+msgid "Ethernet"
 msgstr ""
-"Produciuse un fallo na conexión VPN «%1» porque o servizo VPN non se iniciou "
-"a tempo."
 
-#: ../src/indicator/vpn-status-notifier.cpp:55
-msgid ""
-"The VPN connection '%1' failed because the VPN service failed to start."
-msgstr ""
-"Produciuse un fallo na conexión VPN «%1» porque o servizo VPN non se iniciou "
-"correctamente."
+#: ../src/indicator/menuitems/wwan-link-item.cpp:90
+msgid "No SIM"
+msgstr "Sen SIM"
 
-#: ../src/indicator/vpn-status-notifier.cpp:56
-msgid ""
-"The VPN connection '%1' failed because there were no valid VPN secrets."
-msgstr ""
-"Produciuse un fallo na conexión VPN «%1» porque non houbo secretos correctos "
-"para a VPN."
+#: ../src/indicator/menuitems/wwan-link-item.cpp:97
+msgid "SIM Error"
+msgstr "Erro da SIM"
 
-#: ../src/indicator/vpn-status-notifier.cpp:57
-msgid "The VPN connection '%1' failed because of invalid VPN secrets."
-msgstr ""
-"Produciuse un fallo na conexión VPN «%1» porque os secretos da VPN eran "
-"incorrectos."
+#: ../src/indicator/menuitems/wwan-link-item.cpp:105
+msgid "SIM Locked"
+msgstr "SIM bloqueada"
 
-#: ../src/indicator/vpn-status-notifier.cpp:68
-msgid "VPN Connection Failed"
-msgstr "Fallou a conexión VPN"
+#: ../src/indicator/menuitems/wwan-link-item.cpp:118
+msgid "Unregistered"
+msgstr "Non rexistrado"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:123
+msgid "Unknown"
+msgstr "Descoñecido"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:128
+msgid "Denied"
+msgstr "Rexeitado"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:133
+msgid "Searching"
+msgstr "Buscando"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:145
+msgid "No Signal"
+msgstr "Sen sinal"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:157
+#: ../src/indicator/menuitems/wwan-link-item.cpp:164
+msgid "Offline"
+msgstr "Desconectado"
+
+#. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
+#: ../src/indicator/root-state.cpp:340
+msgid "Network"
+msgstr "Rede"
+
+#. TODO Move this into a new class
+#: ../src/indicator/factory.cpp:193
+msgid "Wi-Fi"
+msgstr "Wifi"
+
+#. TODO Move this into a new class
+#: ../src/indicator/factory.cpp:204
+msgid "Flight Mode"
+msgstr "Modo avión"
+
+#: ../src/indicator/factory.cpp:214
+msgid "Cellular data"
+msgstr "Datos do móbil"
+
+#. TODO Move this into a new class
+#: ../src/indicator/factory.cpp:227
+msgid "Hotspot"
+msgstr "Punto de conexión"
 
 #: ../src/indicator/sections/wwan-section.cpp:102
 msgid "Cellular settings…"
 msgstr "Axustes do móbil..."
 
-#: ../src/indicator/sections/vpn-section.cpp:140
-msgid "VPN settings…"
-msgstr "Axustes da VPN…"
+#: ../src/indicator/sections/ethernet-section.cpp:114
+msgid "Ethernet settings…"
+msgstr ""
 
 #: ../src/indicator/sections/wifi-section.cpp:65
 msgid "Wi-Fi settings…"
 msgstr "Axustes da wifi..."
 
-#. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
-#: ../src/indicator/root-state.cpp:306
-msgid "Network"
-msgstr "Rede"
-
-#: ../src/indicator/nmofono/vpn/vpn-manager.cpp:81
-msgid "VPN connection %1"
-msgstr "Conexión VPN %1"
+#: ../src/indicator/sections/vpn-section.cpp:139
+msgid "VPN settings…"
+msgstr "Axustes da VPN…"

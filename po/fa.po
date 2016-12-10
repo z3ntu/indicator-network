@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-04-29 12:38+0300\n"
+"POT-Creation-Date: 2016-11-30 16:30+0000\n"
 "PO-Revision-Date: 2016-06-22 04:58+0000\n"
 "Last-Translator: Danial Behzadi <dani.behzi@gmail.com>\n"
 "Language-Team: Persian <fa@li.org>\n"
@@ -15,8 +15,8 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Launchpad-Export-Date: 2016-11-18 06:44+0000\n"
-"X-Generator: Launchpad (build 18269)\n"
+"X-Launchpad-Export-Date: 2016-12-10 05:53+0000\n"
+"X-Generator: Launchpad (build 18292)\n"
 "Language: fa\n"
 
 #: ../src/agent/SecretRequest.cpp:61
@@ -39,65 +39,58 @@ msgstr "اتّصال"
 msgid "Cancel"
 msgstr "لغو"
 
-#: ../src/indicator/menuitems/wifi-link-item.cpp:109
-msgid "Other network…"
-msgstr "شبکه‌های دیگر…"
+#: ../src/indicator/vpn-status-notifier.cpp:48
+msgid "The VPN connection '%1' failed."
+msgstr "اتّصال وی‌پی‌ان %1 شکست خورد."
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:90
-msgid "No SIM"
-msgstr "سیم‌کارت موجود نیست"
+#: ../src/indicator/vpn-status-notifier.cpp:50
+msgid ""
+"The VPN connection '%1' failed because the network connection was "
+"interrupted."
+msgstr "اتّصال وی‌پی‌ان %1 به دلیل وقفه در اتّصال شبکه شکست خورد."
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:97
-msgid "SIM Error"
-msgstr "خطای سیم‌کارت"
+#: ../src/indicator/vpn-status-notifier.cpp:51
+msgid ""
+"The VPN connection '%1' failed because the VPN service stopped unexpectedly."
+msgstr ""
+"اتّصال وی‌پی‌ان %1 به دلیل توقّف غیر منتظرهٔ خدمت وی‌پی‌ان شکست خورد."
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:105
-msgid "SIM Locked"
-msgstr "سیم‌کارت قفل شده"
+#: ../src/indicator/vpn-status-notifier.cpp:52
+msgid ""
+"The VPN connection '%1' failed because the VPN service returned invalid "
+"configuration."
+msgstr ""
+"اتّصال وی‌پی‌ان %1 به دلیل برگرداندن پیکربندی نامعتبر از سوی خدمت وی‌پی‌ان "
+"شکست خورد."
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:118
-msgid "Unregistered"
-msgstr "ثبت نشده"
+#: ../src/indicator/vpn-status-notifier.cpp:53
+msgid ""
+"The VPN connection '%1' failed because the connection attempt timed out."
+msgstr "اتّصال وی‌پی‌ان %1 به دلیل تمام شدن مهات زمانی اتّصال شکست خورد."
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:123
-msgid "Unknown"
-msgstr "ناشناس"
+#: ../src/indicator/vpn-status-notifier.cpp:54
+msgid ""
+"The VPN connection '%1' failed because the VPN service did not start in time."
+msgstr ""
+"اتّصال وی‌پی‌ان %1 به دلیل شروع نشدن به موقع خدمت وی‌پی‌ان شکست خورد."
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:128
-msgid "Denied"
-msgstr "رد‌شده"
+#: ../src/indicator/vpn-status-notifier.cpp:55
+msgid ""
+"The VPN connection '%1' failed because the VPN service failed to start."
+msgstr "اتّصال وی‌پی‌ان %1 به دلیل شکست در شروع خدمت وی‌پی‌ان شکست خورد."
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:133
-msgid "Searching"
-msgstr "در حال جست‌وجو"
+#: ../src/indicator/vpn-status-notifier.cpp:56
+msgid ""
+"The VPN connection '%1' failed because there were no valid VPN secrets."
+msgstr "اتّصال وی‌پی‌ان %1 به دلیل نبودن هیچ رمز وی‌پی‌ان معتبری شکست خورد."
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:145
-msgid "No Signal"
-msgstr "سیگنال موجود نیست"
+#: ../src/indicator/vpn-status-notifier.cpp:57
+msgid "The VPN connection '%1' failed because of invalid VPN secrets."
+msgstr "اتّصال وی‌پی‌ان %1 به دلیل رمزهای نامعتبر وی‌پی‌ان شکست خورد."
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:157
-#: ../src/indicator/menuitems/wwan-link-item.cpp:164
-msgid "Offline"
-msgstr "برون‌خط"
-
-#. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:187
-msgid "Wi-Fi"
-msgstr "بی‌سیم"
-
-#. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:198
-msgid "Flight Mode"
-msgstr "حالت هواپیما"
-
-#: ../src/indicator/factory.cpp:208
-msgid "Cellular data"
-msgstr "دادهٔ سلّولی"
-
-#. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:221
-msgid "Hotspot"
-msgstr "نقطهٔ داغ"
+#: ../src/indicator/vpn-status-notifier.cpp:68
+msgid "VPN Connection Failed"
+msgstr "اتّصال وی‌پی‌ان شکست خورد."
 
 #: ../src/indicator/sim-unlock-dialog.cpp:144
 msgid "Sorry, incorrect %{1} PIN."
@@ -190,76 +183,119 @@ msgstr "PIN جدید %{1} را تأیید کنید"
 msgid "PIN codes did not match."
 msgstr "کدهای PIN مطابقت نداشت."
 
-#: ../src/indicator/vpn-status-notifier.cpp:48
-msgid "The VPN connection '%1' failed."
-msgstr "اتّصال وی‌پی‌ان %1 شکست خورد."
+#: ../src/indicator/nmofono/vpn/vpn-manager.cpp:81
+msgid "VPN connection %1"
+msgstr "اتّصال وی‌پی‌ان %1"
 
-#: ../src/indicator/vpn-status-notifier.cpp:50
-msgid ""
-"The VPN connection '%1' failed because the network connection was "
-"interrupted."
-msgstr "اتّصال وی‌پی‌ان %1 به دلیل وقفه در اتّصال شبکه شکست خورد."
+#: ../src/indicator/menuitems/wifi-link-item.cpp:109
+msgid "Other network…"
+msgstr "شبکه‌های دیگر…"
 
-#: ../src/indicator/vpn-status-notifier.cpp:51
-msgid ""
-"The VPN connection '%1' failed because the VPN service stopped unexpectedly."
+#: ../src/indicator/menuitems/ethernet-link-item.cpp:39
+msgid "Connected"
 msgstr ""
-"اتّصال وی‌پی‌ان %1 به دلیل توقّف غیر منتظرهٔ خدمت وی‌پی‌ان شکست خورد."
 
-#: ../src/indicator/vpn-status-notifier.cpp:52
-msgid ""
-"The VPN connection '%1' failed because the VPN service returned invalid "
-"configuration."
+#: ../src/indicator/menuitems/ethernet-link-item.cpp:40
+msgid "Connecting"
 msgstr ""
-"اتّصال وی‌پی‌ان %1 به دلیل برگرداندن پیکربندی نامعتبر از سوی خدمت وی‌پی‌ان "
-"شکست خورد."
 
-#: ../src/indicator/vpn-status-notifier.cpp:53
-msgid ""
-"The VPN connection '%1' failed because the connection attempt timed out."
-msgstr "اتّصال وی‌پی‌ان %1 به دلیل تمام شدن مهات زمانی اتّصال شکست خورد."
-
-#: ../src/indicator/vpn-status-notifier.cpp:54
-msgid ""
-"The VPN connection '%1' failed because the VPN service did not start in time."
+#: ../src/indicator/menuitems/ethernet-link-item.cpp:41
+msgid "Disabled"
 msgstr ""
-"اتّصال وی‌پی‌ان %1 به دلیل شروع نشدن به موقع خدمت وی‌پی‌ان شکست خورد."
 
-#: ../src/indicator/vpn-status-notifier.cpp:55
-msgid ""
-"The VPN connection '%1' failed because the VPN service failed to start."
-msgstr "اتّصال وی‌پی‌ان %1 به دلیل شکست در شروع خدمت وی‌پی‌ان شکست خورد."
+#: ../src/indicator/menuitems/ethernet-link-item.cpp:42
+msgid "Disconnected"
+msgstr ""
 
-#: ../src/indicator/vpn-status-notifier.cpp:56
-msgid ""
-"The VPN connection '%1' failed because there were no valid VPN secrets."
-msgstr "اتّصال وی‌پی‌ان %1 به دلیل نبودن هیچ رمز وی‌پی‌ان معتبری شکست خورد."
+#: ../src/indicator/menuitems/ethernet-link-item.cpp:43
+msgid "Online"
+msgstr ""
 
-#: ../src/indicator/vpn-status-notifier.cpp:57
-msgid "The VPN connection '%1' failed because of invalid VPN secrets."
-msgstr "اتّصال وی‌پی‌ان %1 به دلیل رمزهای نامعتبر وی‌پی‌ان شکست خورد."
+#: ../src/indicator/menuitems/ethernet-link-item.cpp:44
+msgid "Failed"
+msgstr ""
 
-#: ../src/indicator/vpn-status-notifier.cpp:68
-msgid "VPN Connection Failed"
-msgstr "اتّصال وی‌پی‌ان شکست خورد."
+#: ../src/indicator/menuitems/ethernet-link-item.cpp:56
+msgid "Ethernet (%1)"
+msgstr ""
+
+#: ../src/indicator/menuitems/ethernet-link-item.cpp:60
+msgid "Ethernet"
+msgstr ""
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:90
+msgid "No SIM"
+msgstr "سیم‌کارت موجود نیست"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:97
+msgid "SIM Error"
+msgstr "خطای سیم‌کارت"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:105
+msgid "SIM Locked"
+msgstr "سیم‌کارت قفل شده"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:118
+msgid "Unregistered"
+msgstr "ثبت نشده"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:123
+msgid "Unknown"
+msgstr "ناشناس"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:128
+msgid "Denied"
+msgstr "رد‌شده"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:133
+msgid "Searching"
+msgstr "در حال جست‌وجو"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:145
+msgid "No Signal"
+msgstr "سیگنال موجود نیست"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:157
+#: ../src/indicator/menuitems/wwan-link-item.cpp:164
+msgid "Offline"
+msgstr "برون‌خط"
+
+#. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
+#: ../src/indicator/root-state.cpp:340
+msgid "Network"
+msgstr "شبکه"
+
+#. TODO Move this into a new class
+#: ../src/indicator/factory.cpp:193
+msgid "Wi-Fi"
+msgstr "بی‌سیم"
+
+#. TODO Move this into a new class
+#: ../src/indicator/factory.cpp:204
+msgid "Flight Mode"
+msgstr "حالت هواپیما"
+
+#: ../src/indicator/factory.cpp:214
+msgid "Cellular data"
+msgstr "دادهٔ سلّولی"
+
+#. TODO Move this into a new class
+#: ../src/indicator/factory.cpp:227
+msgid "Hotspot"
+msgstr "نقطهٔ داغ"
 
 #: ../src/indicator/sections/wwan-section.cpp:102
 msgid "Cellular settings…"
 msgstr "تنظیمات سلّولی…"
 
-#: ../src/indicator/sections/vpn-section.cpp:140
-msgid "VPN settings…"
-msgstr "تنظیمات وی‌پی‌ان…"
+#: ../src/indicator/sections/ethernet-section.cpp:114
+msgid "Ethernet settings…"
+msgstr ""
 
 #: ../src/indicator/sections/wifi-section.cpp:65
 msgid "Wi-Fi settings…"
 msgstr "تنظیمات بی‌سیم…"
 
-#. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
-#: ../src/indicator/root-state.cpp:306
-msgid "Network"
-msgstr "شبکه"
-
-#: ../src/indicator/nmofono/vpn/vpn-manager.cpp:81
-msgid "VPN connection %1"
-msgstr "اتّصال وی‌پی‌ان %1"
+#: ../src/indicator/sections/vpn-section.cpp:139
+msgid "VPN settings…"
+msgstr "تنظیمات وی‌پی‌ان…"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-04-29 12:38+0300\n"
+"POT-Creation-Date: 2016-11-30 16:30+0000\n"
 "PO-Revision-Date: 2016-02-15 17:40+0000\n"
 "Last-Translator: Pete Woods <Unknown>\n"
 "Language-Team: Indonesian <id@li.org>\n"
@@ -15,8 +15,8 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Launchpad-Export-Date: 2016-11-18 06:44+0000\n"
-"X-Generator: Launchpad (build 18269)\n"
+"X-Launchpad-Export-Date: 2016-12-10 05:53+0000\n"
+"X-Generator: Launchpad (build 18292)\n"
 "Language: id\n"
 
 #: ../src/agent/SecretRequest.cpp:61
@@ -39,65 +39,56 @@ msgstr "Sambung"
 msgid "Cancel"
 msgstr "Batal"
 
-#: ../src/indicator/menuitems/wifi-link-item.cpp:109
-msgid "Other network…"
-msgstr "Jaringan lain..."
+#: ../src/indicator/vpn-status-notifier.cpp:48
+msgid "The VPN connection '%1' failed."
+msgstr "Koneksi VPN '%1' gagal."
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:90
-msgid "No SIM"
-msgstr "Tidak ada SIM"
+#: ../src/indicator/vpn-status-notifier.cpp:50
+msgid ""
+"The VPN connection '%1' failed because the network connection was "
+"interrupted."
+msgstr "Koneksi VPN '%1' gagal karena koneksi jaringan terputus."
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:97
-msgid "SIM Error"
-msgstr "Galat SIM"
+#: ../src/indicator/vpn-status-notifier.cpp:51
+msgid ""
+"The VPN connection '%1' failed because the VPN service stopped unexpectedly."
+msgstr "Koneksi VPN '%1' gagal karena layanan VPN tiba-tiba berhenti."
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:105
-msgid "SIM Locked"
-msgstr "SIM Terkunci"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:118
-msgid "Unregistered"
-msgstr "Tak terdaftar"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:123
-msgid "Unknown"
-msgstr "Tak diketahui"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:128
-msgid "Denied"
-msgstr "Ditolak"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:133
-msgid "Searching"
-msgstr "Sedang mencari"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:145
-msgid "No Signal"
-msgstr "Tidak ada Sinyal"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:157
-#: ../src/indicator/menuitems/wwan-link-item.cpp:164
-msgid "Offline"
-msgstr "Luring"
-
-#. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:187
-msgid "Wi-Fi"
-msgstr "Wi-Fi"
-
-#. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:198
-msgid "Flight Mode"
-msgstr "Mode Penerbangan"
-
-#: ../src/indicator/factory.cpp:208
-msgid "Cellular data"
+#: ../src/indicator/vpn-status-notifier.cpp:52
+msgid ""
+"The VPN connection '%1' failed because the VPN service returned invalid "
+"configuration."
 msgstr ""
+"Koneksi VPN '%1' gagal karena layanan VPN mengembalikan konfigurasi yang tak "
+"valid."
 
-#. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:221
-msgid "Hotspot"
-msgstr "Hotspot"
+#: ../src/indicator/vpn-status-notifier.cpp:53
+msgid ""
+"The VPN connection '%1' failed because the connection attempt timed out."
+msgstr "Koneksi VPN '%1' gagal karena upaya koneksi habis waktu."
+
+#: ../src/indicator/vpn-status-notifier.cpp:54
+msgid ""
+"The VPN connection '%1' failed because the VPN service did not start in time."
+msgstr "Koneksi VPN '%1' gagal karena layanan VPN tak dimulai pada waktunya."
+
+#: ../src/indicator/vpn-status-notifier.cpp:55
+msgid ""
+"The VPN connection '%1' failed because the VPN service failed to start."
+msgstr "Koneksi VPN '%1' gagal karena layanan VPN gagal mulai."
+
+#: ../src/indicator/vpn-status-notifier.cpp:56
+msgid ""
+"The VPN connection '%1' failed because there were no valid VPN secrets."
+msgstr "Koneksi VPN '%1' gagal karena tidak ada rahasia VPN yang valid."
+
+#: ../src/indicator/vpn-status-notifier.cpp:57
+msgid "The VPN connection '%1' failed because of invalid VPN secrets."
+msgstr "Koneksi VPN '%1' gagal karena rahasia VPN tak valid."
+
+#: ../src/indicator/vpn-status-notifier.cpp:68
+msgid "VPN Connection Failed"
+msgstr "Sambungan VPN Gagal"
 
 #: ../src/indicator/sim-unlock-dialog.cpp:144
 msgid "Sorry, incorrect %{1} PIN."
@@ -190,74 +181,119 @@ msgstr "Konfirmasikan PIN baru %{1}"
 msgid "PIN codes did not match."
 msgstr "Kode PIN tak cocok."
 
-#: ../src/indicator/vpn-status-notifier.cpp:48
-msgid "The VPN connection '%1' failed."
-msgstr "Koneksi VPN '%1' gagal."
+#: ../src/indicator/nmofono/vpn/vpn-manager.cpp:81
+msgid "VPN connection %1"
+msgstr "Koneksi VPN %1"
 
-#: ../src/indicator/vpn-status-notifier.cpp:50
-msgid ""
-"The VPN connection '%1' failed because the network connection was "
-"interrupted."
-msgstr "Koneksi VPN '%1' gagal karena koneksi jaringan terputus."
+#: ../src/indicator/menuitems/wifi-link-item.cpp:109
+msgid "Other network…"
+msgstr "Jaringan lain..."
 
-#: ../src/indicator/vpn-status-notifier.cpp:51
-msgid ""
-"The VPN connection '%1' failed because the VPN service stopped unexpectedly."
-msgstr "Koneksi VPN '%1' gagal karena layanan VPN tiba-tiba berhenti."
-
-#: ../src/indicator/vpn-status-notifier.cpp:52
-msgid ""
-"The VPN connection '%1' failed because the VPN service returned invalid "
-"configuration."
+#: ../src/indicator/menuitems/ethernet-link-item.cpp:39
+msgid "Connected"
 msgstr ""
-"Koneksi VPN '%1' gagal karena layanan VPN mengembalikan konfigurasi yang tak "
-"valid."
 
-#: ../src/indicator/vpn-status-notifier.cpp:53
-msgid ""
-"The VPN connection '%1' failed because the connection attempt timed out."
-msgstr "Koneksi VPN '%1' gagal karena upaya koneksi habis waktu."
+#: ../src/indicator/menuitems/ethernet-link-item.cpp:40
+msgid "Connecting"
+msgstr ""
 
-#: ../src/indicator/vpn-status-notifier.cpp:54
-msgid ""
-"The VPN connection '%1' failed because the VPN service did not start in time."
-msgstr "Koneksi VPN '%1' gagal karena layanan VPN tak dimulai pada waktunya."
+#: ../src/indicator/menuitems/ethernet-link-item.cpp:41
+msgid "Disabled"
+msgstr ""
 
-#: ../src/indicator/vpn-status-notifier.cpp:55
-msgid ""
-"The VPN connection '%1' failed because the VPN service failed to start."
-msgstr "Koneksi VPN '%1' gagal karena layanan VPN gagal mulai."
+#: ../src/indicator/menuitems/ethernet-link-item.cpp:42
+msgid "Disconnected"
+msgstr ""
 
-#: ../src/indicator/vpn-status-notifier.cpp:56
-msgid ""
-"The VPN connection '%1' failed because there were no valid VPN secrets."
-msgstr "Koneksi VPN '%1' gagal karena tidak ada rahasia VPN yang valid."
+#: ../src/indicator/menuitems/ethernet-link-item.cpp:43
+msgid "Online"
+msgstr ""
 
-#: ../src/indicator/vpn-status-notifier.cpp:57
-msgid "The VPN connection '%1' failed because of invalid VPN secrets."
-msgstr "Koneksi VPN '%1' gagal karena rahasia VPN tak valid."
+#: ../src/indicator/menuitems/ethernet-link-item.cpp:44
+msgid "Failed"
+msgstr ""
 
-#: ../src/indicator/vpn-status-notifier.cpp:68
-msgid "VPN Connection Failed"
-msgstr "Sambungan VPN Gagal"
+#: ../src/indicator/menuitems/ethernet-link-item.cpp:56
+msgid "Ethernet (%1)"
+msgstr ""
+
+#: ../src/indicator/menuitems/ethernet-link-item.cpp:60
+msgid "Ethernet"
+msgstr ""
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:90
+msgid "No SIM"
+msgstr "Tidak ada SIM"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:97
+msgid "SIM Error"
+msgstr "Galat SIM"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:105
+msgid "SIM Locked"
+msgstr "SIM Terkunci"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:118
+msgid "Unregistered"
+msgstr "Tak terdaftar"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:123
+msgid "Unknown"
+msgstr "Tak diketahui"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:128
+msgid "Denied"
+msgstr "Ditolak"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:133
+msgid "Searching"
+msgstr "Sedang mencari"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:145
+msgid "No Signal"
+msgstr "Tidak ada Sinyal"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:157
+#: ../src/indicator/menuitems/wwan-link-item.cpp:164
+msgid "Offline"
+msgstr "Luring"
+
+#. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
+#: ../src/indicator/root-state.cpp:340
+msgid "Network"
+msgstr "Jaringan"
+
+#. TODO Move this into a new class
+#: ../src/indicator/factory.cpp:193
+msgid "Wi-Fi"
+msgstr "Wi-Fi"
+
+#. TODO Move this into a new class
+#: ../src/indicator/factory.cpp:204
+msgid "Flight Mode"
+msgstr "Mode Penerbangan"
+
+#: ../src/indicator/factory.cpp:214
+msgid "Cellular data"
+msgstr ""
+
+#. TODO Move this into a new class
+#: ../src/indicator/factory.cpp:227
+msgid "Hotspot"
+msgstr "Hotspot"
 
 #: ../src/indicator/sections/wwan-section.cpp:102
 msgid "Cellular settings…"
 msgstr "Pengaturan seluler..."
 
-#: ../src/indicator/sections/vpn-section.cpp:140
-msgid "VPN settings…"
-msgstr "Pengaturan VPN..."
+#: ../src/indicator/sections/ethernet-section.cpp:114
+msgid "Ethernet settings…"
+msgstr ""
 
 #: ../src/indicator/sections/wifi-section.cpp:65
 msgid "Wi-Fi settings…"
 msgstr "Pengaturan Wi-Fi..."
 
-#. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
-#: ../src/indicator/root-state.cpp:306
-msgid "Network"
-msgstr "Jaringan"
-
-#: ../src/indicator/nmofono/vpn/vpn-manager.cpp:81
-msgid "VPN connection %1"
-msgstr "Koneksi VPN %1"
+#: ../src/indicator/sections/vpn-section.cpp:139
+msgid "VPN settings…"
+msgstr "Pengaturan VPN..."

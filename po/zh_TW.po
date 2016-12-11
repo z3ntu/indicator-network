@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-04-29 12:38+0300\n"
+"POT-Creation-Date: 2016-11-30 16:30+0000\n"
 "PO-Revision-Date: 2016-02-15 17:40+0000\n"
 "Last-Translator: Pete Woods <Unknown>\n"
 "Language-Team: Chinese (Traditional) <zh_TW@li.org>\n"
@@ -15,8 +15,8 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Launchpad-Export-Date: 2016-11-18 06:44+0000\n"
-"X-Generator: Launchpad (build 18269)\n"
+"X-Launchpad-Export-Date: 2016-12-10 05:53+0000\n"
+"X-Generator: Launchpad (build 18292)\n"
 "Language: \n"
 
 #: ../src/agent/SecretRequest.cpp:61
@@ -39,65 +39,54 @@ msgstr "連接"
 msgid "Cancel"
 msgstr "取消"
 
-#: ../src/indicator/menuitems/wifi-link-item.cpp:109
-msgid "Other network…"
-msgstr "其他網路…"
+#: ../src/indicator/vpn-status-notifier.cpp:48
+msgid "The VPN connection '%1' failed."
+msgstr "VPN 連線 '%1' 失敗。"
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:90
-msgid "No SIM"
-msgstr "無 SIM"
+#: ../src/indicator/vpn-status-notifier.cpp:50
+msgid ""
+"The VPN connection '%1' failed because the network connection was "
+"interrupted."
+msgstr "由於網路連線中斷，導致 VPN 連線 '%1' 失敗。"
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:97
-msgid "SIM Error"
-msgstr "SIM 錯誤"
+#: ../src/indicator/vpn-status-notifier.cpp:51
+msgid ""
+"The VPN connection '%1' failed because the VPN service stopped unexpectedly."
+msgstr ""
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:105
-msgid "SIM Locked"
-msgstr "SIM 已上鎖"
+#: ../src/indicator/vpn-status-notifier.cpp:52
+msgid ""
+"The VPN connection '%1' failed because the VPN service returned invalid "
+"configuration."
+msgstr ""
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:118
-msgid "Unregistered"
-msgstr "已取消註冊"
+#: ../src/indicator/vpn-status-notifier.cpp:53
+msgid ""
+"The VPN connection '%1' failed because the connection attempt timed out."
+msgstr ""
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:123
-msgid "Unknown"
-msgstr "不明"
+#: ../src/indicator/vpn-status-notifier.cpp:54
+msgid ""
+"The VPN connection '%1' failed because the VPN service did not start in time."
+msgstr ""
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:128
-msgid "Denied"
-msgstr "遭拒"
+#: ../src/indicator/vpn-status-notifier.cpp:55
+msgid ""
+"The VPN connection '%1' failed because the VPN service failed to start."
+msgstr ""
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:133
-msgid "Searching"
-msgstr "搜尋中"
+#: ../src/indicator/vpn-status-notifier.cpp:56
+msgid ""
+"The VPN connection '%1' failed because there were no valid VPN secrets."
+msgstr ""
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:145
-msgid "No Signal"
-msgstr "無訊號"
+#: ../src/indicator/vpn-status-notifier.cpp:57
+msgid "The VPN connection '%1' failed because of invalid VPN secrets."
+msgstr ""
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:157
-#: ../src/indicator/menuitems/wwan-link-item.cpp:164
-msgid "Offline"
-msgstr "離線"
-
-#. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:187
-msgid "Wi-Fi"
-msgstr "Wi-Fi"
-
-#. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:198
-msgid "Flight Mode"
-msgstr "飛安模式"
-
-#: ../src/indicator/factory.cpp:208
-msgid "Cellular data"
-msgstr "行動數據"
-
-#. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:221
-msgid "Hotspot"
-msgstr "熱點"
+#: ../src/indicator/vpn-status-notifier.cpp:68
+msgid "VPN Connection Failed"
+msgstr "VPN 連線失敗"
 
 #: ../src/indicator/sim-unlock-dialog.cpp:144
 msgid "Sorry, incorrect %{1} PIN."
@@ -186,72 +175,119 @@ msgstr "再次輸入新的 %{1} PIN"
 msgid "PIN codes did not match."
 msgstr "PIN 碼不符。"
 
-#: ../src/indicator/vpn-status-notifier.cpp:48
-msgid "The VPN connection '%1' failed."
-msgstr "VPN 連線 '%1' 失敗。"
+#: ../src/indicator/nmofono/vpn/vpn-manager.cpp:81
+msgid "VPN connection %1"
+msgstr "VPN 連線 %1"
 
-#: ../src/indicator/vpn-status-notifier.cpp:50
-msgid ""
-"The VPN connection '%1' failed because the network connection was "
-"interrupted."
-msgstr "由於網路連線中斷，導致 VPN 連線 '%1' 失敗。"
+#: ../src/indicator/menuitems/wifi-link-item.cpp:109
+msgid "Other network…"
+msgstr "其他網路…"
 
-#: ../src/indicator/vpn-status-notifier.cpp:51
-msgid ""
-"The VPN connection '%1' failed because the VPN service stopped unexpectedly."
+#: ../src/indicator/menuitems/ethernet-link-item.cpp:39
+msgid "Connected"
 msgstr ""
 
-#: ../src/indicator/vpn-status-notifier.cpp:52
-msgid ""
-"The VPN connection '%1' failed because the VPN service returned invalid "
-"configuration."
+#: ../src/indicator/menuitems/ethernet-link-item.cpp:40
+msgid "Connecting"
 msgstr ""
 
-#: ../src/indicator/vpn-status-notifier.cpp:53
-msgid ""
-"The VPN connection '%1' failed because the connection attempt timed out."
+#: ../src/indicator/menuitems/ethernet-link-item.cpp:41
+msgid "Disabled"
 msgstr ""
 
-#: ../src/indicator/vpn-status-notifier.cpp:54
-msgid ""
-"The VPN connection '%1' failed because the VPN service did not start in time."
+#: ../src/indicator/menuitems/ethernet-link-item.cpp:42
+msgid "Disconnected"
 msgstr ""
 
-#: ../src/indicator/vpn-status-notifier.cpp:55
-msgid ""
-"The VPN connection '%1' failed because the VPN service failed to start."
+#: ../src/indicator/menuitems/ethernet-link-item.cpp:43
+msgid "Online"
 msgstr ""
 
-#: ../src/indicator/vpn-status-notifier.cpp:56
-msgid ""
-"The VPN connection '%1' failed because there were no valid VPN secrets."
+#: ../src/indicator/menuitems/ethernet-link-item.cpp:44
+msgid "Failed"
 msgstr ""
 
-#: ../src/indicator/vpn-status-notifier.cpp:57
-msgid "The VPN connection '%1' failed because of invalid VPN secrets."
+#: ../src/indicator/menuitems/ethernet-link-item.cpp:56
+msgid "Ethernet (%1)"
 msgstr ""
 
-#: ../src/indicator/vpn-status-notifier.cpp:68
-msgid "VPN Connection Failed"
-msgstr "VPN 連線失敗"
+#: ../src/indicator/menuitems/ethernet-link-item.cpp:60
+msgid "Ethernet"
+msgstr ""
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:90
+msgid "No SIM"
+msgstr "無 SIM"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:97
+msgid "SIM Error"
+msgstr "SIM 錯誤"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:105
+msgid "SIM Locked"
+msgstr "SIM 已上鎖"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:118
+msgid "Unregistered"
+msgstr "已取消註冊"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:123
+msgid "Unknown"
+msgstr "不明"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:128
+msgid "Denied"
+msgstr "遭拒"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:133
+msgid "Searching"
+msgstr "搜尋中"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:145
+msgid "No Signal"
+msgstr "無訊號"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:157
+#: ../src/indicator/menuitems/wwan-link-item.cpp:164
+msgid "Offline"
+msgstr "離線"
+
+#. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
+#: ../src/indicator/root-state.cpp:340
+msgid "Network"
+msgstr "網路"
+
+#. TODO Move this into a new class
+#: ../src/indicator/factory.cpp:193
+msgid "Wi-Fi"
+msgstr "Wi-Fi"
+
+#. TODO Move this into a new class
+#: ../src/indicator/factory.cpp:204
+msgid "Flight Mode"
+msgstr "飛安模式"
+
+#: ../src/indicator/factory.cpp:214
+msgid "Cellular data"
+msgstr "行動數據"
+
+#. TODO Move this into a new class
+#: ../src/indicator/factory.cpp:227
+msgid "Hotspot"
+msgstr "熱點"
 
 #: ../src/indicator/sections/wwan-section.cpp:102
 msgid "Cellular settings…"
 msgstr "行動網路設定…"
 
-#: ../src/indicator/sections/vpn-section.cpp:140
-msgid "VPN settings…"
-msgstr "VPN 設定…"
+#: ../src/indicator/sections/ethernet-section.cpp:114
+msgid "Ethernet settings…"
+msgstr ""
 
 #: ../src/indicator/sections/wifi-section.cpp:65
 msgid "Wi-Fi settings…"
 msgstr "Wi-Fi 設定…"
 
-#. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
-#: ../src/indicator/root-state.cpp:306
-msgid "Network"
-msgstr "網路"
-
-#: ../src/indicator/nmofono/vpn/vpn-manager.cpp:81
-msgid "VPN connection %1"
-msgstr "VPN 連線 %1"
+#: ../src/indicator/sections/vpn-section.cpp:139
+msgid "VPN settings…"
+msgstr "VPN 設定…"

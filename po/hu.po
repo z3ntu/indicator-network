@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-04-29 12:38+0300\n"
+"POT-Creation-Date: 2016-11-30 16:30+0000\n"
 "PO-Revision-Date: 2016-04-30 09:33+0000\n"
 "Last-Translator: Richard Somlói <ricsipontaz@gmail.com>\n"
 "Language-Team: Hungarian <hu@li.org>\n"
@@ -15,8 +15,8 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2016-11-18 06:44+0000\n"
-"X-Generator: Launchpad (build 18269)\n"
+"X-Launchpad-Export-Date: 2016-12-10 05:53+0000\n"
+"X-Generator: Launchpad (build 18292)\n"
 "Language: hu\n"
 
 #: ../src/agent/SecretRequest.cpp:61
@@ -39,65 +39,67 @@ msgstr "Csatlakozás"
 msgid "Cancel"
 msgstr "Mégse"
 
-#: ../src/indicator/menuitems/wifi-link-item.cpp:109
-msgid "Other network…"
-msgstr "Más hálózat…"
+#: ../src/indicator/vpn-status-notifier.cpp:48
+msgid "The VPN connection '%1' failed."
+msgstr "A(z) „%1” VPN-hez kapcsolódás meghiúsult."
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:90
-msgid "No SIM"
-msgstr "Nincs SIM kártya"
+#: ../src/indicator/vpn-status-notifier.cpp:50
+msgid ""
+"The VPN connection '%1' failed because the network connection was "
+"interrupted."
+msgstr ""
+"A(z) „%1” VPN-hez kapcsolódás meghiúsult, mert megszakadt a hálózati "
+"kapcsolat."
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:97
-msgid "SIM Error"
-msgstr "SIM kártya hiba"
+#: ../src/indicator/vpn-status-notifier.cpp:51
+msgid ""
+"The VPN connection '%1' failed because the VPN service stopped unexpectedly."
+msgstr ""
+"A(z) „%1” VPN-hez kapcsolódás meghiúsult, mert a VPN szolgáltatás váratlanul "
+"leállt."
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:105
-msgid "SIM Locked"
-msgstr "SIM kártya zárolva"
+#: ../src/indicator/vpn-status-notifier.cpp:52
+msgid ""
+"The VPN connection '%1' failed because the VPN service returned invalid "
+"configuration."
+msgstr ""
+"A(z) „%1” VPN-hez kapcsolódás meghiúsult, mert a VPN érvénytelen "
+"beállításokkal tért vissza."
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:118
-msgid "Unregistered"
-msgstr "Nem regisztrált"
+#: ../src/indicator/vpn-status-notifier.cpp:53
+msgid ""
+"The VPN connection '%1' failed because the connection attempt timed out."
+msgstr "A(z) „%1” VPN-hez kapcsolódás meghiúsult időtúllépés miatt."
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:123
-msgid "Unknown"
-msgstr "Ismeretlen"
+#: ../src/indicator/vpn-status-notifier.cpp:54
+msgid ""
+"The VPN connection '%1' failed because the VPN service did not start in time."
+msgstr ""
+"A(z) „%1” VPN-hez kapcsolódás meghiúsult, mert a VPN szolgáltatás nem indult "
+"el időben."
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:128
-msgid "Denied"
-msgstr "Megtagadva"
+#: ../src/indicator/vpn-status-notifier.cpp:55
+msgid ""
+"The VPN connection '%1' failed because the VPN service failed to start."
+msgstr ""
+"A(z) „%1” VPN-hez kapcsolódás meghiúsult, mert a VPN szolgáltatás nem indult "
+"el időben."
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:133
-msgid "Searching"
-msgstr "Keresés"
+#: ../src/indicator/vpn-status-notifier.cpp:56
+msgid ""
+"The VPN connection '%1' failed because there were no valid VPN secrets."
+msgstr ""
+"A(z) „%1” VPN-hez kapcsolódás meghiúsult, mert a VPN nem rendelkezik "
+"érvényes kulcsokkal."
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:145
-msgid "No Signal"
-msgstr "Nincs jel"
+#: ../src/indicator/vpn-status-notifier.cpp:57
+msgid "The VPN connection '%1' failed because of invalid VPN secrets."
+msgstr ""
+"A(z) „%1” VPN-hez kapcsolódás meghiúsult, mert a VPN kulcsai érvénytelenek."
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:157
-#: ../src/indicator/menuitems/wwan-link-item.cpp:164
-msgid "Offline"
-msgstr "Nem elérhető"
-
-#. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:187
-msgid "Wi-Fi"
-msgstr "Wi-Fi"
-
-#. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:198
-msgid "Flight Mode"
-msgstr "Repülőgépes mód"
-
-#: ../src/indicator/factory.cpp:208
-msgid "Cellular data"
-msgstr "Mobiladatok"
-
-#. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:221
-msgid "Hotspot"
-msgstr "Hotspot"
+#: ../src/indicator/vpn-status-notifier.cpp:68
+msgid "VPN Connection Failed"
+msgstr "A VPN kapcsolat meghiúsult"
 
 #: ../src/indicator/sim-unlock-dialog.cpp:144
 msgid "Sorry, incorrect %{1} PIN."
@@ -193,85 +195,119 @@ msgstr "Új %{1} PIN megerősítése"
 msgid "PIN codes did not match."
 msgstr "A PIN kódok nem egyeznek."
 
-#: ../src/indicator/vpn-status-notifier.cpp:48
-msgid "The VPN connection '%1' failed."
-msgstr "A(z) „%1” VPN-hez kapcsolódás meghiúsult."
+#: ../src/indicator/nmofono/vpn/vpn-manager.cpp:81
+msgid "VPN connection %1"
+msgstr "%1 VPN kapcsolat"
 
-#: ../src/indicator/vpn-status-notifier.cpp:50
-msgid ""
-"The VPN connection '%1' failed because the network connection was "
-"interrupted."
+#: ../src/indicator/menuitems/wifi-link-item.cpp:109
+msgid "Other network…"
+msgstr "Más hálózat…"
+
+#: ../src/indicator/menuitems/ethernet-link-item.cpp:39
+msgid "Connected"
 msgstr ""
-"A(z) „%1” VPN-hez kapcsolódás meghiúsult, mert megszakadt a hálózati "
-"kapcsolat."
 
-#: ../src/indicator/vpn-status-notifier.cpp:51
-msgid ""
-"The VPN connection '%1' failed because the VPN service stopped unexpectedly."
+#: ../src/indicator/menuitems/ethernet-link-item.cpp:40
+msgid "Connecting"
 msgstr ""
-"A(z) „%1” VPN-hez kapcsolódás meghiúsult, mert a VPN szolgáltatás váratlanul "
-"leállt."
 
-#: ../src/indicator/vpn-status-notifier.cpp:52
-msgid ""
-"The VPN connection '%1' failed because the VPN service returned invalid "
-"configuration."
+#: ../src/indicator/menuitems/ethernet-link-item.cpp:41
+msgid "Disabled"
 msgstr ""
-"A(z) „%1” VPN-hez kapcsolódás meghiúsult, mert a VPN érvénytelen "
-"beállításokkal tért vissza."
 
-#: ../src/indicator/vpn-status-notifier.cpp:53
-msgid ""
-"The VPN connection '%1' failed because the connection attempt timed out."
-msgstr "A(z) „%1” VPN-hez kapcsolódás meghiúsult időtúllépés miatt."
-
-#: ../src/indicator/vpn-status-notifier.cpp:54
-msgid ""
-"The VPN connection '%1' failed because the VPN service did not start in time."
+#: ../src/indicator/menuitems/ethernet-link-item.cpp:42
+msgid "Disconnected"
 msgstr ""
-"A(z) „%1” VPN-hez kapcsolódás meghiúsult, mert a VPN szolgáltatás nem indult "
-"el időben."
 
-#: ../src/indicator/vpn-status-notifier.cpp:55
-msgid ""
-"The VPN connection '%1' failed because the VPN service failed to start."
+#: ../src/indicator/menuitems/ethernet-link-item.cpp:43
+msgid "Online"
 msgstr ""
-"A(z) „%1” VPN-hez kapcsolódás meghiúsult, mert a VPN szolgáltatás nem indult "
-"el időben."
 
-#: ../src/indicator/vpn-status-notifier.cpp:56
-msgid ""
-"The VPN connection '%1' failed because there were no valid VPN secrets."
+#: ../src/indicator/menuitems/ethernet-link-item.cpp:44
+msgid "Failed"
 msgstr ""
-"A(z) „%1” VPN-hez kapcsolódás meghiúsult, mert a VPN nem rendelkezik "
-"érvényes kulcsokkal."
 
-#: ../src/indicator/vpn-status-notifier.cpp:57
-msgid "The VPN connection '%1' failed because of invalid VPN secrets."
+#: ../src/indicator/menuitems/ethernet-link-item.cpp:56
+msgid "Ethernet (%1)"
 msgstr ""
-"A(z) „%1” VPN-hez kapcsolódás meghiúsult, mert a VPN kulcsai érvénytelenek."
 
-#: ../src/indicator/vpn-status-notifier.cpp:68
-msgid "VPN Connection Failed"
-msgstr "A VPN kapcsolat meghiúsult"
+#: ../src/indicator/menuitems/ethernet-link-item.cpp:60
+msgid "Ethernet"
+msgstr ""
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:90
+msgid "No SIM"
+msgstr "Nincs SIM kártya"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:97
+msgid "SIM Error"
+msgstr "SIM kártya hiba"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:105
+msgid "SIM Locked"
+msgstr "SIM kártya zárolva"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:118
+msgid "Unregistered"
+msgstr "Nem regisztrált"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:123
+msgid "Unknown"
+msgstr "Ismeretlen"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:128
+msgid "Denied"
+msgstr "Megtagadva"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:133
+msgid "Searching"
+msgstr "Keresés"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:145
+msgid "No Signal"
+msgstr "Nincs jel"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:157
+#: ../src/indicator/menuitems/wwan-link-item.cpp:164
+msgid "Offline"
+msgstr "Nem elérhető"
+
+#. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
+#: ../src/indicator/root-state.cpp:340
+msgid "Network"
+msgstr "Hálózat"
+
+#. TODO Move this into a new class
+#: ../src/indicator/factory.cpp:193
+msgid "Wi-Fi"
+msgstr "Wi-Fi"
+
+#. TODO Move this into a new class
+#: ../src/indicator/factory.cpp:204
+msgid "Flight Mode"
+msgstr "Repülőgépes mód"
+
+#: ../src/indicator/factory.cpp:214
+msgid "Cellular data"
+msgstr "Mobiladatok"
+
+#. TODO Move this into a new class
+#: ../src/indicator/factory.cpp:227
+msgid "Hotspot"
+msgstr "Hotspot"
 
 #: ../src/indicator/sections/wwan-section.cpp:102
 msgid "Cellular settings…"
 msgstr "Mobilhálózat beállítások…"
 
-#: ../src/indicator/sections/vpn-section.cpp:140
-msgid "VPN settings…"
-msgstr "VPN beállítások…"
+#: ../src/indicator/sections/ethernet-section.cpp:114
+msgid "Ethernet settings…"
+msgstr ""
 
 #: ../src/indicator/sections/wifi-section.cpp:65
 msgid "Wi-Fi settings…"
 msgstr "Wi-Fi beállítások…"
 
-#. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
-#: ../src/indicator/root-state.cpp:306
-msgid "Network"
-msgstr "Hálózat"
-
-#: ../src/indicator/nmofono/vpn/vpn-manager.cpp:81
-msgid "VPN connection %1"
-msgstr "%1 VPN kapcsolat"
+#: ../src/indicator/sections/vpn-section.cpp:139
+msgid "VPN settings…"
+msgstr "VPN beállítások…"

@@ -23,6 +23,7 @@
 #include <QSet>
 
 #include <nmofono/connection/active-connection.h>
+#include <dbus-types.h>
 
 namespace nmofono
 {
@@ -45,6 +46,10 @@ public:
     ActiveConnection::SPtr connection(const QDBusObjectPath& path) const;
 
     bool deactivate(ActiveConnection::SPtr activeConnection);
+
+    ActiveConnection::SPtr activate(const QDBusObjectPath& connection, const QDBusObjectPath& device = QDBusObjectPath("/"), const QDBusObjectPath& specificObject = QDBusObjectPath("/"));
+
+    ActiveConnection::SPtr addAndActivate(const QVariantDictMap &connection, const QDBusObjectPath &device, const QDBusObjectPath &specificObject);
 
 Q_SIGNALS:
     void connectionsChanged(const QSet<ActiveConnection::SPtr>& connections);

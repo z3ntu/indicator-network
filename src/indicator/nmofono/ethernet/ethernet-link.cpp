@@ -211,8 +211,6 @@ public:
 
     shared_ptr<OrgFreedesktopNetworkManagerDeviceInterface> m_dev;
 
-    shared_ptr<OrgFreedesktopNetworkManagerInterface> m_nm;
-
     shared_ptr<OrgFreedesktopNetworkManagerSettingsInterface> m_settings;
 
     shared_ptr<OrgFreedesktopNetworkManagerDeviceWiredInterface> m_wired;
@@ -234,11 +232,10 @@ public:
     bool m_autoConnect = false;
 };
 
-EthernetLink::EthernetLink(shared_ptr<OrgFreedesktopNetworkManagerDeviceInterface> dev, shared_ptr<OrgFreedesktopNetworkManagerInterface> nm, shared_ptr<OrgFreedesktopNetworkManagerSettingsInterface> settings, ActiveConnectionManager::SPtr connectionManager) :
+EthernetLink::EthernetLink(shared_ptr<OrgFreedesktopNetworkManagerDeviceInterface> dev, shared_ptr<OrgFreedesktopNetworkManagerSettingsInterface> settings, ActiveConnectionManager::SPtr connectionManager) :
         d(new Private(*this))
 {
     d->m_dev = dev;
-    d->m_nm = nm;
     d->m_settings = settings;
     d->m_connectionManager = connectionManager;
     d->m_devicePropertyCache = make_shared<util::DBusPropertyCache>(NM_DBUS_SERVICE, NM_DBUS_INTERFACE_DEVICE, dev->path(), dev->connection());
@@ -321,12 +318,7 @@ EthernetLink::setAutoConnect(bool autoConnect)
     {
         if (d->m_preferredConnection)
         {
-            auto reply = d->m_nm->ActivateConnection(d->m_preferredConnection->path(), QDBusObjectPath(d->m_dev->path()), QDBusObjectPath("/"));
-            reply.waitForFinished();
-            if (reply.isError())
-            {
-                qWarning() << reply.error().message();
-            }
+            d->m_connectionManager->activate(d->m_preferredConnection->path(), QDBusObjectPath(d->m_dev->path()));
         }
         d->m_dev->setAutoconnect(true);
     }
@@ -356,12 +348,7 @@ EthernetLink::setPreferredConnection(AvailableConnection::SPtr preferredConnecti
 
     if (d->m_autoConnect && preferredConnection)
     {
-        auto reply = d->m_nm->ActivateConnection(d->m_preferredConnection->path(), QDBusObjectPath(d->m_dev->path()), QDBusObjectPath("/"));
-        reply.waitForFinished();
-        if (reply.isError())
-        {
-            qWarning() << reply.error().message();
-        }
+        d->m_connectionManager->activate(d->m_preferredConnection->path(), QDBusObjectPath(d->m_dev->path()));
     }
 
     Q_EMIT preferredConnectionChanged(preferredConnection);

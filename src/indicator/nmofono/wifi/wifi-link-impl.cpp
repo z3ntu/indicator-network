@@ -108,7 +108,7 @@ public:
         case NM_DEVICE_STATE_FAILED:
         {
             // make sure to set activeConnection before changing the status
-            updateActiveConnection(QDBusObjectPath("/"));
+            updateActiveConnection(connection::ActiveConnection::SPtr());
 
             switch(m_killSwitch->state()) {
             case KillSwitch::State::hard_blocked:
@@ -134,7 +134,7 @@ public:
             // we have one.
             if (path != QDBusObjectPath("/"))
             {
-                updateActiveConnection(path);
+                updateActiveConnection(m_activeConnectionManager->connection(path));
             }
             setStatus(Status::connecting);
             break;
@@ -142,20 +142,19 @@ public:
         case NM_DEVICE_STATE_SECONDARIES:
         {
             // make sure to set activeConnection before changing the status
-            updateActiveConnection(m_dev->activeConnection());
+            updateActiveConnection(m_activeConnectionManager->connection(m_dev->activeConnection()));
             setStatus(Status::connected);
             break;
         }
         case NM_DEVICE_STATE_ACTIVATED:
         {
             // make sure to set activeConnection before changing the status
-            updateActiveConnection(m_dev->activeConnection());
+            updateActiveConnection(m_activeConnectionManager->connection(m_dev->activeConnection()));
             setStatus(Status::online);
             break;
         }}
 
     }
-
 
     void disconnectSignalStengthConnection()
     {
@@ -166,11 +165,10 @@ public:
         }
     }
 
-    /// '/' path means invalid.
-    void updateActiveConnection(const QDBusObjectPath &path)
+    void updateActiveConnection(connection::ActiveConnection::SPtr activeConnection)
     {
         // clear the one we have.
-        if (path == QDBusObjectPath("/")) {
+        if (!activeConnection) {
             m_activeAccessPoint.reset();
             Q_EMIT p.activeAccessPointUpdated(m_activeAccessPoint);
             m_activeConnection.reset();
@@ -180,45 +178,38 @@ public:
         }
 
         // already up-to-date
-        if (m_activeConnection && m_activeConnection->path() == path)
+        if (m_activeConnection && m_activeConnection->path() == activeConnection->path())
         {
             return;
         }
 
-        m_activeConnection = m_activeConnectionManager->connection(path);
-        if (m_activeConnection)
-        {
-            auto state = m_activeConnection->state();
-            switch (state) {
-            case connection::ActiveConnection::State::unknown:
-            case connection::ActiveConnection::State::activating:
-            case connection::ActiveConnection::State::activated:
-            case connection::ActiveConnection::State::deactivating:
-            case connection::ActiveConnection::State::deactivated:
-                // for Wi-Fi devices specific_object is the AccessPoint object.
-                QDBusObjectPath ap_path = m_activeConnection->specificObject();
-                for (auto &ap : m_groupedAccessPoints) {
-                    auto shap =  dynamic_pointer_cast<GroupedAccessPoint>(ap);
-                    if (shap->has_object(ap_path)) {
-                        m_activeAccessPoint = ap;
-                        disconnectSignalStengthConnection();
-                        m_signalStrengthConnection = make_unique<
-                                QMetaObject::Connection>(
-                                connect(m_activeAccessPoint.get(),
-                                        &AccessPoint::strengthUpdated, this,
-                                        &Private::strengthUpdated));
-                        Q_EMIT p.activeAccessPointUpdated(m_activeAccessPoint);
-                        strengthUpdated();
-                        break;
-                    }
+        m_activeConnection = activeConnection;
+        auto state = m_activeConnection->state();
+        switch (state) {
+        case connection::ActiveConnection::State::unknown:
+        case connection::ActiveConnection::State::activating:
+        case connection::ActiveConnection::State::activated:
+        case connection::ActiveConnection::State::deactivating:
+        case connection::ActiveConnection::State::deactivated:
+            // for Wi-Fi devices specific_object is the AccessPoint object.
+            QDBusObjectPath ap_path = m_activeConnection->specificObject();
+            for (auto &ap : m_groupedAccessPoints) {
+                auto shap =  dynamic_pointer_cast<GroupedAccessPoint>(ap);
+                if (shap->has_object(ap_path)) {
+                    m_activeAccessPoint = ap;
+                    disconnectSignalStengthConnection();
+                    m_signalStrengthConnection = make_unique<
+                            QMetaObject::Connection>(
+                            connect(m_activeAccessPoint.get(),
+                                    &AccessPoint::strengthUpdated, this,
+                                    &Private::strengthUpdated));
+                    Q_EMIT p.activeAccessPointUpdated(m_activeAccessPoint);
+                    strengthUpdated();
+                    break;
                 }
             }
         }
-        else
-        {
-            qWarning() << "Failed to get active connection:" << path.path();
-        }
-    }
+}
 
 
 public Q_SLOTS:
@@ -450,81 +441,77 @@ WifiLinkImpl::connect_to(AccessPoint::Ptr accessPoint)
 {
     qDebug() << "Connecting to:" << accessPoint->ssid();
 
-    try {
-        d->m_connecting = true;
-        QByteArray ssid = accessPoint->raw_ssid();
+    d->m_connecting = true;
+    QByteArray ssid = accessPoint->raw_ssid();
 
-        shared_ptr<OrgFreedesktopNetworkManagerSettingsConnectionInterface> found;
-        QList<QDBusObjectPath> connections = d->m_dev->availableConnections();
-        for (auto &path : connections) {
-            auto con = make_shared<OrgFreedesktopNetworkManagerSettingsConnectionInterface>(
-                    NM_DBUS_SERVICE, path.path(), d->m_dev->connection());
-            QVariantDictMap settings = con->GetSettings();
-            auto wirelessIt = settings.find("802-11-wireless");
-            if (wirelessIt != settings.cend())
+    shared_ptr<OrgFreedesktopNetworkManagerSettingsConnectionInterface> found;
+    QList<QDBusObjectPath> connections = d->m_dev->availableConnections();
+    for (auto &path : connections) {
+        auto con = make_shared<OrgFreedesktopNetworkManagerSettingsConnectionInterface>(
+                NM_DBUS_SERVICE, path.path(), d->m_dev->connection());
+        QVariantDictMap settings = con->GetSettings();
+        auto wirelessIt = settings.find("802-11-wireless");
+        if (wirelessIt != settings.cend())
+        {
+            auto ssidIt = wirelessIt->find("ssid");
+            if (ssidIt != wirelessIt->cend())
             {
-                auto ssidIt = wirelessIt->find("ssid");
-                if (ssidIt != wirelessIt->cend())
+                if (ssidIt->toByteArray() == ssid)
                 {
-                    if (ssidIt->toByteArray() == ssid)
-                    {
-                        found = con;
-                        break;
-                    }
+                    found = con;
+                    break;
                 }
             }
         }
-
-        /// @todo check the timestamps as there might be multiple ones that are suitable.
-        /// @todo oh, and check more parameters than just the ssid
-
-        QDBusObjectPath ac("/");
-        if (found) {
-            qDebug() << "Connecting to known access point";
-            ac = d->m_nm->ActivateConnection(QDBusObjectPath(found->path()),
-                                           QDBusObjectPath(d->m_dev->path()),
-                                           accessPoint->object_path());
-        } else {
-            if (accessPoint->enterprise()) {
-                qDebug() << "New connection to enterprise access point";
-                // activate system settings URI
-                QUrlQuery q;
-                q.addQueryItem("ssid", accessPoint->raw_ssid());
-                q.addQueryItem("bssid", accessPoint->bssid());
-                QString url = "settings:///system/wifi?" + q.query(QUrl::FullyEncoded);
-
-                UrlDispatcher::send(url.toStdString(), [](string url, bool success) {
-                    if (!success) {
-                        cerr << "URL Dispatcher failed on " << url << endl;
-                    }
-                });
-            } else {
-                qDebug() << "New connection to regular access point";
-                QVariantDictMap conf;
-
-                /// @todo getting the ssid multiple times over dbus is stupid.
-
-                QVariantMap wireless_conf;
-                wireless_conf["ssid"] = ssid;
-
-                conf["802-11-wireless"] = wireless_conf;
-                auto ret = d->m_nm->AddAndActivateConnection(
-                        conf, QDBusObjectPath(d->m_dev->path()), accessPoint->object_path());
-                ret.waitForFinished();
-                ac = ret.argumentAt<1>();
-            }
-        }
-        // For enterprise access points, the system settings app will perform the connection
-        if (!accessPoint->enterprise()) {
-            d->updateActiveConnection(ac);
-        }
-        d->m_connecting = false;
-    } catch(const exception &e) {
-        // @bug default timeout expired: LP(#1361642)
-        // If this happens, indicator-network is in an unknown state with no clear way of
-        // recovering. The only reasonable way out is a graceful exit.
-        qWarning() << " Failed to activate connection: " << e.what();
     }
+
+    /// @todo check the timestamps as there might be multiple ones that are suitable.
+    /// @todo oh, and check more parameters than just the ssid
+
+    connection::ActiveConnection::SPtr ac;
+    if (found) {
+        qDebug() << "Connecting to known access point";
+        ac = d->m_activeConnectionManager->activate(QDBusObjectPath(found->path()),
+                                       QDBusObjectPath(d->m_dev->path()),
+                                       accessPoint->object_path());
+    } else {
+        if (accessPoint->enterprise()) {
+            qDebug() << "New connection to enterprise access point";
+            // activate system settings URI
+            QUrlQuery q;
+            q.addQueryItem("ssid", accessPoint->raw_ssid());
+            q.addQueryItem("bssid", accessPoint->bssid());
+            QString url = "settings:///system/wifi?" + q.query(QUrl::FullyEncoded);
+
+            UrlDispatcher::send(url.toStdString(), [](string url, bool success) {
+                if (!success) {
+                    cerr << "URL Dispatcher failed on " << url << endl;
+                }
+            });
+        } else {
+            qDebug() << "New connection to regular access point";
+            QVariantDictMap conf;
+
+            /// @todo getting the ssid multiple times over dbus is stupid.
+
+            QVariantMap wireless_conf;
+            wireless_conf["ssid"] = ssid;
+
+            conf["802-11-wireless"] = wireless_conf;
+            ac = d->m_activeConnectionManager->addAndActivate(conf, QDBusObjectPath(d->m_dev->path()), accessPoint->object_path());
+        }
+    }
+    if (!ac)
+    {
+        qWarning() << " Failed to activate connection";
+        return;
+    }
+
+    // For enterprise access points, the system settings app will perform the connection
+    if (!accessPoint->enterprise()) {
+        d->updateActiveConnection(ac);
+    }
+    d->m_connecting = false;
 }
 
 AccessPoint::Ptr

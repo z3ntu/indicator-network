@@ -784,7 +784,7 @@ ManagerImpl::device_added(const QDBusObjectPath &path)
             case NM_DEVICE_TYPE_ETHERNET:
             {
                 link = make_shared<ethernet::EthernetLink>(
-                        dev, d->nm, d->m_settingsInterface, d->m_activeConnectionManager);
+                        dev, d->m_settingsInterface, d->m_activeConnectionManager);
                 break;
             }
             case NM_DEVICE_TYPE_MODEM:

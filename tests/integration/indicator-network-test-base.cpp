@@ -209,6 +209,14 @@ mh::MenuMatcher::Parameters IndicatorNetworkTestBase::phoneParameters()
             "/com/canonical/indicator/network/phone");
 }
 
+mh::MenuMatcher::Parameters IndicatorNetworkTestBase::phoneWifiSettingsParameters()
+{
+    return mh::MenuMatcher::Parameters(
+            "com.canonical.indicator.network",
+            { { "indicator", "/com/canonical/indicator/network" } },
+            "/com/canonical/indicator/network/phone_wifi_settings");
+}
+
 mh::MenuMatcher::Parameters IndicatorNetworkTestBase::unlockSimParameters(std::string const& busName, int exportId)
 {
     return mh::MenuMatcher::Parameters(

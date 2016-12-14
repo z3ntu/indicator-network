@@ -67,6 +67,26 @@ public:
         }
     }
 
+    ActiveConnection::SPtr addConnection(const QDBusObjectPath& path)
+    {
+        ActiveConnection::SPtr connection;
+
+        auto it = m_connections.constFind(path);
+        if (it == m_connections.constEnd())
+        {
+            connection = make_shared<ActiveConnection>(path, m_manager->connection());
+            m_connections.insert(path, connection);
+            Q_EMIT p.connectionsChanged(m_connections.values().toSet());
+            Q_EMIT p.connectionsUpdated();
+        }
+        else
+        {
+            connection = *it;
+        }
+
+        return connection;
+    }
+
 public Q_SLOTS:
     void propertiesChanged(const QVariantMap &properties)
     {
@@ -111,7 +131,17 @@ QSet<ActiveConnection::SPtr> ActiveConnectionManager::connections() const
 
 ActiveConnection::SPtr ActiveConnectionManager::connection(const QDBusObjectPath& path) const
 {
-    return d->m_connections.value(path);
+    auto connection = d->m_connections.value(path);
+    if (path.path() != "/" && !connection)
+    {
+        d->updateConnections(d->m_manager->activeConnections());
+        connection = d->m_connections.value(path);
+        if (!connection)
+        {
+            qWarning() << "Could not find connection at path" << path.path();
+        }
+    }
+    return connection;
 }
 
 bool ActiveConnectionManager::deactivate(ActiveConnection::SPtr activeConnection)
@@ -124,6 +154,31 @@ bool ActiveConnectionManager::deactivate(ActiveConnection::SPtr activeConnection
         return false;
     }
     return true;
+}
+
+ActiveConnection::SPtr ActiveConnectionManager::activate(const QDBusObjectPath& connection, const QDBusObjectPath& device, const QDBusObjectPath& specificObject)
+{
+    auto reply = d->m_manager->ActivateConnection(connection, device, specificObject);
+    reply.waitForFinished();
+    if (reply.isError())
+    {
+        qWarning() << reply.error().message();
+        return ActiveConnection::SPtr();
+    }
+    return d->addConnection(reply);
+}
+
+
+ActiveConnection::SPtr ActiveConnectionManager::addAndActivate(const QVariantDictMap &connection, const QDBusObjectPath &device, const QDBusObjectPath &specificObject)
+{
+    auto reply = d->m_manager->AddAndActivateConnection(connection, device, specificObject);
+    reply.waitForFinished();
+    if (reply.isError())
+    {
+        qWarning() << reply.error().message();
+        return ActiveConnection::SPtr();
+    }
+    return d->addConnection(reply.argumentAt<1>());
 }
 
 }

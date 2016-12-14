@@ -46,7 +46,6 @@ public:
     UNITY_DEFINES_PTRS(EthernetLink);
 
     EthernetLink(std::shared_ptr<OrgFreedesktopNetworkManagerDeviceInterface> dev,
-                 std::shared_ptr<OrgFreedesktopNetworkManagerInterface> nm,
                  std::shared_ptr<OrgFreedesktopNetworkManagerSettingsInterface> settings,
                  nmofono::connection::ActiveConnectionManager::SPtr connectionManager);
 

@@ -492,6 +492,27 @@ TEST_F(TestIndicator, DisconnectFromEthernet)
     EXPECT_EQ("/", activeConnection.path().toStdString());
 }
 
+TEST_F(TestIndicator, OneDisconnectedAccessPointAtStartupInSettingsMenu)
+{
+    setGlobalConnectedState(NM_STATE_DISCONNECTED);
+    auto device = createWiFiDevice(NM_DEVICE_STATE_DISCONNECTED);
+    auto ap = createAccessPoint("0", "the ssid", device);
+    auto connection = createAccessPointConnection("0", "the ssid", device);
+
+    ASSERT_NO_THROW(startIndicator());
+
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneWifiSettingsParameters())
+        .item(wifiEnableSwitch())
+        .item(mh::MenuItemMatcher()
+            .section()
+            .item(accessPoint("the ssid",
+                  Secure::wpa,
+                  ApMode::infra,
+                  ConnectionStatus::disconnected)
+            )
+        ).match());
+}
+
 TEST_F(TestIndicator, OneDisconnectedAccessPointAtStartup)
 {
     setGlobalConnectedState(NM_STATE_DISCONNECTED);

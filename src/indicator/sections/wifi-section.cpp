@@ -43,6 +43,7 @@ public:
 
     ActionGroupMerger::Ptr m_actionGroupMerger;
     MenuMerger::Ptr m_menuMerger;
+    MenuMerger::Ptr m_settingsModel;
 
     Menu::Ptr m_switchMenu;
     Menu::Ptr m_menu;
@@ -58,6 +59,7 @@ public:
     {
         m_actionGroupMerger = make_shared<ActionGroupMerger>();
         m_menuMerger = make_shared<MenuMerger>();
+        m_settingsModel = make_shared<MenuMerger>();
         m_switchMenu = make_shared<Menu>();
         m_menu = make_shared<Menu>();
         m_settingsMenu = make_shared<Menu>();
@@ -70,6 +72,8 @@ public:
         m_menuMerger->append(m_switchMenu);
         m_menuMerger->append(m_menu);
         m_menuMerger->append(m_settingsMenu);
+        m_settingsModel->append(m_switchMenu);
+        m_settingsModel->append(m_menu);
 
         updateLinks();
         connect(m_manager.get(), &Manager::linksUpdated, this, &Private::updateLinks);
@@ -169,7 +173,7 @@ WifiSection::menuModel()
 MenuModel::Ptr
 WifiSection::settingsModel()
 {
-    return d->m_settingsMenu;
+    return d->m_settingsModel;
 }
 
 #include "wifi-section.moc"

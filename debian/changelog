@@ -1,3 +1,14 @@
+indicator-network (0.9.0+17.04.20161223.3-0ubuntu1) zesty; urgency=medium
+
+  [ Dimitri John Ledkov ]
+  * Remove xdg autolaunch desktop files (LP: #1648360)
+
+  [ Pete Woods ]
+  * Use plain NetworkManager radio control on desktop, URFKill on
+    phablet (LP: #1652288)
+
+ -- Pete Woods <pete.woods@canonical.com>  Fri, 23 Dec 2016 13:58:36 +0000
+
 indicator-network (0.9.0+17.04.20161214.1-0ubuntu1) zesty; urgency=medium
 
   * Compatibility with unversioned cmake-extras modules (LP: #1563573)

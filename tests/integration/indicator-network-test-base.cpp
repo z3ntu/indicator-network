@@ -19,6 +19,7 @@
 #include <indicator-network-test-base.h>
 #include <dbus-types.h>
 
+#include <HostnameInterface.h>
 #include <NetworkManager.h>
 #include <NetworkManagerSettingsConnectionInterface.h>
 #include <NetworkManagerSettingsInterface.h>
@@ -84,11 +85,13 @@ void IndicatorNetworkTestBase::SetUp()
                                 QStringList{"-y", testDir.filePath(QString("%1-%2").arg(test_info->name(), "system.log"))})));
     }
 
-    dbusMock.registerTemplate(NM_DBUS_SERVICE, NETWORK_MANAGER_TEMPLATE_PATH, {}, QDBusConnection::SystemBus);
+    registerDBusMocks();
+    dbusMock.registerTemplate(DBusTypes::HOSTNAME_BUS_NAME, DBUSMOCK_TEMPLATE_DIR "hostname1.py", {}, QDBusConnection::SystemBus);
+    dbusMock.registerTemplate(NM_DBUS_SERVICE, DBUSMOCK_TEMPLATE_DIR "networkmanager.py", {}, QDBusConnection::SystemBus);
     dbusMock.registerNotificationDaemon();
     // By default the ofono mock starts with one modem
     dbusMock.registerOfono({{"no_modem", true}});
-    dbusMock.registerURfkill();
+
 
     dbusMock.registerCustomMock(
                         DBusTypes::POWERD_DBUS_NAME,
@@ -114,6 +117,8 @@ void IndicatorNetworkTestBase::SetUp()
                         QDBusConnection::SessionBus);
 
     dbusTestRunner.startServices();
+
+    setupDBusMocks();
 
     // Set up a basic URL dispatcher mock
     auto& urlDispatcher = dbusMock.mockInterface(
@@ -167,8 +172,6 @@ void IndicatorNetworkTestBase::SetUp()
                         ""
                      ).waitForFinished();
 
-
-    modem = createModem("ril_0");
 
     // Identify the test when looking at Bustle logs
     QDBusConnection systemConnection = dbusTestRunner.systemConnection();
@@ -246,6 +249,27 @@ IndicatorNetworkTestBase::startIndicator()
     {
         cout << "startIndicator(): " << e.what() << endl;
         throw;
+    }
+}
+
+void IndicatorNetworkTestBase::setChassis(Chassis chassis)
+{
+    static const QMap<Chassis, QString> CHASSIS_MAP{
+        {Chassis::desktop, "desktop"},
+        {Chassis::laptop, "laptop"},
+        {Chassis::server, "server"},
+        {Chassis::tablet, "tablet"},
+        {Chassis::handset, "handset"},
+        {Chassis::vm, "vm"},
+        {Chassis::container, "container"}
+    };
+
+    OrgFreedesktopHostname1Interface hostnameInterface(DBusTypes::HOSTNAME_BUS_NAME, DBusTypes::HOSTNAME_OBJ_PATH, dbusTestRunner.systemConnection());
+    auto reply = hostnameInterface.SetChassis(CHASSIS_MAP[chassis], true);
+    reply.waitForFinished();
+    if (reply.isError())
+    {
+        EXPECT_FALSE(reply.isError()) << reply.error().message().toStdString();
     }
 }
 

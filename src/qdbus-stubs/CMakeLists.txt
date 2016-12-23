@@ -29,6 +29,7 @@ set_source_files_properties(
     "${DATA_DIR}/org.freedesktop.URfkill.Killswitch.xml"
     "${DATA_DIR}/com.canonical.powerd.xml"
     "${DATA_DIR}/org.freedesktop.DBus.Properties.xml"
+    "${DATA_DIR}/org.freedesktop.hostname1.xml"
     PROPERTIES
     NO_NAMESPACE YES
 )
@@ -149,6 +150,12 @@ qt5_add_dbus_interface(
     CONNECTIVITY_BACKEND_SRC
     "${DATA_DIR}/org.freedesktop.DBus.Properties.xml"
     PropertiesInterface
+)
+
+qt5_add_dbus_interface(
+    CONNECTIVITY_BACKEND_SRC
+    "${DATA_DIR}/org.freedesktop.hostname1.xml"
+    HostnameInterface
 )
 
 add_library(

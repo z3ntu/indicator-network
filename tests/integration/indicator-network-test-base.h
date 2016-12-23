@@ -137,6 +137,17 @@ public:
         disabled
     };
 
+    enum class Chassis
+    {
+        desktop,
+        laptop,
+        server,
+        tablet,
+        handset,
+        vm,
+        container
+    };
+
     IndicatorNetworkTestBase();
 
     ~IndicatorNetworkTestBase();
@@ -144,6 +155,10 @@ public:
 protected:
     void SetUp() override;
     void TearDown() override;
+
+    virtual void registerDBusMocks() = 0;
+
+    virtual void setupDBusMocks() = 0;
 
     void setDataUsageIndicationSetting(bool value);
 
@@ -154,6 +169,8 @@ protected:
     static unity::gmenuharness::MenuMatcher::Parameters unlockSimParameters(std::string const& busName, int exportId);
 
     void startIndicator();
+
+    void setChassis(Chassis chassis);
 
     QString createEthernetDevice(int state, const QString& id = "0");
 
@@ -284,8 +301,6 @@ protected:
     QtDBusMock::DBusMock dbusMock;
 
     QtDBusTest::DBusServicePtr indicator;
-
-    QString modem;
 
     QTemporaryDir temporaryDir;
 };

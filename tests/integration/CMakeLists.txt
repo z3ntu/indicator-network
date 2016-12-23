@@ -11,12 +11,16 @@ include_directories(
     "${CMAKE_SOURCE_DIR}/src/connectivity-api/connectivity-qt"
     "${CMAKE_SOURCE_DIR}/src/qdbus-stubs"
     "${CMAKE_BINARY_DIR}/src/qdbus-stubs"
+    "${CMAKE_SOURCE_DIR}/src"
 )
 
 set(
     INTEGRATION_TESTS_SRC
     indicator-network-test-base.cpp
-    test-indicator.cpp
+    indicator-network-test-base-desktop.cpp
+    indicator-network-test-base-phone.cpp
+    test-indicator-desktop.cpp
+    test-indicator-phone.cpp
     test-indicator-vpn.cpp
     test-connectivity-api.cpp
     test-connectivity-api-modem.cpp

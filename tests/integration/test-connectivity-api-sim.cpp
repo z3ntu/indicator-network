@@ -20,7 +20,7 @@
 
 #include <connectivityqt/sim.h>
 #include <connectivityqt/sims-list-model.h>
-#include <indicator-network-test-base.h>
+#include <indicator-network-test-base-phone.h>
 #include <dbus-types.h>
 #include <NetworkManagerSettingsInterface.h>
 
@@ -87,7 +87,7 @@ using namespace connectivityqt;
 namespace
 {
 
-class TestConnectivityApiSim: public IndicatorNetworkTestBase
+class TestConnectivityApiSim: public IndicatorNetworkTestBasePhone
 {
 protected:
     static void SetUpTestCase()

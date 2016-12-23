@@ -21,8 +21,9 @@
 
 #include <nmofono/connection/active-connection-manager.h>
 #include <nmofono/manager.h>
-#include <nmofono/kill-switch.h>
 #include <nmofono/hotspot-manager.h>
+#include <nmofono/flight-mode-toggle.h>
+#include <nmofono/wifi/wifi-toggle.h>
 
 #include <QDBusConnection>
 #include <QDBusObjectPath>
@@ -33,8 +34,9 @@ namespace notify
 class NotificationManager;
 }
 
-namespace nmofono {
-    class Manager;
+namespace nmofono
+{
+class Manager;
 
 class ManagerImpl : public Manager
 {
@@ -50,7 +52,8 @@ public:
 
     ManagerImpl(
             std::shared_ptr<notify::NotificationManager> notificationManager,
-            KillSwitch::Ptr killSwitch,
+            FlightModeToggle::SPtr flightModeToggle,
+            wifi::WifiToggle::SPtr wifiToggle,
             HotspotManager::SPtr hotspotManager,
             connection::ActiveConnectionManager::SPtr activeConnectionManager,
             const QDBusConnection& systemBus);
@@ -58,6 +61,7 @@ public:
     // Public API
     void setFlightMode(bool) override;
     bool flightMode() const override;
+    bool flightModeAvailable() const override;
 
     bool unstoppableOperationHappening() const override;
 

@@ -80,6 +80,8 @@ public:
     Q_PROPERTY(bool flightMode READ flightMode NOTIFY flightModeUpdated)
     virtual bool flightMode() const = 0;
 
+    virtual bool flightModeAvailable() const = 0;
+
     Q_PROPERTY(bool unstoppableOperationHappening READ unstoppableOperationHappening NOTIFY unstoppableOperationHappeningUpdated)
     virtual bool unstoppableOperationHappening() const = 0;
 

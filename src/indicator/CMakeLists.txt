@@ -18,10 +18,11 @@ set(NETWORK_SERVICE_SOURCES
 
     nmofono/connectivity-service-settings.cpp
     nmofono/hotspot-manager.cpp
-    nmofono/kill-switch.cpp
     nmofono/manager.cpp
     nmofono/manager-impl.cpp
     nmofono/nm-device-statistics-monitor.cpp
+    nmofono/null-flight-mode-toggle.cpp
+    nmofono/urfkill-flight-mode-toggle.cpp
     nmofono/connection/active-connection.cpp
     nmofono/connection/active-connection-manager.cpp
     nmofono/connection/active-vpn-connection.cpp
@@ -30,7 +31,9 @@ set(NETWORK_SERVICE_SOURCES
     nmofono/wifi/access-point.cpp
     nmofono/wifi/access-point-impl.cpp
     nmofono/wifi/grouped-access-point.cpp
+    nmofono/wifi/network-manager-wifi-toggle.cpp
     nmofono/wifi/wifi-link-impl.cpp
+    nmofono/wifi/urfkill-wifi-toggle.cpp
     nmofono/wwan/modem.cpp
     nmofono/wwan/sim.cpp
     nmofono/wwan/sim-manager.cpp

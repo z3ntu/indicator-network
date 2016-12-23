@@ -17,7 +17,7 @@
  * Author: Pete Woods <pete.woods@canonical.com>
  */
 
-#include <indicator-network-test-base.h>
+#include <indicator-network-test-base-phone.h>
 #include <dbus-types.h>
 #include <NetworkManagerSettingsInterface.h>
 
@@ -31,7 +31,7 @@ using namespace connectivityqt;
 namespace
 {
 
-class TestConnectivityApi: public IndicatorNetworkTestBase
+class TestConnectivityApi: public IndicatorNetworkTestBasePhone
 {
 protected:
     static void SetUpTestCase()

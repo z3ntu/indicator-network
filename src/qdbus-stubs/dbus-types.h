@@ -89,9 +89,14 @@ namespace DBusTypes
     static constexpr char const* URFKILL_OBJ_PATH = "/org/freedesktop/URfkill";
 
     static constexpr char const* URFKILL_WIFI_OBJ_PATH = "/org/freedesktop/URfkill/WLAN";
+
     static constexpr char const* NOTIFY_DBUS_NAME = "org.freedesktop.Notifications";
 
     static constexpr char const* NOTIFY_DBUS_INTERFACE = "org.freedesktop.Notifications";
 
     static constexpr char const* NOTIFY_DBUS_PATH = "/org/freedesktop/Notifications";
+
+    static constexpr char const* HOSTNAME_BUS_NAME = "org.freedesktop.hostname1";
+
+    static constexpr char const* HOSTNAME_OBJ_PATH = "/org/freedesktop/hostname1";
 }

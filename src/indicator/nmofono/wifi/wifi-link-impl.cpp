@@ -45,12 +45,12 @@ public:
     Private(WifiLinkImpl& parent,
             shared_ptr<OrgFreedesktopNetworkManagerDeviceInterface> dev,
             shared_ptr<OrgFreedesktopNetworkManagerInterface> nm,
-            KillSwitch::Ptr killSwitch)
+            WifiToggle::SPtr wifiToggle)
        : p(parent),
          m_dev(dev),
          m_wireless(NM_DBUS_SERVICE, dev->path(), dev->connection()),
          m_nm(nm),
-         m_killSwitch(killSwitch),
+         m_wifiToggle(wifiToggle),
          m_lastState(NM_STATE_UNKNOWN),
          m_connecting(false)
     {
@@ -70,7 +70,7 @@ public:
     shared_ptr<OrgFreedesktopNetworkManagerInterface> m_nm;
     connection::ActiveConnectionManager::SPtr m_activeConnectionManager;
 
-    KillSwitch::Ptr m_killSwitch;
+    WifiToggle::SPtr m_wifiToggle;
 
     map<AccessPointImpl::Key, shared_ptr<GroupedAccessPoint>> m_grouper;
     uint32_t m_lastState = 0;
@@ -110,13 +110,13 @@ public:
             // make sure to set activeConnection before changing the status
             updateActiveConnection(connection::ActiveConnection::SPtr());
 
-            switch(m_killSwitch->state()) {
-            case KillSwitch::State::hard_blocked:
-            case KillSwitch::State::soft_blocked:
+            switch(m_wifiToggle->state()) {
+            case WifiToggle::State::hard_blocked:
+            case WifiToggle::State::soft_blocked:
                 setStatus(Status::disabled);
                 break;
-            case KillSwitch::State::not_available:
-            case KillSwitch::State::unblocked:
+            case WifiToggle::State::not_available:
+            case WifiToggle::State::unblocked:
                 setStatus(Status::offline);
             }
             break;
@@ -307,7 +307,7 @@ public Q_SLOTS:
         updateDeviceState(new_state);
     }
 
-    void kill_switch_updated(KillSwitch::State)
+    void wifiToggleChanged()
     {
         updateDeviceState(m_lastState);
     }
@@ -355,9 +355,9 @@ public Q_SLOTS:
 
 WifiLinkImpl::WifiLinkImpl(shared_ptr<OrgFreedesktopNetworkManagerDeviceInterface> dev,
            shared_ptr<OrgFreedesktopNetworkManagerInterface> nm,
-           KillSwitch::Ptr killSwitch,
+           WifiToggle::SPtr wifiToggle,
            connection::ActiveConnectionManager::SPtr activeConnectionManager)
-    : d(new Private(*this, dev, nm, killSwitch)) {
+    : d(new Private(*this, dev, nm, wifiToggle)) {
     d->m_name = d->m_dev->interface();
     d->m_activeConnectionManager = activeConnectionManager;
 
@@ -371,7 +371,7 @@ WifiLinkImpl::WifiLinkImpl(shared_ptr<OrgFreedesktopNetworkManagerDeviceInterfac
     connect(d->m_dev.get(), &OrgFreedesktopNetworkManagerDeviceInterface::StateChanged, d.get(), &Private::state_changed);
     d->updateDeviceState(d->m_dev->state());
 
-    connect(d->m_killSwitch.get(), &KillSwitch::stateChanged, d.get(), &Private::kill_switch_updated);
+    connect(d->m_wifiToggle.get(), &WifiToggle::stateChanged, d.get(), &Private::wifiToggleChanged);
 
     d->strengthUpdated();
 }

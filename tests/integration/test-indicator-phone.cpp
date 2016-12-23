@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Canonical, Ltd.
+ * Copyright (C) 2016 Canonical, Ltd.
  *
  * This program is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 3, as published
@@ -16,12 +16,14 @@
  * Author: Pete Woods <pete.woods@canonical.com>
  */
 
-#include <indicator-network-test-base.h>
+#include <indicator-network-test-base-phone.h>
+#include <util/dbus-property-cache.h>
 
 #include <QDebug>
 #include <QTestEventLoop>
 #include <QSignalSpy>
 
+#include <NetworkManagerInterface.h>
 #include <NetworkManagerDeviceInterface.h>
 #include <NetworkManagerActiveConnectionInterface.h>
 
@@ -33,11 +35,11 @@ namespace mh = unity::gmenuharness;
 namespace
 {
 
-class TestIndicator: public IndicatorNetworkTestBase
+class TestIndicatorPhone: public IndicatorNetworkTestBasePhone
 {
 };
 
-TEST_F(TestIndicator, BasicMenuContents)
+TEST_F(TestIndicatorPhone, BasicMenuContents)
 {
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
     ASSERT_NO_THROW(startIndicator());
@@ -61,7 +63,7 @@ TEST_F(TestIndicator, BasicMenuContents)
         ).match());
 }
 
-TEST_F(TestIndicator, OneDisabledEthernetAtStartup)
+TEST_F(TestIndicatorPhone, OneDisabledEthernetAtStartup)
 {
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
     auto device = createEthernetDevice(NM_DEVICE_STATE_DISCONNECTED);
@@ -89,7 +91,7 @@ TEST_F(TestIndicator, OneDisabledEthernetAtStartup)
         ).match());
 }
 
-TEST_F(TestIndicator, OneConnectedEthernetAtStartup)
+TEST_F(TestIndicatorPhone, OneConnectedEthernetAtStartup)
 {
     setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
     auto device = createEthernetDevice(NM_DEVICE_STATE_ACTIVATED);
@@ -118,7 +120,7 @@ TEST_F(TestIndicator, OneConnectedEthernetAtStartup)
         ).match());
 }
 
-TEST_F(TestIndicator, TwoEthernetAtStartupConnectedAndDisconnected)
+TEST_F(TestIndicatorPhone, TwoEthernetAtStartupConnectedAndDisconnected)
 {
     setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
 
@@ -164,7 +166,7 @@ TEST_F(TestIndicator, TwoEthernetAtStartupConnectedAndDisconnected)
         ).match());
 }
 
-TEST_F(TestIndicator, OneDisabledEthernetAfterStartup)
+TEST_F(TestIndicatorPhone, OneDisabledEthernetAfterStartup)
 {
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
 
@@ -193,7 +195,7 @@ TEST_F(TestIndicator, OneDisabledEthernetAfterStartup)
         ).match());
 }
 
-TEST_F(TestIndicator, OneConnectedEthernetAfterStartup)
+TEST_F(TestIndicatorPhone, OneConnectedEthernetAfterStartup)
 {
     setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
 
@@ -223,7 +225,7 @@ TEST_F(TestIndicator, OneConnectedEthernetAfterStartup)
         ).match());
 }
 
-TEST_F(TestIndicator, TwoEthernetAfterStartupConnectedAndDisconnected)
+TEST_F(TestIndicatorPhone, TwoEthernetAfterStartupConnectedAndDisconnected)
 {
     setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
 
@@ -269,7 +271,7 @@ TEST_F(TestIndicator, TwoEthernetAfterStartupConnectedAndDisconnected)
         ).match());
 }
 
-TEST_F(TestIndicator, ConnectToEthernet)
+TEST_F(TestIndicatorPhone, ConnectToEthernet)
 {
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
     auto device = createEthernetDevice(NM_DEVICE_STATE_DISCONNECTED);
@@ -330,7 +332,7 @@ TEST_F(TestIndicator, ConnectToEthernet)
     EXPECT_NE("/", activeConnection.path().toStdString());
 }
 
-TEST_F(TestIndicator, ConnectToEthernetSelectProfile)
+TEST_F(TestIndicatorPhone, ConnectToEthernetSelectProfile)
 {
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
     auto device = createEthernetDevice(NM_DEVICE_STATE_DISCONNECTED);
@@ -420,7 +422,7 @@ TEST_F(TestIndicator, ConnectToEthernetSelectProfile)
 }
 
 
-TEST_F(TestIndicator, DisconnectFromEthernet)
+TEST_F(TestIndicatorPhone, DisconnectFromEthernet)
 {
     setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
     auto device = createEthernetDevice(NM_DEVICE_STATE_ACTIVATED);
@@ -492,7 +494,7 @@ TEST_F(TestIndicator, DisconnectFromEthernet)
     EXPECT_EQ("/", activeConnection.path().toStdString());
 }
 
-TEST_F(TestIndicator, OneDisconnectedAccessPointAtStartupInSettingsMenu)
+TEST_F(TestIndicatorPhone, OneDisconnectedAccessPointAtStartupInSettingsMenu)
 {
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
     auto device = createWiFiDevice(NM_DEVICE_STATE_DISCONNECTED);
@@ -513,7 +515,7 @@ TEST_F(TestIndicator, OneDisconnectedAccessPointAtStartupInSettingsMenu)
         ).match());
 }
 
-TEST_F(TestIndicator, OneDisconnectedAccessPointAtStartup)
+TEST_F(TestIndicatorPhone, OneDisconnectedAccessPointAtStartup)
 {
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
     auto device = createWiFiDevice(NM_DEVICE_STATE_DISCONNECTED);
@@ -544,7 +546,7 @@ TEST_F(TestIndicator, OneDisconnectedAccessPointAtStartup)
         ).match());
 }
 
-TEST_F(TestIndicator, OneConnectedAccessPointAtStartup)
+TEST_F(TestIndicatorPhone, OneConnectedAccessPointAtStartup)
 {
     setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
     auto device = createWiFiDevice(NM_DEVICE_STATE_ACTIVATED);
@@ -576,7 +578,7 @@ TEST_F(TestIndicator, OneConnectedAccessPointAtStartup)
         ).match());
 }
 
-TEST_F(TestIndicator, AddOneDisconnectedAccessPointAfterStartup)
+TEST_F(TestIndicatorPhone, AddOneDisconnectedAccessPointAfterStartup)
 {
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
     auto device = createWiFiDevice(NM_DEVICE_STATE_DISCONNECTED);
@@ -606,7 +608,7 @@ TEST_F(TestIndicator, AddOneDisconnectedAccessPointAfterStartup)
         ).match());
 }
 
-TEST_F(TestIndicator, AddOneConnectedAccessPointAfterStartup)
+TEST_F(TestIndicatorPhone, AddOneConnectedAccessPointAfterStartup)
 {
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
     auto device = createWiFiDevice(NM_DEVICE_STATE_DISCONNECTED);
@@ -639,7 +641,7 @@ TEST_F(TestIndicator, AddOneConnectedAccessPointAfterStartup)
         ).match());
 }
 
-TEST_F(TestIndicator, SecondModem)
+TEST_F(TestIndicatorPhone, SecondModem)
 {
     createModem("ril_1"); // ril_0 already exists
     ASSERT_NO_THROW(startIndicator());
@@ -661,7 +663,7 @@ TEST_F(TestIndicator, SecondModem)
         ).match());
 }
 
-TEST_F(TestIndicator, FlightModeTalksToURfkill)
+TEST_F(TestIndicatorPhone, FlightModeTalksToURfkill)
 {
     ASSERT_NO_THROW(startIndicator());
 
@@ -682,7 +684,7 @@ TEST_F(TestIndicator, FlightModeTalksToURfkill)
     EXPECT_EQ(urfkillSpy.first(), QVariantList() << QVariant(true));
 }
 
-TEST_F(TestIndicator, IndicatorListensToURfkill)
+TEST_F(TestIndicatorPhone, IndicatorListensToURfkill)
 {
     setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
     auto device = createWiFiDevice(NM_DEVICE_STATE_ACTIVATED);
@@ -720,7 +722,7 @@ TEST_F(TestIndicator, IndicatorListensToURfkill)
         ).match());
 }
 
-TEST_F(TestIndicator, SimStates_NoSIM)
+TEST_F(TestIndicatorPhone, SimStates_NoSIM)
 {
     // set flight mode off, wifi off, and cell data off
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
@@ -747,7 +749,7 @@ TEST_F(TestIndicator, SimStates_NoSIM)
         ).match());
 }
 
-TEST_F(TestIndicator, SimStates_NoSIM2)
+TEST_F(TestIndicatorPhone, SimStates_NoSIM2)
 {
     // set flight mode off, wifi off, and cell data off
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
@@ -776,7 +778,7 @@ TEST_F(TestIndicator, SimStates_NoSIM2)
         ).match());
 }
 
-TEST_F(TestIndicator, SimStates_LockedSIM)
+TEST_F(TestIndicatorPhone, SimStates_LockedSIM)
 {
     // set flight mode off, wifi off, and cell data off, and sim in
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
@@ -824,7 +826,7 @@ TEST_F(TestIndicator, SimStates_LockedSIM)
         ).match());
 }
 
-TEST_F(TestIndicator, SimStates_LockedSIM2)
+TEST_F(TestIndicatorPhone, SimStates_LockedSIM2)
 {
     // set flight mode off, wifi off, and cell data off, and sim in
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
@@ -873,7 +875,7 @@ TEST_F(TestIndicator, SimStates_LockedSIM2)
         ).match());
 }
 
-TEST_F(TestIndicator, SimStates_UnlockedSIM)
+TEST_F(TestIndicatorPhone, SimStates_UnlockedSIM)
 {
     // set flight mode off, wifi off, cell data off, sim in, and sim unlocked
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
@@ -1011,7 +1013,7 @@ TEST_F(TestIndicator, SimStates_UnlockedSIM)
         ).match());
 }
 
-TEST_F(TestIndicator, SimStates_UnlockedSIM2)
+TEST_F(TestIndicatorPhone, SimStates_UnlockedSIM2)
 {
     // set flight mode off, wifi off, cell data off, sim in, and sim unlocked
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
@@ -1157,7 +1159,7 @@ TEST_F(TestIndicator, SimStates_UnlockedSIM2)
         ).match());
 }
 
-TEST_F(TestIndicator, FlightMode_NoSIM)
+TEST_F(TestIndicatorPhone, FlightMode_NoSIM)
 {
     // set wifi on, flight mode off
     setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
@@ -1268,7 +1270,7 @@ TEST_F(TestIndicator, FlightMode_NoSIM)
         ).match());
 }
 
-TEST_F(TestIndicator, FlightMode_LockedSIM)
+TEST_F(TestIndicatorPhone, FlightMode_LockedSIM)
 {
     // set wifi on, flight mode off
     setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
@@ -1378,7 +1380,7 @@ TEST_F(TestIndicator, FlightMode_LockedSIM)
         ).match());
 }
 
-TEST_F(TestIndicator, FlightMode_WifiOff)
+TEST_F(TestIndicatorPhone, FlightMode_WifiOff)
 {
     // set wifi on, flight mode off
     setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
@@ -1546,7 +1548,7 @@ TEST_F(TestIndicator, FlightMode_WifiOff)
         ).match());
 }
 
-TEST_F(TestIndicator, FlightMode_WifiOn)
+TEST_F(TestIndicatorPhone, FlightMode_WifiOn)
 {
     // set wifi on, flight mode off
     setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
@@ -1738,7 +1740,7 @@ TEST_F(TestIndicator, FlightMode_WifiOn)
         ).match());
 }
 
-TEST_F(TestIndicator, GroupedWiFiAccessPoints)
+TEST_F(TestIndicatorPhone, GroupedWiFiAccessPoints)
 {
     // set wifi on, flight mode off
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
@@ -1831,7 +1833,7 @@ TEST_F(TestIndicator, GroupedWiFiAccessPoints)
         ).match());
 }
 
-TEST_F(TestIndicator, WifiStates_SSIDs)
+TEST_F(TestIndicatorPhone, WifiStates_SSIDs)
 {
     // set wifi on, flight mode off
     setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
@@ -1884,7 +1886,7 @@ TEST_F(TestIndicator, WifiStates_SSIDs)
         ).match());
 }
 
-TEST_F(TestIndicator, WifiStates_Connect1AP)
+TEST_F(TestIndicatorPhone, WifiStates_Connect1AP)
 {
     // create a wifi device
     auto device = createWiFiDevice(NM_DEVICE_STATE_ACTIVATED);
@@ -2101,7 +2103,7 @@ TEST_F(TestIndicator, WifiStates_Connect1AP)
         ).match());
 }
 
-TEST_F(TestIndicator, WifiStates_Connect2APs)
+TEST_F(TestIndicatorPhone, WifiStates_Connect2APs)
 {
     // set wifi on, flight mode off
     setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
@@ -2263,7 +2265,7 @@ TEST_F(TestIndicator, WifiStates_Connect2APs)
         ).match());
 }
 
-TEST_F(TestIndicator, WifiStates_AddAndActivate)
+TEST_F(TestIndicatorPhone, WifiStates_AddAndActivate)
 {
     // set wifi on, flight mode off
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
@@ -2404,7 +2406,7 @@ TEST_F(TestIndicator, WifiStates_AddAndActivate)
         ).match());
 }
 
-TEST_F(TestIndicator, EnterpriseWifiConnect)
+TEST_F(TestIndicatorPhone, EnterpriseWifiConnect)
 {
     // set wifi on, flight mode off
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
@@ -2463,7 +2465,7 @@ TEST_F(TestIndicator, EnterpriseWifiConnect)
     );
 }
 
-TEST_F(TestIndicator, CellDataEnabled)
+TEST_F(TestIndicatorPhone, CellDataEnabled)
 {
     // We are connected
     setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
@@ -2545,7 +2547,7 @@ TEST_F(TestIndicator, CellDataEnabled)
             ).match());
 }
 
-TEST_F(TestIndicator, CellDataDisabled)
+TEST_F(TestIndicatorPhone, CellDataDisabled)
 {
     // We are disconnected
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
@@ -2641,7 +2643,7 @@ TEST_F(TestIndicator, CellDataDisabled)
         ).match());
 }
 
-TEST_F(TestIndicator, UnlockSIM_MenuContents)
+TEST_F(TestIndicatorPhone, UnlockSIM_MenuContents)
 {
     // set flight mode off, wifi off, and cell data off, and sim in
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
@@ -2734,7 +2736,7 @@ TEST_F(TestIndicator, UnlockSIM_MenuContents)
         ).match());
 }
 
-TEST_F(TestIndicator, UnlockSIM_Cancel)
+TEST_F(TestIndicatorPhone, UnlockSIM_Cancel)
 {
     // set flight mode off, wifi off, and cell data off, and sim in
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
@@ -2852,7 +2854,7 @@ TEST_F(TestIndicator, UnlockSIM_Cancel)
     notificationsSpy.clear();
 }
 
-TEST_F(TestIndicator, UnlockSIM_CancelFirstUnlockSecond)
+TEST_F(TestIndicatorPhone, UnlockSIM_CancelFirstUnlockSecond)
 {
     // set flight mode off, wifi off, and cell data off, and sim in
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
@@ -2985,7 +2987,7 @@ TEST_F(TestIndicator, UnlockSIM_CancelFirstUnlockSecond)
     notificationsSpy.clear();
 }
 
-TEST_F(TestIndicator, UnlockSIM_CorrectPin)
+TEST_F(TestIndicatorPhone, UnlockSIM_CorrectPin)
 {
     // set flight mode off, wifi off, and cell data off, and sim in
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
@@ -3070,7 +3072,7 @@ TEST_F(TestIndicator, UnlockSIM_CorrectPin)
     notificationsSpy.clear();
 }
 
-TEST_F(TestIndicator, UnlockSIM_IncorrectPin)
+TEST_F(TestIndicatorPhone, UnlockSIM_IncorrectPin)
 {
     // set flight mode off, wifi off, and cell data off, and sim in
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
@@ -3353,7 +3355,7 @@ TEST_F(TestIndicator, UnlockSIM_IncorrectPin)
     notificationsSpy.clear();
 }
 
-TEST_F(TestIndicator, UnlockSIM2_IncorrectPin)
+TEST_F(TestIndicatorPhone, UnlockSIM2_IncorrectPin)
 {
     // set flight mode off, wifi off, and cell data off, and sim in
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
@@ -3638,7 +3640,7 @@ TEST_F(TestIndicator, UnlockSIM2_IncorrectPin)
     notificationsSpy.clear();
 }
 
-TEST_F(TestIndicator, CellularData_1)
+TEST_F(TestIndicatorPhone, CellularData_1)
 {
     auto con = newConnectivity();
 
@@ -3708,7 +3710,7 @@ TEST_F(TestIndicator, CellularData_1)
         ).match());
 }
 
-TEST_F(TestIndicator, CellularData_2)
+TEST_F(TestIndicatorPhone, CellularData_2)
 {
     auto con = newConnectivity();
 
@@ -3801,7 +3803,7 @@ TEST_F(TestIndicator, CellularData_2)
  * To manually run, do following inside ${CMAKE_BINARY_DIR}
  *     $ tests/integration/integration-tests --gtest_filter=TestIndicator.DISABLED_DataUsageIndication_enabled --gtest_also_run_disabled_tests
  */
-TEST_F(TestIndicator, DISABLED_DataUsageIndication_enabled)
+TEST_F(TestIndicatorPhone, DISABLED_DataUsageIndication_enabled)
 {
     setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
     auto wifi_device = createWiFiDevice(NM_DEVICE_STATE_ACTIVATED);
@@ -3898,7 +3900,7 @@ TEST_F(TestIndicator, DISABLED_DataUsageIndication_enabled)
         ).match());
 }
 
-TEST_F(TestIndicator, DataUsageIndication_disabled)
+TEST_F(TestIndicatorPhone, DataUsageIndication_disabled)
 {
     setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
     auto wifi_device = createWiFiDevice(NM_DEVICE_STATE_ACTIVATED);

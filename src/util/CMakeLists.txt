@@ -9,4 +9,5 @@ add_library(util STATIC ${UTIL_SOURCES})
 target_link_libraries(
     util
     qdbus-stubs
+    ${CMAKE_THREAD_LIBS_INIT}
 )

@@ -1,3 +1,9 @@
+indicator-network (0.9.0+17.04.20161223.3-0ubuntu2) zesty; urgency=medium
+
+  * Fix conffile removal.
+
+ -- Dimitri John Ledkov <xnox@ubuntu.com>  Wed, 04 Jan 2017 11:02:29 +0000
+
 indicator-network (0.9.0+17.04.20161223.3-0ubuntu1) zesty; urgency=medium
 
   [ Dimitri John Ledkov ]

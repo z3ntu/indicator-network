@@ -1,1 +1,1 @@
-rm_conffile /etc/xdg/autostart/indicator-network.desktop 0replaceme~
+rm_conffile /etc/xdg/autostart/indicator-network.desktop 0.9.0+17.04.20170116-0ubuntu1~

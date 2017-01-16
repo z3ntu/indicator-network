@@ -1,3 +1,11 @@
+indicator-network (0.9.0+17.04.20170116-0ubuntu1) zesty; urgency=medium
+
+  * Fix maintscript XDG removal path
+  * Use modern CMake syntax for setting compiler type to fix FTBFS (LP:
+    #1656043)
+
+ -- Pete Woods <pete.woods@canonical.com>  Mon, 16 Jan 2017 13:41:35 +0000
+
 indicator-network (0.9.0+17.04.20161223.3-0ubuntu2) zesty; urgency=medium
 
   * Fix conffile removal.

@@ -15,8 +15,8 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Launchpad-Export-Date: 2017-01-04 06:26+0000\n"
-"X-Generator: Launchpad (build 18298)\n"
+"X-Launchpad-Export-Date: 2017-01-21 07:33+0000\n"
+"X-Generator: Launchpad (build 18302)\n"
 "Language: br\n"
 
 #: ../src/agent/SecretRequest.cpp:61
@@ -48,41 +48,56 @@ msgid ""
 "The VPN connection '%1' failed because the network connection was "
 "interrupted."
 msgstr ""
+"C'hwitet eo ar c'hevreañ ouzh an RPG « %1 » rak troc'het eo bet ar "
+"c'hevreadur ouzh ar rouedad."
 
 #: ../src/indicator/vpn-status-notifier.cpp:51
 msgid ""
 "The VPN connection '%1' failed because the VPN service stopped unexpectedly."
 msgstr ""
+"C'hwitet eo ar c'hevreañ ouzh an RPG « %1 » rak chomet eo ar servij RPG a-"
+"sav en un doare dic'hortoz."
 
 #: ../src/indicator/vpn-status-notifier.cpp:52
 msgid ""
 "The VPN connection '%1' failed because the VPN service returned invalid "
 "configuration."
 msgstr ""
+"C'hwitet eo ar c'hevreañ ouzh an RPG « %1 » rak kaset ez eus bet ur "
+"c'hefluniadur direizh gant ar servij RPG."
 
 #: ../src/indicator/vpn-status-notifier.cpp:53
 msgid ""
 "The VPN connection '%1' failed because the connection attempt timed out."
 msgstr ""
+"C'hwitet eo ar c'hevreañ ouzh an RPG « %1 » rak n'eo ket bet graet a-raok an "
+"termen."
 
 #: ../src/indicator/vpn-status-notifier.cpp:54
 msgid ""
 "The VPN connection '%1' failed because the VPN service did not start in time."
 msgstr ""
+"C'hwitet eo ar c'hevreañ ouzh an RPG « %1 » rak n'eo ket loc'het servij an "
+"RPG e koulz."
 
 #: ../src/indicator/vpn-status-notifier.cpp:55
 msgid ""
 "The VPN connection '%1' failed because the VPN service failed to start."
 msgstr ""
+"C'hwitet eo ar c'hevreañ ouzh an RPG « %1 » rak n'eo ket deuet servij an RPG "
+"a-benn da loc'hañ."
 
 #: ../src/indicator/vpn-status-notifier.cpp:56
 msgid ""
 "The VPN connection '%1' failed because there were no valid VPN secrets."
 msgstr ""
+"C'hwitet eo ar c'hevreañ ouzh an RPG « %1 » rak n'eus ket sekredoù RPG reizh."
 
 #: ../src/indicator/vpn-status-notifier.cpp:57
 msgid "The VPN connection '%1' failed because of invalid VPN secrets."
 msgstr ""
+"C'hwitet eo ar c'hevreañ ouzh an RPG « %1 » abalamour da sekredoù RPG "
+"direizh."
 
 #: ../src/indicator/vpn-status-notifier.cpp:68
 msgid "VPN Connection Failed"
@@ -185,7 +200,7 @@ msgstr "Ar c'hodoù PIN ne glotont ket an eil gant egile."
 
 #: ../src/indicator/nmofono/vpn/vpn-manager.cpp:81
 msgid "VPN connection %1"
-msgstr ""
+msgstr "Kevreañ ouzh an RPG « %1 »"
 
 #: ../src/indicator/menuitems/wifi-link-item.cpp:109
 msgid "Other network…"

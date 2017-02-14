@@ -8,15 +8,15 @@ msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-11-30 16:30+0000\n"
-"PO-Revision-Date: 2016-02-15 17:40+0000\n"
-"Last-Translator: Vojtěch Daněk <vdanek@outlook.com>\n"
+"PO-Revision-Date: 2017-02-13 21:36+0000\n"
+"Last-Translator: AsciiWolf <mail@asciiwolf.com>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-Launchpad-Export-Date: 2017-01-21 07:33+0000\n"
-"X-Generator: Launchpad (build 18302)\n"
+"X-Launchpad-Export-Date: 2017-02-14 06:05+0000\n"
+"X-Generator: Launchpad (build 18326)\n"
 "Language: cs\n"
 
 #: ../src/agent/SecretRequest.cpp:61
@@ -41,39 +41,40 @@ msgstr "Zrušit"
 
 #: ../src/indicator/vpn-status-notifier.cpp:48
 msgid "The VPN connection '%1' failed."
-msgstr ""
+msgstr "VPN spojení '%1' selhalo."
 
 #: ../src/indicator/vpn-status-notifier.cpp:50
 msgid ""
 "The VPN connection '%1' failed because the network connection was "
 "interrupted."
-msgstr ""
+msgstr "VPN spojení '%1' selhalo, protože bylo přerušeno síťové spojení."
 
 #: ../src/indicator/vpn-status-notifier.cpp:51
 msgid ""
 "The VPN connection '%1' failed because the VPN service stopped unexpectedly."
-msgstr ""
+msgstr "VPN spojení '%1' selhalo, protože služba VPN byla nečekaně ukončena."
 
 #: ../src/indicator/vpn-status-notifier.cpp:52
 msgid ""
 "The VPN connection '%1' failed because the VPN service returned invalid "
 "configuration."
 msgstr ""
+"VPN spojení '%1' selhalo, protože služba VPN vrátila neplatné nastavení."
 
 #: ../src/indicator/vpn-status-notifier.cpp:53
 msgid ""
 "The VPN connection '%1' failed because the connection attempt timed out."
-msgstr ""
+msgstr "VPN spojení '%1' selhalo, protože čas pro pokus o spojení vypršel."
 
 #: ../src/indicator/vpn-status-notifier.cpp:54
 msgid ""
 "The VPN connection '%1' failed because the VPN service did not start in time."
-msgstr ""
+msgstr "VPN spojení '%1' selhalo, protože služba VPN nenastartovala včas."
 
 #: ../src/indicator/vpn-status-notifier.cpp:55
 msgid ""
 "The VPN connection '%1' failed because the VPN service failed to start."
-msgstr ""
+msgstr "VPN spojení '%1' selhalo, protože služba VPN nenastartovala."
 
 #: ../src/indicator/vpn-status-notifier.cpp:56
 msgid ""
@@ -86,7 +87,7 @@ msgstr ""
 
 #: ../src/indicator/vpn-status-notifier.cpp:68
 msgid "VPN Connection Failed"
-msgstr ""
+msgstr "Připojení k VPN selhalo"
 
 #: ../src/indicator/sim-unlock-dialog.cpp:144
 msgid "Sorry, incorrect %{1} PIN."
@@ -181,7 +182,7 @@ msgstr "PIN kódy nesouhlasí"
 
 #: ../src/indicator/nmofono/vpn/vpn-manager.cpp:81
 msgid "VPN connection %1"
-msgstr ""
+msgstr "VPN spojení %1"
 
 #: ../src/indicator/menuitems/wifi-link-item.cpp:109
 msgid "Other network…"
@@ -273,12 +274,12 @@ msgstr "Režim letadlo"
 
 #: ../src/indicator/factory.cpp:214
 msgid "Cellular data"
-msgstr ""
+msgstr "Mobilní data"
 
 #. TODO Move this into a new class
 #: ../src/indicator/factory.cpp:227
 msgid "Hotspot"
-msgstr ""
+msgstr "Hotspot"
 
 #: ../src/indicator/sections/wwan-section.cpp:102
 msgid "Cellular settings…"
@@ -294,4 +295,4 @@ msgstr "Nastavení Wi-Fi..."
 
 #: ../src/indicator/sections/vpn-section.cpp:139
 msgid "VPN settings…"
-msgstr ""
+msgstr "Nastavení VPN..."

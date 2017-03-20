@@ -68,8 +68,8 @@ set(NETWORK_SERVICE_SOURCES
     menuitems/ethernet-connection-item.cpp
     menuitems/ethernet-item.cpp
     menuitems/ethernet-link-item.cpp
+    menuitems/settings-item.cpp
     menuitems/switch-item.cpp
-    menuitems/text-item.cpp
     menuitems/vpn-item.cpp
     menuitems/wifi-link-item.cpp
     menuitems/wwan-link-item.cpp

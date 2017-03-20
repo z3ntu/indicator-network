@@ -19,8 +19,8 @@
 
 #include <sections/ethernet-link-section.h>
 #include <sections/ethernet-section.h>
+#include <menuitems/settings-item.h>
 #include <menuitems/switch-item.h>
-#include <menuitems/text-item.h>
 
 #include "menumodel-cpp/action-group.h"
 #include "menumodel-cpp/action-group-merger.h"
@@ -52,7 +52,7 @@ public:
 
     QMap<EthernetLink::SPtr, EthernetLinkSection::SPtr> m_items;
 
-    TextItem::Ptr m_openEthernetSettings;
+    SettingsItem::Ptr m_openEthernetSettings;
 
     Private()
     {
@@ -139,7 +139,7 @@ EthernetSection::EthernetSection(Manager::Ptr manager, bool isSettingsMenu)
         d->m_settingsMenu = make_shared<Menu>();
         d->m_menuMerger->append(d->m_settingsMenu);
 
-        d->m_openEthernetSettings = make_shared<TextItem>(_("Ethernet settings…"), "ethernet", "settings");
+        d->m_openEthernetSettings = make_shared<SettingsItem>(_("Ethernet settings…"), "ethernet");
         d->m_actionGroupMerger->add(d->m_openEthernetSettings->actionGroup());
     }
 

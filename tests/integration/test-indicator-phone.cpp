@@ -120,6 +120,26 @@ TEST_F(TestIndicatorPhone, OneConnectedEthernetAtStartup)
         ).match());
 }
 
+TEST_F(TestIndicatorPhone, OneConnectedEthernetAtStartupInSettingsMenu)
+{
+    setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
+    auto device = createEthernetDevice(NM_DEVICE_STATE_ACTIVATED);
+    auto connection = createEthernetConnection("Home", device);
+    createActiveConnection("0", device, connection);
+
+    ASSERT_NO_THROW(startIndicator());
+
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneEthernetSettingsParameters())
+        .item(mh::MenuItemMatcher()
+            .section()
+            .item(ethernetInfo("Ethernet",
+                  "Connected",
+                  Toggle::enabled)
+            )
+            .item(radio("Home", Toggle::enabled))
+        ).match());
+}
+
 TEST_F(TestIndicatorPhone, TwoEthernetAtStartupConnectedAndDisconnected)
 {
     setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);

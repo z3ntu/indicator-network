@@ -61,6 +61,8 @@ public:
 
     virtual EthernetSection::UPtr newEthernetSection();
 
+    virtual EthernetSection::UPtr newEthernetSettings();
+
     virtual std::unique_ptr<WifiSection> newWiFiSection(SwitchItem::Ptr wifiSwitch);
 
     virtual std::unique_ptr<VpnSection> newVpnSection();

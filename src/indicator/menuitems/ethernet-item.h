@@ -37,7 +37,7 @@ class EthernetItem : public Item
 public:
     typedef std::shared_ptr<EthernetItem> Ptr;
 
-    EthernetItem(unsigned int id);
+    EthernetItem(unsigned int id, bool isSettingsMenu);
     virtual ~EthernetItem();
 
     virtual MenuItem::Ptr menuItem();

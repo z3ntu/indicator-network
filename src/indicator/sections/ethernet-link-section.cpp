@@ -41,6 +41,8 @@ public:
 
     EthernetLink::SPtr m_link;
 
+    bool m_isSettingsMenu = false;
+
     ActionGroupMerger::Ptr m_actionGroupMerger;
 
     ActionGroup::Ptr m_actionGroup;
@@ -102,7 +104,7 @@ public Q_SLOTS:
 
         m_connectionsMenu->clear();
 
-        if (connections.size() <= 1)
+        if (!m_isSettingsMenu && connections.size() <= 1)
         {
             return;
         }
@@ -151,11 +153,12 @@ public Q_SLOTS:
     }
 };
 
-EthernetLinkSection::EthernetLinkSection(Manager::Ptr manager, EthernetLink::SPtr link) :
+EthernetLinkSection::EthernetLinkSection(Manager::Ptr manager, EthernetLink::SPtr link, bool isSettingsMenu) :
         d(new Private())
 {
     d->m_manager = manager;
     d->m_link = link;
+    d->m_isSettingsMenu = isSettingsMenu;
 
     d->m_actionGroupMerger = make_shared<ActionGroupMerger>();
     d->m_actionGroup = make_shared<ActionGroup>();
@@ -164,7 +167,7 @@ EthernetLinkSection::EthernetLinkSection(Manager::Ptr manager, EthernetLink::SPt
     d->m_menuMerger = make_shared<MenuMerger>();
 
     d->m_linkMenu = make_shared<Menu>();
-    d->m_linkItem = make_shared<EthernetLinkItem>(d->m_link);
+    d->m_linkItem = make_shared<EthernetLinkItem>(d->m_link, isSettingsMenu);
     d->m_linkMenu->append(d->m_linkItem->menuItem());
     d->m_actionGroupMerger->add(d->m_linkItem->actionGroup());
 
@@ -178,7 +181,7 @@ EthernetLinkSection::EthernetLinkSection(Manager::Ptr manager, EthernetLink::SPt
     d->m_menuMerger->append(d->m_linkMenu);
     d->m_menuMerger->append(d->m_connectionsMenu);
 
-    QString actionName = "ethernet." + QString::number(link->id()) + "::connection";
+    QString actionName = "ethernet." + QString::number(link->id()) + "::connection" + (isSettingsMenu? "-settings": "");
     d->m_connectionAction = make_shared<Action>(actionName, G_VARIANT_TYPE_STRING, TypedVariant<string>(""));
     d->m_actionGroup->add(d->m_connectionAction);
 

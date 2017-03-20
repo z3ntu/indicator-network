@@ -69,12 +69,12 @@ public:
     bool m_showInterface = true;
 };
 
-EthernetLinkItem::EthernetLinkItem(EthernetLink::SPtr ethernetLink) :
+EthernetLinkItem::EthernetLinkItem(EthernetLink::SPtr ethernetLink, bool isSettingsMenu) :
         d(new Private)
 {
     d->m_ethernetLink = ethernetLink;
 
-    d->m_item = make_shared<EthernetItem>(ethernetLink->id());
+    d->m_item = make_shared<EthernetItem>(ethernetLink->id(), isSettingsMenu);
 
     m_actionGroupMerger->add(d->m_item->actionGroup());
 

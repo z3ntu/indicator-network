@@ -25,7 +25,7 @@ using namespace std;
 
 SettingsItem::SettingsItem(const QString &label, const QString &name)
 {
-    QString action_name = "settings." + name;
+    QString action_name = name + ".settings";
     string url = "settings:///system/" + name.toStdString();
 
     m_action = make_shared<Action>(action_name, nullptr);

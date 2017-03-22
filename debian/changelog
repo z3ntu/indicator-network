@@ -1,3 +1,9 @@
+indicator-network (0.9.0+17.04.20170322-0ubuntu1) zesty; urgency=medium
+
+  * no change rebuild
+
+ -- Ken VanDine <ken.vandine@canonical.com>  Wed, 22 Mar 2017 18:28:10 +0000
+
 indicator-network (0.9.0+17.04.20170116-0ubuntu1) zesty; urgency=medium
 
   * Fix maintscript XDG removal path

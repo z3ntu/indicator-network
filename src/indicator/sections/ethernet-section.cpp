@@ -40,13 +40,19 @@ class EthernetSection::Private : public QObject
 public:
     Manager::Ptr m_manager;
 
+    bool m_isSettingsMenu = false;
+
     Menu::Ptr m_settingsMenu;
 
     ActionGroupMerger::Ptr m_actionGroupMerger;
 
     MenuMerger::Ptr m_menuMerger;
 
+    MenuMerger::Ptr m_links;
+
     QMap<EthernetLink::SPtr, EthernetLinkSection::SPtr> m_items;
+
+    TextItem::Ptr m_openEthernetSettings;
 
     Private()
     {
@@ -69,6 +75,8 @@ public Q_SLOTS:
             return;
         }
 
+        m_links->clear();
+
         for (auto connection : removed)
         {
             m_actionGroupMerger->remove(m_items[connection]->actionGroup());
@@ -77,12 +85,10 @@ public Q_SLOTS:
 
         for (auto link : added)
         {
-            auto section = make_shared<EthernetLinkSection>(m_manager, link);
+            auto section = make_shared<EthernetLinkSection>(m_manager, link, m_isSettingsMenu);
             m_items[link] = section;
             m_actionGroupMerger->add(section->actionGroup());
         }
-
-        m_menuMerger->clear();
 
         multimap<Link::Id, EthernetLinkSection::SPtr> sorted;
         QMapIterator<EthernetLink::SPtr, EthernetLinkSection::SPtr> it(m_items);
@@ -93,29 +99,49 @@ public Q_SLOTS:
         }
         for (auto pair : sorted)
         {
-            m_menuMerger->append(pair.second->menuModel());
+            m_links->append(pair.second->menuModel());
         }
 
-        if (!links.isEmpty())
+        if (m_isSettingsMenu)
         {
-            m_menuMerger->append(m_settingsMenu);
+            return;
+        }
+
+        if (links.isEmpty())
+        {
+            m_settingsMenu->removeAll(m_openEthernetSettings->menuItem());
+        }
+        else
+        {
+            if (m_settingsMenu->find(m_openEthernetSettings->menuItem()) == m_settingsMenu->end())
+            {
+                m_settingsMenu->append(m_openEthernetSettings->menuItem());
+            }
         }
     }
 };
 
-EthernetSection::EthernetSection(Manager::Ptr manager)
+EthernetSection::EthernetSection(Manager::Ptr manager, bool isSettingsMenu)
     : d{new Private()}
 {
     d->m_manager = manager;
+    d->m_isSettingsMenu = isSettingsMenu;
 
     d->m_actionGroupMerger = make_shared<ActionGroupMerger>();
     d->m_menuMerger = make_shared<MenuMerger>();
+    d->m_links = make_shared<MenuMerger>();
 
-    auto settingsItem = make_shared<TextItem>(_("Ethernet settings…"), "ethernet", "settings");
-    d->m_actionGroupMerger->add(settingsItem->actionGroup());
+    d->m_menuMerger->append(d->m_links);
 
-    d->m_settingsMenu = make_shared<Menu>();
-    d->m_settingsMenu->append(settingsItem->menuItem());
+    // Don't include a link to the settings in the settings themselves
+    if (!isSettingsMenu)
+    {
+        d->m_settingsMenu = make_shared<Menu>();
+        d->m_menuMerger->append(d->m_settingsMenu);
+
+        d->m_openEthernetSettings = make_shared<TextItem>(_("Ethernet settings…"), "ethernet", "settings");
+        d->m_actionGroupMerger->add(d->m_openEthernetSettings->actionGroup());
+    }
 
     QObject::connect(d->m_manager.get(), &Manager::linksUpdated, d.get(), &Private::linksChanged);
     d->linksChanged();

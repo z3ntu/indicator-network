@@ -46,10 +46,12 @@ public:
     WifiSection::SPtr m_wifiSection;
     WwanSection::SPtr m_wwanSection;
     VpnSection::SPtr m_vpnSection;
+    EthernetSection::SPtr m_ethernetSettings;
 
     MenuExporter::UPtr m_menuExporter;
     MenuExporter::UPtr m_greeterMenuExporter;
     MenuExporter::UPtr m_wifiSettingsMenuExporter;
+    MenuExporter::UPtr m_ethernetSettingsMenuExporter;
 
     MenuExporter::UPtr m_ubiquityMenuExporter;
 
@@ -156,6 +158,8 @@ MenuBuilder::MenuBuilder(nmofono::Manager::Ptr manager, Factory& factory) :
     d->m_mainMenu->addSection(d->m_vpnSection);
     d->m_greeterMenu->addSection(d->m_vpnSection);
 
+    d->m_ethernetSettings = factory.newEthernetSettings();
+
     // we have a single actiongroup for all the menus.
     d->m_actionGroupMerger = factory.newActionGroupMerger();
     d->m_actionGroupMerger->add(d->m_flightModeSwitch->actionGroup());
@@ -163,12 +167,14 @@ MenuBuilder::MenuBuilder(nmofono::Manager::Ptr manager, Factory& factory) :
     d->m_actionGroupMerger->add(d->m_hotspotSwitch->actionGroup());
     d->m_actionGroupMerger->add(d->m_mainMenu->actionGroup());
     d->m_actionGroupMerger->add(d->m_greeterMenu->actionGroup());
+    d->m_actionGroupMerger->add(d->m_ethernetSettings->actionGroup());
     d->m_actionGroupExporter = factory.newActionGroupExporter(d->m_actionGroupMerger->actionGroup(),
                                                         "/com/canonical/indicator/network");
 
     d->m_menuExporter = factory.newMenuExporter("/com/canonical/indicator/network/phone", d->m_mainMenu->menu());
     d->m_greeterMenuExporter = factory.newMenuExporter("/com/canonical/indicator/network/phone_greeter", d->m_greeterMenu->menu());
     d->m_wifiSettingsMenuExporter = factory.newMenuExporter("/com/canonical/indicator/network/phone_wifi_settings", d->m_wifiSection->settingsModel());
+    d->m_ethernetSettingsMenuExporter = factory.newMenuExporter("/com/canonical/indicator/network/phone_ethernet_settings", d->m_ethernetSettings->menuModel());
 
     d->m_ubiquityMenuExporter = factory.newMenuExporter("/com/canonical/indicator/network/ubiquity", d->m_ubiquityMenu->menu());
 

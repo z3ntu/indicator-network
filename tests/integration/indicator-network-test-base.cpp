@@ -212,6 +212,14 @@ mh::MenuMatcher::Parameters IndicatorNetworkTestBase::phoneParameters()
             "/com/canonical/indicator/network/phone");
 }
 
+mh::MenuMatcher::Parameters IndicatorNetworkTestBase::phoneEthernetSettingsParameters()
+{
+    return mh::MenuMatcher::Parameters(
+            "com.canonical.indicator.network",
+            { { "indicator", "/com/canonical/indicator/network" } },
+            "/com/canonical/indicator/network/phone_ethernet_settings");
+}
+
 mh::MenuMatcher::Parameters IndicatorNetworkTestBase::phoneWifiSettingsParameters()
 {
     return mh::MenuMatcher::Parameters(

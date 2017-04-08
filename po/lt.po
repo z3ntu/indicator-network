@@ -16,8 +16,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "(n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Launchpad-Export-Date: 2017-01-21 07:34+0000\n"
-"X-Generator: Launchpad (build 18302)\n"
+"X-Launchpad-Export-Date: 2017-04-08 06:36+0000\n"
+"X-Generator: Launchpad (build 18343)\n"
 
 #: ../src/agent/SecretRequest.cpp:61
 msgid "Connect to “%1”"
@@ -195,35 +195,35 @@ msgstr "Kitas tinklas..."
 
 #: ../src/indicator/menuitems/ethernet-link-item.cpp:39
 msgid "Connected"
-msgstr ""
+msgstr "Prisijungta"
 
 #: ../src/indicator/menuitems/ethernet-link-item.cpp:40
 msgid "Connecting"
-msgstr ""
+msgstr "Jungiamasi"
 
 #: ../src/indicator/menuitems/ethernet-link-item.cpp:41
 msgid "Disabled"
-msgstr ""
+msgstr "Išjungta"
 
 #: ../src/indicator/menuitems/ethernet-link-item.cpp:42
 msgid "Disconnected"
-msgstr ""
+msgstr "Atsijungta"
 
 #: ../src/indicator/menuitems/ethernet-link-item.cpp:43
 msgid "Online"
-msgstr ""
+msgstr "Prisijungta prie tinklo"
 
 #: ../src/indicator/menuitems/ethernet-link-item.cpp:44
 msgid "Failed"
-msgstr ""
+msgstr "Nepavyko"
 
 #: ../src/indicator/menuitems/ethernet-link-item.cpp:56
 msgid "Ethernet (%1)"
-msgstr ""
+msgstr "Laidinis tinklas (%1)"
 
 #: ../src/indicator/menuitems/ethernet-link-item.cpp:60
 msgid "Ethernet"
-msgstr ""
+msgstr "Laidinis tinklas"
 
 #: ../src/indicator/menuitems/wwan-link-item.cpp:90
 msgid "No SIM"
@@ -292,7 +292,7 @@ msgstr "Mobiliojo telefono nustatymai..."
 
 #: ../src/indicator/sections/ethernet-section.cpp:114
 msgid "Ethernet settings…"
-msgstr ""
+msgstr "Laidinio tinklo nustatymai…"
 
 #: ../src/indicator/sections/wifi-section.cpp:65
 msgid "Wi-Fi settings…"

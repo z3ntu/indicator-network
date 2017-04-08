@@ -15,8 +15,8 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Launchpad-Export-Date: 2017-01-21 07:34+0000\n"
-"X-Generator: Launchpad (build 18302)\n"
+"X-Launchpad-Export-Date: 2017-04-08 06:36+0000\n"
+"X-Generator: Launchpad (build 18343)\n"
 "Language: \n"
 
 #: ../src/agent/SecretRequest.cpp:61
@@ -185,27 +185,27 @@ msgstr "其他網路…"
 
 #: ../src/indicator/menuitems/ethernet-link-item.cpp:39
 msgid "Connected"
-msgstr ""
+msgstr "已連線"
 
 #: ../src/indicator/menuitems/ethernet-link-item.cpp:40
 msgid "Connecting"
-msgstr ""
+msgstr "連線中"
 
 #: ../src/indicator/menuitems/ethernet-link-item.cpp:41
 msgid "Disabled"
-msgstr ""
+msgstr "已停用"
 
 #: ../src/indicator/menuitems/ethernet-link-item.cpp:42
 msgid "Disconnected"
-msgstr ""
+msgstr "已斷線"
 
 #: ../src/indicator/menuitems/ethernet-link-item.cpp:43
 msgid "Online"
-msgstr ""
+msgstr "在線"
 
 #: ../src/indicator/menuitems/ethernet-link-item.cpp:44
 msgid "Failed"
-msgstr ""
+msgstr "失敗"
 
 #: ../src/indicator/menuitems/ethernet-link-item.cpp:56
 msgid "Ethernet (%1)"
@@ -213,7 +213,7 @@ msgstr ""
 
 #: ../src/indicator/menuitems/ethernet-link-item.cpp:60
 msgid "Ethernet"
-msgstr ""
+msgstr "有線網路"
 
 #: ../src/indicator/menuitems/wwan-link-item.cpp:90
 msgid "No SIM"
@@ -282,7 +282,7 @@ msgstr "行動網路設定…"
 
 #: ../src/indicator/sections/ethernet-section.cpp:114
 msgid "Ethernet settings…"
-msgstr ""
+msgstr "有線網路設定…"
 
 #: ../src/indicator/sections/wifi-section.cpp:65
 msgid "Wi-Fi settings…"

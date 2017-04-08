@@ -16,8 +16,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Launchpad-Export-Date: 2017-01-21 07:34+0000\n"
-"X-Generator: Launchpad (build 18302)\n"
+"X-Launchpad-Export-Date: 2017-04-08 06:36+0000\n"
+"X-Generator: Launchpad (build 18343)\n"
 "Language: hr\n"
 
 #: ../src/agent/SecretRequest.cpp:61
@@ -111,7 +111,7 @@ msgstr ""
 
 #: ../src/indicator/sim-unlock-dialog.cpp:161
 msgid "Sorry, your %{1} is now blocked."
-msgstr "Isprika, vaš %{1} je sada blokiran."
+msgstr "Nažalost, vaš %{1} je sada blokiran."
 
 #: ../src/indicator/sim-unlock-dialog.cpp:166
 msgid "Please enter your PUK code to unblock SIM card."
@@ -150,11 +150,11 @@ msgstr "Kontaktirajte vašeg pružatelja usluge."
 
 #: ../src/indicator/sim-unlock-dialog.cpp:218
 msgid "Sorry, incorrect PIN"
-msgstr "Isprika, neispravan PIN"
+msgstr "Nažalost, neispravan PIN"
 
 #: ../src/indicator/sim-unlock-dialog.cpp:230
 msgid "Sorry, incorrect PUK"
-msgstr "Isprika, neispravan PUK"
+msgstr "Nažalost, neispravan PUK"
 
 #: ../src/indicator/sim-unlock-dialog.cpp:292
 msgid "Enter %{1} PIN"
@@ -198,35 +198,35 @@ msgstr "Ostale mreže..."
 
 #: ../src/indicator/menuitems/ethernet-link-item.cpp:39
 msgid "Connected"
-msgstr ""
+msgstr "Povezano"
 
 #: ../src/indicator/menuitems/ethernet-link-item.cpp:40
 msgid "Connecting"
-msgstr ""
+msgstr "Povezivanje"
 
 #: ../src/indicator/menuitems/ethernet-link-item.cpp:41
 msgid "Disabled"
-msgstr ""
+msgstr "Onemogućeno"
 
 #: ../src/indicator/menuitems/ethernet-link-item.cpp:42
 msgid "Disconnected"
-msgstr ""
+msgstr "Povezivanje prekinuto"
 
 #: ../src/indicator/menuitems/ethernet-link-item.cpp:43
 msgid "Online"
-msgstr ""
+msgstr "Dostupan"
 
 #: ../src/indicator/menuitems/ethernet-link-item.cpp:44
 msgid "Failed"
-msgstr ""
+msgstr "Neuspjelo"
 
 #: ../src/indicator/menuitems/ethernet-link-item.cpp:56
 msgid "Ethernet (%1)"
-msgstr ""
+msgstr "Žična mreža (%1)"
 
 #: ../src/indicator/menuitems/ethernet-link-item.cpp:60
 msgid "Ethernet"
-msgstr ""
+msgstr "Žična mreža"
 
 #: ../src/indicator/menuitems/wwan-link-item.cpp:90
 msgid "No SIM"
@@ -295,7 +295,7 @@ msgstr "Mobilne postavke..."
 
 #: ../src/indicator/sections/ethernet-section.cpp:114
 msgid "Ethernet settings…"
-msgstr ""
+msgstr "Postavke žične mreže…"
 
 #: ../src/indicator/sections/wifi-section.cpp:65
 msgid "Wi-Fi settings…"

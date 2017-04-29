@@ -28,7 +28,7 @@ class EthernetSection : public Section
 public:
     UNITY_DEFINES_PTRS(EthernetSection);
 
-    explicit EthernetSection(nmofono::Manager::Ptr manager);
+    explicit EthernetSection(nmofono::Manager::Ptr manager, bool isSettingsMenu);
 
     ~EthernetSection();
 

@@ -129,7 +129,7 @@ RootState::Private::updateModem(const wwan::Modem& modem)
         switch(modem.simStatus())
         {
         case wwan::Modem::SimStatus::missing:
-            newCellularIcon = "no-simcard";
+            // no need to show anything in the panel
             break;
         case wwan::Modem::SimStatus::error:
             newCellularIcon = "simcard-error";
@@ -164,7 +164,7 @@ RootState::Private::updateModem(const wwan::Modem& modem)
             break;
         }
         case wwan::Modem::SimStatus::not_available:
-            newCellularIcon = "no-simcard";
+            // no need to show anything in the panel
             break;
         }
     }

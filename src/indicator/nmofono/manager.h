@@ -21,6 +21,7 @@
 
 #include <nmofono/hotspot-manager.h>
 #include <nmofono/link.h>
+#include <nmofono/ethernet/ethernet-link.h>
 #include <nmofono/wifi/wifi-link.h>
 #include <nmofono/wwan/modem.h>
 #include <nmofono/wwan/sim.h>
@@ -79,14 +80,18 @@ public:
     Q_PROPERTY(bool flightMode READ flightMode NOTIFY flightModeUpdated)
     virtual bool flightMode() const = 0;
 
+    virtual bool flightModeAvailable() const = 0;
+
     Q_PROPERTY(bool unstoppableOperationHappening READ unstoppableOperationHappening NOTIFY unstoppableOperationHappeningUpdated)
     virtual bool unstoppableOperationHappening() const = 0;
 
     /// @private
-    Q_PROPERTY(QSet<Link::Ptr> links READ links NOTIFY linksUpdated)
-    virtual QSet<Link::Ptr> links() const = 0;
+    Q_PROPERTY(QSet<Link::SPtr> links READ links NOTIFY linksUpdated)
+    virtual QSet<Link::SPtr> links() const = 0;
 
-    virtual QSet<wifi::WifiLink::Ptr> wifiLinks() const = 0;
+    virtual QSet<wifi::WifiLink::SPtr> wifiLinks() const = 0;
+
+    virtual QSet<ethernet::EthernetLink::SPtr> ethernetLinks() const = 0;
 
     virtual QSet<wwan::Modem::Ptr> modemLinks() const = 0;
 
@@ -156,6 +161,12 @@ public:
     Q_PROPERTY(QList<wwan::Sim::Ptr> sims READ sims NOTIFY simsChanged)
     virtual QList<wwan::Sim::Ptr> sims() const = 0;
 
+    Q_PROPERTY(bool tx READ tx NOTIFY txChanged)
+    virtual bool tx() const = 0;
+
+    Q_PROPERTY(bool rx READ rx NOTIFY rxChanged)
+    virtual bool rx() const = 0;
+
 
 Q_SIGNALS:
     void flightModeUpdated(bool);
@@ -196,6 +207,10 @@ Q_SIGNALS:
 
     void simsChanged();
 
+    void txChanged();
+
+    void rxChanged();
+
 public Q_SLOTS:
     virtual void setWifiEnabled(bool) = 0;
 
@@ -214,6 +229,7 @@ public Q_SLOTS:
     virtual void setMobileDataEnabled(bool) = 0;
 
     virtual void setSimForMobileData(wwan::Sim::Ptr) = 0;
+
 
 protected:
     /**

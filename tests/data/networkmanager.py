@@ -31,6 +31,7 @@ MAIN_IFACE = 'org.freedesktop.NetworkManager'
 SETTINGS_OBJ = '/org/freedesktop/NetworkManager/Settings'
 SETTINGS_IFACE = 'org.freedesktop.NetworkManager.Settings'
 DEVICE_IFACE = 'org.freedesktop.NetworkManager.Device'
+DEVICE_STATISTICS_IFACE = 'org.freedesktop.NetworkManager.Device.Statistics'
 WIRELESS_DEVICE_IFACE = 'org.freedesktop.NetworkManager.Device.Wireless'
 ACCESS_POINT_IFACE = 'org.freedesktop.NetworkManager.AccessPoint'
 CSETTINGS_IFACE = 'org.freedesktop.NetworkManager.Settings.Connection'
@@ -168,6 +169,12 @@ def activate_connection(self, conn, dev, ap):
     active_conn = dbus.ObjectPath(AddActiveConnection(self, devices, conn, ap, str(count), state))
 
     return active_conn
+
+
+def device_disconnect(self):
+    active_connection = self.Get(DEVICE_IFACE, 'ActiveConnection')
+    NM = dbusmock.get_object(MAIN_OBJ)
+    NM.RemoveActiveConnection(self.path, active_connection)
 
 
 def deactivate_connection(self, active_conn_path):
@@ -316,13 +323,67 @@ def AddEthernetDevice(self, device_name, iface_name, state):
              'Interface': iface_name,
              'ActiveConnection': dbus.ObjectPath('/'),
              'AvailableConnections': dbus.Array([], signature='o'),
-             'AutoConnect': False,
+             'Autoconnect': False, # Network Manager captializes this differently than other properties
              'Managed': True,
              'Driver': 'dbusmock',
              'IpInterface': ''}
 
     obj = dbusmock.get_object(path)
+    obj.disconnect = device_disconnect
+    obj.AddMethods(DEVICE_IFACE, [
+        ('Disconnect', '', '', "self.disconnect(self)")
+    ])
     obj.AddProperties(DEVICE_IFACE, props)
+    obj.AddProperties(DEVICE_STATISTICS_IFACE,
+                      {
+                          'RefreshRateMs': dbus.UInt32(0),
+                          'TxBytes': dbus.UInt64(0),
+                          'RxBytes': dbus.UInt64(0),
+                      })
+
+    devices = self.Get(MAIN_IFACE, 'Devices')
+    devices.append(path)
+    self.Set(MAIN_IFACE, 'Devices', devices)
+
+    self.EmitSignal('org.freedesktop.NetworkManager', 'DeviceAdded', 'o', [path])
+
+    return path
+
+@dbus.service.method(MOCK_IFACE,
+                     in_signature='ss', out_signature='s')
+def AddOfonoModemDevice(self, device_name, ofono_path):
+
+    #  this is a thin skeleton..
+
+    path = '/org/freedesktop/NetworkManager/Devices/' + device_name
+
+    props = {'DeviceType': dbus.UInt32(8),
+             'State': dbus.UInt32(100), # NM_DEVICE_STATE_ACTIVATED
+             'Interface': ofono_path[1:],
+             'ActiveConnection': dbus.ObjectPath('/'),
+             'AvailableConnections': dbus.Array([], signature='o'),
+             'Autoconnect': False, # Network Manager captializes this differently than other properties
+             'Managed': True,
+             'Driver': 'ofono',
+             'Udi': ofono_path,
+             'IpInterface': ''}
+
+    self.AddObject(path,
+               DEVICE_IFACE,
+               props,
+               [])
+
+    obj = dbusmock.get_object(path)
+    obj.AddProperties(DEVICE_STATISTICS_IFACE,
+                      {
+                          'RefreshRateMs': dbus.UInt32(0),
+                          'TxBytes': dbus.UInt64(0),
+                          'RxBytes': dbus.UInt64(0),
+                      })
+    obj.disconnect = device_disconnect
+    obj.AddMethods(DEVICE_IFACE, [
+        ('Disconnect', '', '', "self.disconnect(self)")
+    ])
 
     devices = self.Get(MAIN_IFACE, 'Devices')
     devices.append(path)
@@ -374,13 +435,23 @@ def AddWiFiDevice(self, device_name, iface_name, state):
                           {
                               'ActiveConnection': dbus.ObjectPath('/'),
                               'AvailableConnections': dbus.Array([], signature='o'),
-                              'AutoConnect': False,
+                              'Autoconnect': False, # Network Manager captializes this differently than other properties
                               'Managed': True,
                               'Driver': 'dbusmock',
                               'DeviceType': dbus.UInt32(2),
                               'State': dbus.UInt32(state),
                               'Interface': iface_name,
                               'IpInterface': iface_name,
+                          })
+    dev_obj.disconnect = device_disconnect
+    dev_obj.AddMethods(DEVICE_IFACE, [
+        ('Disconnect', '', '', "self.disconnect(self)")
+    ])
+    dev_obj.AddProperties(DEVICE_STATISTICS_IFACE,
+                          {
+                              'RefreshRateMs': dbus.UInt32(0),
+                              'TxBytes': dbus.UInt64(0),
+                              'RxBytes': dbus.UInt64(0),
                           })
 
     devices = self.Get(MAIN_IFACE, 'Devices')
@@ -538,7 +609,7 @@ def AddWiFiConnection(self, dev_path, connection_name, ssid_name, key_mgmt):
     main_connections.append(connection_path)
     settings_obj.Set(SETTINGS_IFACE, 'Connections', main_connections)
 
-    settings_obj.EmitSignal(SETTINGS_IFACE, 'NewConnection', 'o', [ap_path])
+    settings_obj.EmitSignal(SETTINGS_IFACE, 'NewConnection', 'o', [connection_path])
 
     return connection_path
 
@@ -568,6 +639,7 @@ def AddActiveConnection(self, devices, connection_device, specific_object, name,
     self.AddObject(active_connection_path,
                    ACTIVE_CONNECTION_IFACE,
                    {
+                       'Id': name,
                        'Devices': device_objects,
                        'Default6': False,
                        'Default': True,
@@ -581,12 +653,12 @@ def AddActiveConnection(self, devices, connection_device, specific_object, name,
                    },
                    [])
 
-    for dev_path in devices:
-        self.SetDeviceActive(dev_path, active_connection_path)
-
     active_connections = self.Get(MAIN_IFACE, 'ActiveConnections')
     active_connections.append(dbus.ObjectPath(active_connection_path))
     self.SetProperty(MAIN_OBJ, MAIN_IFACE, 'ActiveConnections', active_connections)
+    
+    for dev_path in devices:
+        self.SetDeviceActive(dev_path, active_connection_path)
 
     return active_connection_path
 
@@ -671,6 +743,24 @@ def RemoveActiveConnection(self, dev_path, active_connection_path):
 
     self.RemoveObject(active_connection_path)
 
+@dbus.service.method(MOCK_IFACE,
+                     in_signature='stt', out_signature='')
+def SetDeviceStatistics(self, device_path, tx, rx):
+    dev_obj = dbusmock.get_object(device_path)
+
+    old_tx = dev_obj.Get(DEVICE_STATISTICS_IFACE, 'TxBytes')
+    old_rx = dev_obj.Get(DEVICE_STATISTICS_IFACE, 'RxBytes')
+
+    updated = {}
+    if old_tx != tx:
+        dev_obj.Set(DEVICE_STATISTICS_IFACE, 'TxBytes', dbus.UInt64(tx))
+        updated["TxBytes"] = dbus.UInt64(tx)
+    if old_rx != rx:
+        dev_obj.Set(DEVICE_STATISTICS_IFACE, 'RxBytes', dbus.UInt64(rx))
+        updated["RxBytes"] = dbus.UInt64(rx)
+
+    if len(updated) != 0:
+        dev_obj.EmitSignal(DEVICE_STATISTICS_IFACE, 'PropertiesChanged', 'a{sv}', [updated])
 
 @dbus.service.method(SETTINGS_IFACE,
                      in_signature='a{sa{sv}}', out_signature='o')
@@ -681,13 +771,47 @@ def SettingsAddConnection(self, connection_settings):
     https://developer.gnome.org/NetworkManager/0.9/spec.html
         #type-String_String_Variant_Map_Map
 
-    If you omit uuid, this method adds one for you.
+    If you omit connection uuid or timestamp, this method adds one for you.
+    
+    Note that this automatically associates the connection settings object
+    with the first device that was created.
     '''
 
-    if 'uuid' not in connection_settings['connection']:
-        connection_settings['connection']['uuid'] = str(uuid.uuid4())
-
     NM = dbusmock.get_object(MAIN_OBJ)
+    devices = NM.GetDevices()
+
+    dev = None
+    
+    auto_connect = False
+    if 'autoconnect' in connection_settings['connection']:
+        auto_connect = connection_settings['connection']['autoconnect']
+    
+    # Grab the first device if we are to auto-connect
+    if auto_connect and len(devices) > 0:
+        dev = devices[0]
+        
+    connection_path = self.AddDeviceConnection(dev, connection_settings)
+
+    if auto_connect and dev:
+        activate_connection(NM, connection_path, dev, connection_path)
+
+    return connection_path
+    
+    
+@dbus.service.method(MOCK_IFACE,
+                     in_signature='sa{sa{sv}}', out_signature='s')
+def AddDeviceConnection(self, dev_path, settings):
+    '''Add an available connection to an existing WiFi device and access point.
+
+    You have to specify device path and a settings map.
+    
+    settings is a String String Variant Map Map. See
+    https://developer.gnome.org/NetworkManager/0.9/spec.html
+        #type-String_String_Variant_Map_Map
+
+    Returns the new object path.
+    '''
+
     settings_obj = dbusmock.get_object(SETTINGS_OBJ)
     main_connections = settings_obj.ListConnections()
 
@@ -699,6 +823,39 @@ def SettingsAddConnection(self, connection_settings):
             break
         count += 1
     connection_path = str(connection_obj_path)
+
+    # Fill in the blanks if they haven't been provided    
+    if not 'connection' in settings:
+        settings['connection'] = {}
+
+    if not 'uuid' in settings['connection']:
+        settings['connection']['uuid'] = str(uuid.uuid4())
+        
+    if not 'timestamp' in settings['connection']:
+        settings['connection']['timestamp'] = dbus.UInt64(1374828522)
+        
+    if not 'ipv4' in settings:
+        settings['ipv4'] = {
+          'address-data': dbus.Array([], signature='a{sv}'),
+          'addresses': dbus.Array([], signature='au'),
+          'dns': dbus.Array([], signature='u'),
+          'dns-search': dbus.Array([], signature='s'),
+          'method': 'auto',
+          'route-data': dbus.Array([], signature='a{sv}'),
+          'routes': dbus.Array([], signature='au')
+        }
+
+    if not 'ipv6' in settings:
+        settings['ipv6'] = {
+          'address-data': dbus.Array([], signature='a{sv}'),
+          'addresses': dbus.Array([], signature='(ayuay)'),
+          'dns': dbus.Array([], signature='ay'),
+          'dns-search': dbus.Array([], signature='s'),
+          'ip6-privacy': 0,
+          'method': 'auto',
+          'route-data': dbus.Array([], signature='a{sv}'),
+          'routes': dbus.Array([], signature='(ayuayu)')
+        }
 
     self.AddObject(connection_path,
                    CSETTINGS_IFACE,
@@ -713,32 +870,22 @@ def SettingsAddConnection(self, connection_settings):
                    ])
 
     connection_obj = dbusmock.get_object(connection_path)
-    connection_obj.settings = connection_settings
+    connection_obj.settings = settings
     connection_obj.connection_path = connection_path
     connection_obj.ConnectionDelete = ConnectionDelete
     connection_obj.ConnectionGetSettings = ConnectionGetSettings
     connection_obj.ConnectionGetSecrets = ConnectionGetSecrets
     connection_obj.ConnectionUpdate = ConnectionUpdate
 
+    if dev_path and dev_path != '' and dev_path != '/':
+        dev_obj = dbusmock.get_object(dev_path)
+        connections = dev_obj.Get(DEVICE_IFACE, 'AvailableConnections')
+        connections.append(dbus.ObjectPath(connection_path))
+        dev_obj.Set(DEVICE_IFACE, 'AvailableConnections', connections)
+
     main_connections.append(connection_path)
     settings_obj.Set(SETTINGS_IFACE, 'Connections', main_connections)
-
     settings_obj.EmitSignal(SETTINGS_IFACE, 'NewConnection', 'o', [connection_path])
-
-    auto_connect = False
-    if 'autoconnect' in connection_settings['connection']:
-        auto_connect = connection_settings['connection']['autoconnect']
-
-    if auto_connect:
-        dev = None
-        devices = NM.GetDevices()
-
-        # Grab the first device.
-        if len(devices) > 0:
-            dev = devices[0]
-
-        if dev:
-            activate_connection(NM, connection_path, dev, connection_path)
 
     return connection_path
 

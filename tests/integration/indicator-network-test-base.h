@@ -131,22 +131,58 @@ public:
         disconnected
     };
 
+    enum class Toggle
+    {
+        enabled,
+        disabled
+    };
+
+    enum class Chassis
+    {
+        desktop,
+        laptop,
+        server,
+        tablet,
+        handset,
+        vm,
+        container
+    };
+
     IndicatorNetworkTestBase();
 
     ~IndicatorNetworkTestBase();
 
 protected:
     void SetUp() override;
+    void TearDown() override;
+
+    virtual void registerDBusMocks() = 0;
+
+    virtual void setupDBusMocks() = 0;
+
+    void setDataUsageIndicationSetting(bool value);
 
     static unity::gmenuharness::MenuMatcher::Parameters phoneParameters();
+
+    static unity::gmenuharness::MenuMatcher::Parameters phoneWifiSettingsParameters();
 
     static unity::gmenuharness::MenuMatcher::Parameters unlockSimParameters(std::string const& busName, int exportId);
 
     void startIndicator();
 
+    void setChassis(Chassis chassis);
+
     QString createEthernetDevice(int state, const QString& id = "0");
 
+    QString createEthernetConnection(const QString& name, const QString& device);
+
     QString createWiFiDevice(int state, const QString& id = "0");
+
+    QString createOfonoModemDevice(const QString &ofonoPath, const QString& id);
+
+    void setDeviceStatistics(const QString &device, quint64 tx, quint64 rx);
+    quint32 getStatisticsRefreshRateMs(const QString &device);
+
 
     static QString randomMac();
 
@@ -163,7 +199,7 @@ protected:
 
     void removeWifiConnection(const QString& device, const QString& connection);
 
-    QString createActiveConnection(const QString& id, const QString& device, const QString& connection, const QString& specificObject);
+    QString createActiveConnection(const QString& id, const QString& device, const QString& connection, const QString& specificObject = "/");
 
     void removeActiveConnection(const QString& device, const QString& active_connection);
 
@@ -182,6 +218,12 @@ protected:
     QVariantMap getConnectionManagerProperties(const QString& path);
 
     void setNetworkRegistrationProperty(const QString& path, const QString& propertyName, const QVariant& value);
+
+    enum DisplayPowerState {
+        Off,
+        On,
+    };
+    void setDisplayPowerState(DisplayPowerState value);
 
     OrgFreedesktopDBusMockInterface& notificationsMockInterface();
 
@@ -228,7 +270,16 @@ protected:
                 bool locked = false,
                 const std::string& connectivityIcon = "");
 
+    static unity::gmenuharness::MenuItemMatcher ethernetInfo(const std::string& label,
+                                                             const std::string& status,
+                                                             Toggle autoConnect = Toggle::enabled);
+
+    static unity::gmenuharness::MenuItemMatcher radio(const std::string& label,
+                                                      Toggle toggled);
+
     static unity::gmenuharness::MenuItemMatcher cellularSettings();
+
+    static unity::gmenuharness::MenuItemMatcher ethernetSettings();
 
     static unity::gmenuharness::MenuItemMatcher vpnSettings();
 
@@ -250,8 +301,6 @@ protected:
     QtDBusMock::DBusMock dbusMock;
 
     QtDBusTest::DBusServicePtr indicator;
-
-    QString modem;
 
     QTemporaryDir temporaryDir;
 };

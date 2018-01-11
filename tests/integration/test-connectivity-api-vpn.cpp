@@ -19,7 +19,7 @@
 
 #include <connectivityqt/openvpn-connection.h>
 #include <connectivityqt/vpn-connections-list-model.h>
-#include <indicator-network-test-base.h>
+#include <indicator-network-test-base-desktop.h>
 #include <dbus-types.h>
 #include <NetworkManagerInterface.h>
 #include <NetworkManagerSettingsInterface.h>
@@ -47,7 +47,7 @@ inline void PrintTo(const CS& list, std::ostream* os) {
 namespace
 {
 
-class TestConnectivityApiVpn: public IndicatorNetworkTestBase
+class TestConnectivityApiVpn: public IndicatorNetworkTestBaseDesktop
 {
 protected:
     static void SetUpTestCase()

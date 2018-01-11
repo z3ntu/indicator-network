@@ -1,3 +1,9 @@
+indicator-network (0.8.1+ubports1) xenial; urgency=medium
+
+  * Update Jenkinsfile
+
+ -- Dan Chapman <dan@ubports.com>  Thu, 11 Jan 2018 11:57:17 +0000
+
 indicator-network (0.8.1+ubports) vivid; urgency=medium
 
   * Imported to UBports

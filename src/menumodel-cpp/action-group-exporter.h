@@ -20,6 +20,7 @@
 #pragma once
 
 #include <memory>
+#include <functional>
 #include <gio/gio.h>
 
 #include "gio-helpers/util.h"

@@ -24,6 +24,7 @@
 #include <iostream>
 #include <vector>
 #include <list>
+#include <functional>
 
 void runGMainloop(guint ms = 50);
 

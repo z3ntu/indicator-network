@@ -7,6 +7,7 @@ Build-Depends: cmake,
                cmake-extras (>= 0.10),
                dbus,
                debhelper (>= 9.0.0),
+               dh-systemd,
                doxygen,
                google-mock (>= 1.6.0+svn437),
                graphviz,
@@ -112,4 +113,3 @@ Description: Unity Action API - documentation
  Ubuntu Connectivity API
  .
  This package contains developer documentation.
-

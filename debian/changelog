@@ -1,4 +1,4 @@
-indicator-network (0.9.1+ubports) xenial; urgency=medium
+indicator-network (0.9.1+ubports) bionic; urgency=medium
 
   * Import latest from launchpad
   * Revert changes that removed xdg autostart

@@ -16,8 +16,11 @@ install(
 
 set(SYMBOL_MAP "${DATA_DIR}/connectivity-qt.map")
 
+include_directories("${CMAKE_SOURCE_DIR}/src/qdbus-stubs")
+
 set(
     CONNECTIVITY_QT_SRC
+    connectivityqt/internal/dbus-property-cache.cpp
     connectivityqt/connectivity.cpp
     connectivityqt/modem.cpp
     connectivityqt/modems-list-model.cpp
@@ -31,6 +34,7 @@ set(
 )
 
 set_source_files_properties(
+    "${DATA_DIR}/org.freedesktop.DBus.Properties.xml"
     "${DATA_DIR}/com.ubuntu.connectivity1.NetworkingStatus.xml"
     "${DATA_DIR}/com.ubuntu.connectivity1.Private.xml"
     "${DATA_DIR}/com.ubuntu.connectivity1.Modem.xml"
@@ -84,6 +88,12 @@ qt5_add_dbus_interface(
     PptpConnectionInterface
 )
 
+qt5_add_dbus_interface(
+    CONNECTIVITY_QT_SRC
+    "${DATA_DIR}/org.freedesktop.DBus.Properties.xml"
+    PropertiesInterface
+)
+
 add_library(
     ${CONNECTIVITY_QT_LIB_TARGET}
     SHARED
@@ -100,7 +110,6 @@ qt5_use_modules(
 target_link_libraries(
     ${CONNECTIVITY_QT_LIB_TARGET}
     qdbus-stubs
-    util
 )
 
 set(SO_VERSION ${CONNECTIVITY_QT_VERSION_MAJOR})

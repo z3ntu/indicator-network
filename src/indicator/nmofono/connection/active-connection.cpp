@@ -62,10 +62,6 @@ public Q_SLOTS:
             {
                 setConnectionPath(qvariant_cast<QDBusObjectPath>(value));
             }
-            else if (property == "SpecificObject")
-            {
-                setSpecificObject(qvariant_cast<QDBusObjectPath>(value));
-            }
         }
     }
 
@@ -125,25 +121,12 @@ public Q_SLOTS:
         Q_EMIT p.connectionPathChanged(m_connectionPath);
     }
 
-    void setSpecificObject(const QDBusObjectPath& specificObject)
-    {
-        if (specificObject == m_specificObject)
-        {
-            return;
-        }
-
-        m_specificObject = specificObject;
-        Q_EMIT p.specificObjectChanged(m_specificObject);
-    }
-
 public:
     ActiveConnection& p;
 
     shared_ptr<OrgFreedesktopNetworkManagerConnectionActiveInterface> m_activeConnection;
 
     ActiveVpnConnection::SPtr m_activeVpnConnection;
-
-    QString m_uuid;
 
     QString m_id;
 
@@ -152,8 +135,6 @@ public:
     State m_state = State::unknown;
 
     QDBusObjectPath m_connectionPath;
-
-    QDBusObjectPath m_specificObject;
 };
 
 ActiveConnection::ActiveConnection(const QDBusObjectPath& path, const QDBusConnection& systemConnection) :
@@ -161,12 +142,10 @@ ActiveConnection::ActiveConnection(const QDBusObjectPath& path, const QDBusConne
 {
     d->m_activeConnection = make_shared<OrgFreedesktopNetworkManagerConnectionActiveInterface>(NM_DBUS_SERVICE, path.path(), systemConnection);
 
-    d->m_uuid = d->m_activeConnection->uuid();
     d->setId(d->m_activeConnection->id());
     d->setType(d->m_activeConnection->type());
     d->setState(static_cast<State>(d->m_activeConnection->state()));
     d->setConnectionPath(d->m_activeConnection->connection());
-    d->setSpecificObject(d->m_activeConnection->specificObject());
 
     connect(d->m_activeConnection.get(), &OrgFreedesktopNetworkManagerConnectionActiveInterface::PropertiesChanged, d.get(), &Priv::propertiesChanged);
 }
@@ -174,11 +153,6 @@ ActiveConnection::ActiveConnection(const QDBusObjectPath& path, const QDBusConne
 QString ActiveConnection::id() const
 {
     return d->m_id;
-}
-
-QString ActiveConnection::uuid() const
-{
-    return d->m_uuid;
 }
 
 QString ActiveConnection::type() const
@@ -194,11 +168,6 @@ ActiveConnection::State ActiveConnection::state() const
 QDBusObjectPath ActiveConnection::connectionPath() const
 {
     return d->m_connectionPath;
-}
-
-QDBusObjectPath ActiveConnection::specificObject() const
-{
-    return d->m_specificObject;
 }
 
 QDBusObjectPath ActiveConnection::path() const

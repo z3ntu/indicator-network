@@ -16,7 +16,7 @@
  * Author: Pete Woods <pete.woods@canonical.com>
  */
 
-#include <indicator-network-test-base-phone.h>
+#include <indicator-network-test-base.h>
 
 #include <QDebug>
 #include <QTestEventLoop>
@@ -29,7 +29,7 @@ namespace mh = unity::gmenuharness;
 namespace
 {
 
-class TestIndicatorVpn: public IndicatorNetworkTestBasePhone
+class TestIndicatorVpn: public IndicatorNetworkTestBase
 {
 };
 

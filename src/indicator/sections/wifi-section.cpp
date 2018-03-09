@@ -30,10 +30,8 @@
 #include "menumodel-cpp/menu-merger.h"
 
 #include <util/localisation.h>
-#include <util/qhash-sharedptr.h>
 
 using namespace nmofono;
-using namespace std;
 
 class WifiSection::Private : public QObject
 {
@@ -42,39 +40,36 @@ public:
     Manager::Ptr m_manager;
 
     ActionGroupMerger::Ptr m_actionGroupMerger;
-    MenuMerger::Ptr m_menuMerger;
-    MenuMerger::Ptr m_settingsModel;
-
-    Menu::Ptr m_switchMenu;
     Menu::Ptr m_menu;
     Menu::Ptr m_settingsMenu;
 
     SwitchItem::Ptr m_switch;
 
-    QMap<wifi::WifiLink::SPtr, WifiLinkItem::Ptr> m_items;
+    WifiLinkItem::Ptr m_wifiLink;
     TextItem::Ptr m_openWifiSettings;
 
     Private(Manager::Ptr manager, SwitchItem::Ptr wifiSwitch)
         : m_manager{manager}, m_switch{wifiSwitch}
     {
-        m_actionGroupMerger = make_shared<ActionGroupMerger>();
-        m_menuMerger = make_shared<MenuMerger>();
-        m_settingsModel = make_shared<MenuMerger>();
-        m_switchMenu = make_shared<Menu>();
-        m_menu = make_shared<Menu>();
-        m_settingsMenu = make_shared<Menu>();
+        m_actionGroupMerger = std::make_shared<ActionGroupMerger>();
+        m_menu = std::make_shared<Menu>();
+        m_settingsMenu = std::make_shared<Menu>();
 
-        m_openWifiSettings = make_shared<TextItem>(_("Wi-Fi settings…"), "wifi", "settings");
+        /// @todo don't now really care about actully being able to detach the whole
+        ///       wifi chipset. on touch devices we always have wifi.
+        if (m_manager->hasWifi()) {
+            m_menu->append(m_switch->menuItem());
+            m_settingsMenu->append(m_switch->menuItem());
+        }
+
+        m_openWifiSettings = std::make_shared<TextItem>(_("Wi-Fi settings…"), "wifi", "settings");
         connect(m_openWifiSettings.get(), &TextItem::activated, this, &Private::openWiFiSettings);
 
-        m_actionGroupMerger->add(m_switch->actionGroup());
         m_actionGroupMerger->add(m_openWifiSettings->actionGroup());
-        m_menuMerger->append(m_switchMenu);
-        m_menuMerger->append(m_menu);
-        m_menuMerger->append(m_settingsMenu);
-        m_settingsModel->append(m_switchMenu);
-        m_settingsModel->append(m_menu);
+        m_menu->append(m_openWifiSettings->menuItem());
 
+        // We have this last because the menu item insertion location
+        // depends on the presence of the WiFi settings item.
         updateLinks();
         connect(m_manager.get(), &Manager::linksUpdated, this, &Private::updateLinks);
     }
@@ -82,70 +77,35 @@ public:
 public Q_SLOTS:
     void openWiFiSettings()
     {
-        UrlDispatcher::send("settings:///system/wifi", [](string url, bool success){
+        UrlDispatcher::send("settings:///system/wifi", [](std::string url, bool success){
             if (!success)
-                cerr << "URL Dispatcher failed on " << url << endl;
+                std::cerr << "URL Dispatcher failed on " << url << std::endl;
         });
     }
 
     void updateLinks()
     {
-        auto links = m_manager->wifiLinks();
-        auto current(m_items.keys().toSet());
-
-        auto removed(current);
-        removed.subtract(links);
-
-        auto added(links);
-        added.subtract(current);
-
-        if (removed.isEmpty() && added.isEmpty())
-        {
-            return;
+        // remove all and recreate. we have top 1 now anyway
+        if (m_wifiLink) {
+            m_actionGroupMerger->remove(m_wifiLink->actionGroup());
+            m_menu->removeAll(m_wifiLink->menuItem());
+            m_settingsMenu->removeAll(m_wifiLink->menuItem());
+            m_wifiLink.reset();
         }
 
-        for (auto link : removed)
-        {
-            m_actionGroupMerger->remove(m_items[link]->actionGroup());
-            m_items.remove(link);
-        }
+        for (auto wifi_link : m_manager->wifiLinks()) {
+            m_wifiLink = std::make_shared<WifiLinkItem>(wifi_link);
 
-        for (auto link : added)
-        {
-            auto item = make_shared<WifiLinkItem>(link);
-            m_items[link] = item;
-            m_actionGroupMerger->add(item->actionGroup());
-        }
-
-        m_menu->clear();
-
-        multimap<Link::Id, WifiLinkItem::Ptr> sorted;
-        QMapIterator<wifi::WifiLink::SPtr, WifiLinkItem::Ptr> it(m_items);
-        while (it.hasNext())
-        {
-            it.next();
-            sorted.insert(make_pair(it.key()->id(), it.value()));
-        }
-        for (auto pair : sorted)
-        {
-            m_menu->append(pair.second->menuItem());
-        }
-
-        if (links.isEmpty())
-        {
-            m_switchMenu->removeAll(m_switch->menuItem());
-            m_settingsMenu->removeAll(m_openWifiSettings->menuItem());
-        }
-        else
-        {
-            if (m_settingsMenu->find(m_openWifiSettings->menuItem()) == m_settingsMenu->end())
+            m_actionGroupMerger->add(m_wifiLink->actionGroup());
+            auto comp = [this](MenuItem::Ptr, MenuItem::Ptr other)
             {
-                m_settingsMenu->append(m_openWifiSettings->menuItem());
-            }
-            if (m_switchMenu->find(m_switch->menuItem()) == m_switchMenu->end())
-            {
-                m_switchMenu->append(m_switch->menuItem());
-            }
+                return other == m_openWifiSettings->menuItem();
+            };
+            m_menu->insert(m_wifiLink->menuItem(), comp);
+            m_settingsMenu->insert(m_wifiLink->menuItem(), comp);
+
+            // just take the first one
+            break;
         }
     }
 };
@@ -167,13 +127,13 @@ WifiSection::actionGroup()
 MenuModel::Ptr
 WifiSection::menuModel()
 {
-    return d->m_menuMerger;
+    return d->m_menu;
 }
 
 MenuModel::Ptr
 WifiSection::settingsModel()
 {
-    return d->m_settingsModel;
+    return d->m_settingsMenu;
 }
 
 #include "wifi-section.moc"

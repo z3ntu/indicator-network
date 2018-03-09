@@ -19,10 +19,8 @@
 
 #pragma once
 
-#include <nmofono/connection/active-connection-manager.h>
-#include <nmofono/urfkill-flight-mode-toggle.h>
+#include <nmofono/kill-switch.h>
 #include <nmofono/wifi/wifi-link.h>
-#include <nmofono/wifi/wifi-toggle.h>
 #include <util/qhash-sharedptr.h>
 
 #include <NetworkManagerInterface.h>
@@ -41,8 +39,7 @@ public:
 
     WifiLinkImpl(std::shared_ptr<OrgFreedesktopNetworkManagerDeviceInterface> dev,
          std::shared_ptr<OrgFreedesktopNetworkManagerInterface> nm,
-         WifiToggle::SPtr wifiToggle,
-         connection::ActiveConnectionManager::SPtr activeConnectionManager);
+         KillSwitch::Ptr killSwitch);
     ~WifiLinkImpl();
 
     // public API

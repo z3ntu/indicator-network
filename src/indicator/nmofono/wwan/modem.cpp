@@ -125,8 +125,6 @@ public:
 
     bool m_shouldTriggerUnlock = false;
 
-    QString m_nmPath;
-
     Private(Modem& parent, shared_ptr<QOfonoModem> ofonoModem)
         : p(parent), m_ofonoModem{ofonoModem}
     {
@@ -732,19 +730,6 @@ Modem::ofonoPath() const
 {
     return d->m_ofonoModem->modemPath();
 }
-
-QString
-Modem::nmPath() const
-{
-    return d->m_nmPath;
-}
-
-void
-Modem::setNmPath(const QString& path)
-{
-    d->m_nmPath = path;
-}
-
 
 WwanLink::WwanType
 Modem::wwanType() const

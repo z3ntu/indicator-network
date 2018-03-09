@@ -108,15 +108,21 @@ public:
 
     bool activateConnection(const QDBusObjectPath& device)
     {
-        auto activeConnectionObject = m_activeConnectionManager->activate(QDBusObjectPath(m_hotspot->path()), device);
-        if (!activeConnectionObject)
+        auto reply = m_manager->ActivateConnection(
+                        QDBusObjectPath(m_hotspot->path()), device,
+                        QDBusObjectPath("/"));
+        reply.waitForFinished();
+        if (reply.isError())
         {
-            qCritical() << "Could not activate hotspot connection";
+            qCritical() << "Could not activate hotspot connection"
+                    << reply.error().message();
             return false;
         }
 
+        QDBusObjectPath activeConnectionPath(reply);
+
         OrgFreedesktopNetworkManagerConnectionActiveInterface activeConnection (
-                    NM_DBUS_SERVICE, activeConnectionObject->path().path (),
+                    NM_DBUS_SERVICE, activeConnectionPath.path (),
                     m_manager->connection());
 
         int count = 0;

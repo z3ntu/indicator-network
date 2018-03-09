@@ -56,18 +56,10 @@ main(int argc, char **argv)
 	});
 	handler.setupUnixSignalHandlers();
 
-    try
-    {
-        auto agent = make_unique<agent::SecretAgent>(
+    auto agent = make_unique<agent::SecretAgent>(
             make_shared<notify::NotificationManager>(GETTEXT_PACKAGE),
             make_shared<agent::KeyringCredentialStore>(),
             QDBusConnection::systemBus(), QDBusConnection::sessionBus());
 
-        return app.exec();
-    }
-    catch(exception& e)
-    {
-        qWarning() << e.what();
-        return 1;
-    }
+    return app.exec();
 }

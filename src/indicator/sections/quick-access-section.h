@@ -32,8 +32,7 @@ class QuickAccessSection : public Section
     std::shared_ptr<Private> d;
 
 public:
-    UNITY_DEFINES_PTRS(QuickAccessSection);
-
+    typedef std::shared_ptr<QuickAccessSection> Ptr;
     QuickAccessSection(nmofono::Manager::Ptr manager, SwitchItem::Ptr flightModeSwitch);
     virtual ~QuickAccessSection();
 

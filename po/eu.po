@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-11-30 16:30+0000\n"
+"POT-Creation-Date: 2016-04-29 12:38+0300\n"
 "PO-Revision-Date: 2016-02-15 17:40+0000\n"
 "Last-Translator: Pete Woods <Unknown>\n"
 "Language-Team: Basque <eu@li.org>\n"
@@ -15,8 +15,8 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2017-04-08 06:36+0000\n"
-"X-Generator: Launchpad (build 18343)\n"
+"X-Launchpad-Export-Date: 2016-10-21 07:05+0000\n"
+"X-Generator: Launchpad (build 18246)\n"
 "Language: eu\n"
 
 #: ../src/agent/SecretRequest.cpp:61
@@ -39,61 +39,65 @@ msgstr "Konektatu"
 msgid "Cancel"
 msgstr "Utzi"
 
-#: ../src/indicator/vpn-status-notifier.cpp:48
-msgid "The VPN connection '%1' failed."
-msgstr "'%1' VPN konexioak huts egin du."
+#: ../src/indicator/menuitems/wifi-link-item.cpp:109
+msgid "Other network…"
+msgstr "Beste sare bat..."
 
-#: ../src/indicator/vpn-status-notifier.cpp:50
-msgid ""
-"The VPN connection '%1' failed because the network connection was "
-"interrupted."
-msgstr "'%1' VPN konexioak huts egin du sare-konexioa eten delako."
+#: ../src/indicator/menuitems/wwan-link-item.cpp:90
+msgid "No SIM"
+msgstr "SIMik ez"
 
-#: ../src/indicator/vpn-status-notifier.cpp:51
-msgid ""
-"The VPN connection '%1' failed because the VPN service stopped unexpectedly."
-msgstr ""
-"'%1' VPN konexioak huts egin du VPN zerbitzua ustekabean gelditu delako."
+#: ../src/indicator/menuitems/wwan-link-item.cpp:97
+msgid "SIM Error"
+msgstr "SIM errorea"
 
-#: ../src/indicator/vpn-status-notifier.cpp:52
-msgid ""
-"The VPN connection '%1' failed because the VPN service returned invalid "
-"configuration."
-msgstr ""
-"'%1' VPN konexioak huts egin du VPN zerbitzuak konfigurazio baliogabea "
-"itzuli duelako."
+#: ../src/indicator/menuitems/wwan-link-item.cpp:105
+msgid "SIM Locked"
+msgstr "SIMa blokeatuta"
 
-#: ../src/indicator/vpn-status-notifier.cpp:53
-msgid ""
-"The VPN connection '%1' failed because the connection attempt timed out."
-msgstr ""
-"'%1' VPN konexioak huts egin du konexio-saiakera denboraz kanpo gelditu "
-"delako."
+#: ../src/indicator/menuitems/wwan-link-item.cpp:118
+msgid "Unregistered"
+msgstr "Erregistratu gabea"
 
-#: ../src/indicator/vpn-status-notifier.cpp:54
-msgid ""
-"The VPN connection '%1' failed because the VPN service did not start in time."
-msgstr "'%1' VPN konexioak huts egin du VPN zerbitzua ez delako garaiz hasi."
+#: ../src/indicator/menuitems/wwan-link-item.cpp:123
+msgid "Unknown"
+msgstr "Ezezaguna"
 
-#: ../src/indicator/vpn-status-notifier.cpp:55
-msgid ""
-"The VPN connection '%1' failed because the VPN service failed to start."
-msgstr ""
-"'%1' VPN konexioak huts egin du VPN zerbitzua hasteak huts egin duelako."
+#: ../src/indicator/menuitems/wwan-link-item.cpp:128
+msgid "Denied"
+msgstr "Ukatua"
 
-#: ../src/indicator/vpn-status-notifier.cpp:56
-msgid ""
-"The VPN connection '%1' failed because there were no valid VPN secrets."
-msgstr ""
-"'%1' VPN konexioak huts egin du ez zegoelako baliozko VPN sekreturik."
+#: ../src/indicator/menuitems/wwan-link-item.cpp:133
+msgid "Searching"
+msgstr "Bilatzen"
 
-#: ../src/indicator/vpn-status-notifier.cpp:57
-msgid "The VPN connection '%1' failed because of invalid VPN secrets."
-msgstr "'%1' VPN konexioak huts egin du VPN sekretu baliogabeengatik."
+#: ../src/indicator/menuitems/wwan-link-item.cpp:145
+msgid "No Signal"
+msgstr "Seinalerik ez"
 
-#: ../src/indicator/vpn-status-notifier.cpp:68
-msgid "VPN Connection Failed"
-msgstr "VPN konexioak huts egin du"
+#: ../src/indicator/menuitems/wwan-link-item.cpp:157
+#: ../src/indicator/menuitems/wwan-link-item.cpp:164
+msgid "Offline"
+msgstr "Lineaz kanpo"
+
+#. TODO Move this into a new class
+#: ../src/indicator/factory.cpp:187
+msgid "Wi-Fi"
+msgstr "Wifia"
+
+#. TODO Move this into a new class
+#: ../src/indicator/factory.cpp:198
+msgid "Flight Mode"
+msgstr "Hegaldi modua"
+
+#: ../src/indicator/factory.cpp:208
+msgid "Cellular data"
+msgstr "Datu mugikorrak"
+
+#. TODO Move this into a new class
+#: ../src/indicator/factory.cpp:221
+msgid "Hotspot"
+msgstr "Wifigunea"
 
 #: ../src/indicator/sim-unlock-dialog.cpp:144
 msgid "Sorry, incorrect %{1} PIN."
@@ -188,119 +192,79 @@ msgstr "Berretsi %{1} PIN berria"
 msgid "PIN codes did not match."
 msgstr "PIN kodeak ez datoz bat."
 
-#: ../src/indicator/nmofono/vpn/vpn-manager.cpp:81
-msgid "VPN connection %1"
-msgstr "%1 VPN konexioa"
+#: ../src/indicator/vpn-status-notifier.cpp:48
+msgid "The VPN connection '%1' failed."
+msgstr "'%1' VPN konexioak huts egin du."
 
-#: ../src/indicator/menuitems/wifi-link-item.cpp:109
-msgid "Other network…"
-msgstr "Beste sare bat..."
+#: ../src/indicator/vpn-status-notifier.cpp:50
+msgid ""
+"The VPN connection '%1' failed because the network connection was "
+"interrupted."
+msgstr "'%1' VPN konexioak huts egin du sare-konexioa eten delako."
 
-#: ../src/indicator/menuitems/ethernet-link-item.cpp:39
-msgid "Connected"
-msgstr "Konektatua"
-
-#: ../src/indicator/menuitems/ethernet-link-item.cpp:40
-msgid "Connecting"
-msgstr "Konektatzen"
-
-#: ../src/indicator/menuitems/ethernet-link-item.cpp:41
-msgid "Disabled"
+#: ../src/indicator/vpn-status-notifier.cpp:51
+msgid ""
+"The VPN connection '%1' failed because the VPN service stopped unexpectedly."
 msgstr ""
+"'%1' VPN konexioak huts egin du VPN zerbitzua ustekabean gelditu delako."
 
-#: ../src/indicator/menuitems/ethernet-link-item.cpp:42
-msgid "Disconnected"
-msgstr "Deskonektatua"
-
-#: ../src/indicator/menuitems/ethernet-link-item.cpp:43
-msgid "Online"
+#: ../src/indicator/vpn-status-notifier.cpp:52
+msgid ""
+"The VPN connection '%1' failed because the VPN service returned invalid "
+"configuration."
 msgstr ""
+"'%1' VPN konexioak huts egin du VPN zerbitzuak konfigurazio baliogabea "
+"itzuli duelako."
 
-#: ../src/indicator/menuitems/ethernet-link-item.cpp:44
-msgid "Failed"
+#: ../src/indicator/vpn-status-notifier.cpp:53
+msgid ""
+"The VPN connection '%1' failed because the connection attempt timed out."
 msgstr ""
+"'%1' VPN konexioak huts egin du konexio-saiakera denboraz kanpo gelditu "
+"delako."
 
-#: ../src/indicator/menuitems/ethernet-link-item.cpp:56
-msgid "Ethernet (%1)"
+#: ../src/indicator/vpn-status-notifier.cpp:54
+msgid ""
+"The VPN connection '%1' failed because the VPN service did not start in time."
+msgstr "'%1' VPN konexioak huts egin du VPN zerbitzua ez delako garaiz hasi."
+
+#: ../src/indicator/vpn-status-notifier.cpp:55
+msgid ""
+"The VPN connection '%1' failed because the VPN service failed to start."
 msgstr ""
+"'%1' VPN konexioak huts egin du VPN zerbitzua hasteak huts egin duelako."
 
-#: ../src/indicator/menuitems/ethernet-link-item.cpp:60
-msgid "Ethernet"
+#: ../src/indicator/vpn-status-notifier.cpp:56
+msgid ""
+"The VPN connection '%1' failed because there were no valid VPN secrets."
 msgstr ""
+"'%1' VPN konexioak huts egin du ez zegoelako baliozko VPN sekreturik."
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:90
-msgid "No SIM"
-msgstr "SIMik ez"
+#: ../src/indicator/vpn-status-notifier.cpp:57
+msgid "The VPN connection '%1' failed because of invalid VPN secrets."
+msgstr "'%1' VPN konexioak huts egin du VPN sekretu baliogabeengatik."
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:97
-msgid "SIM Error"
-msgstr "SIM errorea"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:105
-msgid "SIM Locked"
-msgstr "SIMa blokeatuta"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:118
-msgid "Unregistered"
-msgstr "Erregistratu gabea"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:123
-msgid "Unknown"
-msgstr "Ezezaguna"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:128
-msgid "Denied"
-msgstr "Ukatua"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:133
-msgid "Searching"
-msgstr "Bilatzen"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:145
-msgid "No Signal"
-msgstr "Seinalerik ez"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:157
-#: ../src/indicator/menuitems/wwan-link-item.cpp:164
-msgid "Offline"
-msgstr "Lineaz kanpo"
-
-#. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
-#: ../src/indicator/root-state.cpp:340
-msgid "Network"
-msgstr "Sarea"
-
-#. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:193
-msgid "Wi-Fi"
-msgstr "Wifia"
-
-#. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:204
-msgid "Flight Mode"
-msgstr "Hegaldi modua"
-
-#: ../src/indicator/factory.cpp:214
-msgid "Cellular data"
-msgstr "Datu mugikorrak"
-
-#. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:227
-msgid "Hotspot"
-msgstr "Wifigunea"
+#: ../src/indicator/vpn-status-notifier.cpp:68
+msgid "VPN Connection Failed"
+msgstr "VPN konexioak huts egin du"
 
 #: ../src/indicator/sections/wwan-section.cpp:102
 msgid "Cellular settings…"
 msgstr "Datu mugikorren ezarpenak..."
 
-#: ../src/indicator/sections/ethernet-section.cpp:114
-msgid "Ethernet settings…"
-msgstr ""
+#: ../src/indicator/sections/vpn-section.cpp:140
+msgid "VPN settings…"
+msgstr "VPN ezarpenak..."
 
 #: ../src/indicator/sections/wifi-section.cpp:65
 msgid "Wi-Fi settings…"
 msgstr "Wifiaren ezarpenak..."
 
-#: ../src/indicator/sections/vpn-section.cpp:139
-msgid "VPN settings…"
-msgstr "VPN ezarpenak..."
+#. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
+#: ../src/indicator/root-state.cpp:306
+msgid "Network"
+msgstr "Sarea"
+
+#: ../src/indicator/nmofono/vpn/vpn-manager.cpp:81
+msgid "VPN connection %1"
+msgstr "%1 VPN konexioa"

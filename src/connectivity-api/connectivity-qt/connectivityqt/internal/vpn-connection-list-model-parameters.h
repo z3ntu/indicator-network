@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include <util/dbus-property-cache.h>
+#include <connectivityqt/internal/dbus-property-cache.h>
 
 #include <NetworkingStatusPrivateInterface.h>
 
@@ -37,7 +37,7 @@ struct VpnConnectionsListModelParameters
 
     std::shared_ptr<ComUbuntuConnectivity1PrivateInterface> writeInterface;
 
-    std::shared_ptr<util::DBusPropertyCache> propertyCache;
+    std::shared_ptr<internal::DBusPropertyCache> propertyCache;
 };
 
 }

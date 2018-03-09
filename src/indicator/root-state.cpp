@@ -74,9 +74,6 @@ RootState::Private::Private(RootState& parent, nmofono::Manager::Ptr manager)
     connect(m_manager.get(), &Manager::statusUpdated, this, &Private::updateNetworkingIcon);
     connect(m_manager.get(), &Manager::linksUpdated, this, &Private::updateNetworkingIcon);
 
-    connect(m_manager.get(), &nmofono::Manager::txChanged, this, &Private::updateNetworkingIcon);
-    connect(m_manager.get(), &nmofono::Manager::rxChanged, this, &Private::updateNetworkingIcon);
-
     // will also call updateRootState()
     updateNetworkingIcon();
 }
@@ -195,22 +192,6 @@ RootState::Private::updateNetworkingIcon()
         // some sort of connection animation
         break;
     case Manager::NetworkingStatus::online:
-        multimap<Link::Id, ethernet::EthernetLink::SPtr> sortedEthernetLinks;
-        for (auto ethernetLink : m_manager->ethernetLinks())
-        {
-            sortedEthernetLinks.insert(make_pair(ethernetLink->id(), ethernetLink));
-        }
-        for (auto pair : sortedEthernetLinks)
-        {
-            auto ethernetLink = pair.second;
-
-            connect(ethernetLink.get(), &ethernet::EthernetLink::statusUpdated, this,
-                    &Private::updateNetworkingIcon, Qt::UniqueConnection);
-
-            auto status = ethernetLink->status();
-            m_networkingIcons << Icons::ethernetIcon(status);
-        }
-
         for (auto wifiLink : m_manager->wifiLinks())
         {
             connect(wifiLink.get(), &wifi::WifiLink::statusUpdated, this,
@@ -228,21 +209,6 @@ RootState::Private::updateNetworkingIcon()
             if (signal != wifi::WifiLink::Signal::disconnected)
             {
                 m_networkingIcons << Icons::wifiIcon(signal);
-            }
-        }
-
-        if (m_manager->rx() && m_manager->tx())
-        {
-            m_networkingIcons << "transfer-progress";
-        }
-        else
-        {
-            if (m_manager->rx()){
-                m_networkingIcons << "transfer-progress-download";
-            }
-
-            if (m_manager->tx()){
-                m_networkingIcons << "transfer-progress-upload";
             }
         }
 

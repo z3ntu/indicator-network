@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2016-11-30 16:30+0000\n"
+"POT-Creation-Date: 2016-04-29 12:38+0300\n"
 "PO-Revision-Date: 2016-02-15 17:40+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Lithuanian <lt@li.org>\n"
@@ -16,8 +16,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "(n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Launchpad-Export-Date: 2017-04-08 06:36+0000\n"
-"X-Generator: Launchpad (build 18343)\n"
+"X-Launchpad-Export-Date: 2016-10-21 07:05+0000\n"
+"X-Generator: Launchpad (build 18246)\n"
 
 #: ../src/agent/SecretRequest.cpp:61
 msgid "Connect to “%1”"
@@ -39,56 +39,65 @@ msgstr "Prisijungti"
 msgid "Cancel"
 msgstr "Atsisakyti"
 
-#: ../src/indicator/vpn-status-notifier.cpp:48
-msgid "The VPN connection '%1' failed."
-msgstr "VPN ryšys \"%1\" nepavyko."
+#: ../src/indicator/menuitems/wifi-link-item.cpp:109
+msgid "Other network…"
+msgstr "Kitas tinklas..."
 
-#: ../src/indicator/vpn-status-notifier.cpp:50
-msgid ""
-"The VPN connection '%1' failed because the network connection was "
-"interrupted."
-msgstr "VPN ryšys \"%1\" nepavyko, nes tinklo ryšys buvo pertrauktas."
+#: ../src/indicator/menuitems/wwan-link-item.cpp:90
+msgid "No SIM"
+msgstr "Nėra SIM kortelės"
 
-#: ../src/indicator/vpn-status-notifier.cpp:51
-msgid ""
-"The VPN connection '%1' failed because the VPN service stopped unexpectedly."
-msgstr ""
-"VPN ryšys \"%1\" nepavyko, nes VPN tarnyba netikėtai buvo sustabdyta."
+#: ../src/indicator/menuitems/wwan-link-item.cpp:97
+msgid "SIM Error"
+msgstr "SIM kortelės klaida"
 
-#: ../src/indicator/vpn-status-notifier.cpp:52
-msgid ""
-"The VPN connection '%1' failed because the VPN service returned invalid "
-"configuration."
-msgstr ""
-"VPN ryšys \"%1\" nepavyko, nes VPN tarnyba grąžino neteisingą konfigūraciją."
+#: ../src/indicator/menuitems/wwan-link-item.cpp:105
+msgid "SIM Locked"
+msgstr "SIM kortelė užrakinta"
 
-#: ../src/indicator/vpn-status-notifier.cpp:53
-msgid ""
-"The VPN connection '%1' failed because the connection attempt timed out."
-msgstr "VPN ryšys \"%1\" nepavyko, nes baigėsi ryšiui skirtas laikas."
+#: ../src/indicator/menuitems/wwan-link-item.cpp:118
+msgid "Unregistered"
+msgstr "Neregistruota"
 
-#: ../src/indicator/vpn-status-notifier.cpp:54
-msgid ""
-"The VPN connection '%1' failed because the VPN service did not start in time."
-msgstr "VPN ryšys \"%1\" nepavyko, nes VPN tarnyba nepradėjo darbo laiku."
+#: ../src/indicator/menuitems/wwan-link-item.cpp:123
+msgid "Unknown"
+msgstr "Nežinoma"
 
-#: ../src/indicator/vpn-status-notifier.cpp:55
-msgid ""
-"The VPN connection '%1' failed because the VPN service failed to start."
-msgstr "VPN ryšys \"%1\" nepavyko, nes VPN tarnybai nepavyko pasileisti."
+#: ../src/indicator/menuitems/wwan-link-item.cpp:128
+msgid "Denied"
+msgstr "Atmesta"
 
-#: ../src/indicator/vpn-status-notifier.cpp:56
-msgid ""
-"The VPN connection '%1' failed because there were no valid VPN secrets."
-msgstr "VPN ryšys \"%1\" nepavyko, nes nebuvo teisingų VPN paslapčių."
+#: ../src/indicator/menuitems/wwan-link-item.cpp:133
+msgid "Searching"
+msgstr "Ieškoma"
 
-#: ../src/indicator/vpn-status-notifier.cpp:57
-msgid "The VPN connection '%1' failed because of invalid VPN secrets."
-msgstr "VPN ryšys \"%1\" nepavyko, dėl neteisingų VPN paslapčių."
+#: ../src/indicator/menuitems/wwan-link-item.cpp:145
+msgid "No Signal"
+msgstr "Nėra signalo"
 
-#: ../src/indicator/vpn-status-notifier.cpp:68
-msgid "VPN Connection Failed"
-msgstr "VPN ryšys nepavyko"
+#: ../src/indicator/menuitems/wwan-link-item.cpp:157
+#: ../src/indicator/menuitems/wwan-link-item.cpp:164
+msgid "Offline"
+msgstr "Nepasiekiama"
+
+#. TODO Move this into a new class
+#: ../src/indicator/factory.cpp:187
+msgid "Wi-Fi"
+msgstr "Belaidis"
+
+#. TODO Move this into a new class
+#: ../src/indicator/factory.cpp:198
+msgid "Flight Mode"
+msgstr "Skrydžio veiksena"
+
+#: ../src/indicator/factory.cpp:208
+msgid "Cellular data"
+msgstr "Korinio ryšio duomenys"
+
+#. TODO Move this into a new class
+#: ../src/indicator/factory.cpp:221
+msgid "Hotspot"
+msgstr "Prieigos taškas"
 
 #: ../src/indicator/sim-unlock-dialog.cpp:144
 msgid "Sorry, incorrect %{1} PIN."
@@ -185,119 +194,74 @@ msgstr "Pakartokite naują %{1} PIN kodą"
 msgid "PIN codes did not match."
 msgstr "PIN kodai nesutampa."
 
-#: ../src/indicator/nmofono/vpn/vpn-manager.cpp:81
-msgid "VPN connection %1"
-msgstr "VPN ryšys %1"
+#: ../src/indicator/vpn-status-notifier.cpp:48
+msgid "The VPN connection '%1' failed."
+msgstr "VPN ryšys \"%1\" nepavyko."
 
-#: ../src/indicator/menuitems/wifi-link-item.cpp:109
-msgid "Other network…"
-msgstr "Kitas tinklas..."
+#: ../src/indicator/vpn-status-notifier.cpp:50
+msgid ""
+"The VPN connection '%1' failed because the network connection was "
+"interrupted."
+msgstr "VPN ryšys \"%1\" nepavyko, nes tinklo ryšys buvo pertrauktas."
 
-#: ../src/indicator/menuitems/ethernet-link-item.cpp:39
-msgid "Connected"
-msgstr "Prisijungta"
+#: ../src/indicator/vpn-status-notifier.cpp:51
+msgid ""
+"The VPN connection '%1' failed because the VPN service stopped unexpectedly."
+msgstr ""
+"VPN ryšys \"%1\" nepavyko, nes VPN tarnyba netikėtai buvo sustabdyta."
 
-#: ../src/indicator/menuitems/ethernet-link-item.cpp:40
-msgid "Connecting"
-msgstr "Jungiamasi"
+#: ../src/indicator/vpn-status-notifier.cpp:52
+msgid ""
+"The VPN connection '%1' failed because the VPN service returned invalid "
+"configuration."
+msgstr ""
+"VPN ryšys \"%1\" nepavyko, nes VPN tarnyba grąžino neteisingą konfigūraciją."
 
-#: ../src/indicator/menuitems/ethernet-link-item.cpp:41
-msgid "Disabled"
-msgstr "Išjungta"
+#: ../src/indicator/vpn-status-notifier.cpp:53
+msgid ""
+"The VPN connection '%1' failed because the connection attempt timed out."
+msgstr "VPN ryšys \"%1\" nepavyko, nes baigėsi ryšiui skirtas laikas."
 
-#: ../src/indicator/menuitems/ethernet-link-item.cpp:42
-msgid "Disconnected"
-msgstr "Atsijungta"
+#: ../src/indicator/vpn-status-notifier.cpp:54
+msgid ""
+"The VPN connection '%1' failed because the VPN service did not start in time."
+msgstr "VPN ryšys \"%1\" nepavyko, nes VPN tarnyba nepradėjo darbo laiku."
 
-#: ../src/indicator/menuitems/ethernet-link-item.cpp:43
-msgid "Online"
-msgstr "Prisijungta prie tinklo"
+#: ../src/indicator/vpn-status-notifier.cpp:55
+msgid ""
+"The VPN connection '%1' failed because the VPN service failed to start."
+msgstr "VPN ryšys \"%1\" nepavyko, nes VPN tarnybai nepavyko pasileisti."
 
-#: ../src/indicator/menuitems/ethernet-link-item.cpp:44
-msgid "Failed"
-msgstr "Nepavyko"
+#: ../src/indicator/vpn-status-notifier.cpp:56
+msgid ""
+"The VPN connection '%1' failed because there were no valid VPN secrets."
+msgstr "VPN ryšys \"%1\" nepavyko, nes nebuvo teisingų VPN paslapčių."
 
-#: ../src/indicator/menuitems/ethernet-link-item.cpp:56
-msgid "Ethernet (%1)"
-msgstr "Laidinis tinklas (%1)"
+#: ../src/indicator/vpn-status-notifier.cpp:57
+msgid "The VPN connection '%1' failed because of invalid VPN secrets."
+msgstr "VPN ryšys \"%1\" nepavyko, dėl neteisingų VPN paslapčių."
 
-#: ../src/indicator/menuitems/ethernet-link-item.cpp:60
-msgid "Ethernet"
-msgstr "Laidinis tinklas"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:90
-msgid "No SIM"
-msgstr "Nėra SIM kortelės"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:97
-msgid "SIM Error"
-msgstr "SIM kortelės klaida"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:105
-msgid "SIM Locked"
-msgstr "SIM kortelė užrakinta"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:118
-msgid "Unregistered"
-msgstr "Neregistruota"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:123
-msgid "Unknown"
-msgstr "Nežinoma"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:128
-msgid "Denied"
-msgstr "Atmesta"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:133
-msgid "Searching"
-msgstr "Ieškoma"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:145
-msgid "No Signal"
-msgstr "Nėra signalo"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:157
-#: ../src/indicator/menuitems/wwan-link-item.cpp:164
-msgid "Offline"
-msgstr "Nepasiekiama"
-
-#. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
-#: ../src/indicator/root-state.cpp:340
-msgid "Network"
-msgstr "Tinklas"
-
-#. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:193
-msgid "Wi-Fi"
-msgstr "Belaidis"
-
-#. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:204
-msgid "Flight Mode"
-msgstr "Skrydžio veiksena"
-
-#: ../src/indicator/factory.cpp:214
-msgid "Cellular data"
-msgstr "Korinio ryšio duomenys"
-
-#. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:227
-msgid "Hotspot"
-msgstr "Prieigos taškas"
+#: ../src/indicator/vpn-status-notifier.cpp:68
+msgid "VPN Connection Failed"
+msgstr "VPN ryšys nepavyko"
 
 #: ../src/indicator/sections/wwan-section.cpp:102
 msgid "Cellular settings…"
 msgstr "Mobiliojo telefono nustatymai..."
 
-#: ../src/indicator/sections/ethernet-section.cpp:114
-msgid "Ethernet settings…"
-msgstr "Laidinio tinklo nustatymai…"
+#: ../src/indicator/sections/vpn-section.cpp:140
+msgid "VPN settings…"
+msgstr "VPN nustatymai..."
 
 #: ../src/indicator/sections/wifi-section.cpp:65
 msgid "Wi-Fi settings…"
 msgstr "Belaidžio ryšio nustatymai..."
 
-#: ../src/indicator/sections/vpn-section.cpp:139
-msgid "VPN settings…"
-msgstr "VPN nustatymai..."
+#. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
+#: ../src/indicator/root-state.cpp:306
+msgid "Network"
+msgstr "Tinklas"
+
+#: ../src/indicator/nmofono/vpn/vpn-manager.cpp:81
+msgid "VPN connection %1"
+msgstr "VPN ryšys %1"

@@ -1,5 +1,6 @@
  
-find_package(QmlPlugins)
+include(QmlPlugins)
+
 find_package(Qt5Quick REQUIRED)
 
 include_directories(

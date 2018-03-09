@@ -53,10 +53,7 @@ QuickAccessSection::Private::Private(Manager::Ptr manager, SwitchItem::Ptr fligh
     m_actionGroupMerger = std::make_shared<ActionGroupMerger>();
     m_menu = std::make_shared<Menu>();
 
-    if (manager->flightModeAvailable())
-    {
-        m_menu->append(m_flightModeSwitch->menuItem());
-    }
+    m_menu->append(m_flightModeSwitch->menuItem());
 }
 
 QuickAccessSection::QuickAccessSection(Manager::Ptr manager, SwitchItem::Ptr flightModeSwitch)

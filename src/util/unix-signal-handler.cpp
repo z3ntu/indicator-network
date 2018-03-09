@@ -42,9 +42,9 @@ UnixSignalHandler::UnixSignalHandler(const std::function<void()>& f, QObject *pa
 	}
 
 	m_socketNotifierInt = new QSocketNotifier(sigintFd[1], QSocketNotifier::Read, this);
-	connect(m_socketNotifierInt, &QSocketNotifier::activated, this, &UnixSignalHandler::handleSigInt, Qt::QueuedConnection);
+	connect(m_socketNotifierInt, &QSocketNotifier::activated, this, &UnixSignalHandler::handleSigInt);
 	m_socketNotifierTerm = new QSocketNotifier(sigtermFd[1], QSocketNotifier::Read, this);
-	connect(m_socketNotifierTerm, &QSocketNotifier::activated, this, &UnixSignalHandler::handleSigTerm, Qt::QueuedConnection);
+	connect(m_socketNotifierTerm, &QSocketNotifier::activated, this, &UnixSignalHandler::handleSigTerm);
 }
 
 void UnixSignalHandler::intSignalHandler(int) {

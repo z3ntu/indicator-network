@@ -28,8 +28,7 @@ class WwanLinkItem : public Section
     std::shared_ptr<Private> d;
 
 public:
-    UNITY_DEFINES_PTRS(WwanLinkItem);
-
+    typedef std::shared_ptr<WwanLinkItem> Ptr;
     WwanLinkItem(nmofono::wwan::Modem::Ptr, nmofono::Manager::Ptr manager);
     virtual ~WwanLinkItem();
 

@@ -22,8 +22,6 @@
 #include <memory>
 #include <QObject>
 
-#include <unity/util/DefinesPtrs.h>
-
 namespace nmofono {
 
 #ifndef CONNECTIVITY_CPP_EXPORT
@@ -36,7 +34,7 @@ Link: public QObject
     Q_OBJECT
 
 public:
-    UNITY_DEFINES_PTRS(Link);
+    typedef std::shared_ptr<Link> Ptr;
 
     Link(const Link&) = delete;
     virtual ~Link() = default;
@@ -47,7 +45,6 @@ public:
     /// @private
     enum class Type
     {
-        ethernet,
         wifi,
         wired,
         wwan,
@@ -63,8 +60,7 @@ public:
         connected,   // the link is up, but not fully configured yet
                      // happens with wifi for example when captive portal
                      // login is required
-        online,
-        failed
+        online
     };
 
     /**
@@ -119,8 +115,6 @@ Q_SIGNALS:
     void characteristicsUpdated(std::uint32_t);
 
     void statusUpdated(Status);
-
-    void nameUpdated(const QString& name);
 
 protected:
     /// @private

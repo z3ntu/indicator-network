@@ -17,9 +17,9 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#include <util/dbus-property-cache.h>
+#include <connectivityqt/internal/dbus-property-cache.h>
 #include <connectivityqt/modem.h>
-#include <qdbus-stubs/dbus-types.h>
+#include <dbus-types.h>
 
 #include <ModemInterface.h>
 
@@ -41,7 +41,6 @@ public:
 public Q_SLOTS:
     void propertyChanged(const QString& name, const QVariant& value)
     {
-        Q_UNUSED(value);
         if (name == "Sim")
         {
             simsUpdated();
@@ -73,7 +72,7 @@ public:
 
     unique_ptr<ComUbuntuConnectivity1ModemInterface> m_modemInterface;
 
-    util::DBusPropertyCache::UPtr m_propertyCache;
+    internal::DBusPropertyCache::UPtr m_propertyCache;
 };
 
 Modem::Modem(const QDBusObjectPath& path,
@@ -88,13 +87,13 @@ Modem::Modem(const QDBusObjectPath& path,
             DBusTypes::DBUS_NAME, path.path(), connection);
 
     d->m_propertyCache =
-            make_unique<util::DBusPropertyCache>(
+            make_unique<internal::DBusPropertyCache>(
                     DBusTypes::DBUS_NAME,
                     ComUbuntuConnectivity1ModemInterface::staticInterfaceName(),
                     path.path(), connection);
 
     connect(d->m_propertyCache.get(),
-                &util::DBusPropertyCache::propertyChanged, d.get(),
+                &internal::DBusPropertyCache::propertyChanged, d.get(),
                 &Priv::propertyChanged);
 
     d->simsUpdated();

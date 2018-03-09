@@ -21,14 +21,8 @@
 #include <factory.h>
 
 #include <util/localisation.h>
-#include <dbus-types.h>
 #include <nmofono/manager-impl.h>
-#include <nmofono/urfkill-flight-mode-toggle.h>
-#include <nmofono/null-flight-mode-toggle.h>
-#include <nmofono/wifi/network-manager-wifi-toggle.h>
-#include <nmofono/wifi/urfkill-wifi-toggle.h>
 #include <notify-cpp/notification-manager.h>
-#include <HostnameInterface.h>
 
 using namespace std;
 
@@ -44,6 +38,8 @@ struct Factory::Private
 
     notify::NotificationManager::SPtr m_notificationManager;
 
+    nmofono::KillSwitch::Ptr m_killSwitch;
+
     nmofono::HotspotManager::SPtr m_hotspotManager;
 
     notify::NotificationManager::SPtr singletonNotificationManager()
@@ -53,6 +49,15 @@ struct Factory::Private
             m_notificationManager = make_shared<notify::NotificationManager>(GETTEXT_PACKAGE);
         }
         return m_notificationManager;
+    }
+
+    nmofono::KillSwitch::Ptr singletonKillSwitch()
+    {
+        if (!m_killSwitch)
+        {
+            m_killSwitch = make_shared<nmofono::KillSwitch>(QDBusConnection::systemBus());
+        }
+        return m_killSwitch;
     }
 
     nmofono::HotspotManager::SPtr singletonHotspotManager()
@@ -79,30 +84,10 @@ struct Factory::Private
     {
         if (!m_nmofono)
         {
-            shared_ptr<nmofono::FlightModeToggle> flightModeToggle;
-            shared_ptr<nmofono::wifi::WifiToggle> wifiToggle;
-
-            OrgFreedesktopHostname1Interface hostnameInterface(DBusTypes::HOSTNAME_BUS_NAME, DBusTypes::HOSTNAME_OBJ_PATH, QDBusConnection::systemBus());
-
-            if (QSet<QString>{"handset", "tablet"}.contains(hostnameInterface.chassis()))
-            {
-                qDebug() << "Using URFKill to toggle WiFi";
-                flightModeToggle = make_unique<nmofono::UrfkillFlightModeToggle>(QDBusConnection::systemBus());
-                wifiToggle = make_unique<nmofono::wifi::UrfkillWifiToggle>(QDBusConnection::systemBus());
-            }
-            else
-            {
-                qDebug() << "Using NetworkManager to toggle WiFi";
-                flightModeToggle = make_unique<nmofono::NullFlightModeToggle>();
-                wifiToggle = make_unique<nmofono::wifi::NetworkManagerWifiToggle>(QDBusConnection::systemBus());
-            }
-
             m_nmofono = make_shared<nmofono::ManagerImpl>(
                     singletonNotificationManager(),
-                    flightModeToggle,
-                    wifiToggle,
+                    singletonKillSwitch(),
                     singletonHotspotManager(),
-                    singletonActiveConnectionManager(),
                     QDBusConnection::systemBus());
         }
         return m_nmofono;
@@ -168,11 +153,6 @@ unique_ptr<MenuExporter> Factory::newMenuExporter(const string &path, MenuModel:
 unique_ptr<QuickAccessSection> Factory::newQuickAccessSection(SwitchItem::Ptr flightModeSwitch)
 {
     return make_unique<QuickAccessSection>(d->singletonNmofono(), flightModeSwitch);
-}
-
-unique_ptr<EthernetSection> Factory::newEthernetSection()
-{
-    return make_unique<EthernetSection>(d->singletonNmofono());
 }
 
 unique_ptr<WwanSection> Factory::newWwanSection(SwitchItem::Ptr mobileDataSwitch, SwitchItem::Ptr hotspotSwitch)

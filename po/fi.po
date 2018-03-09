@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-11-30 16:30+0000\n"
+"POT-Creation-Date: 2016-04-29 12:38+0300\n"
 "PO-Revision-Date: 2016-02-15 17:40+0000\n"
 "Last-Translator: Timo Jyrinki <timo.jyrinki@canonical.com>\n"
 "Language-Team: Finnish <fi@li.org>\n"
@@ -15,8 +15,8 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2017-04-08 06:36+0000\n"
-"X-Generator: Launchpad (build 18343)\n"
+"X-Launchpad-Export-Date: 2016-10-21 07:05+0000\n"
+"X-Generator: Launchpad (build 18246)\n"
 "Language: fi\n"
 
 #: ../src/agent/SecretRequest.cpp:61
@@ -39,61 +39,65 @@ msgstr "Yhdistä"
 msgid "Cancel"
 msgstr "Peruuta"
 
-#: ../src/indicator/vpn-status-notifier.cpp:48
-msgid "The VPN connection '%1' failed."
-msgstr "VPN-yhteys '%1' epäonnistui."
+#: ../src/indicator/menuitems/wifi-link-item.cpp:109
+msgid "Other network…"
+msgstr "Muu verkko…"
 
-#: ../src/indicator/vpn-status-notifier.cpp:50
-msgid ""
-"The VPN connection '%1' failed because the network connection was "
-"interrupted."
-msgstr "VPN-yhteys '%1' epäonnistui, koska verkkoyhteys keskeytettiin."
+#: ../src/indicator/menuitems/wwan-link-item.cpp:90
+msgid "No SIM"
+msgstr "Ei SIM-korttia"
 
-#: ../src/indicator/vpn-status-notifier.cpp:51
-msgid ""
-"The VPN connection '%1' failed because the VPN service stopped unexpectedly."
-msgstr "VPN-yhteys '%1' epäonnistui, koska VPN-palvelu pysähtyi odottamatta."
+#: ../src/indicator/menuitems/wwan-link-item.cpp:97
+msgid "SIM Error"
+msgstr "SIM-virhe"
 
-#: ../src/indicator/vpn-status-notifier.cpp:52
-msgid ""
-"The VPN connection '%1' failed because the VPN service returned invalid "
-"configuration."
-msgstr ""
-"VPN-yhteys '%1' epäonnistui, koska VPN-palvelu palautti virheelliset "
-"määritykset."
+#: ../src/indicator/menuitems/wwan-link-item.cpp:105
+msgid "SIM Locked"
+msgstr "SIM lukittu"
 
-#: ../src/indicator/vpn-status-notifier.cpp:53
-msgid ""
-"The VPN connection '%1' failed because the connection attempt timed out."
-msgstr "VPN-yhteys '%1' epäonnistui, koska yhteysyritys aikakatkaistiin."
+#: ../src/indicator/menuitems/wwan-link-item.cpp:118
+msgid "Unregistered"
+msgstr "Rekisteröitymätön"
 
-#: ../src/indicator/vpn-status-notifier.cpp:54
-msgid ""
-"The VPN connection '%1' failed because the VPN service did not start in time."
-msgstr ""
-"VPN-yhteys '%1' epäonnistui, koska VPN-palvelu ei käynnistynyt ajallaan."
+#: ../src/indicator/menuitems/wwan-link-item.cpp:123
+msgid "Unknown"
+msgstr "Tuntematon"
 
-#: ../src/indicator/vpn-status-notifier.cpp:55
-msgid ""
-"The VPN connection '%1' failed because the VPN service failed to start."
-msgstr ""
-"VPN-yhteys '%1' epäonnistui, koska VPN-palvelun käynnistyminen epäonnistui."
+#: ../src/indicator/menuitems/wwan-link-item.cpp:128
+msgid "Denied"
+msgstr "Estetty"
 
-#: ../src/indicator/vpn-status-notifier.cpp:56
-msgid ""
-"The VPN connection '%1' failed because there were no valid VPN secrets."
-msgstr ""
-"VPN-yhteys '%1' epäonnistui, koska tarjolla ei ole kelvollisia VPN-"
-"salaisuuksia."
+#: ../src/indicator/menuitems/wwan-link-item.cpp:133
+msgid "Searching"
+msgstr "Etsitään"
 
-#: ../src/indicator/vpn-status-notifier.cpp:57
-msgid "The VPN connection '%1' failed because of invalid VPN secrets."
-msgstr ""
-"VPN-yhteys '%1' epäonnistui, koska VPN-salaisuudet ovat virheelliset."
+#: ../src/indicator/menuitems/wwan-link-item.cpp:145
+msgid "No Signal"
+msgstr "Ei signaalia"
 
-#: ../src/indicator/vpn-status-notifier.cpp:68
-msgid "VPN Connection Failed"
-msgstr "VPN-yhteys epäonnistui"
+#: ../src/indicator/menuitems/wwan-link-item.cpp:157
+#: ../src/indicator/menuitems/wwan-link-item.cpp:164
+msgid "Offline"
+msgstr "Ei verkossa"
+
+#. TODO Move this into a new class
+#: ../src/indicator/factory.cpp:187
+msgid "Wi-Fi"
+msgstr "Wifi"
+
+#. TODO Move this into a new class
+#: ../src/indicator/factory.cpp:198
+msgid "Flight Mode"
+msgstr "Lentotila"
+
+#: ../src/indicator/factory.cpp:208
+msgid "Cellular data"
+msgstr "Mobiilidata"
+
+#. TODO Move this into a new class
+#: ../src/indicator/factory.cpp:221
+msgid "Hotspot"
+msgstr "Yhteyspiste"
 
 #: ../src/indicator/sim-unlock-dialog.cpp:144
 msgid "Sorry, incorrect %{1} PIN."
@@ -188,119 +192,79 @@ msgstr "Vahvista uusi %{1} PIN"
 msgid "PIN codes did not match."
 msgstr "PIN-koodit eivät täsmänneet."
 
-#: ../src/indicator/nmofono/vpn/vpn-manager.cpp:81
-msgid "VPN connection %1"
-msgstr "VPN-yhteys %1"
+#: ../src/indicator/vpn-status-notifier.cpp:48
+msgid "The VPN connection '%1' failed."
+msgstr "VPN-yhteys '%1' epäonnistui."
 
-#: ../src/indicator/menuitems/wifi-link-item.cpp:109
-msgid "Other network…"
-msgstr "Muu verkko…"
+#: ../src/indicator/vpn-status-notifier.cpp:50
+msgid ""
+"The VPN connection '%1' failed because the network connection was "
+"interrupted."
+msgstr "VPN-yhteys '%1' epäonnistui, koska verkkoyhteys keskeytettiin."
 
-#: ../src/indicator/menuitems/ethernet-link-item.cpp:39
-msgid "Connected"
-msgstr "Yhdistetty"
+#: ../src/indicator/vpn-status-notifier.cpp:51
+msgid ""
+"The VPN connection '%1' failed because the VPN service stopped unexpectedly."
+msgstr "VPN-yhteys '%1' epäonnistui, koska VPN-palvelu pysähtyi odottamatta."
 
-#: ../src/indicator/menuitems/ethernet-link-item.cpp:40
-msgid "Connecting"
-msgstr "Yhdistetään"
+#: ../src/indicator/vpn-status-notifier.cpp:52
+msgid ""
+"The VPN connection '%1' failed because the VPN service returned invalid "
+"configuration."
+msgstr ""
+"VPN-yhteys '%1' epäonnistui, koska VPN-palvelu palautti virheelliset "
+"määritykset."
 
-#: ../src/indicator/menuitems/ethernet-link-item.cpp:41
-msgid "Disabled"
-msgstr "Pois käytöstä"
+#: ../src/indicator/vpn-status-notifier.cpp:53
+msgid ""
+"The VPN connection '%1' failed because the connection attempt timed out."
+msgstr "VPN-yhteys '%1' epäonnistui, koska yhteysyritys aikakatkaistiin."
 
-#: ../src/indicator/menuitems/ethernet-link-item.cpp:42
-msgid "Disconnected"
-msgstr "Ei yhteyttä"
+#: ../src/indicator/vpn-status-notifier.cpp:54
+msgid ""
+"The VPN connection '%1' failed because the VPN service did not start in time."
+msgstr ""
+"VPN-yhteys '%1' epäonnistui, koska VPN-palvelu ei käynnistynyt ajallaan."
 
-#: ../src/indicator/menuitems/ethernet-link-item.cpp:43
-msgid "Online"
-msgstr "Verkossa"
+#: ../src/indicator/vpn-status-notifier.cpp:55
+msgid ""
+"The VPN connection '%1' failed because the VPN service failed to start."
+msgstr ""
+"VPN-yhteys '%1' epäonnistui, koska VPN-palvelun käynnistyminen epäonnistui."
 
-#: ../src/indicator/menuitems/ethernet-link-item.cpp:44
-msgid "Failed"
-msgstr "Epäonnistui"
+#: ../src/indicator/vpn-status-notifier.cpp:56
+msgid ""
+"The VPN connection '%1' failed because there were no valid VPN secrets."
+msgstr ""
+"VPN-yhteys '%1' epäonnistui, koska tarjolla ei ole kelvollisia VPN-"
+"salaisuuksia."
 
-#: ../src/indicator/menuitems/ethernet-link-item.cpp:56
-msgid "Ethernet (%1)"
-msgstr "Ethernet (%1)"
+#: ../src/indicator/vpn-status-notifier.cpp:57
+msgid "The VPN connection '%1' failed because of invalid VPN secrets."
+msgstr ""
+"VPN-yhteys '%1' epäonnistui, koska VPN-salaisuudet ovat virheelliset."
 
-#: ../src/indicator/menuitems/ethernet-link-item.cpp:60
-msgid "Ethernet"
-msgstr "Ethernet"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:90
-msgid "No SIM"
-msgstr "Ei SIM-korttia"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:97
-msgid "SIM Error"
-msgstr "SIM-virhe"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:105
-msgid "SIM Locked"
-msgstr "SIM lukittu"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:118
-msgid "Unregistered"
-msgstr "Rekisteröitymätön"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:123
-msgid "Unknown"
-msgstr "Tuntematon"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:128
-msgid "Denied"
-msgstr "Estetty"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:133
-msgid "Searching"
-msgstr "Etsitään"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:145
-msgid "No Signal"
-msgstr "Ei signaalia"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:157
-#: ../src/indicator/menuitems/wwan-link-item.cpp:164
-msgid "Offline"
-msgstr "Ei verkossa"
-
-#. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
-#: ../src/indicator/root-state.cpp:340
-msgid "Network"
-msgstr "Verkko"
-
-#. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:193
-msgid "Wi-Fi"
-msgstr "Wifi"
-
-#. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:204
-msgid "Flight Mode"
-msgstr "Lentotila"
-
-#: ../src/indicator/factory.cpp:214
-msgid "Cellular data"
-msgstr "Mobiilidata"
-
-#. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:227
-msgid "Hotspot"
-msgstr "Yhteyspiste"
+#: ../src/indicator/vpn-status-notifier.cpp:68
+msgid "VPN Connection Failed"
+msgstr "VPN-yhteys epäonnistui"
 
 #: ../src/indicator/sections/wwan-section.cpp:102
 msgid "Cellular settings…"
 msgstr "Mobiiliverkon asetukset…"
 
-#: ../src/indicator/sections/ethernet-section.cpp:114
-msgid "Ethernet settings…"
-msgstr "Ethernet-asetukset…"
+#: ../src/indicator/sections/vpn-section.cpp:140
+msgid "VPN settings…"
+msgstr "VPN-asetukset…"
 
 #: ../src/indicator/sections/wifi-section.cpp:65
 msgid "Wi-Fi settings…"
 msgstr "Wifi-asetukset…"
 
-#: ../src/indicator/sections/vpn-section.cpp:139
-msgid "VPN settings…"
-msgstr "VPN-asetukset…"
+#. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
+#: ../src/indicator/root-state.cpp:306
+msgid "Network"
+msgstr "Verkko"
+
+#: ../src/indicator/nmofono/vpn/vpn-manager.cpp:81
+msgid "VPN connection %1"
+msgstr "VPN-yhteys %1"

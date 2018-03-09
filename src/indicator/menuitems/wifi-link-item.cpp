@@ -42,7 +42,7 @@ class WifiLinkItem::Private : public QObject
 public:
     ActionGroupMerger::Ptr m_actionGroupMerger;
 
-    wifi::WifiLink::SPtr m_link;
+    wifi::WifiLink::Ptr m_link;
 
     /// @todo do something with me...
     Action::Ptr m_actionBusy;
@@ -73,7 +73,7 @@ public:
 
     Private() = delete;
     ~Private() {}
-    Private(wifi::WifiLink::SPtr link)
+    Private(wifi::WifiLink::Ptr link)
         : m_link {link}
     {
         m_actionGroupMerger = std::make_shared<ActionGroupMerger>();
@@ -196,7 +196,7 @@ public Q_SLOTS:
 };
 
 
-WifiLinkItem::WifiLinkItem(wifi::WifiLink::SPtr link)
+WifiLinkItem::WifiLinkItem(wifi::WifiLink::Ptr link)
     : d{new Private(link)}
 {
 }

@@ -17,7 +17,7 @@
  *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
  */
 
-#include <util/dbus-property-cache.h>
+#include <connectivityqt/internal/dbus-property-cache.h>
 #include <connectivityqt/sim.h>
 #include <dbus-types.h>
 
@@ -70,7 +70,7 @@ public:
 
     unique_ptr<ComUbuntuConnectivity1SimInterface> m_simInterface;
 
-    util::DBusPropertyCache::UPtr m_propertyCache;
+    internal::DBusPropertyCache::UPtr m_propertyCache;
 };
 
 Sim::Sim(const QDBusObjectPath& path, const QDBusConnection& connection, QObject* parent) :
@@ -81,13 +81,13 @@ Sim::Sim(const QDBusObjectPath& path, const QDBusConnection& connection, QObject
             DBusTypes::DBUS_NAME, path.path(), connection);
 
     d->m_propertyCache =
-            make_unique<util::DBusPropertyCache>(
+            make_unique<internal::DBusPropertyCache>(
                     DBusTypes::DBUS_NAME,
                     ComUbuntuConnectivity1SimInterface::staticInterfaceName(),
                     path.path(), connection);
 
     connect(d->m_propertyCache.get(),
-                &util::DBusPropertyCache::propertyChanged, d.get(),
+                &internal::DBusPropertyCache::propertyChanged, d.get(),
                 &Priv::propertyChanged);
 }
 

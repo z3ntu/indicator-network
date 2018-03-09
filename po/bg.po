@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-11-30 16:30+0000\n"
+"POT-Creation-Date: 2016-04-29 12:38+0300\n"
 "PO-Revision-Date: 2016-02-15 17:40+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Bulgarian <bg@li.org>\n"
@@ -15,8 +15,8 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Launchpad-Export-Date: 2017-04-08 06:36+0000\n"
-"X-Generator: Launchpad (build 18343)\n"
+"X-Launchpad-Export-Date: 2016-10-21 07:05+0000\n"
+"X-Generator: Launchpad (build 18246)\n"
 "Language: bg\n"
 
 #: ../src/agent/SecretRequest.cpp:61
@@ -39,53 +39,64 @@ msgstr "Свързване"
 msgid "Cancel"
 msgstr "Отказ"
 
-#: ../src/indicator/vpn-status-notifier.cpp:48
-msgid "The VPN connection '%1' failed."
+#: ../src/indicator/menuitems/wifi-link-item.cpp:109
+msgid "Other network…"
 msgstr ""
 
-#: ../src/indicator/vpn-status-notifier.cpp:50
-msgid ""
-"The VPN connection '%1' failed because the network connection was "
-"interrupted."
+#: ../src/indicator/menuitems/wwan-link-item.cpp:90
+msgid "No SIM"
+msgstr "Липсва SIM карта"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:97
+msgid "SIM Error"
+msgstr "Грешка при SIM картата"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:105
+msgid "SIM Locked"
 msgstr ""
 
-#: ../src/indicator/vpn-status-notifier.cpp:51
-msgid ""
-"The VPN connection '%1' failed because the VPN service stopped unexpectedly."
+#: ../src/indicator/menuitems/wwan-link-item.cpp:118
+msgid "Unregistered"
 msgstr ""
 
-#: ../src/indicator/vpn-status-notifier.cpp:52
-msgid ""
-"The VPN connection '%1' failed because the VPN service returned invalid "
-"configuration."
+#: ../src/indicator/menuitems/wwan-link-item.cpp:123
+msgid "Unknown"
 msgstr ""
 
-#: ../src/indicator/vpn-status-notifier.cpp:53
-msgid ""
-"The VPN connection '%1' failed because the connection attempt timed out."
+#: ../src/indicator/menuitems/wwan-link-item.cpp:128
+msgid "Denied"
 msgstr ""
 
-#: ../src/indicator/vpn-status-notifier.cpp:54
-msgid ""
-"The VPN connection '%1' failed because the VPN service did not start in time."
+#: ../src/indicator/menuitems/wwan-link-item.cpp:133
+msgid "Searching"
 msgstr ""
 
-#: ../src/indicator/vpn-status-notifier.cpp:55
-msgid ""
-"The VPN connection '%1' failed because the VPN service failed to start."
+#: ../src/indicator/menuitems/wwan-link-item.cpp:145
+msgid "No Signal"
+msgstr "Няма сигнал"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:157
+#: ../src/indicator/menuitems/wwan-link-item.cpp:164
+msgid "Offline"
 msgstr ""
 
-#: ../src/indicator/vpn-status-notifier.cpp:56
-msgid ""
-"The VPN connection '%1' failed because there were no valid VPN secrets."
+#. TODO Move this into a new class
+#: ../src/indicator/factory.cpp:187
+msgid "Wi-Fi"
+msgstr "Безжична мрежа"
+
+#. TODO Move this into a new class
+#: ../src/indicator/factory.cpp:198
+msgid "Flight Mode"
+msgstr "Режим на полет"
+
+#: ../src/indicator/factory.cpp:208
+msgid "Cellular data"
 msgstr ""
 
-#: ../src/indicator/vpn-status-notifier.cpp:57
-msgid "The VPN connection '%1' failed because of invalid VPN secrets."
-msgstr ""
-
-#: ../src/indicator/vpn-status-notifier.cpp:68
-msgid "VPN Connection Failed"
+#. TODO Move this into a new class
+#: ../src/indicator/factory.cpp:221
+msgid "Hotspot"
 msgstr ""
 
 #: ../src/indicator/sim-unlock-dialog.cpp:144
@@ -176,119 +187,72 @@ msgstr ""
 msgid "PIN codes did not match."
 msgstr ""
 
-#: ../src/indicator/nmofono/vpn/vpn-manager.cpp:81
-msgid "VPN connection %1"
+#: ../src/indicator/vpn-status-notifier.cpp:48
+msgid "The VPN connection '%1' failed."
 msgstr ""
 
-#: ../src/indicator/menuitems/wifi-link-item.cpp:109
-msgid "Other network…"
+#: ../src/indicator/vpn-status-notifier.cpp:50
+msgid ""
+"The VPN connection '%1' failed because the network connection was "
+"interrupted."
 msgstr ""
 
-#: ../src/indicator/menuitems/ethernet-link-item.cpp:39
-msgid "Connected"
-msgstr "Свързан"
-
-#: ../src/indicator/menuitems/ethernet-link-item.cpp:40
-msgid "Connecting"
-msgstr "Свързване"
-
-#: ../src/indicator/menuitems/ethernet-link-item.cpp:41
-msgid "Disabled"
+#: ../src/indicator/vpn-status-notifier.cpp:51
+msgid ""
+"The VPN connection '%1' failed because the VPN service stopped unexpectedly."
 msgstr ""
 
-#: ../src/indicator/menuitems/ethernet-link-item.cpp:42
-msgid "Disconnected"
-msgstr "Без връзка"
-
-#: ../src/indicator/menuitems/ethernet-link-item.cpp:43
-msgid "Online"
+#: ../src/indicator/vpn-status-notifier.cpp:52
+msgid ""
+"The VPN connection '%1' failed because the VPN service returned invalid "
+"configuration."
 msgstr ""
 
-#: ../src/indicator/menuitems/ethernet-link-item.cpp:44
-msgid "Failed"
+#: ../src/indicator/vpn-status-notifier.cpp:53
+msgid ""
+"The VPN connection '%1' failed because the connection attempt timed out."
 msgstr ""
 
-#: ../src/indicator/menuitems/ethernet-link-item.cpp:56
-msgid "Ethernet (%1)"
+#: ../src/indicator/vpn-status-notifier.cpp:54
+msgid ""
+"The VPN connection '%1' failed because the VPN service did not start in time."
 msgstr ""
 
-#: ../src/indicator/menuitems/ethernet-link-item.cpp:60
-msgid "Ethernet"
+#: ../src/indicator/vpn-status-notifier.cpp:55
+msgid ""
+"The VPN connection '%1' failed because the VPN service failed to start."
 msgstr ""
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:90
-msgid "No SIM"
-msgstr "Липсва SIM карта"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:97
-msgid "SIM Error"
-msgstr "Грешка при SIM картата"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:105
-msgid "SIM Locked"
+#: ../src/indicator/vpn-status-notifier.cpp:56
+msgid ""
+"The VPN connection '%1' failed because there were no valid VPN secrets."
 msgstr ""
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:118
-msgid "Unregistered"
+#: ../src/indicator/vpn-status-notifier.cpp:57
+msgid "The VPN connection '%1' failed because of invalid VPN secrets."
 msgstr ""
 
-#: ../src/indicator/menuitems/wwan-link-item.cpp:123
-msgid "Unknown"
-msgstr ""
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:128
-msgid "Denied"
-msgstr ""
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:133
-msgid "Searching"
-msgstr ""
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:145
-msgid "No Signal"
-msgstr "Няма сигнал"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:157
-#: ../src/indicator/menuitems/wwan-link-item.cpp:164
-msgid "Offline"
-msgstr ""
-
-#. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
-#: ../src/indicator/root-state.cpp:340
-msgid "Network"
-msgstr "Мрежа"
-
-#. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:193
-msgid "Wi-Fi"
-msgstr "Безжична мрежа"
-
-#. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:204
-msgid "Flight Mode"
-msgstr "Режим на полет"
-
-#: ../src/indicator/factory.cpp:214
-msgid "Cellular data"
-msgstr ""
-
-#. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:227
-msgid "Hotspot"
+#: ../src/indicator/vpn-status-notifier.cpp:68
+msgid "VPN Connection Failed"
 msgstr ""
 
 #: ../src/indicator/sections/wwan-section.cpp:102
 msgid "Cellular settings…"
 msgstr "Настройки на клетъчна мрежа..."
 
-#: ../src/indicator/sections/ethernet-section.cpp:114
-msgid "Ethernet settings…"
+#: ../src/indicator/sections/vpn-section.cpp:140
+msgid "VPN settings…"
 msgstr ""
 
 #: ../src/indicator/sections/wifi-section.cpp:65
 msgid "Wi-Fi settings…"
 msgstr "Настройки на безжичната мрежа…"
 
-#: ../src/indicator/sections/vpn-section.cpp:139
-msgid "VPN settings…"
+#. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
+#: ../src/indicator/root-state.cpp:306
+msgid "Network"
+msgstr "Мрежа"
+
+#: ../src/indicator/nmofono/vpn/vpn-manager.cpp:81
+msgid "VPN connection %1"
 msgstr ""

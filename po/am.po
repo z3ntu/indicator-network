@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-11-30 16:30+0000\n"
+"POT-Creation-Date: 2016-04-29 12:38+0300\n"
 "PO-Revision-Date: 2016-08-14 14:18+0000\n"
 "Last-Translator: samson <Unknown>\n"
 "Language-Team: Amharic <am@li.org>\n"
@@ -15,8 +15,8 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Launchpad-Export-Date: 2017-04-08 06:36+0000\n"
-"X-Generator: Launchpad (build 18343)\n"
+"X-Launchpad-Export-Date: 2016-10-21 07:05+0000\n"
+"X-Generator: Launchpad (build 18246)\n"
 "Language: am\n"
 
 #: ../src/agent/SecretRequest.cpp:61
@@ -39,54 +39,65 @@ msgstr "መገናኛ"
 msgid "Cancel"
 msgstr "መሰረዣ"
 
-#: ../src/indicator/vpn-status-notifier.cpp:48
-msgid "The VPN connection '%1' failed."
-msgstr "የ VPN ግንኙነት '%1' ወድቋል"
+#: ../src/indicator/menuitems/wifi-link-item.cpp:109
+msgid "Other network…"
+msgstr "ሌሎች ኔትዎርኮች..."
 
-#: ../src/indicator/vpn-status-notifier.cpp:50
-msgid ""
-"The VPN connection '%1' failed because the network connection was "
-"interrupted."
-msgstr "የ VPN ግንኙነት '%1' ወድቋል ምክንያቱም የ ኔትዎርክ ግንኙነት ተቋርጧል"
+#: ../src/indicator/menuitems/wwan-link-item.cpp:90
+msgid "No SIM"
+msgstr "ሲም አልተገኘም"
 
-#: ../src/indicator/vpn-status-notifier.cpp:51
-msgid ""
-"The VPN connection '%1' failed because the VPN service stopped unexpectedly."
-msgstr "የ VPN ግንኙነት '%1' ወድቋል ምክንያቱም የ VPN ግልጋሎት በድንገት ተቋርጧል"
+#: ../src/indicator/menuitems/wwan-link-item.cpp:97
+msgid "SIM Error"
+msgstr "የ ሲም ስህተት"
 
-#: ../src/indicator/vpn-status-notifier.cpp:52
-msgid ""
-"The VPN connection '%1' failed because the VPN service returned invalid "
-"configuration."
-msgstr "የ VPN ግንኙነት '%1' ወድቋል ምክንያቱም የ VPN ግልጋሎት ዋጋ የለውም"
+#: ../src/indicator/menuitems/wwan-link-item.cpp:105
+msgid "SIM Locked"
+msgstr "ሲም ተቆልፏል"
 
-#: ../src/indicator/vpn-status-notifier.cpp:53
-msgid ""
-"The VPN connection '%1' failed because the connection attempt timed out."
-msgstr "የ VPN ግንኙነት '%1' ወድቋል ምክንያቱም ግንኙነት ጊዜው አልፏል"
+#: ../src/indicator/menuitems/wwan-link-item.cpp:118
+msgid "Unregistered"
+msgstr "ያልተመዘገበ"
 
-#: ../src/indicator/vpn-status-notifier.cpp:54
-msgid ""
-"The VPN connection '%1' failed because the VPN service did not start in time."
-msgstr "የ VPN ግንኙነት '%1' ወድቋል ምክንያቱም የ VPN ግልጋሎት በጊዜው ስራ አልጀመረም"
+#: ../src/indicator/menuitems/wwan-link-item.cpp:123
+msgid "Unknown"
+msgstr "ያልታወቀ"
 
-#: ../src/indicator/vpn-status-notifier.cpp:55
-msgid ""
-"The VPN connection '%1' failed because the VPN service failed to start."
-msgstr "የ VPN ግንኙነት '%1' ወድቋል ምክንያቱም የ VPN ግልጋሎት ማስጀመር አልተቻለም"
+#: ../src/indicator/menuitems/wwan-link-item.cpp:128
+msgid "Denied"
+msgstr "ተከልክሏል"
 
-#: ../src/indicator/vpn-status-notifier.cpp:56
-msgid ""
-"The VPN connection '%1' failed because there were no valid VPN secrets."
-msgstr "የ VPN ግንኙነት '%1' ወድቋል ምክንያቱም ዋጋ ያለው VPN ግልጋሎት አልተገኘም"
+#: ../src/indicator/menuitems/wwan-link-item.cpp:133
+msgid "Searching"
+msgstr "በ መፈለግ ላይ"
 
-#: ../src/indicator/vpn-status-notifier.cpp:57
-msgid "The VPN connection '%1' failed because of invalid VPN secrets."
-msgstr "የ VPN ግንኙነት '%1' ወድቋል ምክንያቱም VPN ዋጋ የለውም"
+#: ../src/indicator/menuitems/wwan-link-item.cpp:145
+msgid "No Signal"
+msgstr "ምልክት የለም"
 
-#: ../src/indicator/vpn-status-notifier.cpp:68
-msgid "VPN Connection Failed"
-msgstr "የ VPN ግንኙነት ወድቋል"
+#: ../src/indicator/menuitems/wwan-link-item.cpp:157
+#: ../src/indicator/menuitems/wwan-link-item.cpp:164
+msgid "Offline"
+msgstr "ከመስመር ውጪ"
+
+#. TODO Move this into a new class
+#: ../src/indicator/factory.cpp:187
+msgid "Wi-Fi"
+msgstr "ዋይ-ፋይ"
+
+#. TODO Move this into a new class
+#: ../src/indicator/factory.cpp:198
+msgid "Flight Mode"
+msgstr "በ በረራ ዘዴ"
+
+#: ../src/indicator/factory.cpp:208
+msgid "Cellular data"
+msgstr "ሴሉላር ዳታ"
+
+#. TODO Move this into a new class
+#: ../src/indicator/factory.cpp:221
+msgid "Hotspot"
+msgstr "Hotspot"
 
 #: ../src/indicator/sim-unlock-dialog.cpp:144
 msgid "Sorry, incorrect %{1} PIN."
@@ -176,119 +187,72 @@ msgstr "ማረጋገጫ አዲስ %{1} ፒን"
 msgid "PIN codes did not match."
 msgstr "የ ፒን ኮዶቹ አይመሳሰሉም"
 
-#: ../src/indicator/nmofono/vpn/vpn-manager.cpp:81
-msgid "VPN connection %1"
-msgstr "የ VPN ግንኙነት %1"
+#: ../src/indicator/vpn-status-notifier.cpp:48
+msgid "The VPN connection '%1' failed."
+msgstr "የ VPN ግንኙነት '%1' ወድቋል"
 
-#: ../src/indicator/menuitems/wifi-link-item.cpp:109
-msgid "Other network…"
-msgstr "ሌሎች ኔትዎርኮች..."
+#: ../src/indicator/vpn-status-notifier.cpp:50
+msgid ""
+"The VPN connection '%1' failed because the network connection was "
+"interrupted."
+msgstr "የ VPN ግንኙነት '%1' ወድቋል ምክንያቱም የ ኔትዎርክ ግንኙነት ተቋርጧል"
 
-#: ../src/indicator/menuitems/ethernet-link-item.cpp:39
-msgid "Connected"
-msgstr "ተገናኝቷል"
+#: ../src/indicator/vpn-status-notifier.cpp:51
+msgid ""
+"The VPN connection '%1' failed because the VPN service stopped unexpectedly."
+msgstr "የ VPN ግንኙነት '%1' ወድቋል ምክንያቱም የ VPN ግልጋሎት በድንገት ተቋርጧል"
 
-#: ../src/indicator/menuitems/ethernet-link-item.cpp:40
-msgid "Connecting"
-msgstr "በመገናኘት ላይ"
+#: ../src/indicator/vpn-status-notifier.cpp:52
+msgid ""
+"The VPN connection '%1' failed because the VPN service returned invalid "
+"configuration."
+msgstr "የ VPN ግንኙነት '%1' ወድቋል ምክንያቱም የ VPN ግልጋሎት ዋጋ የለውም"
 
-#: ../src/indicator/menuitems/ethernet-link-item.cpp:41
-msgid "Disabled"
-msgstr "ተሰናክሏል"
+#: ../src/indicator/vpn-status-notifier.cpp:53
+msgid ""
+"The VPN connection '%1' failed because the connection attempt timed out."
+msgstr "የ VPN ግንኙነት '%1' ወድቋል ምክንያቱም ግንኙነት ጊዜው አልፏል"
 
-#: ../src/indicator/menuitems/ethernet-link-item.cpp:42
-msgid "Disconnected"
-msgstr "ተቋርጧል"
+#: ../src/indicator/vpn-status-notifier.cpp:54
+msgid ""
+"The VPN connection '%1' failed because the VPN service did not start in time."
+msgstr "የ VPN ግንኙነት '%1' ወድቋል ምክንያቱም የ VPN ግልጋሎት በጊዜው ስራ አልጀመረም"
 
-#: ../src/indicator/menuitems/ethernet-link-item.cpp:43
-msgid "Online"
-msgstr "በ መስመር ላይ"
+#: ../src/indicator/vpn-status-notifier.cpp:55
+msgid ""
+"The VPN connection '%1' failed because the VPN service failed to start."
+msgstr "የ VPN ግንኙነት '%1' ወድቋል ምክንያቱም የ VPN ግልጋሎት ማስጀመር አልተቻለም"
 
-#: ../src/indicator/menuitems/ethernet-link-item.cpp:44
-msgid "Failed"
-msgstr "ወድቋል"
+#: ../src/indicator/vpn-status-notifier.cpp:56
+msgid ""
+"The VPN connection '%1' failed because there were no valid VPN secrets."
+msgstr "የ VPN ግንኙነት '%1' ወድቋል ምክንያቱም ዋጋ ያለው VPN ግልጋሎት አልተገኘም"
 
-#: ../src/indicator/menuitems/ethernet-link-item.cpp:56
-msgid "Ethernet (%1)"
-msgstr "ኢተርኔት (%1)"
+#: ../src/indicator/vpn-status-notifier.cpp:57
+msgid "The VPN connection '%1' failed because of invalid VPN secrets."
+msgstr "የ VPN ግንኙነት '%1' ወድቋል ምክንያቱም VPN ዋጋ የለውም"
 
-#: ../src/indicator/menuitems/ethernet-link-item.cpp:60
-msgid "Ethernet"
-msgstr "ኢተርኔት"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:90
-msgid "No SIM"
-msgstr "ሲም አልተገኘም"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:97
-msgid "SIM Error"
-msgstr "የ ሲም ስህተት"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:105
-msgid "SIM Locked"
-msgstr "ሲም ተቆልፏል"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:118
-msgid "Unregistered"
-msgstr "ያልተመዘገበ"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:123
-msgid "Unknown"
-msgstr "ያልታወቀ"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:128
-msgid "Denied"
-msgstr "ተከልክሏል"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:133
-msgid "Searching"
-msgstr "በ መፈለግ ላይ"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:145
-msgid "No Signal"
-msgstr "ምልክት የለም"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:157
-#: ../src/indicator/menuitems/wwan-link-item.cpp:164
-msgid "Offline"
-msgstr "ከመስመር ውጪ"
-
-#. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
-#: ../src/indicator/root-state.cpp:340
-msgid "Network"
-msgstr "ኔትዎርክ"
-
-#. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:193
-msgid "Wi-Fi"
-msgstr "ዋይ-ፋይ"
-
-#. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:204
-msgid "Flight Mode"
-msgstr "በ በረራ ዘዴ"
-
-#: ../src/indicator/factory.cpp:214
-msgid "Cellular data"
-msgstr "ሴሉላር ዳታ"
-
-#. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:227
-msgid "Hotspot"
-msgstr "Hotspot"
+#: ../src/indicator/vpn-status-notifier.cpp:68
+msgid "VPN Connection Failed"
+msgstr "የ VPN ግንኙነት ወድቋል"
 
 #: ../src/indicator/sections/wwan-section.cpp:102
 msgid "Cellular settings…"
 msgstr "ሴሉላር ማሰናጃዎች…"
 
-#: ../src/indicator/sections/ethernet-section.cpp:114
-msgid "Ethernet settings…"
-msgstr "ኢተርኔት ማሰናጃ…"
+#: ../src/indicator/sections/vpn-section.cpp:140
+msgid "VPN settings…"
+msgstr "VPN ማሰናጃ…"
 
 #: ../src/indicator/sections/wifi-section.cpp:65
 msgid "Wi-Fi settings…"
 msgstr "ዋይ-ፋይ ማሰናጃዎች…"
 
-#: ../src/indicator/sections/vpn-section.cpp:139
-msgid "VPN settings…"
-msgstr "VPN ማሰናጃ…"
+#. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
+#: ../src/indicator/root-state.cpp:306
+msgid "Network"
+msgstr "ኔትዎርክ"
+
+#: ../src/indicator/nmofono/vpn/vpn-manager.cpp:81
+msgid "VPN connection %1"
+msgstr "የ VPN ግንኙነት %1"

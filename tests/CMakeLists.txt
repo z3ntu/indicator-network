@@ -17,7 +17,7 @@ include_directories(
 )
 
 add_definitions(
--DDBUSMOCK_TEMPLATE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/data/"
+-DNETWORK_MANAGER_TEMPLATE_PATH="${CMAKE_CURRENT_SOURCE_DIR}/data/networkmanager.py"
 )
 
 add_subdirectory(integration)

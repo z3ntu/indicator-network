@@ -61,18 +61,10 @@ main(int argc, char **argv)
         qDebug() << QDBusConnection::systemBus().baseService();
     }
 
-    try
-    {
-        Factory factory;
-        auto menu = factory.newMenuBuilder();
-        auto connectivityService = factory.newConnectivityService();
-        auto vpnStatusNotifier = factory.newVpnStatusNotifier();
+    Factory factory;
+    auto menu = factory.newMenuBuilder();
+    auto connectivityService = factory.newConnectivityService();
+    auto vpnStatusNotifier = factory.newVpnStatusNotifier();
 
-        return app.exec();
-    }
-    catch(exception& e)
-    {
-        qWarning() << e.what();
-        return 1;
-    }
+    return app.exec();
 }

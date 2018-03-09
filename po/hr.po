@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-11-30 16:30+0000\n"
+"POT-Creation-Date: 2016-04-29 12:38+0300\n"
 "PO-Revision-Date: 2016-02-15 17:40+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Croatian <hr@li.org>\n"
@@ -16,8 +16,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Launchpad-Export-Date: 2017-04-08 06:36+0000\n"
-"X-Generator: Launchpad (build 18343)\n"
+"X-Launchpad-Export-Date: 2016-10-21 07:05+0000\n"
+"X-Generator: Launchpad (build 18246)\n"
 "Language: hr\n"
 
 #: ../src/agent/SecretRequest.cpp:61
@@ -39,6 +39,160 @@ msgstr "Poveži se"
 #: ../src/agent/SecretRequest.cpp:75
 msgid "Cancel"
 msgstr "Odustani"
+
+#: ../src/indicator/menuitems/wifi-link-item.cpp:109
+msgid "Other network…"
+msgstr "Ostale mreže..."
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:90
+msgid "No SIM"
+msgstr "Nema SIM-a"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:97
+msgid "SIM Error"
+msgstr "SIM greška"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:105
+msgid "SIM Locked"
+msgstr "SIM zaključan"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:118
+msgid "Unregistered"
+msgstr "Neregistrirana"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:123
+msgid "Unknown"
+msgstr "Nepoznata"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:128
+msgid "Denied"
+msgstr "Odbijena"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:133
+msgid "Searching"
+msgstr "Pretraživanje"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:145
+msgid "No Signal"
+msgstr "Nema signala"
+
+#: ../src/indicator/menuitems/wwan-link-item.cpp:157
+#: ../src/indicator/menuitems/wwan-link-item.cpp:164
+msgid "Offline"
+msgstr "Nije povezano"
+
+#. TODO Move this into a new class
+#: ../src/indicator/factory.cpp:187
+msgid "Wi-Fi"
+msgstr "Bežična mreža"
+
+#. TODO Move this into a new class
+#: ../src/indicator/factory.cpp:198
+msgid "Flight Mode"
+msgstr "Način rada u zrakoplovu"
+
+#: ../src/indicator/factory.cpp:208
+msgid "Cellular data"
+msgstr "Mobilni podaci"
+
+#. TODO Move this into a new class
+#: ../src/indicator/factory.cpp:221
+msgid "Hotspot"
+msgstr "Pristupna točka"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:144
+msgid "Sorry, incorrect %{1} PIN."
+msgstr "Isprika, neispravan %{1} PIN."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:149
+#: ../src/indicator/sim-unlock-dialog.cpp:178
+msgid "This will be your last attempt."
+msgstr "Ovo je vaš posljednji pokušaj."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:151
+msgid ""
+"If %{1} PIN is entered incorrectly you will require your PUK code to unlock."
+msgstr ""
+"Ako je %{1} PIN upisan neispravno, trebati će vam PUK kôd za otključavanje."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:161
+msgid "Sorry, your %{1} is now blocked."
+msgstr "Isprika, vaš %{1} je sada blokiran."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:166
+msgid "Please enter your PUK code to unblock SIM card."
+msgstr "Upišite vaš PUK kôd kako bi odblokirali SIM karticu."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:168
+msgid "You may need to contact your network provider for PUK code."
+msgstr ""
+"Možda ćete trebati kontaktirati vašeg pružatelja mrežne usluge za PUK kôd."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:176
+#: ../src/indicator/sim-unlock-dialog.cpp:190
+msgid "Sorry, incorrect PUK."
+msgstr "Isprika, neispravan PUK."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:180
+msgid ""
+"If PUK code is entered incorrectly, your SIM card will be blocked and needs "
+"replacement."
+msgstr ""
+"Ako je PUK kôd upisan neispravno, vaša SIM kartica će biti blokirana i "
+"potrebna će biti njena zamjena."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:182
+msgid "Please contact your network provider."
+msgstr "Kontaktirajte vašeg pružatelja mrežne usluge."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:192
+msgid "Your SIM card is now permanently blocked and needs replacement."
+msgstr ""
+"Vaša SIM kartica je sada trajno blokirana i potrebna je njena zamjena."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:194
+msgid "Please contact your service provider."
+msgstr "Kontaktirajte vašeg pružatelja usluge."
+
+#: ../src/indicator/sim-unlock-dialog.cpp:218
+msgid "Sorry, incorrect PIN"
+msgstr "Isprika, neispravan PIN"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:230
+msgid "Sorry, incorrect PUK"
+msgstr "Isprika, neispravan PUK"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:292
+msgid "Enter %{1} PIN"
+msgstr "Upišite %{1} PIN"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:300
+msgid "Enter PUK code"
+msgstr "Upišite PUK kôd"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:304
+msgid "Enter PUK code for %{1}"
+msgstr "Upišite PUK kôd za %{1}"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:315
+#, c-format
+msgid "1 attempt remaining"
+msgid_plural "%d attempts remaining"
+msgstr[0] "1 pokušaj preostao"
+msgstr[1] "%d pokušaja preostala"
+msgstr[2] "%d pokušaja preostalo"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:326
+msgid "Enter new %{1} PIN"
+msgstr "Upišite novi %{1} PIN"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:334
+msgid "Confirm new %{1} PIN"
+msgstr "Potvrdite novi %{1} PIN"
+
+#: ../src/indicator/sim-unlock-dialog.cpp:373
+msgid "PIN codes did not match."
+msgstr "PIN kôdovi se ne podudaraju."
 
 #: ../src/indicator/vpn-status-notifier.cpp:48
 msgid "The VPN connection '%1' failed."
@@ -94,213 +248,23 @@ msgstr "VPN povezivanje '%1' neuspjelo zbog nevaljanih VPN tajni."
 msgid "VPN Connection Failed"
 msgstr "VPN povezivanje neuspjelo"
 
-#: ../src/indicator/sim-unlock-dialog.cpp:144
-msgid "Sorry, incorrect %{1} PIN."
-msgstr "Isprika, neispravan %{1} PIN."
-
-#: ../src/indicator/sim-unlock-dialog.cpp:149
-#: ../src/indicator/sim-unlock-dialog.cpp:178
-msgid "This will be your last attempt."
-msgstr "Ovo je vaš posljednji pokušaj."
-
-#: ../src/indicator/sim-unlock-dialog.cpp:151
-msgid ""
-"If %{1} PIN is entered incorrectly you will require your PUK code to unlock."
-msgstr ""
-"Ako je %{1} PIN upisan neispravno, trebati će vam PUK kôd za otključavanje."
-
-#: ../src/indicator/sim-unlock-dialog.cpp:161
-msgid "Sorry, your %{1} is now blocked."
-msgstr "Nažalost, vaš %{1} je sada blokiran."
-
-#: ../src/indicator/sim-unlock-dialog.cpp:166
-msgid "Please enter your PUK code to unblock SIM card."
-msgstr "Upišite vaš PUK kôd kako bi odblokirali SIM karticu."
-
-#: ../src/indicator/sim-unlock-dialog.cpp:168
-msgid "You may need to contact your network provider for PUK code."
-msgstr ""
-"Možda ćete trebati kontaktirati vašeg pružatelja mrežne usluge za PUK kôd."
-
-#: ../src/indicator/sim-unlock-dialog.cpp:176
-#: ../src/indicator/sim-unlock-dialog.cpp:190
-msgid "Sorry, incorrect PUK."
-msgstr "Isprika, neispravan PUK."
-
-#: ../src/indicator/sim-unlock-dialog.cpp:180
-msgid ""
-"If PUK code is entered incorrectly, your SIM card will be blocked and needs "
-"replacement."
-msgstr ""
-"Ako je PUK kôd upisan neispravno, vaša SIM kartica će biti blokirana i "
-"potrebna će biti njena zamjena."
-
-#: ../src/indicator/sim-unlock-dialog.cpp:182
-msgid "Please contact your network provider."
-msgstr "Kontaktirajte vašeg pružatelja mrežne usluge."
-
-#: ../src/indicator/sim-unlock-dialog.cpp:192
-msgid "Your SIM card is now permanently blocked and needs replacement."
-msgstr ""
-"Vaša SIM kartica je sada trajno blokirana i potrebna je njena zamjena."
-
-#: ../src/indicator/sim-unlock-dialog.cpp:194
-msgid "Please contact your service provider."
-msgstr "Kontaktirajte vašeg pružatelja usluge."
-
-#: ../src/indicator/sim-unlock-dialog.cpp:218
-msgid "Sorry, incorrect PIN"
-msgstr "Nažalost, neispravan PIN"
-
-#: ../src/indicator/sim-unlock-dialog.cpp:230
-msgid "Sorry, incorrect PUK"
-msgstr "Nažalost, neispravan PUK"
-
-#: ../src/indicator/sim-unlock-dialog.cpp:292
-msgid "Enter %{1} PIN"
-msgstr "Upišite %{1} PIN"
-
-#: ../src/indicator/sim-unlock-dialog.cpp:300
-msgid "Enter PUK code"
-msgstr "Upišite PUK kôd"
-
-#: ../src/indicator/sim-unlock-dialog.cpp:304
-msgid "Enter PUK code for %{1}"
-msgstr "Upišite PUK kôd za %{1}"
-
-#: ../src/indicator/sim-unlock-dialog.cpp:315
-#, c-format
-msgid "1 attempt remaining"
-msgid_plural "%d attempts remaining"
-msgstr[0] "1 pokušaj preostao"
-msgstr[1] "%d pokušaja preostala"
-msgstr[2] "%d pokušaja preostalo"
-
-#: ../src/indicator/sim-unlock-dialog.cpp:326
-msgid "Enter new %{1} PIN"
-msgstr "Upišite novi %{1} PIN"
-
-#: ../src/indicator/sim-unlock-dialog.cpp:334
-msgid "Confirm new %{1} PIN"
-msgstr "Potvrdite novi %{1} PIN"
-
-#: ../src/indicator/sim-unlock-dialog.cpp:373
-msgid "PIN codes did not match."
-msgstr "PIN kôdovi se ne podudaraju."
-
-#: ../src/indicator/nmofono/vpn/vpn-manager.cpp:81
-msgid "VPN connection %1"
-msgstr "VPN povezivanje %1"
-
-#: ../src/indicator/menuitems/wifi-link-item.cpp:109
-msgid "Other network…"
-msgstr "Ostale mreže..."
-
-#: ../src/indicator/menuitems/ethernet-link-item.cpp:39
-msgid "Connected"
-msgstr "Povezano"
-
-#: ../src/indicator/menuitems/ethernet-link-item.cpp:40
-msgid "Connecting"
-msgstr "Povezivanje"
-
-#: ../src/indicator/menuitems/ethernet-link-item.cpp:41
-msgid "Disabled"
-msgstr "Onemogućeno"
-
-#: ../src/indicator/menuitems/ethernet-link-item.cpp:42
-msgid "Disconnected"
-msgstr "Povezivanje prekinuto"
-
-#: ../src/indicator/menuitems/ethernet-link-item.cpp:43
-msgid "Online"
-msgstr "Dostupan"
-
-#: ../src/indicator/menuitems/ethernet-link-item.cpp:44
-msgid "Failed"
-msgstr "Neuspjelo"
-
-#: ../src/indicator/menuitems/ethernet-link-item.cpp:56
-msgid "Ethernet (%1)"
-msgstr "Žična mreža (%1)"
-
-#: ../src/indicator/menuitems/ethernet-link-item.cpp:60
-msgid "Ethernet"
-msgstr "Žična mreža"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:90
-msgid "No SIM"
-msgstr "Nema SIM-a"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:97
-msgid "SIM Error"
-msgstr "SIM greška"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:105
-msgid "SIM Locked"
-msgstr "SIM zaključan"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:118
-msgid "Unregistered"
-msgstr "Neregistrirana"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:123
-msgid "Unknown"
-msgstr "Nepoznata"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:128
-msgid "Denied"
-msgstr "Odbijena"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:133
-msgid "Searching"
-msgstr "Pretraživanje"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:145
-msgid "No Signal"
-msgstr "Nema signala"
-
-#: ../src/indicator/menuitems/wwan-link-item.cpp:157
-#: ../src/indicator/menuitems/wwan-link-item.cpp:164
-msgid "Offline"
-msgstr "Nije povezano"
-
-#. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
-#: ../src/indicator/root-state.cpp:340
-msgid "Network"
-msgstr "Mreža"
-
-#. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:193
-msgid "Wi-Fi"
-msgstr "Bežična mreža"
-
-#. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:204
-msgid "Flight Mode"
-msgstr "Način rada u zrakoplovu"
-
-#: ../src/indicator/factory.cpp:214
-msgid "Cellular data"
-msgstr "Mobilni podaci"
-
-#. TODO Move this into a new class
-#: ../src/indicator/factory.cpp:227
-msgid "Hotspot"
-msgstr "Pristupna točka"
-
 #: ../src/indicator/sections/wwan-section.cpp:102
 msgid "Cellular settings…"
 msgstr "Mobilne postavke..."
 
-#: ../src/indicator/sections/ethernet-section.cpp:114
-msgid "Ethernet settings…"
-msgstr "Postavke žične mreže…"
+#: ../src/indicator/sections/vpn-section.cpp:140
+msgid "VPN settings…"
+msgstr "VPN postavke…"
 
 #: ../src/indicator/sections/wifi-section.cpp:65
 msgid "Wi-Fi settings…"
 msgstr "Postavke bežične mreže…"
 
-#: ../src/indicator/sections/vpn-section.cpp:139
-msgid "VPN settings…"
-msgstr "VPN postavke…"
+#. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
+#: ../src/indicator/root-state.cpp:306
+msgid "Network"
+msgstr "Mreža"
+
+#: ../src/indicator/nmofono/vpn/vpn-manager.cpp:81
+msgid "VPN connection %1"
+msgstr "VPN povezivanje %1"

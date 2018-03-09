@@ -1,84 +1,14 @@
-indicator-network (0.9.1+ubports) xenial; urgency=medium
+indicator-network (0.8.1+ubports1) xenial; urgency=medium
 
-  * Import latest from launchpad
-  * Revert changes that removed xdg autostart
+  * Update Jenkinsfile
 
- -- Dan Chapman <dan@ubports.com>  Thu, 11 Jan 2018 14:08:16 +0000
+ -- Dan Chapman <dan@ubports.com>  Thu, 11 Jan 2018 11:57:17 +0000
 
-indicator-network (0.9.0+17.04.20170322-0ubuntu1) zesty; urgency=medium
+indicator-network (0.8.1+ubports) vivid; urgency=medium
 
-  * no change rebuild
+  * Imported to UBports
 
- -- Ken VanDine <ken.vandine@canonical.com>  Wed, 22 Mar 2017 18:28:10 +0000
-
-indicator-network (0.9.0+17.04.20170116-0ubuntu1) zesty; urgency=medium
-
-  * Fix maintscript XDG removal path
-  * Use modern CMake syntax for setting compiler type to fix FTBFS (LP:
-    #1656043)
-
- -- Pete Woods <pete.woods@canonical.com>  Mon, 16 Jan 2017 13:41:35 +0000
-
-indicator-network (0.9.0+17.04.20161223.3-0ubuntu2) zesty; urgency=medium
-
-  * Fix conffile removal.
-
- -- Dimitri John Ledkov <xnox@ubuntu.com>  Wed, 04 Jan 2017 11:02:29 +0000
-
-indicator-network (0.9.0+17.04.20161223.3-0ubuntu1) zesty; urgency=medium
-
-  [ Dimitri John Ledkov ]
-  * Remove xdg autolaunch desktop files (LP: #1648360)
-
-  [ Pete Woods ]
-  * Use plain NetworkManager radio control on desktop, URFKill on
-    phablet (LP: #1652288)
-
- -- Pete Woods <pete.woods@canonical.com>  Fri, 23 Dec 2016 13:58:36 +0000
-
-indicator-network (0.9.0+17.04.20161214.1-0ubuntu1) zesty; urgency=medium
-
-  * Compatibility with unversioned cmake-extras modules (LP: #1563573)
-  * Use high-level C++ ActiveConnectionManager class for activating and
-    deactivating connections
-  * Export the correct menu contents for the settings menu (LP:
-    #1647830)
-
- -- Pete Woods <pete.woods@canonical.com>  Wed, 14 Dec 2016 16:57:22 +0000
-
-indicator-network (0.9.0+17.04.20161205.1-0ubuntu1) zesty; urgency=medium
-
-  [ Pete ]
-  * Add ethernet support to indicator (and NM dbus template).
-  * Switch to common active connection interface throughout the codebase.
-  * Re-enable tests on all arches except powerpc, ppc64el, s390x.
-  * Fix Wi-Fi widget visibility.
-
-  [ Michael Terry ]
-  * Work inside a snap by prefixing hard coded paths with $SNAP. (LP:
-    #1629009)
-
- -- Pete Woods <pete.woods@canonical.com>  Mon, 05 Dec 2016 18:16:19 +0000
-
-indicator-network (0.8.0+17.04.20161111-0ubuntu1) zesty; urgency=medium
-
-  * Fix memory corruption inside unix signal handler (LP: #1632275)
-  * Add main exception handler to avoid crashes during startup (LP:
-    #1629703)
-
- -- Pete Woods <pete.woods@canonical.com>  Fri, 11 Nov 2016 11:09:08 +0000
-
-indicator-network (0.8.0+17.04.20161109-0ubuntu1) zesty; urgency=medium
-
-  * Try again to make the tests more reliable (LP: #1632275)
-
- -- Pete Woods <pete.woods@canonical.com>  Wed, 09 Nov 2016 10:04:06 +0000
-
-indicator-network (0.8.0+17.04.20161031.4-0ubuntu1) zesty; urgency=medium
-
-  * Show network data usage indication. (LP: #1470852)
-
- -- Antti Kaijanmäki <antti@kaijanmaki.net>  Mon, 31 Oct 2016 11:08:29 +0000
+ -- UBports auto importer <infra@ubports.com>  Sun, 23 Jul 2017 17:34:03 +0200
 
 indicator-network (0.8.0+17.04.20161021-0ubuntu1) zesty; urgency=medium
 

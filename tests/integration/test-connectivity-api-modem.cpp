@@ -20,7 +20,7 @@
 
 #include <connectivityqt/modem.h>
 #include <connectivityqt/modems-list-model.h>
-#include <indicator-network-test-base-phone.h>
+#include <indicator-network-test-base.h>
 #include <dbus-types.h>
 #include <NetworkManagerSettingsInterface.h>
 
@@ -90,7 +90,7 @@ using namespace connectivityqt;
 namespace
 {
 
-class TestConnectivityApiModem: public IndicatorNetworkTestBasePhone
+class TestConnectivityApiModem: public IndicatorNetworkTestBase
 {
 protected:
     static void SetUpTestCase()

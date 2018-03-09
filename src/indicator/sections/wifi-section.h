@@ -30,8 +30,7 @@ class WifiSection : public Section
     std::shared_ptr<Private> d;
 
 public:
-    UNITY_DEFINES_PTRS(WifiSection);
-
+    typedef std::shared_ptr<WifiSection> Ptr;
     explicit WifiSection(nmofono::Manager::Ptr manager, SwitchItem::Ptr wifiSwitch);
     virtual ~WifiSection();
 

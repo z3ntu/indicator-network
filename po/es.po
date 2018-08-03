@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-04-29 12:38+0300\n"
-"PO-Revision-Date: 2018-08-03 17:43+0000\n"
-"Last-Translator: advocatux <advocatux@airpost.net>\n"
+"PO-Revision-Date: 2018-08-03 19:20+0000\n"
+"Last-Translator: Krakakanok <krakakanok@protonmail.com>\n"
 "Language-Team: Spanish <https://translate.ubports.com/projects/ubports/"
 "indicator-network/es/>\n"
 "Language: es\n"
@@ -84,7 +84,7 @@ msgstr "Sin conexión"
 #. TODO Move this into a new class
 #: ../src/indicator/factory.cpp:187
 msgid "Wi-Fi"
-msgstr "Red inalámbrica"
+msgstr "Wi-Fi"
 
 #. TODO Move this into a new class
 #: ../src/indicator/factory.cpp:198
@@ -256,7 +256,7 @@ msgstr "Falló la conexión VPN"
 
 #: ../src/indicator/sections/wwan-section.cpp:102
 msgid "Cellular settings…"
-msgstr "Configuración de datos móviles..."
+msgstr "Configuración de datos móviles…"
 
 #: ../src/indicator/sections/vpn-section.cpp:140
 msgid "VPN settings…"

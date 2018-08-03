@@ -8,16 +8,17 @@ msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-04-29 12:38+0300\n"
-"PO-Revision-Date: 2016-02-15 17:40+0000\n"
-"Last-Translator: Pete Woods <Unknown>\n"
-"Language-Team: Spanish <es@li.org>\n"
+"PO-Revision-Date: 2018-08-03 17:42+0000\n"
+"Last-Translator: Krakakanok <krakakanok@protonmail.com>\n"
+"Language-Team: Spanish <https://translate.ubports.com/projects/ubports/"
+"indicator-network/es/>\n"
+"Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 2.19.1\n"
 "X-Launchpad-Export-Date: 2016-10-21 07:05+0000\n"
-"X-Generator: Launchpad (build 18246)\n"
-"Language: es\n"
 
 #: ../src/agent/SecretRequest.cpp:61
 msgid "Connect to “%1”"
@@ -192,7 +193,7 @@ msgstr "Confirme el PIN nuevo de %{1}"
 
 #: ../src/indicator/sim-unlock-dialog.cpp:373
 msgid "PIN codes did not match."
-msgstr "El código PIN no coincide"
+msgstr "El código PIN no coincide."
 
 #: ../src/indicator/vpn-status-notifier.cpp:48
 msgid "The VPN connection '%1' failed."

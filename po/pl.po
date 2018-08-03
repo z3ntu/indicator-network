@@ -8,17 +8,18 @@ msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-04-29 12:38+0300\n"
-"PO-Revision-Date: 2016-02-15 17:40+0000\n"
-"Last-Translator: Krzysztof Tataradziński <Unknown>\n"
-"Language-Team: Polish <pl@li.org>\n"
+"PO-Revision-Date: 2018-08-03 19:20+0000\n"
+"Last-Translator: Daniel Frańczak <danielfranczak5@wp.pl>\n"
+"Language-Team: Polish <https://translate.ubports.com/projects/ubports/"
+"indicator-network/pl/>\n"
+"Language: pl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2;\n"
+"X-Generator: Weblate 2.19.1\n"
 "X-Launchpad-Export-Date: 2016-10-21 07:05+0000\n"
-"X-Generator: Launchpad (build 18246)\n"
-"Language: pl\n"
 
 #: ../src/agent/SecretRequest.cpp:61
 msgid "Connect to “%1”"
@@ -42,7 +43,7 @@ msgstr "Anuluj"
 
 #: ../src/indicator/menuitems/wifi-link-item.cpp:109
 msgid "Other network…"
-msgstr "Inne sieci..."
+msgstr "Inne sieci…"
 
 #: ../src/indicator/menuitems/wwan-link-item.cpp:90
 msgid "No SIM"
@@ -62,7 +63,7 @@ msgstr "Niezarejestrowany"
 
 #: ../src/indicator/menuitems/wwan-link-item.cpp:123
 msgid "Unknown"
-msgstr "Nieznany"
+msgstr "Nieznane"
 
 #: ../src/indicator/menuitems/wwan-link-item.cpp:128
 msgid "Denied"
@@ -131,7 +132,7 @@ msgstr "Jeśli nie znasz kodu PUK, skontaktuj się z operatorem sieci GSM."
 #: ../src/indicator/sim-unlock-dialog.cpp:176
 #: ../src/indicator/sim-unlock-dialog.cpp:190
 msgid "Sorry, incorrect PUK."
-msgstr "Niepoprawny PUK"
+msgstr "Niepoprawny PUK."
 
 #: ../src/indicator/sim-unlock-dialog.cpp:180
 msgid ""
@@ -192,7 +193,7 @@ msgstr "Potwierdz nowy PIN karty %{1}"
 
 #: ../src/indicator/sim-unlock-dialog.cpp:373
 msgid "PIN codes did not match."
-msgstr "Wprowadzono różne kody PIN"
+msgstr "Wprowadzono różne kody PIN."
 
 #: ../src/indicator/vpn-status-notifier.cpp:48
 msgid "The VPN connection '%1' failed."
@@ -262,11 +263,11 @@ msgstr "Ustawienia komórkowe…"
 
 #: ../src/indicator/sections/vpn-section.cpp:140
 msgid "VPN settings…"
-msgstr "Ustawienia VPN..."
+msgstr "Ustawienia VPN…"
 
 #: ../src/indicator/sections/wifi-section.cpp:65
 msgid "Wi-Fi settings…"
-msgstr "Ustawienia Wi-Fi..."
+msgstr "Ustawienia Wi-Fi…"
 
 #. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
 #: ../src/indicator/root-state.cpp:306

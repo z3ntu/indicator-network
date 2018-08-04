@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-04-29 12:38+0300\n"
-"PO-Revision-Date: 2018-08-03 19:20+0000\n"
+"PO-Revision-Date: 2018-08-04 09:01+0000\n"
 "Last-Translator: Krakakanok <krakakanok@protonmail.com>\n"
 "Language-Team: Spanish <https://translate.ubports.com/projects/ubports/"
 "indicator-network/es/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 2.19.1\n"
+"X-Generator: Weblate 2.20\n"
 "X-Launchpad-Export-Date: 2016-10-21 07:05+0000\n"
 
 #: ../src/agent/SecretRequest.cpp:61
@@ -84,7 +84,7 @@ msgstr "Sin conexión"
 #. TODO Move this into a new class
 #: ../src/indicator/factory.cpp:187
 msgid "Wi-Fi"
-msgstr "Wi-Fi"
+msgstr "Wifi"
 
 #. TODO Move this into a new class
 #: ../src/indicator/factory.cpp:198

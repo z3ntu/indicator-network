@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-04-29 12:38+0300\n"
-"PO-Revision-Date: 2018-08-10 21:33+0000\n"
+"PO-Revision-Date: 2018-08-10 21:55+0000\n"
 "Last-Translator: Jaume Angrill <txaume@protonmail.com>\n"
 "Language-Team: Catalan <https://translate.ubports.com/projects/ubports/"
 "indicator-network/ca/>\n"
@@ -204,45 +204,57 @@ msgid ""
 "The VPN connection '%1' failed because the network connection was "
 "interrupted."
 msgstr ""
+"La connexió VPN '% 1' ha fallat perquè s'ha interromput la connexió de xarxa."
 
 #: ../src/indicator/vpn-status-notifier.cpp:51
 msgid ""
 "The VPN connection '%1' failed because the VPN service stopped unexpectedly."
 msgstr ""
+"La connexió VPN '% 1' ha fallat perquè el servei VPN s'ha aturat de manera "
+"inesperada."
 
 #: ../src/indicator/vpn-status-notifier.cpp:52
 msgid ""
 "The VPN connection '%1' failed because the VPN service returned invalid "
 "configuration."
 msgstr ""
+"La connexió VPN '% 1' ha fallat perquè el servei VPN retornava una "
+"configuració no vàlida."
 
 #: ../src/indicator/vpn-status-notifier.cpp:53
 msgid ""
 "The VPN connection '%1' failed because the connection attempt timed out."
 msgstr ""
+"La connexió VPN '% 1' ha fallat perquè s'ha esgotat el temps de l'intent de "
+"connexió."
 
 #: ../src/indicator/vpn-status-notifier.cpp:54
 msgid ""
 "The VPN connection '%1' failed because the VPN service did not start in time."
 msgstr ""
+"La connexió VPN '% 1' ha fallat perquè el servei VPN no ha començat a temps."
 
 #: ../src/indicator/vpn-status-notifier.cpp:55
 msgid ""
 "The VPN connection '%1' failed because the VPN service failed to start."
 msgstr ""
+"La connexió VPN '% 1' ha fallat perquè el servei VPN no s'ha pogut iniciar."
 
 #: ../src/indicator/vpn-status-notifier.cpp:56
 msgid ""
 "The VPN connection '%1' failed because there were no valid VPN secrets."
 msgstr ""
+"La connexió VPN '% 1' ha fallat perquè no s'han trobat secrets de la VPN "
+"vàlids."
 
 #: ../src/indicator/vpn-status-notifier.cpp:57
 msgid "The VPN connection '%1' failed because of invalid VPN secrets."
 msgstr ""
+"La connexió VPN '% 1' ha fallat perquè els secrets de la VPN no són vàlids."
 
 #: ../src/indicator/vpn-status-notifier.cpp:68
 msgid "VPN Connection Failed"
-msgstr ""
+msgstr "Ha fallat la connexió VPN"
 
 #: ../src/indicator/sections/wwan-section.cpp:102
 msgid "Cellular settings…"
@@ -250,7 +262,7 @@ msgstr "Paràmetres de la xarxa mòbil..."
 
 #: ../src/indicator/sections/vpn-section.cpp:140
 msgid "VPN settings…"
-msgstr ""
+msgstr "Configuració de VPN…"
 
 #: ../src/indicator/sections/wifi-section.cpp:65
 msgid "Wi-Fi settings…"
@@ -263,4 +275,4 @@ msgstr "Xarxa"
 
 #: ../src/indicator/nmofono/vpn/vpn-manager.cpp:81
 msgid "VPN connection %1"
-msgstr ""
+msgstr "Connexió VPN %1"

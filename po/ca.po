@@ -8,16 +8,17 @@ msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-04-29 12:38+0300\n"
-"PO-Revision-Date: 2016-02-15 17:40+0000\n"
-"Last-Translator: David Planella <david.planella@ubuntu.com>\n"
-"Language-Team: Catalan <ca@li.org>\n"
+"PO-Revision-Date: 2018-08-10 21:33+0000\n"
+"Last-Translator: Jaume Angrill <txaume@protonmail.com>\n"
+"Language-Team: Catalan <https://translate.ubports.com/projects/ubports/"
+"indicator-network/ca/>\n"
+"Language: ca\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 2.20\n"
 "X-Launchpad-Export-Date: 2016-10-21 07:05+0000\n"
-"X-Generator: Launchpad (build 18246)\n"
-"Language: ca\n"
 
 #: ../src/agent/SecretRequest.cpp:61
 msgid "Connect to “%1”"
@@ -92,12 +93,12 @@ msgstr "Mode d'avió"
 
 #: ../src/indicator/factory.cpp:208
 msgid "Cellular data"
-msgstr ""
+msgstr "Dades mòbils"
 
 #. TODO Move this into a new class
 #: ../src/indicator/factory.cpp:221
 msgid "Hotspot"
-msgstr ""
+msgstr "Punt d'acces"
 
 #: ../src/indicator/sim-unlock-dialog.cpp:144
 msgid "Sorry, incorrect %{1} PIN."
@@ -196,7 +197,7 @@ msgstr "Els codis PIN no concorden."
 
 #: ../src/indicator/vpn-status-notifier.cpp:48
 msgid "The VPN connection '%1' failed."
-msgstr ""
+msgstr "Ha fallat la connexió VPN '%1'"
 
 #: ../src/indicator/vpn-status-notifier.cpp:50
 msgid ""

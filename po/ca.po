@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-04-29 12:38+0300\n"
-"PO-Revision-Date: 2018-08-10 21:55+0000\n"
-"Last-Translator: Jaume Angrill <txaume@protonmail.com>\n"
+"PO-Revision-Date: 2018-08-13 16:46+0000\n"
+"Last-Translator: Walter Garcia-Fontes <walter.garcia@upf.edu>\n"
 "Language-Team: Catalan <https://translate.ubports.com/projects/ubports/"
 "indicator-network/ca/>\n"
 "Language: ca\n"
@@ -42,7 +42,7 @@ msgstr "Cancel·la"
 
 #: ../src/indicator/menuitems/wifi-link-item.cpp:109
 msgid "Other network…"
-msgstr "Una altra xarxa..."
+msgstr "Una altra xarxa…"
 
 #: ../src/indicator/menuitems/wwan-link-item.cpp:90
 msgid "No SIM"
@@ -102,7 +102,7 @@ msgstr "Punt d'acces"
 
 #: ../src/indicator/sim-unlock-dialog.cpp:144
 msgid "Sorry, incorrect %{1} PIN."
-msgstr "El codi PIN per a %{1} és incorrecte"
+msgstr "El codi PIN per a %{1} és incorrecte."
 
 #: ../src/indicator/sim-unlock-dialog.cpp:149
 #: ../src/indicator/sim-unlock-dialog.cpp:178
@@ -118,7 +118,7 @@ msgstr ""
 
 #: ../src/indicator/sim-unlock-dialog.cpp:161
 msgid "Sorry, your %{1} is now blocked."
-msgstr "S'ha bloquejat %{1}"
+msgstr "S'ha bloquejat %{1}."
 
 #: ../src/indicator/sim-unlock-dialog.cpp:166
 msgid "Please enter your PUK code to unblock SIM card."
@@ -197,7 +197,7 @@ msgstr "Els codis PIN no concorden."
 
 #: ../src/indicator/vpn-status-notifier.cpp:48
 msgid "The VPN connection '%1' failed."
-msgstr "Ha fallat la connexió VPN '%1'"
+msgstr "Ha fallat la connexió VPN '%1'."
 
 #: ../src/indicator/vpn-status-notifier.cpp:50
 msgid ""
@@ -258,7 +258,7 @@ msgstr "Ha fallat la connexió VPN"
 
 #: ../src/indicator/sections/wwan-section.cpp:102
 msgid "Cellular settings…"
-msgstr "Paràmetres de la xarxa mòbil..."
+msgstr "Paràmetres de la xarxa mòbil…"
 
 #: ../src/indicator/sections/vpn-section.cpp:140
 msgid "VPN settings…"
@@ -266,7 +266,7 @@ msgstr "Configuració de VPN…"
 
 #: ../src/indicator/sections/wifi-section.cpp:65
 msgid "Wi-Fi settings…"
-msgstr "Paràmetres del sense fil..."
+msgstr "Paràmetres del sense fil…"
 
 #. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
 #: ../src/indicator/root-state.cpp:306

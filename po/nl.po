@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-04-29 12:38+0300\n"
-"PO-Revision-Date: 2018-08-13 16:46+0000\n"
+"PO-Revision-Date: 2018-08-13 16:55+0000\n"
 "Last-Translator: Sander <sander.k1007@kpnmail.nl>\n"
 "Language-Team: Dutch <https://translate.ubports.com/projects/ubports/"
 "indicator-network/nl/>\n"
@@ -209,7 +209,7 @@ msgstr ""
 msgid ""
 "The VPN connection '%1' failed because the VPN service stopped unexpectedly."
 msgstr ""
-"De VPN verbinding '%1' is mislukt omdat de VPN service onverwachts is "
+"De VPN verbinding '%1' is mislukt omdat de VPN-service onverwachts is "
 "gestopt."
 
 #: ../src/indicator/vpn-status-notifier.cpp:52
@@ -217,7 +217,7 @@ msgid ""
 "The VPN connection '%1' failed because the VPN service returned invalid "
 "configuration."
 msgstr ""
-"De VPN verbinding '%1' is mislukt omdat de VPN service een niet geldige "
+"De VPN verbinding '%1' is mislukt omdat de VPN-service een niet geldige "
 "configuratie heeft geretourneerd."
 
 #: ../src/indicator/vpn-status-notifier.cpp:53
@@ -231,24 +231,27 @@ msgstr ""
 msgid ""
 "The VPN connection '%1' failed because the VPN service did not start in time."
 msgstr ""
+"De VPN verbinding '%1' is mislukt omdat de VPN-service niet op tijd is "
+"gestart."
 
 #: ../src/indicator/vpn-status-notifier.cpp:55
 msgid ""
 "The VPN connection '%1' failed because the VPN service failed to start."
-msgstr ""
+msgstr "De VPN verbinding '%1' is mislukt omdat de VPN-service niet startte."
 
 #: ../src/indicator/vpn-status-notifier.cpp:56
 msgid ""
 "The VPN connection '%1' failed because there were no valid VPN secrets."
 msgstr ""
+"De VPN verbinding '%1' is mislukt omdat er geen geldige VPN-geheimen waren."
 
 #: ../src/indicator/vpn-status-notifier.cpp:57
 msgid "The VPN connection '%1' failed because of invalid VPN secrets."
-msgstr ""
+msgstr "De VPN verbinding '%1' is mislukt vanwege ongeldige VPN-geheimen."
 
 #: ../src/indicator/vpn-status-notifier.cpp:68
 msgid "VPN Connection Failed"
-msgstr ""
+msgstr "VPN Verbinding Mislukt"
 
 #: ../src/indicator/sections/wwan-section.cpp:102
 msgid "Cellular settings…"
@@ -269,4 +272,4 @@ msgstr "Netwerk"
 
 #: ../src/indicator/nmofono/vpn/vpn-manager.cpp:81
 msgid "VPN connection %1"
-msgstr ""
+msgstr "VPN verbinding %1"

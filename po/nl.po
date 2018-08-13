@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-04-29 12:38+0300\n"
-"PO-Revision-Date: 2018-08-13 16:55+0000\n"
+"PO-Revision-Date: 2018-10-14 18:56+0000\n"
 "Last-Translator: Sander <sander.k1007@kpnmail.nl>\n"
 "Language-Team: Dutch <https://translate.ubports.com/projects/ubports/"
 "indicator-network/nl/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 2.20\n"
+"X-Generator: Weblate 3.0\n"
 "X-Launchpad-Export-Date: 2016-10-21 07:05+0000\n"
 
 #: ../src/agent/SecretRequest.cpp:61
@@ -34,7 +34,7 @@ msgstr "WEP"
 
 #: ../src/agent/SecretRequest.cpp:74
 msgid "Connect"
-msgstr "Verbind"
+msgstr "Verbinden"
 
 #: ../src/agent/SecretRequest.cpp:75
 msgid "Cancel"
@@ -93,7 +93,7 @@ msgstr "Vliegtuigstand"
 
 #: ../src/indicator/factory.cpp:208
 msgid "Cellular data"
-msgstr "Mobiele data"
+msgstr "Mobiele gegevens"
 
 #. TODO Move this into a new class
 #: ../src/indicator/factory.cpp:221

@@ -33,15 +33,11 @@ add_executable(
     ${INTEGRATION_TESTS_SRC}
 )
 
-qt5_use_modules(
-    integration-tests
-    Core
-    DBus
-    Test
-)
-
 target_link_libraries(
     integration-tests
+    Qt5::Core
+    Qt5::DBus
+    Qt5::Test
     test-utils
     ${CONNECTIVITY_QT_LIB_TARGET}
     ${TEST_DEPENDENCIES_LDFLAGS}

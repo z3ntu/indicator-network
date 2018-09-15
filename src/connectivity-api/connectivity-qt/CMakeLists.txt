@@ -91,14 +91,10 @@ add_library(
     ${PUBLIC_HEADERS} # public headers have to be included here for Q_DECL_EXPORT to work properly
 )
 
-qt5_use_modules(
-    ${CONNECTIVITY_QT_LIB_TARGET}
-    Core
-    DBus
-)
-
 target_link_libraries(
     ${CONNECTIVITY_QT_LIB_TARGET}
+    Qt5::Core
+    Qt5::DBus
     qdbus-stubs
     util
 )

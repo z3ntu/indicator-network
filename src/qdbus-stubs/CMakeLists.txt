@@ -164,7 +164,7 @@ add_library(
     ${CONNECTIVITY_BACKEND_SRC}
 )
 
-qt5_use_modules(
+target_link_libraries(
     qdbus-stubs
-    DBus
+    Qt5::DBus
 )

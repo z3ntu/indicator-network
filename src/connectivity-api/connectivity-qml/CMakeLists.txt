@@ -16,13 +16,8 @@ add_library(connectivity-qml SHARED
 target_link_libraries(
   connectivity-qml
   ${CONNECTIVITY_QT_LIB_TARGET}
+  Qt5::Qml
 )
-
-
-qt5_use_modules(connectivity-qml
-  Qml
-)
-
 
 add_qmlplugin(
   Ubuntu.Connectivity

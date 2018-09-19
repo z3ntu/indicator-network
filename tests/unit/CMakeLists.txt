@@ -20,13 +20,9 @@ add_executable(
     secret-agent/secret-agent-main.cpp
 )
 
-qt5_use_modules(
-    secret-agent-test-bin
-    Core
-)
-
 target_link_libraries(
     secret-agent-test-bin
+    Qt5::Core
     agent-static
 )
 
@@ -62,15 +58,11 @@ add_executable(
     ${UNIT_TESTS_SRC}
 )
 
-qt5_use_modules(
-    unit-tests
-    Core
-    DBus
-    Test
-)
-
 target_link_libraries(
     unit-tests
+    Qt5::Core
+    Qt5::DBus
+    Qt5::Test
     test-utils
     indicator-network-service-static
     ${TEST_DEPENDENCIES_LDFLAGS}

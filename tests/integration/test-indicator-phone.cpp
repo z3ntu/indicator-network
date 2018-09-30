@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Canonical, Ltd.
+ * Copyright (C) 2016 Canonical, Ltd.
  *
  * This program is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 3, as published
@@ -16,11 +16,16 @@
  * Author: Pete Woods <pete.woods@canonical.com>
  */
 
-#include <indicator-network-test-base.h>
+#include <indicator-network-test-base-phone.h>
+#include <util/dbus-property-cache.h>
 
 #include <QDebug>
 #include <QTestEventLoop>
 #include <QSignalSpy>
+
+#include <NetworkManagerInterface.h>
+#include <NetworkManagerDeviceInterface.h>
+#include <NetworkManagerActiveConnectionInterface.h>
 
 using namespace std;
 using namespace testing;
@@ -30,11 +35,11 @@ namespace mh = unity::gmenuharness;
 namespace
 {
 
-class TestIndicator: public IndicatorNetworkTestBase
+class TestIndicatorPhone: public IndicatorNetworkTestBasePhone
 {
 };
 
-TEST_F(TestIndicator, BasicMenuContents)
+TEST_F(TestIndicatorPhone, BasicMenuContents)
 {
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
     ASSERT_NO_THROW(startIndicator());
@@ -52,15 +57,485 @@ TEST_F(TestIndicator, BasicMenuContents)
                 .item(modemInfo("", "fake.tel", "gsm-3g-full"))
                 .item(cellularSettings())
             )
-            .item(wifiEnableSwitch())
-            .item(wifiSettings())
             .item(mh::MenuItemMatcher()
                 .section()
             )
         ).match());
 }
 
-TEST_F(TestIndicator, OneDisconnectedAccessPointAtStartup)
+TEST_F(TestIndicatorPhone, OneDisabledEthernetAtStartup)
+{
+    setGlobalConnectedState(NM_STATE_DISCONNECTED);
+    auto device = createEthernetDevice(NM_DEVICE_STATE_DISCONNECTED);
+    auto connection = createEthernetConnection("Home", device);
+
+    ASSERT_NO_THROW(startIndicator());
+
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .state_icons({"gsm-3g-full", "nm-no-connection"})
+            .submenu()
+            .item(flightModeSwitch())
+            .item(mh::MenuItemMatcher()) // <-- modems are under here
+            .item(mh::MenuItemMatcher()
+                .section()
+                .item(ethernetInfo("Ethernet",
+                      "Disconnected",
+                      Toggle::disabled)
+                )
+            )
+            .item(ethernetSettings())
+            .item(mh::MenuItemMatcher()
+                .section()
+            )
+        ).match());
+}
+
+TEST_F(TestIndicatorPhone, OneConnectedEthernetAtStartup)
+{
+    setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
+    auto device = createEthernetDevice(NM_DEVICE_STATE_ACTIVATED);
+    auto connection = createEthernetConnection("Home", device);
+    createActiveConnection("0", device, connection);
+
+    ASSERT_NO_THROW(startIndicator());
+
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .state_icons({"gsm-3g-full", "network-wired-connected"})
+            .submenu()
+            .item(flightModeSwitch())
+            .item(mh::MenuItemMatcher()) // <-- modems are under here
+            .item(mh::MenuItemMatcher()
+                .section()
+                .item(ethernetInfo("Ethernet",
+                      "Connected",
+                      Toggle::enabled)
+                )
+            )
+            .item(ethernetSettings())
+            .item(mh::MenuItemMatcher()
+                .section()
+            )
+        ).match());
+}
+
+TEST_F(TestIndicatorPhone, OneConnectedEthernetAtStartupInSettingsMenu)
+{
+    setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
+    auto device = createEthernetDevice(NM_DEVICE_STATE_ACTIVATED);
+    auto connection = createEthernetConnection("Home", device);
+    createActiveConnection("0", device, connection);
+
+    ASSERT_NO_THROW(startIndicator());
+
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneEthernetSettingsParameters())
+        .item(mh::MenuItemMatcher()
+            .section()
+            .item(ethernetInfo("Ethernet",
+                  "Connected",
+                  Toggle::enabled)
+            )
+            .item(radio("Home", Toggle::enabled))
+        ).match());
+}
+
+TEST_F(TestIndicatorPhone, TwoEthernetAtStartupConnectedAndDisconnected)
+{
+    setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
+
+    // Active and connected with two connections
+    auto eth0 = createEthernetDevice(NM_DEVICE_STATE_ACTIVATED, "0");
+    auto eth0connection0 = createEthernetConnection("Home", eth0);
+    auto eth0connection1 = createEthernetConnection("Work", eth0);
+    createActiveConnection("0", eth0, eth0connection0);
+
+    // Active but disconnected
+    auto eth1 = createEthernetDevice(NM_DEVICE_STATE_DISCONNECTED, "1");
+    setNmProperty(eth1, NM_DBUS_INTERFACE_DEVICE, "Autoconnect", true);
+    auto eth1connection0 = createEthernetConnection("Home", eth1);
+
+    ASSERT_NO_THROW(startIndicator());
+
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .state_icons({"gsm-3g-full", "network-wired-connected", "network-wired-offline"})
+            .submenu()
+            .item(flightModeSwitch())
+            .item(mh::MenuItemMatcher()) // <-- modems are under here
+            .item(mh::MenuItemMatcher()
+                .section()
+                .item(ethernetInfo("Ethernet (eth0)",
+                      "Connected",
+                      Toggle::enabled)
+                )
+                .item(radio("Home", Toggle::enabled))
+                .item(radio("Work", Toggle::disabled))
+            )
+            .item(mh::MenuItemMatcher()
+                .section()
+                .item(ethernetInfo("Ethernet (eth1)",
+                      "Disconnected",
+                      Toggle::enabled)
+                )
+            )
+            .item(ethernetSettings())
+            .item(mh::MenuItemMatcher()
+                .section()
+            )
+        ).match());
+}
+
+TEST_F(TestIndicatorPhone, OneDisabledEthernetAfterStartup)
+{
+    setGlobalConnectedState(NM_STATE_DISCONNECTED);
+
+    ASSERT_NO_THROW(startIndicator());
+
+    auto device = createEthernetDevice(NM_DEVICE_STATE_DISCONNECTED);
+    auto connection = createEthernetConnection("Home", device);
+
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .state_icons({"gsm-3g-full", "nm-no-connection"})
+            .submenu()
+            .item(flightModeSwitch())
+            .item(mh::MenuItemMatcher()) // <-- modems are under here
+            .item(mh::MenuItemMatcher()
+                .section()
+                .item(ethernetInfo("Ethernet",
+                      "Disconnected",
+                      Toggle::disabled)
+                )
+            )
+            .item(ethernetSettings())
+            .item(mh::MenuItemMatcher()
+                .section()
+            )
+        ).match());
+}
+
+TEST_F(TestIndicatorPhone, OneConnectedEthernetAfterStartup)
+{
+    setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
+
+    ASSERT_NO_THROW(startIndicator());
+
+    auto device = createEthernetDevice(NM_DEVICE_STATE_ACTIVATED);
+    auto connection = createEthernetConnection("Home", device);
+    createActiveConnection("0", device, connection);
+
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .state_icons({"gsm-3g-full", "network-wired-connected"})
+            .submenu()
+            .item(flightModeSwitch())
+            .item(mh::MenuItemMatcher()) // <-- modems are under here
+            .item(mh::MenuItemMatcher()
+                .section()
+                .item(ethernetInfo("Ethernet",
+                      "Connected",
+                      Toggle::enabled)
+                )
+            )
+            .item(ethernetSettings())
+            .item(mh::MenuItemMatcher()
+                .section()
+            )
+        ).match());
+}
+
+TEST_F(TestIndicatorPhone, TwoEthernetAfterStartupConnectedAndDisconnected)
+{
+    setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
+
+    ASSERT_NO_THROW(startIndicator());
+
+    // Active and connected with two connections
+    auto eth0 = createEthernetDevice(NM_DEVICE_STATE_ACTIVATED, "0");
+    auto eth0connection0 = createEthernetConnection("Home", eth0);
+    auto eth0connection1 = createEthernetConnection("Work", eth0);
+    createActiveConnection("0", eth0, eth0connection0);
+
+    // Active but disconnected
+    auto eth1 = createEthernetDevice(NM_DEVICE_STATE_DISCONNECTED, "1");
+    setNmProperty(eth1, NM_DBUS_INTERFACE_DEVICE, "Autoconnect", true);
+    auto eth1connection0 = createEthernetConnection("Home", eth1);
+
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .state_icons({"gsm-3g-full", "network-wired-connected", "network-wired-offline"})
+            .submenu()
+            .item(flightModeSwitch())
+            .item(mh::MenuItemMatcher()) // <-- modems are under here
+            .item(mh::MenuItemMatcher()
+                .section()
+                .item(ethernetInfo("Ethernet (eth0)",
+                      "Connected",
+                      Toggle::enabled)
+                )
+                .item(radio("Home", Toggle::enabled))
+                .item(radio("Work", Toggle::disabled))
+            )
+            .item(mh::MenuItemMatcher()
+                .section()
+                .item(ethernetInfo("Ethernet (eth1)",
+                      "Disconnected",
+                      Toggle::enabled)
+                )
+            )
+            .item(ethernetSettings())
+            .item(mh::MenuItemMatcher()
+                .section()
+            )
+        ).match());
+}
+
+TEST_F(TestIndicatorPhone, ConnectToEthernet)
+{
+    setGlobalConnectedState(NM_STATE_DISCONNECTED);
+    auto device = createEthernetDevice(NM_DEVICE_STATE_DISCONNECTED);
+    auto connection = createEthernetConnection("Home", device);
+    OrgFreedesktopNetworkManagerDeviceInterface deviceInterface(NM_DBUS_SERVICE, device, dbusTestRunner.systemConnection());
+
+    ASSERT_NO_THROW(startIndicator());
+
+    EXPECT_FALSE(deviceInterface.autoconnect());
+    EXPECT_EQ(NM_DEVICE_STATE_DISCONNECTED, deviceInterface.state());
+    QDBusObjectPath activeConnection = deviceInterface.activeConnection();
+    EXPECT_EQ("/", activeConnection.path().toStdString());
+
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .state_icons({"gsm-3g-full", "nm-no-connection"})
+            .submenu()
+            .item(flightModeSwitch())
+            .item(mh::MenuItemMatcher()) // <-- modems are under here
+            .item(mh::MenuItemMatcher()
+                .section()
+                .item(ethernetInfo("Ethernet",
+                      "Disconnected",
+                      Toggle::disabled)
+                    .activate()
+                )
+            )
+            .item(ethernetSettings())
+            .item(mh::MenuItemMatcher()
+                .section()
+            )
+        ).match());
+
+    setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
+
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .state_icons({"gsm-3g-full", "network-wired-connected"})
+            .submenu()
+            .item(flightModeSwitch())
+            .item(mh::MenuItemMatcher()) // <-- modems are under here
+            .item(mh::MenuItemMatcher()
+                .section()
+                .item(ethernetInfo("Ethernet",
+                      "Connected",
+                      Toggle::enabled)
+                )
+            )
+            .item(ethernetSettings())
+            .item(mh::MenuItemMatcher()
+                .section()
+            )
+        ).match());
+
+    EXPECT_TRUE(deviceInterface.autoconnect());
+    EXPECT_EQ(NM_DEVICE_STATE_ACTIVATED, deviceInterface.state());
+    activeConnection = deviceInterface.activeConnection();
+    EXPECT_NE("/", activeConnection.path().toStdString());
+}
+
+TEST_F(TestIndicatorPhone, ConnectToEthernetSelectProfile)
+{
+    setGlobalConnectedState(NM_STATE_DISCONNECTED);
+    auto device = createEthernetDevice(NM_DEVICE_STATE_DISCONNECTED);
+    auto homeConnection = createEthernetConnection("Home", device);
+    auto roamingConnection = createEthernetConnection("Roaming", device);
+    auto workConnection = createEthernetConnection("Work", device);
+    OrgFreedesktopNetworkManagerDeviceInterface deviceInterface(NM_DBUS_SERVICE, device, dbusTestRunner.systemConnection());
+
+    ASSERT_NO_THROW(startIndicator());
+
+    EXPECT_FALSE(deviceInterface.autoconnect());
+    EXPECT_EQ(NM_DEVICE_STATE_DISCONNECTED, deviceInterface.state());
+    QDBusObjectPath activeConnection = deviceInterface.activeConnection();
+    EXPECT_EQ("/", activeConnection.path().toStdString());
+
+    // First select a different profile
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .state_icons({"gsm-3g-full", "nm-no-connection"})
+            .submenu()
+            .item(flightModeSwitch())
+            .item(mh::MenuItemMatcher()) // <-- modems are under here
+            .item(mh::MenuItemMatcher()
+                .section()
+                .item(ethernetInfo("Ethernet",
+                      "Disconnected",
+                      Toggle::disabled)
+                )
+                .item(radio("Home", Toggle::enabled))
+                .item(radio("Roaming", Toggle::disabled))
+                .item(radio("Work", Toggle::disabled).activate())
+            )
+        ).match());
+
+    // Now connect
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .state_icons({"gsm-3g-full", "nm-no-connection"})
+            .submenu()
+            .item(flightModeSwitch())
+            .item(mh::MenuItemMatcher()) // <-- modems are under here
+            .item(mh::MenuItemMatcher()
+                .section()
+                .item(ethernetInfo("Ethernet",
+                      "Disconnected",
+                      Toggle::disabled)
+                    .activate()
+                )
+                .item(radio("Home", Toggle::disabled))
+                .item(radio("Roaming", Toggle::disabled))
+                .item(radio("Work", Toggle::enabled))
+            )
+        ).match());
+
+    setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
+
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .state_icons({"gsm-3g-full", "network-wired-connected"})
+            .submenu()
+            .item(flightModeSwitch())
+            .item(mh::MenuItemMatcher()) // <-- modems are under here
+            .item(mh::MenuItemMatcher()
+                .section()
+                .item(ethernetInfo("Ethernet",
+                      "Connected",
+                      Toggle::enabled)
+                )
+                .item(radio("Home", Toggle::disabled))
+                .item(radio("Roaming", Toggle::disabled))
+                .item(radio("Work", Toggle::enabled))
+            )
+        ).match());
+
+    EXPECT_TRUE(deviceInterface.autoconnect());
+    EXPECT_EQ(NM_DEVICE_STATE_ACTIVATED, deviceInterface.state());
+    activeConnection = deviceInterface.activeConnection();
+    ASSERT_NE("/", activeConnection.path().toStdString());
+
+    // Check we're connected to the "Work" profile
+    OrgFreedesktopNetworkManagerConnectionActiveInterface activeConnectionInterface(NM_DBUS_SERVICE, activeConnection.path(), dbusTestRunner.systemConnection());
+    auto connection = activeConnectionInterface.connection();
+    EXPECT_EQ(workConnection, connection.path());
+}
+
+
+TEST_F(TestIndicatorPhone, DisconnectFromEthernet)
+{
+    setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
+    auto device = createEthernetDevice(NM_DEVICE_STATE_ACTIVATED);
+    auto connection = createEthernetConnection("Home", device);
+    createActiveConnection("0", device, connection);
+    OrgFreedesktopNetworkManagerDeviceInterface deviceInterface(NM_DBUS_SERVICE, device, dbusTestRunner.systemConnection());
+
+    ASSERT_NO_THROW(startIndicator());
+
+    EXPECT_TRUE(deviceInterface.autoconnect());
+    EXPECT_EQ(NM_DEVICE_STATE_ACTIVATED, deviceInterface.state());
+    QDBusObjectPath activeConnection = deviceInterface.activeConnection();
+    EXPECT_NE("/", activeConnection.path().toStdString());
+
+    auto& deviceMockInterface = dbusMock.mockInterface(NM_DBUS_SERVICE, device, NM_DBUS_INTERFACE_DEVICE, QDBusConnection::SystemBus);
+    QSignalSpy deviceSpy(&deviceMockInterface, SIGNAL(MethodCalled(const QString &, const QVariantList &)));
+
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .state_icons({"gsm-3g-full", "network-wired-connected"})
+            .submenu()
+            .item(flightModeSwitch())
+            .item(mh::MenuItemMatcher()) // <-- modems are under here
+            .item(mh::MenuItemMatcher()
+                .section()
+                .item(ethernetInfo("Ethernet",
+                      "Connected",
+                      Toggle::enabled)
+                    .activate()
+                )
+            )
+            .item(ethernetSettings())
+            .item(mh::MenuItemMatcher()
+                .section()
+            )
+        ).match());
+
+    setGlobalConnectedState(NM_STATE_DISCONNECTED);
+
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+            .state_icons({"gsm-3g-full", "nm-no-connection"})
+            .submenu()
+            .item(flightModeSwitch())
+            .item(mh::MenuItemMatcher()) // <-- modems are under here
+            .item(mh::MenuItemMatcher()
+                .section()
+                .item(ethernetInfo("Ethernet",
+                      "Disconnected",
+                      Toggle::disabled)
+                )
+            )
+            .item(ethernetSettings())
+            .item(mh::MenuItemMatcher()
+                .section()
+            )
+        ).match());
+
+    WAIT_FOR_SIGNALS(deviceSpy, 1);
+    ASSERT_EQ(1, deviceSpy.size());
+    {
+        auto & call = deviceSpy.at(0);
+        EXPECT_EQ("Disconnect", call.at(0).toString());
+    }
+
+    EXPECT_FALSE(deviceInterface.autoconnect());
+    EXPECT_EQ(NM_DEVICE_STATE_DISCONNECTED, deviceInterface.state());
+    activeConnection = deviceInterface.activeConnection();
+    EXPECT_EQ("/", activeConnection.path().toStdString());
+}
+
+TEST_F(TestIndicatorPhone, OneDisconnectedAccessPointAtStartupInSettingsMenu)
+{
+    setGlobalConnectedState(NM_STATE_DISCONNECTED);
+    auto device = createWiFiDevice(NM_DEVICE_STATE_DISCONNECTED);
+    auto ap = createAccessPoint("0", "the ssid", device);
+    auto connection = createAccessPointConnection("0", "the ssid", device);
+
+    ASSERT_NO_THROW(startIndicator());
+
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneWifiSettingsParameters())
+        .item(wifiEnableSwitch())
+        .item(mh::MenuItemMatcher()
+            .section()
+            .item(accessPoint("the ssid",
+                  Secure::wpa,
+                  ApMode::infra,
+                  ConnectionStatus::disconnected)
+            )
+        ).match());
+}
+
+TEST_F(TestIndicatorPhone, OneDisconnectedAccessPointAtStartup)
 {
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
     auto device = createWiFiDevice(NM_DEVICE_STATE_DISCONNECTED);
@@ -91,7 +566,7 @@ TEST_F(TestIndicator, OneDisconnectedAccessPointAtStartup)
         ).match());
 }
 
-TEST_F(TestIndicator, OneConnectedAccessPointAtStartup)
+TEST_F(TestIndicatorPhone, OneConnectedAccessPointAtStartup)
 {
     setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
     auto device = createWiFiDevice(NM_DEVICE_STATE_ACTIVATED);
@@ -123,7 +598,7 @@ TEST_F(TestIndicator, OneConnectedAccessPointAtStartup)
         ).match());
 }
 
-TEST_F(TestIndicator, AddOneDisconnectedAccessPointAfterStartup)
+TEST_F(TestIndicatorPhone, AddOneDisconnectedAccessPointAfterStartup)
 {
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
     auto device = createWiFiDevice(NM_DEVICE_STATE_DISCONNECTED);
@@ -153,7 +628,7 @@ TEST_F(TestIndicator, AddOneDisconnectedAccessPointAfterStartup)
         ).match());
 }
 
-TEST_F(TestIndicator, AddOneConnectedAccessPointAfterStartup)
+TEST_F(TestIndicatorPhone, AddOneConnectedAccessPointAfterStartup)
 {
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
     auto device = createWiFiDevice(NM_DEVICE_STATE_DISCONNECTED);
@@ -186,7 +661,7 @@ TEST_F(TestIndicator, AddOneConnectedAccessPointAfterStartup)
         ).match());
 }
 
-TEST_F(TestIndicator, SecondModem)
+TEST_F(TestIndicatorPhone, SecondModem)
 {
     createModem("ril_1"); // ril_0 already exists
     ASSERT_NO_THROW(startIndicator());
@@ -202,15 +677,13 @@ TEST_F(TestIndicator, SecondModem)
                 .item(modemInfo("SIM 2", "fake.tel", "gsm-3g-full"))
                 .item(cellularSettings())
             )
-            .item(wifiEnableSwitch())
-            .item(wifiSettings())
             .item(mh::MenuItemMatcher()
                 .section()
             )
         ).match());
 }
 
-TEST_F(TestIndicator, FlightModeTalksToURfkill)
+TEST_F(TestIndicatorPhone, FlightModeTalksToURfkill)
 {
     ASSERT_NO_THROW(startIndicator());
 
@@ -231,7 +704,7 @@ TEST_F(TestIndicator, FlightModeTalksToURfkill)
     EXPECT_EQ(urfkillSpy.first(), QVariantList() << QVariant(true));
 }
 
-TEST_F(TestIndicator, IndicatorListensToURfkill)
+TEST_F(TestIndicatorPhone, IndicatorListensToURfkill)
 {
     setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
     auto device = createWiFiDevice(NM_DEVICE_STATE_ACTIVATED);
@@ -269,7 +742,7 @@ TEST_F(TestIndicator, IndicatorListensToURfkill)
         ).match());
 }
 
-TEST_F(TestIndicator, SimStates_NoSIM)
+TEST_F(TestIndicatorPhone, SimStates_NoSIM)
 {
     // set flight mode off, wifi off, and cell data off
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
@@ -296,7 +769,7 @@ TEST_F(TestIndicator, SimStates_NoSIM)
         ).match());
 }
 
-TEST_F(TestIndicator, SimStates_NoSIM2)
+TEST_F(TestIndicatorPhone, SimStates_NoSIM2)
 {
     // set flight mode off, wifi off, and cell data off
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
@@ -325,7 +798,7 @@ TEST_F(TestIndicator, SimStates_NoSIM2)
         ).match());
 }
 
-TEST_F(TestIndicator, SimStates_LockedSIM)
+TEST_F(TestIndicatorPhone, SimStates_LockedSIM)
 {
     // set flight mode off, wifi off, and cell data off, and sim in
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
@@ -373,7 +846,7 @@ TEST_F(TestIndicator, SimStates_LockedSIM)
         ).match());
 }
 
-TEST_F(TestIndicator, SimStates_LockedSIM2)
+TEST_F(TestIndicatorPhone, SimStates_LockedSIM2)
 {
     // set flight mode off, wifi off, and cell data off, and sim in
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
@@ -422,7 +895,7 @@ TEST_F(TestIndicator, SimStates_LockedSIM2)
         ).match());
 }
 
-TEST_F(TestIndicator, SimStates_UnlockedSIM)
+TEST_F(TestIndicatorPhone, SimStates_UnlockedSIM)
 {
     // set flight mode off, wifi off, cell data off, sim in, and sim unlocked
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
@@ -560,7 +1033,7 @@ TEST_F(TestIndicator, SimStates_UnlockedSIM)
         ).match());
 }
 
-TEST_F(TestIndicator, SimStates_UnlockedSIM2)
+TEST_F(TestIndicatorPhone, SimStates_UnlockedSIM2)
 {
     // set flight mode off, wifi off, cell data off, sim in, and sim unlocked
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
@@ -706,7 +1179,7 @@ TEST_F(TestIndicator, SimStates_UnlockedSIM2)
         ).match());
 }
 
-TEST_F(TestIndicator, FlightMode_NoSIM)
+TEST_F(TestIndicatorPhone, FlightMode_NoSIM)
 {
     // set wifi on, flight mode off
     setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
@@ -817,7 +1290,7 @@ TEST_F(TestIndicator, FlightMode_NoSIM)
         ).match());
 }
 
-TEST_F(TestIndicator, FlightMode_LockedSIM)
+TEST_F(TestIndicatorPhone, FlightMode_LockedSIM)
 {
     // set wifi on, flight mode off
     setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
@@ -927,7 +1400,7 @@ TEST_F(TestIndicator, FlightMode_LockedSIM)
         ).match());
 }
 
-TEST_F(TestIndicator, FlightMode_WifiOff)
+TEST_F(TestIndicatorPhone, FlightMode_WifiOff)
 {
     // set wifi on, flight mode off
     setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
@@ -1095,7 +1568,7 @@ TEST_F(TestIndicator, FlightMode_WifiOff)
         ).match());
 }
 
-TEST_F(TestIndicator, FlightMode_WifiOn)
+TEST_F(TestIndicatorPhone, FlightMode_WifiOn)
 {
     // set wifi on, flight mode off
     setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
@@ -1287,7 +1760,7 @@ TEST_F(TestIndicator, FlightMode_WifiOn)
         ).match());
 }
 
-TEST_F(TestIndicator, GroupedWiFiAccessPoints)
+TEST_F(TestIndicatorPhone, GroupedWiFiAccessPoints)
 {
     // set wifi on, flight mode off
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
@@ -1380,7 +1853,7 @@ TEST_F(TestIndicator, GroupedWiFiAccessPoints)
         ).match());
 }
 
-TEST_F(TestIndicator, WifiStates_SSIDs)
+TEST_F(TestIndicatorPhone, WifiStates_SSIDs)
 {
     // set wifi on, flight mode off
     setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
@@ -1433,7 +1906,7 @@ TEST_F(TestIndicator, WifiStates_SSIDs)
         ).match());
 }
 
-TEST_F(TestIndicator, WifiStates_Connect1AP)
+TEST_F(TestIndicatorPhone, WifiStates_Connect1AP)
 {
     // create a wifi device
     auto device = createWiFiDevice(NM_DEVICE_STATE_ACTIVATED);
@@ -1650,7 +2123,7 @@ TEST_F(TestIndicator, WifiStates_Connect1AP)
         ).match());
 }
 
-TEST_F(TestIndicator, WifiStates_Connect2APs)
+TEST_F(TestIndicatorPhone, WifiStates_Connect2APs)
 {
     // set wifi on, flight mode off
     setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
@@ -1812,7 +2285,7 @@ TEST_F(TestIndicator, WifiStates_Connect2APs)
         ).match());
 }
 
-TEST_F(TestIndicator, WifiStates_AddAndActivate)
+TEST_F(TestIndicatorPhone, WifiStates_AddAndActivate)
 {
     // set wifi on, flight mode off
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
@@ -1953,7 +2426,7 @@ TEST_F(TestIndicator, WifiStates_AddAndActivate)
         ).match());
 }
 
-TEST_F(TestIndicator, EnterpriseWifiConnect)
+TEST_F(TestIndicatorPhone, EnterpriseWifiConnect)
 {
     // set wifi on, flight mode off
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
@@ -2012,7 +2485,7 @@ TEST_F(TestIndicator, EnterpriseWifiConnect)
     );
 }
 
-TEST_F(TestIndicator, CellDataEnabled)
+TEST_F(TestIndicatorPhone, CellDataEnabled)
 {
     // We are connected
     setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
@@ -2094,7 +2567,7 @@ TEST_F(TestIndicator, CellDataEnabled)
             ).match());
 }
 
-TEST_F(TestIndicator, CellDataDisabled)
+TEST_F(TestIndicatorPhone, CellDataDisabled)
 {
     // We are disconnected
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
@@ -2190,7 +2663,7 @@ TEST_F(TestIndicator, CellDataDisabled)
         ).match());
 }
 
-TEST_F(TestIndicator, UnlockSIM_MenuContents)
+TEST_F(TestIndicatorPhone, UnlockSIM_MenuContents)
 {
     // set flight mode off, wifi off, and cell data off, and sim in
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
@@ -2214,11 +2687,11 @@ TEST_F(TestIndicator, UnlockSIM_MenuContents)
             .item(flightModeSwitch())
             .item(mh::MenuItemMatcher()
                 .section()
+				.mode(mh::MenuItemMatcher::Mode::starts_with)
                 .item(mobileDataSwitch())
                 .item(modemInfo("", "SIM Locked", "simcard-locked", true)
                       .pass_through_activate("x-canonical-modem-locked-action")
                 )
-                .item(cellularSettings())
             )
         ).match());
 
@@ -2283,7 +2756,7 @@ TEST_F(TestIndicator, UnlockSIM_MenuContents)
         ).match());
 }
 
-TEST_F(TestIndicator, UnlockSIM_Cancel)
+TEST_F(TestIndicatorPhone, UnlockSIM_Cancel)
 {
     // set flight mode off, wifi off, and cell data off, and sim in
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
@@ -2307,11 +2780,11 @@ TEST_F(TestIndicator, UnlockSIM_Cancel)
             .item(flightModeSwitch())
             .item(mh::MenuItemMatcher()
                 .section()
+				.mode(mh::MenuItemMatcher::Mode::starts_with)
                 .item(mobileDataSwitch())
                 .item(modemInfo("", "SIM Locked", "simcard-locked", true)
                       .pass_through_activate("x-canonical-modem-locked-action")
                 )
-                .item(cellularSettings())
             )
         ).match());
 
@@ -2364,11 +2837,11 @@ TEST_F(TestIndicator, UnlockSIM_Cancel)
             .item(flightModeSwitch())
             .item(mh::MenuItemMatcher()
                 .section()
+				.mode(mh::MenuItemMatcher::Mode::starts_with)
                 .item(mobileDataSwitch())
                 .item(modemInfo("", "SIM Locked", "simcard-locked", true)
                       .pass_through_activate("x-canonical-modem-locked-action")
                 )
-                .item(cellularSettings())
             )
         ).match());
 
@@ -2401,7 +2874,7 @@ TEST_F(TestIndicator, UnlockSIM_Cancel)
     notificationsSpy.clear();
 }
 
-TEST_F(TestIndicator, UnlockSIM_CancelFirstUnlockSecond)
+TEST_F(TestIndicatorPhone, UnlockSIM_CancelFirstUnlockSecond)
 {
     // set flight mode off, wifi off, and cell data off, and sim in
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
@@ -2432,12 +2905,12 @@ TEST_F(TestIndicator, UnlockSIM_CancelFirstUnlockSecond)
             .item(flightModeSwitch())
             .item(mh::MenuItemMatcher()
                 .section()
+				.mode(mh::MenuItemMatcher::Mode::starts_with)
                 .item(mobileDataSwitch())
                 .item(modemInfo("SIM 1", "SIM Locked", "simcard-locked", true)
                       .pass_through_activate("x-canonical-modem-locked-action")
                 )
                 .item(modemInfo("SIM 2", "SIM Locked", "simcard-locked", true))
-                .item(cellularSettings())
             )
         ).match());
 
@@ -2490,12 +2963,12 @@ TEST_F(TestIndicator, UnlockSIM_CancelFirstUnlockSecond)
             .item(flightModeSwitch())
             .item(mh::MenuItemMatcher()
                 .section()
+				.mode(mh::MenuItemMatcher::Mode::starts_with)
                 .item(mobileDataSwitch())
                 .item(modemInfo("SIM 1", "SIM Locked", "simcard-locked", true))
                 .item(modemInfo("SIM 2", "SIM Locked", "simcard-locked", true)
                       .pass_through_activate("x-canonical-modem-locked-action")
                 )
-                .item(cellularSettings())
             )
         ).match());
 
@@ -2534,7 +3007,7 @@ TEST_F(TestIndicator, UnlockSIM_CancelFirstUnlockSecond)
     notificationsSpy.clear();
 }
 
-TEST_F(TestIndicator, UnlockSIM_CorrectPin)
+TEST_F(TestIndicatorPhone, UnlockSIM_CorrectPin)
 {
     // set flight mode off, wifi off, and cell data off, and sim in
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
@@ -2558,11 +3031,11 @@ TEST_F(TestIndicator, UnlockSIM_CorrectPin)
             .item(flightModeSwitch())
             .item(mh::MenuItemMatcher()
                 .section()
+				.mode(mh::MenuItemMatcher::Mode::starts_with)
                 .item(mobileDataSwitch())
                 .item(modemInfo("", "SIM Locked", "simcard-locked", true)
                       .pass_through_activate("x-canonical-modem-locked-action")
                 )
-                .item(cellularSettings())
             )
         ).match());
 
@@ -2619,7 +3092,7 @@ TEST_F(TestIndicator, UnlockSIM_CorrectPin)
     notificationsSpy.clear();
 }
 
-TEST_F(TestIndicator, UnlockSIM_IncorrectPin)
+TEST_F(TestIndicatorPhone, UnlockSIM_IncorrectPin)
 {
     // set flight mode off, wifi off, and cell data off, and sim in
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
@@ -2643,11 +3116,11 @@ TEST_F(TestIndicator, UnlockSIM_IncorrectPin)
             .item(flightModeSwitch())
             .item(mh::MenuItemMatcher()
                 .section()
+				.mode(mh::MenuItemMatcher::Mode::starts_with)
                 .item(mobileDataSwitch())
                 .item(modemInfo("", "SIM Locked", "simcard-locked", true)
                       .pass_through_activate("x-canonical-modem-locked-action")
                 )
-                .item(cellularSettings())
             )
         ).match());
 
@@ -2902,7 +3375,7 @@ TEST_F(TestIndicator, UnlockSIM_IncorrectPin)
     notificationsSpy.clear();
 }
 
-TEST_F(TestIndicator, UnlockSIM2_IncorrectPin)
+TEST_F(TestIndicatorPhone, UnlockSIM2_IncorrectPin)
 {
     // set flight mode off, wifi off, and cell data off, and sim in
     setGlobalConnectedState(NM_STATE_DISCONNECTED);
@@ -2927,12 +3400,12 @@ TEST_F(TestIndicator, UnlockSIM2_IncorrectPin)
             .item(flightModeSwitch())
             .item(mh::MenuItemMatcher()
                 .section()
+				.mode(mh::MenuItemMatcher::Mode::starts_with)
                 .item(mobileDataSwitch())
                 .item(modemInfo("SIM 1", "fake.tel", "gsm-3g-full"))
                 .item(modemInfo("SIM 2", "SIM Locked", "simcard-locked", true)
                       .pass_through_activate("x-canonical-modem-locked-action")
                 )
-                .item(cellularSettings())
             )
         ).match());
 
@@ -3187,7 +3660,7 @@ TEST_F(TestIndicator, UnlockSIM2_IncorrectPin)
     notificationsSpy.clear();
 }
 
-TEST_F(TestIndicator, CellularData_1)
+TEST_F(TestIndicatorPhone, CellularData_1)
 {
     auto con = newConnectivity();
 
@@ -3213,7 +3686,7 @@ TEST_F(TestIndicator, CellularData_1)
         .item(mh::MenuItemMatcher()
             .mode(mh::MenuItemMatcher::Mode::starts_with)
             .submenu()
-              .item(flightModeSwitch())
+              .item(flightModeSwitch(false))
               .item(mh::MenuItemMatcher()
                   .mode(mh::MenuItemMatcher::Mode::starts_with)
                   .section()
@@ -3229,7 +3702,7 @@ TEST_F(TestIndicator, CellularData_1)
         .item(mh::MenuItemMatcher()
             .mode(mh::MenuItemMatcher::Mode::starts_with)
             .submenu()
-              .item(flightModeSwitch())
+              .item(flightModeSwitch(true))
               .item(mh::MenuItemMatcher()
                   .mode(mh::MenuItemMatcher::Mode::starts_with)
                   .section()
@@ -3246,7 +3719,7 @@ TEST_F(TestIndicator, CellularData_1)
         .item(mh::MenuItemMatcher()
             .mode(mh::MenuItemMatcher::Mode::starts_with)
             .submenu()
-              .item(flightModeSwitch())
+              .item(flightModeSwitch(false))
               .item(mh::MenuItemMatcher()
                   .mode(mh::MenuItemMatcher::Mode::starts_with)
                   .section()
@@ -3257,7 +3730,7 @@ TEST_F(TestIndicator, CellularData_1)
         ).match());
 }
 
-TEST_F(TestIndicator, CellularData_2)
+TEST_F(TestIndicatorPhone, CellularData_2)
 {
     auto con = newConnectivity();
 
@@ -3343,5 +3816,159 @@ TEST_F(TestIndicator, CellularData_2)
             )
         ).match());
 }
+
+/*
+ * Disabled by default because containst sleeps and what not other horrible things.
+ * There are timers involved, so this will be flaky
+ * To manually run, do following inside ${CMAKE_BINARY_DIR}
+ *     $ tests/integration/integration-tests --gtest_filter=TestIndicator.DISABLED_DataUsageIndication_enabled --gtest_also_run_disabled_tests
+ */
+TEST_F(TestIndicatorPhone, DISABLED_DataUsageIndication_enabled)
+{
+    setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
+    auto wifi_device = createWiFiDevice(NM_DEVICE_STATE_ACTIVATED);
+    auto ap = createAccessPoint("0", "the ssid", wifi_device);
+    auto connection = createAccessPointConnection("0", "the ssid", wifi_device);
+    createActiveConnection("0", wifi_device, connection, ap);
+
+    auto modem1_device = createOfonoModemDevice("/ril_0", "0");
+
+    setDataUsageIndicationSetting(true);
+
+    ASSERT_NO_THROW(startIndicator());
+    usleep(1000);
+
+    // create second modem to test the other code path
+    createModem("ril_1");
+    auto modem2_device = createOfonoModemDevice("/ril_1", "1");
+
+    setDisplayPowerState(DisplayPowerState::On);
+    usleep(1000);
+
+    EXPECT_NE(getStatisticsRefreshRateMs(wifi_device), 0);
+    EXPECT_NE(getStatisticsRefreshRateMs(modem1_device), 0);
+    EXPECT_NE(getStatisticsRefreshRateMs(modem2_device), 0);
+
+    // verify that no transfer icon is seen
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+             .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .state_icons({"gsm-3g-full", "gsm-3g-full", "nm-signal-100-secure"})
+        ).match());
+
+
+    setDeviceStatistics(wifi_device, 1, 0);
+    usleep(1000);
+    // verify that Tx icon is seen
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+             .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .state_icons({"gsm-3g-full", "gsm-3g-full", "nm-signal-100-secure", "transfer-progress-upload"})
+        ).match());
+
+      setDeviceStatistics(modem1_device, 0, 1);
+      usleep(1000);
+
+      // verify that TxRx icon is seen
+      EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+          .item(mh::MenuItemMatcher()
+               .mode(mh::MenuItemMatcher::Mode::starts_with)
+              .state_icons({"gsm-3g-full", "gsm-3g-full", "nm-signal-100-secure", "transfer-progress"})
+          ).match());
+
+      sleep(2);
+
+      // verify that no transfer icon is seen
+      EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+          .item(mh::MenuItemMatcher()
+               .mode(mh::MenuItemMatcher::Mode::starts_with)
+              .state_icons({"gsm-3g-full", "gsm-3g-full", "nm-signal-100-secure"})
+          ).match());
+
+     setDeviceStatistics(modem2_device, 0, 1);
+     usleep(1000);
+     // verify that Rx icon is seen
+     EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+         .item(mh::MenuItemMatcher()
+              .mode(mh::MenuItemMatcher::Mode::starts_with)
+             .state_icons({"gsm-3g-full", "gsm-3g-full", "nm-signal-100-secure", "transfer-progress-download"})
+         ).match());
+
+
+    setDisplayPowerState(DisplayPowerState::Off);
+    usleep(1000);
+
+    EXPECT_EQ(getStatisticsRefreshRateMs(wifi_device), 0);
+    EXPECT_EQ(getStatisticsRefreshRateMs(modem1_device), 0);
+    EXPECT_EQ(getStatisticsRefreshRateMs(modem2_device), 0);
+
+
+    setDisplayPowerState(DisplayPowerState::On);
+    usleep(1000);
+
+    EXPECT_NE(getStatisticsRefreshRateMs(wifi_device), 0);
+    EXPECT_NE(getStatisticsRefreshRateMs(modem1_device), 0);
+    EXPECT_NE(getStatisticsRefreshRateMs(modem2_device), 0);
+
+    sleep(2);
+
+    // verify that no transfer icon is seen
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+             .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .state_icons({"gsm-3g-full", "gsm-3g-full", "nm-signal-100-secure"})
+        ).match());
+}
+
+TEST_F(TestIndicatorPhone, DataUsageIndication_disabled)
+{
+    setGlobalConnectedState(NM_STATE_CONNECTED_GLOBAL);
+    auto wifi_device = createWiFiDevice(NM_DEVICE_STATE_ACTIVATED);
+    auto ap = createAccessPoint("0", "the ssid", wifi_device);
+    auto connection = createAccessPointConnection("0", "the ssid", wifi_device);
+    createActiveConnection("0", wifi_device, connection, ap);
+
+    auto modem1_device = createOfonoModemDevice("/ril_0", "0");
+
+    ASSERT_NO_THROW(startIndicator());
+
+    // create second modem to test the other code path
+    createModem("ril_1");
+    auto modem2_device = createOfonoModemDevice("/ril_1", "1");
+
+    setDisplayPowerState(DisplayPowerState::On);
+
+    EXPECT_EQ(getStatisticsRefreshRateMs(wifi_device), 0);
+    EXPECT_EQ(getStatisticsRefreshRateMs(modem1_device), 0);
+    EXPECT_EQ(getStatisticsRefreshRateMs(modem2_device), 0);
+
+    // verify that no transfer icon is seen
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+             .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .state_icons({"gsm-3g-full", "gsm-3g-full", "nm-signal-100-secure"})
+        ).match());
+
+    setDisplayPowerState(DisplayPowerState::Off);
+
+    EXPECT_EQ(getStatisticsRefreshRateMs(wifi_device), 0);
+    EXPECT_EQ(getStatisticsRefreshRateMs(modem1_device), 0);
+    EXPECT_EQ(getStatisticsRefreshRateMs(modem2_device), 0);
+
+
+    setDisplayPowerState(DisplayPowerState::On);
+
+    EXPECT_EQ(getStatisticsRefreshRateMs(wifi_device), 0);
+    EXPECT_EQ(getStatisticsRefreshRateMs(modem1_device), 0);
+    EXPECT_EQ(getStatisticsRefreshRateMs(modem2_device), 0);
+
+    // verify that no transfer icon is seen
+    EXPECT_MATCHRESULT(mh::MenuMatcher(phoneParameters())
+        .item(mh::MenuItemMatcher()
+             .mode(mh::MenuItemMatcher::Mode::starts_with)
+            .state_icons({"gsm-3g-full", "gsm-3g-full", "nm-signal-100-secure"})
+        ).match());
+}
+
 
 } // namespace

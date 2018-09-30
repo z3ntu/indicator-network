@@ -20,13 +20,11 @@
 
 #include <nmofono/manager-impl.h>
 #include <nmofono/connectivity-service-settings.h>
+#include <nmofono/ethernet/ethernet-link.h>
 #include <nmofono/wifi/wifi-link-impl.h>
+#include <nmofono/wifi/wifi-toggle.h>
 #include <nmofono/wwan/sim-manager.h>
-#include <NetworkManagerActiveConnectionInterface.h>
-#include <NetworkManagerDeviceInterface.h>
 #include <NetworkManagerInterface.h>
-#include <NetworkManagerSettingsInterface.h>
-#include <NetworkManagerSettingsConnectionInterface.h>
 
 #define slots
 #include <qofono-qt5/qofonomanager.h>
@@ -48,6 +46,8 @@
 #include <algorithm>
 #include <iostream>
 
+#include "nm-device-statistics-monitor.h"
+
 using namespace std;
 
 namespace nmofono {
@@ -58,21 +58,24 @@ class ManagerImpl::Private : public QObject
 public:
     Manager& p;
 
-    shared_ptr<OrgFreedesktopNetworkManagerInterface> nm;
+    shared_ptr<OrgFreedesktopNetworkManagerInterface> m_nm;
+    shared_ptr<OrgFreedesktopNetworkManagerSettingsInterface> m_settingsInterface;
     shared_ptr<QOfonoManager> m_ofono;
+    connection::ActiveConnectionManager::SPtr m_activeConnectionManager;
 
-    bool m_flightMode = true;
     bool m_unstoppableOperationHappening = false;
     Manager::NetworkingStatus m_status = NetworkingStatus::offline;
     uint32_t m_characteristics = 0;
 
     bool m_hasWifi = false;
-    bool m_wifiEnabled = false;
-    KillSwitch::Ptr m_killSwitch;
+    FlightModeToggle::SPtr m_flightModeToggle;
+    wifi::WifiToggle::SPtr m_wifiToggle;
 
     bool m_modemAvailable = false;
 
-    QSet<Link::Ptr> m_nmLinks;
+    QList<QDBusObjectPath> m_nmDevices;
+
+    QSet<Link::SPtr> m_nmLinks;
     QMap<QString, wwan::Modem::Ptr> m_ofonoLinks;
 
     SimUnlockDialog::Ptr m_unlockDialog;
@@ -94,6 +97,8 @@ public:
     ConnectivityServiceSettings::Ptr m_settings;
 
     QTimer m_checkSimForMobileDataTimer;
+
+    NMDeviceStatisticsMonitor::Ptr m_statisticsMonitor;
 
     Private(Manager& parent) :
         p(parent)
@@ -285,19 +290,10 @@ public Q_SLOTS:
 
     void updateHasWifi()
     {
-        if (m_killSwitch->state() != KillSwitch::State::not_available)
+        if (m_wifiToggle->state() != wifi::WifiToggle::State::not_available)
         {
             m_hasWifi = true;
-            if (m_killSwitch->state() == KillSwitch::State::unblocked)
-            {
-                m_wifiEnabled = true;
-            }
-            else
-            {
-                m_wifiEnabled = false;
-            }
             Q_EMIT p.hasWifiUpdated(m_hasWifi);
-            Q_EMIT p.wifiEnabledUpdated(m_wifiEnabled);
             return;
         }
 
@@ -311,9 +307,7 @@ public Q_SLOTS:
             }
         }
         m_hasWifi = haswifi;
-        m_wifiEnabled = haswifi;
         Q_EMIT p.hasWifiUpdated(m_hasWifi);
-        Q_EMIT p.wifiEnabledUpdated(m_wifiEnabled);
     }
 
     void updateModemAvailable()
@@ -327,17 +321,6 @@ public Q_SLOTS:
 
         m_modemAvailable = modemAvailable;
         Q_EMIT p.modemAvailableChanged(m_modemAvailable);
-    }
-
-    void setFlightMode(bool newStatus)
-    {
-        if (m_flightMode == newStatus)
-        {
-            return;
-        }
-
-        m_flightMode = newStatus;
-        Q_EMIT p.flightModeUpdated(m_flightMode);
     }
 
     void sim_unlock_ready()
@@ -401,6 +384,19 @@ public Q_SLOTS:
             m_ofonoLinks[path] = modem;
             connect(modem.get(), &wwan::Modem::readyToUnlock, this, &Private::modemReadyToUnlock);
             connect(modem.get(), &wwan::Modem::ready, this, &Private::modemReady);
+
+            for (const auto &nmobjpath : m_nmDevices)
+            {
+                auto dev = make_shared<OrgFreedesktopNetworkManagerDeviceInterface>(
+                            NM_DBUS_SERVICE,
+                            nmobjpath.path(),
+                            m_nm->connection());
+                if (dev->udi() == path) {
+                    modem->setNmPath(nmobjpath.path());
+                    m_statisticsMonitor->addLink(modem);
+                    break;
+                }
+            }
         }
 
         Q_EMIT p.linksUpdated();
@@ -506,15 +502,26 @@ ManagerImpl::updateNetworkingStatus(uint status)
 }
 
 ManagerImpl::ManagerImpl(notify::NotificationManager::SPtr notificationManager,
-                         KillSwitch::Ptr killSwitch,
+                         FlightModeToggle::SPtr flightModeToggle,
+                         wifi::WifiToggle::SPtr wifiToggle,
                          HotspotManager::SPtr hotspotManager,
+                         connection::ActiveConnectionManager::SPtr activeConnectionManager,
                          const QDBusConnection& systemConnection) :
         d(new ManagerImpl::Private(*this))
 {
-    d->nm = make_shared<OrgFreedesktopNetworkManagerInterface>(NM_DBUS_SERVICE, NM_DBUS_PATH, systemConnection);
+    d->m_nm = make_shared<OrgFreedesktopNetworkManagerInterface>(NM_DBUS_SERVICE, NM_DBUS_PATH, systemConnection);
+    d->m_settingsInterface = make_shared<OrgFreedesktopNetworkManagerSettingsInterface>(
+                    NM_DBUS_SERVICE, NM_DBUS_PATH_SETTINGS, systemConnection);
+    d->m_activeConnectionManager = activeConnectionManager;
 
     d->m_unlockDialog = make_shared<SimUnlockDialog>(notificationManager);
     connect(d->m_unlockDialog.get(), &SimUnlockDialog::ready, d.get(), &Private::sim_unlock_ready);
+
+    d->m_statisticsMonitor = make_shared<NMDeviceStatisticsMonitor>();
+
+    connect(d->m_statisticsMonitor.get(), &NMDeviceStatisticsMonitor::txChanged, this, &ManagerImpl::txChanged);
+    connect(d->m_statisticsMonitor.get(), &NMDeviceStatisticsMonitor::rxChanged, this, &ManagerImpl::rxChanged);
+
 
     d->m_ofono = make_shared<QOfonoManager>();
 
@@ -531,8 +538,12 @@ ManagerImpl::ManagerImpl(notify::NotificationManager::SPtr notificationManager,
     connect(d->m_ofono.get(), &QOfonoManager::modemsChanged, d.get(), &Private::modems_changed);
     d->modems_changed(d->m_ofono->modems());
 
-    d->m_killSwitch = killSwitch;
-    connect(d->m_killSwitch.get(), &KillSwitch::stateChanged, d.get(), &Private::updateHasWifi);
+    d->m_flightModeToggle = flightModeToggle;
+    connect(d->m_flightModeToggle.get(), &FlightModeToggle::flightModeChanged, this, &Manager::flightModeUpdated);
+
+    d->m_wifiToggle = wifiToggle;
+    connect(d->m_wifiToggle.get(), &wifi::WifiToggle::stateChanged, d.get(), &Private::updateHasWifi);
+    connect(d->m_wifiToggle.get(), &wifi::WifiToggle::enabledChanged, this, &Manager::wifiEnabledUpdated);
 
     d->m_hotspotManager = hotspotManager;
     connect(d->m_hotspotManager.get(), &HotspotManager::enabledChanged, this, &Manager::hotspotEnabledChanged);
@@ -544,18 +555,15 @@ ManagerImpl::ManagerImpl(notify::NotificationManager::SPtr notificationManager,
 
     connect(d->m_hotspotManager.get(), &HotspotManager::reportError, this, &Manager::reportError);
 
-    connect(d->nm.get(), &OrgFreedesktopNetworkManagerInterface::DeviceAdded, this, &ManagerImpl::device_added);
-    QList<QDBusObjectPath> devices(d->nm->GetDevices());
+    connect(d->m_nm.get(), &OrgFreedesktopNetworkManagerInterface::DeviceAdded, this, &ManagerImpl::device_added);
+    QList<QDBusObjectPath> devices = d->m_nm->GetDevices();
     for(const auto &path : devices) {
         device_added(path);
     }
 
-    connect(d->nm.get(), &OrgFreedesktopNetworkManagerInterface::DeviceRemoved, this, &ManagerImpl::device_removed);
-    updateNetworkingStatus(d->nm->state());
-    connect(d->nm.get(), &OrgFreedesktopNetworkManagerInterface::PropertiesChanged, this, &ManagerImpl::nm_properties_changed);
-
-    connect(d->m_killSwitch.get(), &KillSwitch::flightModeChanged, d.get(), &Private::setFlightMode);
-    d->setFlightMode(d->m_killSwitch->isFlightMode());
+    connect(d->m_nm.get(), &OrgFreedesktopNetworkManagerInterface::DeviceRemoved, this, &ManagerImpl::device_removed);
+    updateNetworkingStatus(d->m_nm->state());
+    connect(d->m_nm.get(), &OrgFreedesktopNetworkManagerInterface::PropertiesChanged, this, &ManagerImpl::nm_properties_changed);
 
     /// @todo set by the default connections.
     d->m_characteristics = Link::Characteristics::empty;
@@ -570,30 +578,30 @@ ManagerImpl::ManagerImpl(notify::NotificationManager::SPtr notificationManager,
     for(auto sim : d->m_sims) {
         connect(sim.get(), &wwan::Sim::presentChanged, d.get(), &Private::startCheckSimForMobileDataTimer);
     }
-    d->m_checkSimForMobileDataTimer.start();
+    d->m_checkSimForMobileDataTimer.start();    
 }
 
 bool
 ManagerImpl::wifiEnabled() const
 {
-    return d->m_wifiEnabled;
+    return d->m_wifiToggle->isEnabled();
 }
 
 
 void
 ManagerImpl::setWifiEnabled(bool enabled)
 {
-    qDebug() << "Setting WiFi enabled =" << enabled;
-
     if (!d->m_hasWifi)
     {
         return;
     }
 
-    if (d->m_wifiEnabled == enabled)
+    if (wifiEnabled() == enabled)
     {
         return;
     }
+
+    qDebug() << "Setting WiFi enabled =" << enabled;
 
     d->setUnstoppableOperationHappening(true);
     // Disable hotspot before disabling WiFi
@@ -602,8 +610,7 @@ ManagerImpl::setWifiEnabled(bool enabled)
         d->m_hotspotManager->setEnabled(false);
     }
 
-    d->m_killSwitch->setBlock(!enabled);
-    d->nm->setWirelessEnabled(enabled);
+    d->m_wifiToggle->setEnabled(enabled);
     d->setUnstoppableOperationHappening(false);
 }
 
@@ -629,7 +636,7 @@ ManagerImpl::setHotspotEnabled(bool enabled)
         return;
     }
 
-    if (enabled && d->m_flightMode)
+    if (enabled && d->m_flightModeToggle->isFlightMode())
     {
         qWarning() << "Cannot set hotspot enabled when flight mode is on";
         return;
@@ -637,10 +644,9 @@ ManagerImpl::setHotspotEnabled(bool enabled)
 
     d->setUnstoppableOperationHappening(true);
 
-    if (enabled && !d->m_wifiEnabled)
+    if (enabled && !d->m_wifiToggle->isEnabled())
     {
-        d->m_killSwitch->setBlock(false);
-        d->nm->setWirelessEnabled(true);
+        d->m_wifiToggle->setEnabled(true);
     }
 
     d->m_hotspotManager->setEnabled(enabled);
@@ -650,12 +656,12 @@ ManagerImpl::setHotspotEnabled(bool enabled)
 void
 ManagerImpl::setFlightMode(bool enabled)
 {
-    qDebug() << "Setting flight mode enabled =" << enabled;
-
-    if (enabled == d->m_killSwitch->isFlightMode())
+    if (enabled == d->m_flightModeToggle->isFlightMode())
     {
         return;
     }
+
+    qDebug() << "Setting flight mode enabled =" << enabled;
 
     d->setUnstoppableOperationHappening(true);
     // Disable hotspot before enabling flight mode
@@ -663,7 +669,7 @@ ManagerImpl::setFlightMode(bool enabled)
     {
         d->m_hotspotManager->setEnabled(false);
     }
-    if (!d->m_killSwitch->flightMode(enabled))
+    if (!d->m_flightModeToggle->setFlightMode(enabled))
     {
         qWarning() << "Failed to change flightmode.";
     }
@@ -673,7 +679,13 @@ ManagerImpl::setFlightMode(bool enabled)
 bool
 ManagerImpl::flightMode() const
 {
-    return d->m_flightMode;
+    return d->m_flightModeToggle->isFlightMode();
+}
+
+bool
+ManagerImpl::flightModeAvailable() const
+{
+    return d->m_flightModeToggle->isValid();
 }
 
 void
@@ -690,7 +702,12 @@ void
 ManagerImpl::device_removed(const QDBusObjectPath &path)
 {
     qDebug() << "Device Removed:" << path.path();
-    Link::Ptr toRemove;
+
+    d->m_nmDevices.removeAll(path);
+
+    d->m_statisticsMonitor->remove(path.path());
+
+    Link::SPtr toRemove;
     for (auto dev : d->m_nmLinks)
     {
         auto wifiLink = dynamic_pointer_cast<wifi::WifiLinkImpl>(dev);
@@ -712,6 +729,9 @@ void
 ManagerImpl::device_added(const QDBusObjectPath &path)
 {
     qDebug() << "Device Added:" << path.path();
+
+    d->m_nmDevices.append(path);
+
     for (const auto &dev : d->m_nmLinks)
     {
         auto wifiLink = dynamic_pointer_cast<wifi::WifiLinkImpl>(dev);
@@ -721,24 +741,54 @@ ManagerImpl::device_added(const QDBusObjectPath &path)
         }
     }
 
-    Link::Ptr link;
+    Link::SPtr link;
     try {
         auto dev = make_shared<OrgFreedesktopNetworkManagerDeviceInterface>(
-            NM_DBUS_SERVICE, path.path(), d->nm->connection());
-        if (dev->deviceType() == NM_DEVICE_TYPE_WIFI) {
-            wifi::WifiLink::Ptr tmp = make_shared<wifi::WifiLinkImpl>(dev,
-                                                d->nm,
-                                                d->m_killSwitch);
-
-            // We're not interested in showing access points
-            if (tmp->name() != d->m_hotspotManager->interface())
+            NM_DBUS_SERVICE, path.path(), d->m_nm->connection());
+        switch (dev->deviceType())
+        {
+            case NM_DEVICE_TYPE_WIFI:
             {
-                tmp->setDisconnectWifi(d->m_hotspotManager->disconnectWifi());
-                QObject::connect(d->m_hotspotManager.get(), &HotspotManager::disconnectWifiChanged,
-                        tmp.get(), &wifi::WifiLink::setDisconnectWifi);
+                wifi::WifiLink::SPtr tmp = make_shared<wifi::WifiLinkImpl>(dev,
+                                                    d->m_nm,
+                                                    d->m_wifiToggle,
+                                                    d->m_activeConnectionManager);
 
-                link = tmp;
+                // We're not interested in showing access points
+                if (tmp->name() != d->m_hotspotManager->interface())
+                {
+                    tmp->setDisconnectWifi(d->m_hotspotManager->disconnectWifi());
+                    QObject::connect(d->m_hotspotManager.get(), &HotspotManager::disconnectWifiChanged,
+                            tmp.get(), &wifi::WifiLink::setDisconnectWifi);
+
+                    link = tmp;
+                }
+                break;
             }
+            case NM_DEVICE_TYPE_ETHERNET:
+            {
+                link = make_shared<ethernet::EthernetLink>(
+                        dev, d->m_settingsInterface, d->m_activeConnectionManager);
+                break;
+            }
+            case NM_DEVICE_TYPE_MODEM:
+            {
+                if (dev->driver() == "ofono")
+                {
+                    for (const auto &modem : d->m_ofonoLinks)
+                    {
+                        if (modem->ofonoPath() == dev->udi())
+                        {
+                            modem->setNmPath(path.path());
+                            d->m_statisticsMonitor->addLink(modem);
+                            break;
+                        }
+                    }
+                }
+                break;
+            }
+            default:
+                break;
         }
     } catch (const exception &e) {
         qDebug() << ": failed to create Device proxy for "<< path.path() << ": ";
@@ -750,6 +800,8 @@ ManagerImpl::device_added(const QDBusObjectPath &path)
     if (link) {
         d->m_nmLinks.insert(link);
         Q_EMIT linksUpdated();
+
+        d->m_statisticsMonitor->addLink(link);
     }
 
     d->updateHasWifi();
@@ -762,10 +814,10 @@ ManagerImpl::unstoppableOperationHappening() const
     return d->m_unstoppableOperationHappening;
 }
 
-QSet<Link::Ptr>
+QSet<Link::SPtr>
 ManagerImpl::links() const
 {
-    QSet<Link::Ptr> result(d->m_nmLinks);
+    QSet<Link::SPtr> result(d->m_nmLinks);
     for(auto i: d->m_ofonoLinks)
     {
         result.insert(i);
@@ -866,15 +918,29 @@ ManagerImpl::unlockModemByName(const QString &name)
 }
 
 
-QSet<wifi::WifiLink::Ptr>
+QSet<wifi::WifiLink::SPtr>
 ManagerImpl::wifiLinks() const
 {
-    QSet<wifi::WifiLink::Ptr> result;
+    QSet<wifi::WifiLink::SPtr> result;
     for(auto link: d->m_nmLinks)
     {
         if (link->type() == Link::Type::wifi)
         {
             result.insert(dynamic_pointer_cast<wifi::WifiLink>(link));
+        }
+    }
+    return result;
+}
+
+QSet<ethernet::EthernetLink::SPtr>
+ManagerImpl::ethernetLinks() const
+{
+    QSet<ethernet::EthernetLink::SPtr> result;
+    for(auto link: d->m_nmLinks)
+    {
+        if (link->type() == Link::Type::ethernet)
+        {
+            result.insert(dynamic_pointer_cast<ethernet::EthernetLink>(link));
         }
     }
     return result;
@@ -974,6 +1040,18 @@ QList<wwan::Sim::Ptr>
 ManagerImpl::sims() const
 {
     return d->m_sims;
+}
+
+bool
+ManagerImpl::tx() const
+{
+    return d->m_statisticsMonitor->tx();
+}
+
+bool
+ManagerImpl::rx() const
+{
+    return d->m_statisticsMonitor->rx();
 }
 
 

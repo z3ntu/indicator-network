@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Canonical, Ltd.
+ * Copyright (C) 2016 Canonical, Ltd.
  *
  * This program is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 3, as published
@@ -14,38 +14,41 @@
  * with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  * Authors:
- *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
+ *     Pete Woods <pete.woods@canonical.com>
  */
 
 #pragma once
 
 #include "item.h"
-
-#include "menumodel-cpp/menu-item.h"
 #include "menumodel-cpp/action.h"
+#include "menumodel-cpp/menu-item.h"
+#include "menumodel-cpp/gio-helpers/variant.h"
 
-class TextItem : public Item
+#include <functional>
+#include <vector>
+
+class EthernetItem : public Item
 {
     Q_OBJECT
 
+    class Private;
+    std::unique_ptr<Private> d;
+
 public:
-    typedef std::shared_ptr<TextItem> Ptr;
+    typedef std::shared_ptr<EthernetItem> Ptr;
 
-    TextItem() = delete;
-    virtual ~TextItem() = default;
-    TextItem(const QString &label, const QString &prefix, const QString &name);
+    EthernetItem(unsigned int id, bool isSettingsMenu);
+    virtual ~EthernetItem();
 
-    virtual MenuItem::Ptr
-    menuItem();
+    virtual MenuItem::Ptr menuItem();
 
 public Q_SLOTS:
-    void setLabel(const QString &label);
+    void setStatusText(const QString &value);
 
+    void setName(const QString &value);
+
+    void setAutoConnect(bool autoConnect);
 
 Q_SIGNALS:
-    void activated();
-
-private:
-    Action::Ptr m_action;
-    MenuItem::Ptr m_item;
+    void autoConnectChanged(bool autoconnect);
 };

@@ -20,7 +20,7 @@
 
 #include <connectivityqt/sim.h>
 #include <connectivityqt/sims-list-model.h>
-#include <indicator-network-test-base.h>
+#include <indicator-network-test-base-phone.h>
 #include <dbus-types.h>
 #include <NetworkManagerSettingsInterface.h>
 
@@ -75,7 +75,7 @@ inline void PrintTo (const SS& simState, std::ostream* os)
             << "Present: " << (simState.present ? "y" : "n") << ", "
             << "MCC: " << simState.mcc.toStdString () << ", "
             << "MNC: " << simState.mnc.toStdString () << ", "
-            << "Langs: " << QStringList(simState.preferredLanguages).join (",").toStdString ()
+            << "Langs: [" << QStringList(simState.preferredLanguages).join (",").toStdString () << "], "
             << "Roaming: " << (simState.dataRoamingEnabled ? "y" : "n")
             << ")";
 }
@@ -87,7 +87,7 @@ using namespace connectivityqt;
 namespace
 {
 
-class TestConnectivityApiSim: public IndicatorNetworkTestBase
+class TestConnectivityApiSim: public IndicatorNetworkTestBasePhone
 {
 protected:
     static void SetUpTestCase()

@@ -5,10 +5,6 @@ pkg_check_modules(
 )
 include_directories(${QOFONO_INCLUDE_DIRS})
 
-include_directories("${CMAKE_SOURCE_DIR}/src")
-include_directories("${CMAKE_BINARY_DIR}/src/qdbus-stubs")
-include_directories("${CMAKE_SOURCE_DIR}/src/qdbus-stubs")
-
 # list these here to have them visible in Qt Creator
 file(
         GLOB_RECURSE NETWORK_SERVICE_HEADERS
@@ -22,16 +18,22 @@ set(NETWORK_SERVICE_SOURCES
 
     nmofono/connectivity-service-settings.cpp
     nmofono/hotspot-manager.cpp
-    nmofono/kill-switch.cpp
     nmofono/manager.cpp
     nmofono/manager-impl.cpp
+    nmofono/nm-device-statistics-monitor.cpp
+    nmofono/null-flight-mode-toggle.cpp
+    nmofono/urfkill-flight-mode-toggle.cpp
     nmofono/connection/active-connection.cpp
     nmofono/connection/active-connection-manager.cpp
     nmofono/connection/active-vpn-connection.cpp
+    nmofono/connection/available-connection.cpp
+    nmofono/ethernet/ethernet-link.cpp
     nmofono/wifi/access-point.cpp
     nmofono/wifi/access-point-impl.cpp
     nmofono/wifi/grouped-access-point.cpp
+    nmofono/wifi/network-manager-wifi-toggle.cpp
     nmofono/wifi/wifi-link-impl.cpp
+    nmofono/wifi/urfkill-wifi-toggle.cpp
     nmofono/wwan/modem.cpp
     nmofono/wwan/sim.cpp
     nmofono/wwan/sim-manager.cpp
@@ -48,6 +50,8 @@ set(NETWORK_SERVICE_SOURCES
     sim-unlock-dialog.cpp
     root-state.cpp
     vpn-status-notifier.cpp
+    sections/ethernet-section.cpp
+    sections/ethernet-link-section.cpp
     sections/quick-access-section.cpp
     sections/wifi-section.cpp
     sections/vpn-section.cpp
@@ -61,8 +65,11 @@ set(NETWORK_SERVICE_SOURCES
     connectivity-service/dbus-sim.cpp
 
     menuitems/access-point-item.cpp
+    menuitems/ethernet-connection-item.cpp
+    menuitems/ethernet-item.cpp
+    menuitems/ethernet-link-item.cpp
+    menuitems/settings-item.cpp
     menuitems/switch-item.cpp
-    menuitems/text-item.cpp
     menuitems/vpn-item.cpp
     menuitems/wifi-link-item.cpp
     menuitems/wwan-link-item.cpp

@@ -1,5 +1,5 @@
 project(indicator-network C CXX)
-cmake_minimum_required(VERSION 2.8.9)
+cmake_minimum_required(VERSION 3.1)
 
 string(TOLOWER "${CMAKE_BUILD_TYPE}" build_type_lower)
 
@@ -22,9 +22,9 @@ add_definitions(
 )
 
 find_package(PkgConfig REQUIRED)
-include(EnableCoverageReport)
+find_package(CoverageReport)
 include(GNUInstallDirs)
-include(UseGSettings)
+find_package(GSettings)
 
 set(GETTEXT_PACKAGE indicator-network)
 set(LOCALE_DIR "${CMAKE_INSTALL_FULL_DATADIR}/locale")
@@ -83,12 +83,15 @@ include_directories(${NM_INCLUDE_DIRS})
 pkg_check_modules(URL_DISPATCHER REQUIRED url-dispatcher-1)
 include_directories(${URL_DISPATCHER_INCLUDE_DIRS})
 
+find_package(Threads REQUIRED)
+include_directories(${Thread_INCLUDE_DIRS})
+
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 include_directories(${CMAKE_BINARY_DIR})
 
-set(COMMON_FLAGS "-Wall -Wextra -Wpedantic -fno-permissive -fPIC -fvisibility=hidden -pthread")
+set(COMMON_FLAGS "-Wall -Wextra -Wpedantic -fno-permissive -fPIC -fvisibility=hidden")
 
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 14)

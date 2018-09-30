@@ -19,13 +19,11 @@
 
 #include <sections/wwan-section.h>
 #include <menuitems/wwan-link-item.h>
+#include <menuitems/settings-item.h>
 #include <menuitems/switch-item.h>
-#include <menuitems/text-item.h>
 
 #include "menumodel-cpp/action-group-merger.h"
 #include "menumodel-cpp/menu-merger.h"
-
-#include "url-dispatcher-cpp/url-dispatcher.h"
 
 #include <util/qhash-sharedptr.h>
 #include <util/localisation.h>
@@ -56,26 +54,15 @@ public:
 
     SwitchItem::Ptr m_mobileDataSwitch;
     SwitchItem::Ptr m_hotspotSwitch;
-    TextItem::Ptr m_openCellularSettings;
+    SettingsItem::Ptr m_openCellularSettings;
 
-    QMap<wwan::Modem::Ptr, WwanLinkItem::Ptr> m_items;
+    QMap<wwan::Modem::Ptr, WwanLinkItem::SPtr> m_items;
 
     Private() = delete;
     Private(Manager::Ptr modemManager, SwitchItem::Ptr mobileDataSwitch ,SwitchItem::Ptr hotspotSwitch);
 
 public Q_SLOTS:
     void modemsChanged();
-
-    void openCellularSettings()
-    {
-        UrlDispatcher::send("settings:///system/cellular", [](string url, bool success)
-        {
-            if (!success)
-            {
-                cerr << "URL Dispatcher failed on " << url << endl;
-            }
-        });
-    }
 };
 
 WwanSection::Private::Private(Manager::Ptr modemManager, SwitchItem::Ptr mobileDataSwitch,SwitchItem::Ptr hotspotSwitch)
@@ -99,8 +86,7 @@ WwanSection::Private::Private(Manager::Ptr modemManager, SwitchItem::Ptr mobileD
     m_topMenu = make_shared<Menu>();
     m_topMenu->append(m_topItem);
 
-    m_openCellularSettings = make_shared<TextItem>(_("Cellular settings…"), "cellular", "settings");
-    connect(m_openCellularSettings.get(), &TextItem::activated, this, &Private::openCellularSettings);
+    m_openCellularSettings = make_shared<SettingsItem>(_("Cellular settings…"), "cellular");
     m_actionGroupMerger->add(m_openCellularSettings->actionGroup());
 
     connect(m_manager.get(), &Manager::linksUpdated, this, &Private::modemsChanged);
@@ -139,7 +125,7 @@ WwanSection::Private::modemsChanged()
     m_linkMenuMerger->clear();
 
     multimap<int, WwanLinkItem::Ptr, wwan::Modem::Compare> sorted;
-    QMapIterator<wwan::Modem::Ptr, WwanLinkItem::Ptr> it(m_items);
+    QMapIterator<wwan::Modem::Ptr, WwanLinkItem::SPtr> it(m_items);
     while (it.hasNext())
     {
         it.next();

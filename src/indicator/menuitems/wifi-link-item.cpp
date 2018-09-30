@@ -19,7 +19,6 @@
 
 #include "wifi-link-item.h"
 
-#include "menuitems/text-item.h"
 #include "menuitems/access-point-item.h"
 
 #include "menumodel-cpp/action-group.h"
@@ -42,7 +41,7 @@ class WifiLinkItem::Private : public QObject
 public:
     ActionGroupMerger::Ptr m_actionGroupMerger;
 
-    wifi::WifiLink::Ptr m_link;
+    wifi::WifiLink::SPtr m_link;
 
     /// @todo do something with me...
     Action::Ptr m_actionBusy;
@@ -56,8 +55,6 @@ public:
     Menu::Ptr m_neverConnectedApsMenu;
     MenuMerger::Ptr m_apsMerger;
 
-    Menu::Ptr m_bottomMenu;
-
     MenuMerger::Ptr m_rootMerger;
     MenuItem::Ptr m_item;
 
@@ -66,14 +63,12 @@ public:
     std::string m_icon;
     std::string m_a11ydesc;
 
-    TextItem::Ptr m_otherNetwork;
-
 public:
 
 
     Private() = delete;
     ~Private() {}
-    Private(wifi::WifiLink::Ptr link)
+    Private(wifi::WifiLink::SPtr link)
         : m_link {link}
     {
         m_actionGroupMerger = std::make_shared<ActionGroupMerger>();
@@ -83,8 +78,6 @@ public:
         m_connectedBeforeApsMenu = std::make_shared<Menu>();
         m_neverConnectedApsMenu = std::make_shared<Menu>();
         m_apsMerger = std::make_shared<MenuMerger>();
-
-        m_bottomMenu = std::make_shared<Menu>();
 
         m_rootMerger = std::make_shared<MenuMerger>();
 
@@ -106,17 +99,11 @@ public:
         updateActiveAccessPoint(m_link->activeAccessPoint());
         connect(m_link.get(), &wifi::WifiLink::activeAccessPointUpdated, this, &Private::updateActiveAccessPoint);
 
-        m_otherNetwork = std::make_shared<TextItem>(_("Other network…"), "wifi", "othernetwork");
-        //m_actionGroupMerger->add(*m_otherNetwork);
-
         m_rootMerger->append(m_topMenu);
 
         m_apsMerger->append(m_connectedBeforeApsMenu);
         m_apsMerger->append(m_neverConnectedApsMenu);
         m_rootMerger->append(m_apsMerger);
-
-        //m_bottomMenu->append(*m_otherNetwork);
-        m_rootMerger->append(m_bottomMenu);
 
         m_item = MenuItem::newSection(m_rootMerger);
     }
@@ -196,7 +183,7 @@ public Q_SLOTS:
 };
 
 
-WifiLinkItem::WifiLinkItem(wifi::WifiLink::Ptr link)
+WifiLinkItem::WifiLinkItem(wifi::WifiLink::SPtr link)
     : d{new Private(link)}
 {
 }

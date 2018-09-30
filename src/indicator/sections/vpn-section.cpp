@@ -18,13 +18,11 @@
 
 #include <sections/vpn-section.h>
 #include <menuitems/vpn-item.h>
+#include <menuitems/settings-item.h>
 #include <menuitems/switch-item.h>
-#include <menuitems/text-item.h>
 
 #include "menumodel-cpp/action-group-merger.h"
 #include "menumodel-cpp/menu-merger.h"
-
-#include "url-dispatcher-cpp/url-dispatcher.h"
 
 #include <util/qhash-sharedptr.h>
 #include <util/localisation.h>
@@ -46,9 +44,8 @@ public:
     Menu::Ptr m_topMenu;
     MenuItem::Ptr m_topItem;
 
-    MenuItem::Ptr m_vpnSettingsItem;
     Menu::Ptr m_vpnSettingsMenu;
-    TextItem::Ptr m_openVpnSettings;
+    SettingsItem::Ptr m_openVpnSettings;
 
     Menu::Ptr m_connectionsMenu;
     MenuItem::Ptr m_connectionsItem;
@@ -115,17 +112,6 @@ public Q_SLOTS:
             }
         }
     }
-
-    void openVpnSettings()
-    {
-        UrlDispatcher::send("settings:///system/vpn", [](string url, bool success)
-        {
-            if (!success)
-            {
-                cerr << "URL Dispatcher failed on " << url << endl;
-            }
-        });
-    }
 };
 
 VpnSection::VpnSection(nmofono::vpn::VpnManager::SPtr vpnManager)
@@ -137,7 +123,7 @@ VpnSection::VpnSection(nmofono::vpn::VpnManager::SPtr vpnManager)
     d->m_menuMerger = make_shared<MenuMerger>();
 
     d->m_vpnSettingsMenu = make_shared<Menu>();
-    d->m_openVpnSettings = make_shared<TextItem>(_("VPN settings…"), "vpn", "settings");
+    d->m_openVpnSettings = make_shared<SettingsItem>(_("VPN settings…"), "vpn");
 
     d->m_connectionsItem = MenuItem::newSection(d->m_menuMerger);
     d->m_connectionsMenu = make_shared<Menu>();
@@ -151,7 +137,6 @@ VpnSection::VpnSection(nmofono::vpn::VpnManager::SPtr vpnManager)
     d->m_topMenu = make_shared<Menu>();
     d->m_topMenu->append(d->m_topItem);
 
-    QObject::connect(d->m_openVpnSettings.get(), &TextItem::activated, d.get(), &Private::openVpnSettings);
     d->m_actionGroupMerger->add(d->m_openVpnSettings->actionGroup());
 
     QObject::connect(d->m_manager.get(), &VpnManager::connectionsChanged, d.get(), &Private::vpnConnectionsChanged);

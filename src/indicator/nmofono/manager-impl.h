@@ -19,9 +19,11 @@
 
 #pragma once
 
+#include <nmofono/connection/active-connection-manager.h>
 #include <nmofono/manager.h>
-#include <nmofono/kill-switch.h>
 #include <nmofono/hotspot-manager.h>
+#include <nmofono/flight-mode-toggle.h>
+#include <nmofono/wifi/wifi-toggle.h>
 
 #include <QDBusConnection>
 #include <QDBusObjectPath>
@@ -32,8 +34,9 @@ namespace notify
 class NotificationManager;
 }
 
-namespace nmofono {
-    class Manager;
+namespace nmofono
+{
+class Manager;
 
 class ManagerImpl : public Manager
 {
@@ -49,13 +52,16 @@ public:
 
     ManagerImpl(
             std::shared_ptr<notify::NotificationManager> notificationManager,
-            KillSwitch::Ptr killSwitch,
+            FlightModeToggle::SPtr flightModeToggle,
+            wifi::WifiToggle::SPtr wifiToggle,
             HotspotManager::SPtr hotspotManager,
+            connection::ActiveConnectionManager::SPtr activeConnectionManager,
             const QDBusConnection& systemBus);
 
     // Public API
     void setFlightMode(bool) override;
     bool flightMode() const override;
+    bool flightModeAvailable() const override;
 
     bool unstoppableOperationHappening() const override;
 
@@ -66,8 +72,9 @@ public:
 
     bool roaming() const override;
 
-    QSet<Link::Ptr> links() const override;
-    QSet<wifi::WifiLink::Ptr> wifiLinks() const override;
+    QSet<Link::SPtr> links() const override;
+    QSet<wifi::WifiLink::SPtr> wifiLinks() const override;
+    QSet<ethernet::EthernetLink::SPtr> ethernetLinks() const override;
     QSet<wwan::Modem::Ptr> modemLinks() const override;
 
     Manager::NetworkingStatus status() const override;
@@ -98,6 +105,10 @@ public:
     QList<wwan::Modem::Ptr> modems() const override;
 
     QList<wwan::Sim::Ptr> sims() const override;
+
+    bool tx() const override;
+
+    bool rx() const override;
 
     void setHotspotEnabled(bool) override;
 

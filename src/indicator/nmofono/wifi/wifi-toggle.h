@@ -1,5 +1,5 @@
 /*
- * Copyright © 2014 Canonical Ltd.
+ * Copyright © 2016 Canonical Ltd.
  *
  * This program is free software: you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License version 3,
@@ -14,28 +14,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  * Authors:
- *     Antti Kaijanmäki <antti.kaijanmaki@canonical.com>
- *     Marcus Tomlinson <marcus.tomlinson@canonical.com>
+ *     Pete Woods <pete.woods@canonical.com>
  */
 
 #pragma once
 
+#include <QObject>
+
 #include <exception>
-#include <memory>
+#include <unity/util/DefinesPtrs.h>
 
-#include <QDBusConnection>
-
-namespace nmofono {
-
-class KillSwitch : public QObject
+namespace nmofono
 {
-    Q_OBJECT
+namespace wifi
+{
 
-    class Private;
-    std::unique_ptr<Private> d;
-
+class WifiToggle : public QObject
+{
+Q_OBJECT
 public:
-    typedef std::shared_ptr<KillSwitch> Ptr;
+    UNITY_DEFINES_PTRS(WifiToggle);
 
     enum class State
     {
@@ -47,19 +45,22 @@ public:
         last_ = hard_blocked
     };
 
-    KillSwitch(const QDBusConnection& systemBus);
-    ~KillSwitch();
+    WifiToggle() = default;
 
-    void setBlock(bool block);
+    virtual ~WifiToggle() = default;
 
-    State state() const;
-    bool flightMode(bool enable);
-    bool isFlightMode();
+    virtual State state() const = 0;
+
+    virtual bool isEnabled() const = 0;
+
+public Q_SLOTS:
+    virtual void setEnabled(bool) = 0;
 
 Q_SIGNALS:
     void stateChanged(State);
-    void flightModeChanged(bool);
 
+    void enabledChanged(bool);
 };
 
+}
 }

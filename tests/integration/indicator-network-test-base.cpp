@@ -19,9 +19,15 @@
 #include <indicator-network-test-base.h>
 #include <dbus-types.h>
 
+#include <HostnameInterface.h>
 #include <NetworkManager.h>
 #include <NetworkManagerSettingsConnectionInterface.h>
 #include <NetworkManagerSettingsInterface.h>
+
+#include <QDebug>
+
+#define G_SETTINGS_ENABLE_BACKEND
+#include <gio/gsettingsbackend.h>
 
 using namespace QtDBusTest;
 using namespace QtDBusMock;
@@ -43,6 +49,19 @@ IndicatorNetworkTestBase::~IndicatorNetworkTestBase()
 void IndicatorNetworkTestBase::SetUp()
 {
     qputenv("INDICATOR_NETWORK_SETTINGS_PATH", temporaryDir.path().toUtf8().constData());
+    qputenv("INDICATOR_NETWORK_UNDER_TESTING", "1");
+    qputenv("GSETTINGS_SCHEMA_DIR", INDICATOR_NETWORK_TESTING_GSETTINGS_SCHEMA_DIR);
+    qputenv("INDICATOR_NETWORK_TESTING_GSETTINGS_INI", INDICATOR_NETWORK_TESTING_GSETTINGS_INI);
+
+    if (QFile::exists(INDICATOR_NETWORK_TESTING_GSETTINGS_INI))
+    {
+        QFile::remove(INDICATOR_NETWORK_TESTING_GSETTINGS_INI);
+    }
+    QFile inifile(INDICATOR_NETWORK_TESTING_GSETTINGS_INI);
+    inifile.open(QIODevice::WriteOnly | QIODevice::Text);
+    QTextStream out(&inifile);
+    out << "[root]\ndata-usage-indication=false\n";
+    inifile.close();
 
     if (qEnvironmentVariableIsSet("TEST_WITH_BUSTLE"))
     {
@@ -66,18 +85,24 @@ void IndicatorNetworkTestBase::SetUp()
                                 QStringList{"-y", testDir.filePath(QString("%1-%2").arg(test_info->name(), "system.log"))})));
     }
 
-    qDebug() << NETWORK_MANAGER_TEMPLATE_PATH;
-    dbusMock.registerTemplate(NM_DBUS_SERVICE, NETWORK_MANAGER_TEMPLATE_PATH, {}, QDBusConnection::SystemBus);
+    registerDBusMocks();
+    dbusMock.registerTemplate(DBusTypes::HOSTNAME_BUS_NAME, DBUSMOCK_TEMPLATE_DIR "hostname1.py", {}, QDBusConnection::SystemBus);
+    dbusMock.registerTemplate(NM_DBUS_SERVICE, DBUSMOCK_TEMPLATE_DIR "networkmanager.py", {}, QDBusConnection::SystemBus);
     dbusMock.registerNotificationDaemon();
     // By default the ofono mock starts with one modem
     dbusMock.registerOfono({{"no_modem", true}});
-    dbusMock.registerURfkill();
+
 
     dbusMock.registerCustomMock(
                         DBusTypes::POWERD_DBUS_NAME,
                         DBusTypes::POWERD_DBUS_PATH,
                         DBusTypes::POWERD_DBUS_INTERFACE,
                         QDBusConnection::SystemBus);
+    dbusMock.registerCustomMock(
+                "com.canonical.Unity.Screen",
+                "/com/canonical/Unity/Screen",
+                "com.canonical.Unity.Screen",
+                QDBusConnection::SystemBus);
 
     dbusMock.registerCustomMock(
                         DBusTypes::WPASUPPLICANT_DBUS_NAME,
@@ -92,6 +117,8 @@ void IndicatorNetworkTestBase::SetUp()
                         QDBusConnection::SessionBus);
 
     dbusTestRunner.startServices();
+
+    setupDBusMocks();
 
     // Set up a basic URL dispatcher mock
     auto& urlDispatcher = dbusMock.mockInterface(
@@ -146,8 +173,6 @@ void IndicatorNetworkTestBase::SetUp()
                      ).waitForFinished();
 
 
-    modem = createModem("ril_0");
-
     // Identify the test when looking at Bustle logs
     QDBusConnection systemConnection = dbusTestRunner.systemConnection();
     systemConnection.registerService("org.TestIndicatorNetworkService");
@@ -155,12 +180,52 @@ void IndicatorNetworkTestBase::SetUp()
     sessionConnection.registerService("org.TestIndicatorNetworkService");
 }
 
+void IndicatorNetworkTestBase::TearDown()
+{
+    if (QFile::exists(INDICATOR_NETWORK_TESTING_GSETTINGS_INI))
+    {
+        QFile::remove(INDICATOR_NETWORK_TESTING_GSETTINGS_INI);
+    }
+}
+
+void IndicatorNetworkTestBase::setDataUsageIndicationSetting(bool value)
+{
+    GSettingsBackend *backend = g_keyfile_settings_backend_new(INDICATOR_NETWORK_TESTING_GSETTINGS_INI,
+                                                               "/com/canonical/indicator/network/",
+                                                               "root");
+    GSettings *settings = g_settings_new_with_backend("com.canonical.indicator.network",
+                                                      backend);
+    g_settings_set_value (settings,
+                          "data-usage-indication",
+                          g_variant_new_boolean(value));
+    g_settings_sync();
+    g_object_unref(settings);
+    g_object_unref(backend);
+}
+
+
 mh::MenuMatcher::Parameters IndicatorNetworkTestBase::phoneParameters()
 {
     return mh::MenuMatcher::Parameters(
             "com.canonical.indicator.network",
             { { "indicator", "/com/canonical/indicator/network" } },
             "/com/canonical/indicator/network/phone");
+}
+
+mh::MenuMatcher::Parameters IndicatorNetworkTestBase::phoneEthernetSettingsParameters()
+{
+    return mh::MenuMatcher::Parameters(
+            "com.canonical.indicator.network",
+            { { "indicator", "/com/canonical/indicator/network" } },
+            "/com/canonical/indicator/network/phone_ethernet_settings");
+}
+
+mh::MenuMatcher::Parameters IndicatorNetworkTestBase::phoneWifiSettingsParameters()
+{
+    return mh::MenuMatcher::Parameters(
+            "com.canonical.indicator.network",
+            { { "indicator", "/com/canonical/indicator/network" } },
+            "/com/canonical/indicator/network/phone_wifi_settings");
 }
 
 mh::MenuMatcher::Parameters IndicatorNetworkTestBase::unlockSimParameters(std::string const& busName, int exportId)
@@ -171,15 +236,21 @@ mh::MenuMatcher::Parameters IndicatorNetworkTestBase::unlockSimParameters(std::s
             "/com/canonical/indicator/network/unlocksim" + to_string(exportId));
 }
 
-void IndicatorNetworkTestBase::startIndicator()
+void
+IndicatorNetworkTestBase::startIndicator()
 {
     try
     {
-        indicator.reset(
-                new QProcessDBusService(DBusTypes::DBUS_NAME,
-                                        QDBusConnection::SessionBus,
-                                        NETWORK_SERVICE_BIN,
-                                        QStringList()));
+        if (qEnvironmentVariableIsSet("TEST_WITH_GDB"))
+        {
+            indicator.reset(new QProcessDBusService(DBusTypes::DBUS_NAME, QDBusConnection::SessionBus, "/usr/bin/gdb", QStringList
+                { "-batch", "-ex", "run", "-ex", "bt", NETWORK_SERVICE_BIN }));
+        }
+        else
+        {
+            indicator.reset(new QProcessDBusService(DBusTypes::DBUS_NAME, QDBusConnection::SessionBus,
+                NETWORK_SERVICE_BIN, QStringList()));
+        }
         indicator->start(dbusTestRunner.sessionConnection());
     }
     catch (exception const& e)
@@ -189,10 +260,65 @@ void IndicatorNetworkTestBase::startIndicator()
     }
 }
 
+void IndicatorNetworkTestBase::setChassis(Chassis chassis)
+{
+    static const QMap<Chassis, QString> CHASSIS_MAP{
+        {Chassis::desktop, "desktop"},
+        {Chassis::laptop, "laptop"},
+        {Chassis::server, "server"},
+        {Chassis::tablet, "tablet"},
+        {Chassis::handset, "handset"},
+        {Chassis::vm, "vm"},
+        {Chassis::container, "container"}
+    };
+
+    OrgFreedesktopHostname1Interface hostnameInterface(DBusTypes::HOSTNAME_BUS_NAME, DBusTypes::HOSTNAME_OBJ_PATH, dbusTestRunner.systemConnection());
+    auto reply = hostnameInterface.SetChassis(CHASSIS_MAP[chassis], true);
+    reply.waitForFinished();
+    if (reply.isError())
+    {
+        EXPECT_FALSE(reply.isError()) << reply.error().message().toStdString();
+    }
+}
+
 QString IndicatorNetworkTestBase::createEthernetDevice(int state, const QString& id)
 {
     auto& networkManager(dbusMock.networkManagerInterface());
     auto reply = networkManager.AddEthernetDevice(id, "eth" + id, state);
+    reply.waitForFinished();
+    if (reply.isError())
+    {
+        EXPECT_FALSE(reply.isError()) << reply.error().message().toStdString();
+    }
+    QString path = reply;
+
+    if (state == NM_DEVICE_STATE_ACTIVATED)
+    {
+        setNmProperty(path, NM_DBUS_INTERFACE_DEVICE, "Autoconnect", true);
+    }
+
+    return reply;
+}
+
+QString IndicatorNetworkTestBase::createEthernetConnection(const QString& name, const QString& device)
+{
+    auto& networkManager(dbusMock.networkManagerInterface());
+
+    VariantDictMap settings{
+        {"802-3-ethernet", QVariantMap{
+            {"duplex", "full"},
+            {"mac-address", randomMac().toUtf8()},
+            {"mac-address-blacklist", QStringList()}
+        }},
+        {"connection", QVariantMap{
+            {"id", name},
+            {"interface-name", "ens33"},
+            {"type", "802-3-ethernet"},
+            {"permissions", QStringList()},
+            {"secondaries", QStringList()}
+        }}
+    };
+    auto reply = networkManager.AddDeviceConnection(device, settings);
     reply.waitForFinished();
     if (reply.isError())
     {
@@ -211,6 +337,45 @@ QString IndicatorNetworkTestBase::createWiFiDevice(int state, const QString& id)
         EXPECT_FALSE(reply.isError()) << reply.error().message().toStdString();
     }
     return reply;
+}
+
+QString IndicatorNetworkTestBase::createOfonoModemDevice(const QString &ofonoPath, const QString& id)
+{
+    auto& networkManager(dbusMock.networkManagerInterface());
+    QList<QVariant> argumentList;
+    argumentList << QVariant(QString("modem") + id) << QVariant(ofonoPath);
+    QDBusPendingReply<QString> reply = networkManager.asyncCallWithArgumentList(QStringLiteral("AddOfonoModemDevice"), argumentList);
+    reply.waitForFinished();
+    if (reply.isError())
+    {
+        EXPECT_FALSE(reply.isError()) << reply.error().message().toStdString();
+    }
+    return reply;
+}
+
+void IndicatorNetworkTestBase::setDeviceStatistics(const QString &device, quint64 tx, quint64 rx)
+{
+    auto& networkManager(dbusMock.networkManagerInterface());
+    QList<QVariant> argumentList;
+    argumentList << QVariant(device) << QVariant(tx) << QVariant(rx);
+    networkManager.asyncCallWithArgumentList(QStringLiteral("SetDeviceStatistics"), argumentList).waitForFinished();
+}
+
+quint32 IndicatorNetworkTestBase::getStatisticsRefreshRateMs(const QString &device)
+{
+    QDBusInterface iface(NM_DBUS_SERVICE,
+                         device,
+                         "org.freedesktop.DBus.Properties",
+                          QDBusConnection::systemBus());
+
+    QDBusPendingReply<QVariant> reply = iface.asyncCall("Get", "org.freedesktop.NetworkManager.Device.Statistics", "RefreshRateMs");
+    reply.waitForFinished();
+    if (reply.isError())
+    {
+        EXPECT_FALSE(reply.isError()) << reply.error().message().toStdString();
+    }
+    QVariant tmp = reply;
+    return tmp.toInt();
 }
 
 QString IndicatorNetworkTestBase::randomMac()
@@ -443,6 +608,21 @@ void IndicatorNetworkTestBase::setNetworkRegistrationProperty(const QString& pat
     }
 }
 
+void IndicatorNetworkTestBase::setDisplayPowerState(DisplayPowerState value)
+{
+    // com.canonical.Unity.Screen interface only supports DisplayPowerStateChange signal
+    // Interface does not implement proper properties - https://bugs.launchpad.net/ubuntu/+source/repowerd/+bug/1637722
+    auto& unityscreen = dbusMock.mockInterface(
+                            "com.canonical.Unity.Screen",
+                            "/com/canonical/Unity/Screen",
+                            "com.canonical.Unity.Screen",
+                            QDBusConnection::SystemBus);
+
+    QVariantList args;
+    args << QVariant((qint32)(value)) << QVariant(qint32(0));
+    unityscreen.EmitSignal("com.canonical.Unity.Screen", "DisplayPowerStateChange", "ii", args).waitForFinished();
+}
+
 OrgFreedesktopDBusMockInterface& IndicatorNetworkTestBase::notificationsMockInterface()
 {
     return dbusMock.mockInterface("org.freedesktop.Notifications",
@@ -553,6 +733,34 @@ mh::MenuItemMatcher IndicatorNetworkTestBase::cellularSettings()
     return mh::MenuItemMatcher()
         .label("Cellular settings…")
         .action("indicator.cellular.settings");
+}
+
+mh::MenuItemMatcher IndicatorNetworkTestBase::ethernetInfo(const string& label,
+                                                           const string& status,
+                                                           Toggle autoConnect)
+{
+    return mh::MenuItemMatcher()
+        .checkbox()
+        .widget("com.canonical.indicator.switch")
+        .toggled(autoConnect == Toggle::enabled)
+        .label(label)
+        .pass_through_string_attribute("x-canonical-subtitle-action", status);
+}
+
+mh::MenuItemMatcher IndicatorNetworkTestBase::radio(const string& label,
+                                                    Toggle toggled)
+{
+    return mh::MenuItemMatcher()
+        .radio()
+        .label(label)
+        .toggled(toggled == Toggle::enabled);
+}
+
+mh::MenuItemMatcher IndicatorNetworkTestBase::ethernetSettings()
+{
+    return mh::MenuItemMatcher()
+        .label("Ethernet settings…")
+        .action("indicator.ethernet.settings");
 }
 
 QString IndicatorNetworkTestBase::createVpnConnection(const QString& id,

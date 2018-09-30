@@ -34,4 +34,6 @@ public:
     static QString bearerIcon(nmofono::wwan::Modem::Bearer bearer);
 
     static QString wifiIcon(nmofono::wifi::WifiLink::Signal signal);
+
+    static QString ethernetIcon(nmofono::Link::Status status);
 };

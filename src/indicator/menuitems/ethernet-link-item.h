@@ -31,7 +31,7 @@ class EthernetLinkItem : public Item
 public:
     UNITY_DEFINES_PTRS(EthernetLinkItem);
 
-    EthernetLinkItem(nmofono::ethernet::EthernetLink::SPtr link);
+    EthernetLinkItem(nmofono::ethernet::EthernetLink::SPtr link, bool isSettingsMenu);
     ~EthernetLinkItem() = default;
 
     MenuItem::Ptr menuItem() override;

@@ -172,7 +172,12 @@ unique_ptr<QuickAccessSection> Factory::newQuickAccessSection(SwitchItem::Ptr fl
 
 unique_ptr<EthernetSection> Factory::newEthernetSection()
 {
-    return make_unique<EthernetSection>(d->singletonNmofono());
+    return make_unique<EthernetSection>(d->singletonNmofono(), false);
+}
+
+unique_ptr<EthernetSection> Factory::newEthernetSettings()
+{
+    return make_unique<EthernetSection>(d->singletonNmofono(), true);
 }
 
 unique_ptr<WwanSection> Factory::newWwanSection(SwitchItem::Ptr mobileDataSwitch, SwitchItem::Ptr hotspotSwitch)

@@ -164,6 +164,8 @@ protected:
 
     static unity::gmenuharness::MenuMatcher::Parameters phoneParameters();
 
+    static unity::gmenuharness::MenuMatcher::Parameters phoneEthernetSettingsParameters();
+
     static unity::gmenuharness::MenuMatcher::Parameters phoneWifiSettingsParameters();
 
     static unity::gmenuharness::MenuMatcher::Parameters unlockSimParameters(std::string const& busName, int exportId);

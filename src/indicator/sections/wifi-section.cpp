@@ -19,10 +19,8 @@
 
 #include <sections/wifi-section.h>
 #include <menuitems/wifi-link-item.h>
+#include <menuitems/settings-item.h>
 #include <menuitems/switch-item.h>
-#include <menuitems/text-item.h>
-
-#include "url-dispatcher-cpp/url-dispatcher.h"
 
 #include "menumodel-cpp/action-group.h"
 #include "menumodel-cpp/action-group-merger.h"
@@ -52,7 +50,7 @@ public:
     SwitchItem::Ptr m_switch;
 
     QMap<wifi::WifiLink::SPtr, WifiLinkItem::Ptr> m_items;
-    TextItem::Ptr m_openWifiSettings;
+    SettingsItem::Ptr m_openWifiSettings;
 
     Private(Manager::Ptr manager, SwitchItem::Ptr wifiSwitch)
         : m_manager{manager}, m_switch{wifiSwitch}
@@ -64,8 +62,7 @@ public:
         m_menu = make_shared<Menu>();
         m_settingsMenu = make_shared<Menu>();
 
-        m_openWifiSettings = make_shared<TextItem>(_("Wi-Fi settings…"), "wifi", "settings");
-        connect(m_openWifiSettings.get(), &TextItem::activated, this, &Private::openWiFiSettings);
+        m_openWifiSettings = make_shared<SettingsItem>(_("Wi-Fi settings…"), "wifi");
 
         m_actionGroupMerger->add(m_switch->actionGroup());
         m_actionGroupMerger->add(m_openWifiSettings->actionGroup());
@@ -80,14 +77,6 @@ public:
     }
 
 public Q_SLOTS:
-    void openWiFiSettings()
-    {
-        UrlDispatcher::send("settings:///system/wifi", [](string url, bool success){
-            if (!success)
-                cerr << "URL Dispatcher failed on " << url << endl;
-        });
-    }
-
     void updateLinks()
     {
         auto links = m_manager->wifiLinks();

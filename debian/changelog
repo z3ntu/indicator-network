@@ -1,9 +1,18 @@
 indicator-network (0.9.1+ubports) bionic; urgency=medium
 
-  * Import latest from launchpad
-  * Revert changes that removed xdg autostart
+  * Bumped version for ubports
 
- -- Dan Chapman <dan@ubports.com>  Thu, 11 Jan 2018 14:08:16 +0000
+ -- Jenkins <ci@ubports.com>  Sun, 30 Sep 2018 20:52:32 +0000
+
+indicator-network (0.9.0+17.04.20170405-0ubuntu1) zesty; urgency=medium
+
+  * Only physically export a single "phone" and tweak the indicator
+    config file so it's used everywhere
+  * Add basic ethernet settings menu export
+  * Use new SettingsItem class to consistently export the settings menu
+    items (LP: #1642989)
+
+ -- Pete Woods <pete.woods@canonical.com>  Wed, 05 Apr 2017 12:55:49 +0000
 
 indicator-network (0.9.0+17.04.20170322-0ubuntu1) zesty; urgency=medium
 
@@ -79,6 +88,18 @@ indicator-network (0.8.0+17.04.20161031.4-0ubuntu1) zesty; urgency=medium
   * Show network data usage indication. (LP: #1470852)
 
  -- Antti Kaijanmäki <antti@kaijanmaki.net>  Mon, 31 Oct 2016 11:08:29 +0000
+
+indicator-network (0.8.1+ubports1) xenial; urgency=medium
+
+  * Update Jenkinsfile
+
+ -- Dan Chapman <dan@ubports.com>  Thu, 11 Jan 2018 11:57:17 +0000
+
+indicator-network (0.8.1+ubports) vivid; urgency=medium
+
+  * Imported to UBports
+
+ -- UBports auto importer <infra@ubports.com>  Sun, 23 Jul 2017 17:34:03 +0200
 
 indicator-network (0.8.0+17.04.20161021-0ubuntu1) zesty; urgency=medium
 

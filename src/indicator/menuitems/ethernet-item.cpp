@@ -49,11 +49,11 @@ public:
     MenuItem::Ptr m_item;
 };
 
-EthernetItem::EthernetItem(unsigned int id)
+EthernetItem::EthernetItem(unsigned int id, bool isSettingsMenu)
 {
     d.reset(new Private(*this));
 
-    QString actionIdBase = "ethernet." + QString::number(id);
+    QString actionIdBase = "ethernet." + QString::number(id) + (isSettingsMenu? "-settings": "");
 
     QString statusConnectedActionId = actionIdBase;
     QString statusLabelActionId = actionIdBase + "::status-label";

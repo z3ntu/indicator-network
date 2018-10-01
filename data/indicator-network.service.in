@@ -2,6 +2,8 @@
 Description=Indicator Network Backend
 PartOf=graphical-session.target
 PartOf=indicators.target
+After=indicators-pre.target unity8.service
+Requisite=unity8.service
 Wants=indicator-network-secret-agent.service
 
 [Service]

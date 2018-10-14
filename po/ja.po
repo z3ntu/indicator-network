@@ -8,16 +8,17 @@ msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-04-29 12:38+0300\n"
-"PO-Revision-Date: 2016-02-15 17:40+0000\n"
-"Last-Translator: Shushi Kurose <md81bird@hitaki.net>\n"
-"Language-Team: Japanese <ja@li.org>\n"
+"PO-Revision-Date: 2018-08-04 09:01+0000\n"
+"Last-Translator: joseph <joseph@liau.ca>\n"
+"Language-Team: Japanese <https://translate.ubports.com/projects/ubports/"
+"indicator-network/ja/>\n"
+"Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 2.20\n"
 "X-Launchpad-Export-Date: 2016-10-21 07:05+0000\n"
-"X-Generator: Launchpad (build 18246)\n"
-"Language: ja\n"
 
 #: ../src/agent/SecretRequest.cpp:61
 msgid "Connect to “%1”"
@@ -41,7 +42,7 @@ msgstr "キャンセル"
 
 #: ../src/indicator/menuitems/wifi-link-item.cpp:109
 msgid "Other network…"
-msgstr "その他のネットワーク..."
+msgstr "その他のネットワーク…"
 
 #: ../src/indicator/menuitems/wwan-link-item.cpp:90
 msgid "No SIM"
@@ -92,16 +93,16 @@ msgstr "機内モード"
 
 #: ../src/indicator/factory.cpp:208
 msgid "Cellular data"
-msgstr ""
+msgstr "モバイルデータ"
 
 #. TODO Move this into a new class
 #: ../src/indicator/factory.cpp:221
 msgid "Hotspot"
-msgstr ""
+msgstr "ホットスポット"
 
 #: ../src/indicator/sim-unlock-dialog.cpp:144
 msgid "Sorry, incorrect %{1} PIN."
-msgstr "%{1} PINが違います"
+msgstr "%{1} PINが違います。"
 
 #: ../src/indicator/sim-unlock-dialog.cpp:149
 #: ../src/indicator/sim-unlock-dialog.cpp:178
@@ -115,7 +116,7 @@ msgstr "%{1} PINを間違って入力すると、アンロックするのにPUK�
 
 #: ../src/indicator/sim-unlock-dialog.cpp:161
 msgid "Sorry, your %{1} is now blocked."
-msgstr "%{1} がブロックされています"
+msgstr "%{1} がブロックされています。"
 
 #: ../src/indicator/sim-unlock-dialog.cpp:166
 msgid "Please enter your PUK code to unblock SIM card."
@@ -128,7 +129,7 @@ msgstr "PUKコードを取得するには、ネットワークプロバイダに
 #: ../src/indicator/sim-unlock-dialog.cpp:176
 #: ../src/indicator/sim-unlock-dialog.cpp:190
 msgid "Sorry, incorrect PUK."
-msgstr "PUKが違います"
+msgstr "PUKが違います。"
 
 #: ../src/indicator/sim-unlock-dialog.cpp:180
 msgid ""
@@ -241,11 +242,11 @@ msgstr "セルラー設定…"
 
 #: ../src/indicator/sections/vpn-section.cpp:140
 msgid "VPN settings…"
-msgstr "VPN 設定..."
+msgstr "VPN 設定…"
 
 #: ../src/indicator/sections/wifi-section.cpp:65
 msgid "Wi-Fi settings…"
-msgstr "Wi-Fi設定..."
+msgstr "Wi-Fi設定…"
 
 #. TRANSLATORS: this is the indicator title shown on the top header of the indicator area
 #: ../src/indicator/root-state.cpp:306

@@ -8,16 +8,17 @@ msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-04-29 12:38+0300\n"
-"PO-Revision-Date: 2016-02-15 17:40+0000\n"
-"Last-Translator: rob <linuxned@gmail.com>\n"
-"Language-Team: Dutch <nl@li.org>\n"
+"PO-Revision-Date: 2018-10-14 18:56+0000\n"
+"Last-Translator: Sander <sander.k1007@kpnmail.nl>\n"
+"Language-Team: Dutch <https://translate.ubports.com/projects/ubports/"
+"indicator-network/nl/>\n"
+"Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 3.0\n"
 "X-Launchpad-Export-Date: 2016-10-21 07:05+0000\n"
-"X-Generator: Launchpad (build 18246)\n"
-"Language: nl\n"
 
 #: ../src/agent/SecretRequest.cpp:61
 msgid "Connect to “%1”"
@@ -33,7 +34,7 @@ msgstr "WEP"
 
 #: ../src/agent/SecretRequest.cpp:74
 msgid "Connect"
-msgstr "Verbind"
+msgstr "Verbinden"
 
 #: ../src/agent/SecretRequest.cpp:75
 msgid "Cancel"
@@ -92,7 +93,7 @@ msgstr "Vliegtuigstand"
 
 #: ../src/indicator/factory.cpp:208
 msgid "Cellular data"
-msgstr ""
+msgstr "Mobiele gegevens"
 
 #. TODO Move this into a new class
 #: ../src/indicator/factory.cpp:221
@@ -195,52 +196,62 @@ msgstr "Pincodes komen niet overeen."
 
 #: ../src/indicator/vpn-status-notifier.cpp:48
 msgid "The VPN connection '%1' failed."
-msgstr ""
+msgstr "De VPN verbinding '%1' is mislukt."
 
 #: ../src/indicator/vpn-status-notifier.cpp:50
 msgid ""
 "The VPN connection '%1' failed because the network connection was "
 "interrupted."
 msgstr ""
+"De VPN verbinding '%1' is mislukt omdat de netwerkverbinding werd verbroken."
 
 #: ../src/indicator/vpn-status-notifier.cpp:51
 msgid ""
 "The VPN connection '%1' failed because the VPN service stopped unexpectedly."
 msgstr ""
+"De VPN verbinding '%1' is mislukt omdat de VPN-service onverwachts is "
+"gestopt."
 
 #: ../src/indicator/vpn-status-notifier.cpp:52
 msgid ""
 "The VPN connection '%1' failed because the VPN service returned invalid "
 "configuration."
 msgstr ""
+"De VPN verbinding '%1' is mislukt omdat de VPN-service een niet geldige "
+"configuratie heeft geretourneerd."
 
 #: ../src/indicator/vpn-status-notifier.cpp:53
 msgid ""
 "The VPN connection '%1' failed because the connection attempt timed out."
 msgstr ""
+"De VPN verbinding '%1' is mislukt omdat er een time-out is opgetreden in de "
+"verbinding."
 
 #: ../src/indicator/vpn-status-notifier.cpp:54
 msgid ""
 "The VPN connection '%1' failed because the VPN service did not start in time."
 msgstr ""
+"De VPN verbinding '%1' is mislukt omdat de VPN-service niet op tijd is "
+"gestart."
 
 #: ../src/indicator/vpn-status-notifier.cpp:55
 msgid ""
 "The VPN connection '%1' failed because the VPN service failed to start."
-msgstr ""
+msgstr "De VPN verbinding '%1' is mislukt omdat de VPN-service niet startte."
 
 #: ../src/indicator/vpn-status-notifier.cpp:56
 msgid ""
 "The VPN connection '%1' failed because there were no valid VPN secrets."
 msgstr ""
+"De VPN verbinding '%1' is mislukt omdat er geen geldige VPN-geheimen waren."
 
 #: ../src/indicator/vpn-status-notifier.cpp:57
 msgid "The VPN connection '%1' failed because of invalid VPN secrets."
-msgstr ""
+msgstr "De VPN verbinding '%1' is mislukt vanwege ongeldige VPN-geheimen."
 
 #: ../src/indicator/vpn-status-notifier.cpp:68
 msgid "VPN Connection Failed"
-msgstr ""
+msgstr "VPN Verbinding Mislukt"
 
 #: ../src/indicator/sections/wwan-section.cpp:102
 msgid "Cellular settings…"
@@ -261,4 +272,4 @@ msgstr "Netwerk"
 
 #: ../src/indicator/nmofono/vpn/vpn-manager.cpp:81
 msgid "VPN connection %1"
-msgstr ""
+msgstr "VPN verbinding %1"

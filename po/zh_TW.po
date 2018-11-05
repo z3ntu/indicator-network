@@ -8,16 +8,17 @@ msgstr ""
 "Project-Id-Version: indicator-network\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-04-29 12:38+0300\n"
-"PO-Revision-Date: 2016-02-15 17:40+0000\n"
-"Last-Translator: Pete Woods <Unknown>\n"
-"Language-Team: Chinese (Traditional) <zh_TW@li.org>\n"
+"PO-Revision-Date: 2018-11-04 00:00+0000\n"
+"Last-Translator: Louies <louies0623@gmail.com>\n"
+"Language-Team: Chinese (Traditional) <https://translate.ubports.com/projects/"
+"ubports/indicator-network/zh_Hant/>\n"
+"Language: zh_TW\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 3.0.1\n"
 "X-Launchpad-Export-Date: 2016-10-21 07:05+0000\n"
-"X-Generator: Launchpad (build 18246)\n"
-"Language: \n"
 
 #: ../src/agent/SecretRequest.cpp:61
 msgid "Connect to “%1”"
@@ -45,15 +46,15 @@ msgstr "其他網路…"
 
 #: ../src/indicator/menuitems/wwan-link-item.cpp:90
 msgid "No SIM"
-msgstr "無 SIM"
+msgstr "無 SIM 卡"
 
 #: ../src/indicator/menuitems/wwan-link-item.cpp:97
 msgid "SIM Error"
-msgstr "SIM 錯誤"
+msgstr "SIM 卡錯誤"
 
 #: ../src/indicator/menuitems/wwan-link-item.cpp:105
 msgid "SIM Locked"
-msgstr "SIM 已上鎖"
+msgstr "SIM 卡已鎖定"
 
 #: ../src/indicator/menuitems/wwan-link-item.cpp:118
 msgid "Unregistered"
@@ -61,7 +62,7 @@ msgstr "已取消註冊"
 
 #: ../src/indicator/menuitems/wwan-link-item.cpp:123
 msgid "Unknown"
-msgstr "不明"
+msgstr "未知"
 
 #: ../src/indicator/menuitems/wwan-link-item.cpp:128
 msgid "Denied"
@@ -88,7 +89,7 @@ msgstr "Wi-Fi"
 #. TODO Move this into a new class
 #: ../src/indicator/factory.cpp:198
 msgid "Flight Mode"
-msgstr "飛安模式"
+msgstr "飛航模式"
 
 #: ../src/indicator/factory.cpp:208
 msgid "Cellular data"
@@ -101,7 +102,7 @@ msgstr "熱點"
 
 #: ../src/indicator/sim-unlock-dialog.cpp:144
 msgid "Sorry, incorrect %{1} PIN."
-msgstr "抱歉，%{1} PIN 碼不正確"
+msgstr "抱歉，%{1} PIN 碼不正確。"
 
 #: ../src/indicator/sim-unlock-dialog.cpp:149
 #: ../src/indicator/sim-unlock-dialog.cpp:178
@@ -180,7 +181,7 @@ msgstr "輸入新的 %{1} PIN"
 
 #: ../src/indicator/sim-unlock-dialog.cpp:334
 msgid "Confirm new %{1} PIN"
-msgstr "再次輸入新的 %{1} PIN"
+msgstr "再次輸入新的 %{1} PIN碼"
 
 #: ../src/indicator/sim-unlock-dialog.cpp:373
 msgid "PIN codes did not match."
@@ -199,37 +200,37 @@ msgstr "由於網路連線中斷，導致 VPN 連線 '%1' 失敗。"
 #: ../src/indicator/vpn-status-notifier.cpp:51
 msgid ""
 "The VPN connection '%1' failed because the VPN service stopped unexpectedly."
-msgstr ""
+msgstr "VPN 連接'％1'失敗，因為 VPN 服務突然終止。"
 
 #: ../src/indicator/vpn-status-notifier.cpp:52
 msgid ""
 "The VPN connection '%1' failed because the VPN service returned invalid "
 "configuration."
-msgstr ""
+msgstr "VPN 連接'％1'失敗，因為 VPN 服務回復了無效的設置而失敗。"
 
 #: ../src/indicator/vpn-status-notifier.cpp:53
 msgid ""
 "The VPN connection '%1' failed because the connection attempt timed out."
-msgstr ""
+msgstr "VPN 連接'％1'失敗，因為嘗試連接超時。"
 
 #: ../src/indicator/vpn-status-notifier.cpp:54
 msgid ""
 "The VPN connection '%1' failed because the VPN service did not start in time."
-msgstr ""
+msgstr "VPN 連接'％1'失敗，因為 VPN 服務未及時啟動。"
 
 #: ../src/indicator/vpn-status-notifier.cpp:55
 msgid ""
 "The VPN connection '%1' failed because the VPN service failed to start."
-msgstr ""
+msgstr "無法連接到 VPN 連接'％1'，因為 VPN 服務未啟動。"
 
 #: ../src/indicator/vpn-status-notifier.cpp:56
 msgid ""
 "The VPN connection '%1' failed because there were no valid VPN secrets."
-msgstr ""
+msgstr "無法連接到 VPN 連接'％1'，因為沒有有效的 VPN 密碼。"
 
 #: ../src/indicator/vpn-status-notifier.cpp:57
 msgid "The VPN connection '%1' failed because of invalid VPN secrets."
-msgstr ""
+msgstr "由於 VPN 密碼無效，而無法連接到 VPN 連接'%1'。"
 
 #: ../src/indicator/vpn-status-notifier.cpp:68
 msgid "VPN Connection Failed"

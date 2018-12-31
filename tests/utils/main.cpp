@@ -27,6 +27,8 @@
 
 #include <util/logging.h>
 
+#include <libintl.h>
+
 using namespace QtDBusMock;
 
 class Runner: public QObject

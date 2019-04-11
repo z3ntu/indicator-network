@@ -60,12 +60,6 @@ pkg_check_modules(
 include_directories(${OFONO_INCLUDE_DIRS})
 
 pkg_check_modules(
-    NETWORKMANAGER REQUIRED
-    NetworkManager
-)
-include_directories(${NETWORKMANAGER_INCLUDE_DIRS})
-
-pkg_check_modules(
   LIBSECRET REQUIRED
   libsecret-1
 )
@@ -77,7 +71,7 @@ include_directories(${Qt5Core_INCLUDE_DIRS})
 find_package(Qt5DBus COMPONENTS Qt5DBusMacros REQUIRED)
 include_directories(${Qt5DBus_INCLUDE_DIRS})
 
-pkg_check_modules(NM REQUIRED NetworkManager REQUIRED)
+pkg_check_modules(NM REQUIRED libnm REQUIRED)
 include_directories(${NM_INCLUDE_DIRS})
 
 pkg_check_modules(URL_DISPATCHER REQUIRED url-dispatcher-1)

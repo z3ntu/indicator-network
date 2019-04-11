@@ -20,6 +20,7 @@
 #include <indicator-network-test-base-phone.h>
 #include <dbus-types.h>
 #include <NetworkManagerSettingsInterface.h>
+#include <nm-dbus-interface.h>
 
 #include <QDebug>
 #include <QTestEventLoop>
@@ -383,7 +384,7 @@ TEST_F(TestConnectivityApi, HotspotConfig)
 
     auto& nmSettingsMock = dbusMock.mockInterface(NM_DBUS_SERVICE,
                            NM_DBUS_PATH_SETTINGS,
-                           NM_DBUS_IFACE_SETTINGS,
+                           NM_DBUS_INTERFACE_SETTINGS,
                            QDBusConnection::SystemBus);
     QSignalSpy nmSettingsMockCallSpy(
                            &nmSettingsMock,
@@ -454,7 +455,7 @@ TEST_F(TestConnectivityApi, HotspotConfig)
     // Connect to method calls on the newly added connection
     auto connectionPath = qvariant_cast<QDBusObjectPath>(settingsNewConnectionSpy.first().first());
     auto& connectionSettingsMock = dbusMock.mockInterface(NM_DBUS_SERVICE, connectionPath.path(),
-                           NM_DBUS_IFACE_SETTINGS_CONNECTION,
+                           NM_DBUS_INTERFACE_SETTINGS_CONNECTION,
                            QDBusConnection::SystemBus);
     QSignalSpy connectionSettingsMockCallSpy(
                            &connectionSettingsMock,
@@ -538,7 +539,7 @@ TEST_F(TestConnectivityApi, InsecureHotspotConfig)
 
     auto& nmSettingsMock = dbusMock.mockInterface(NM_DBUS_SERVICE,
                            NM_DBUS_PATH_SETTINGS,
-                           NM_DBUS_IFACE_SETTINGS,
+                           NM_DBUS_INTERFACE_SETTINGS,
                            QDBusConnection::SystemBus);
     QSignalSpy nmSettingsMockCallSpy(
                            &nmSettingsMock,
@@ -603,7 +604,7 @@ TEST_F(TestConnectivityApi, InsecureHotspotConfig)
     // Connect to method calls on the newly added connection
     auto connectionPath = qvariant_cast<QDBusObjectPath>(settingsNewConnectionSpy.first().first());
     auto& connectionSettingsMock = dbusMock.mockInterface(NM_DBUS_SERVICE, connectionPath.path(),
-                           NM_DBUS_IFACE_SETTINGS_CONNECTION,
+                           NM_DBUS_INTERFACE_SETTINGS_CONNECTION,
                            QDBusConnection::SystemBus);
     QSignalSpy connectionSettingsMockCallSpy(
                            &connectionSettingsMock,
@@ -633,7 +634,7 @@ TEST_F(TestConnectivityApi, HotspotModemAvailable)
 
     auto& nmSettingsMock = dbusMock.mockInterface(NM_DBUS_SERVICE,
                            NM_DBUS_PATH_SETTINGS,
-                           NM_DBUS_IFACE_SETTINGS,
+                           NM_DBUS_INTERFACE_SETTINGS,
                            QDBusConnection::SystemBus);
     QSignalSpy nmSettingsMockCallSpy(
                            &nmSettingsMock,

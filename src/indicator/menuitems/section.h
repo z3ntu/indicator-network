@@ -23,7 +23,7 @@
 #include "menumodel-cpp/action-group.h"
 #include "menumodel-cpp/menu-model.h"
 
-#include <unity/util/DefinesPtrs.h>
+#include <lomiri/util/DefinesPtrs.h>
 
 class Section
 {

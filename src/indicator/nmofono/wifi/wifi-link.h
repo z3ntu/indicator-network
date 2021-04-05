@@ -23,7 +23,7 @@
 #include <nmofono/wifi/access-point.h>
 
 #include <QSet>
-#include <unity/util/DefinesPtrs.h>
+#include <lomiri/util/DefinesPtrs.h>
 
 namespace nmofono {
 namespace wifi {
@@ -39,7 +39,7 @@ WifiLink : public Link
     Q_OBJECT
 
 public:
-    UNITY_DEFINES_PTRS(WifiLink);
+    LOMIRI_DEFINES_PTRS(WifiLink);
     typedef unsigned int Id;
 
     enum class Mode

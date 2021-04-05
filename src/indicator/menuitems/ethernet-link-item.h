@@ -21,7 +21,7 @@
 #include <menuitems/item.h>
 #include <nmofono/ethernet/ethernet-link.h>
 
-#include <unity/util/DefinesPtrs.h>
+#include <lomiri/util/DefinesPtrs.h>
 
 class EthernetLinkItem : public Item
 {
@@ -29,7 +29,7 @@ class EthernetLinkItem : public Item
     std::shared_ptr<Private> d;
 
 public:
-    UNITY_DEFINES_PTRS(EthernetLinkItem);
+    LOMIRI_DEFINES_PTRS(EthernetLinkItem);
 
     EthernetLinkItem(nmofono::ethernet::EthernetLink::SPtr link, bool isSettingsMenu);
     ~EthernetLinkItem() = default;

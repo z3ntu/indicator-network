@@ -26,7 +26,7 @@ namespace nmofono {
 class NullFlightModeToggle : public FlightModeToggle
 {
 public:
-    UNITY_DEFINES_PTRS(NullFlightModeToggle);
+    LOMIRI_DEFINES_PTRS(NullFlightModeToggle);
 
     NullFlightModeToggle();
 

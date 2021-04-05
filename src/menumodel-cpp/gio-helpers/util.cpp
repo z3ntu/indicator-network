@@ -19,11 +19,11 @@
 
 #include "util.h"
 
-#include <unity/util/ResourcePtr.h>
+#include <lomiri/util/ResourcePtr.h>
 #include <glib.h>
 
 using namespace std;
-namespace util = unity::util;
+namespace util = lomiri::util;
 
 void runGMainloop(guint ms)
 {

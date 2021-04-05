@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include <unity/util/DefinesPtrs.h>
+#include <lomiri/util/DefinesPtrs.h>
 
 #include <QMap>
 #include <QString>
@@ -27,7 +27,7 @@ namespace agent {
 
 class CredentialStore {
 public:
-	UNITY_DEFINES_PTRS(CredentialStore);
+	LOMIRI_DEFINES_PTRS(CredentialStore);
 
 	CredentialStore();
 

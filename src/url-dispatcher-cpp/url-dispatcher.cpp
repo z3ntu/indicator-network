@@ -19,7 +19,7 @@
 
 #include "url-dispatcher.h"
 
-#include <liburl-dispatcher-1/url-dispatcher.h>
+#include <liblomiri-url-dispatcher/lomiri-url-dispatcher.h>
 
 namespace
 {
@@ -35,10 +35,10 @@ void
 UrlDispatcher::send(std::string url, std::function<void(std::string, bool)> cb)
 {
     if (cb) {
-        url_dispatch_send(url.c_str(),
-                          url_dispatcher_cb,
-                          new std::function<void(std::string, bool)>{cb});
+        lomiri_url_dispatch_send(url.c_str(),
+                                 url_dispatcher_cb,
+                                 new std::function<void(std::string, bool)>{cb});
     } else {
-        url_dispatch_send(url.c_str(), url_dispatcher_cb, nullptr);
+        lomiri_url_dispatch_send(url.c_str(), url_dispatcher_cb, nullptr);
     }
 }

@@ -23,7 +23,7 @@
 #include <QDBusObjectPath>
 #include <QObject>
 
-#include <unity/util/DefinesPtrs.h>
+#include <lomiri/util/DefinesPtrs.h>
 
 namespace connectivityqt
 {
@@ -33,7 +33,7 @@ class Q_DECL_EXPORT Sim : public QObject, public std::enable_shared_from_this<Si
     Q_OBJECT
 
 public:
-    UNITY_DEFINES_PTRS(Sim);
+    LOMIRI_DEFINES_PTRS(Sim);
 
     Sim(const QDBusObjectPath& path, const QDBusConnection& connection, QObject* parent = 0);
 

@@ -33,7 +33,7 @@ namespace wifi
 class UrfkillWifiToggle : public WifiToggle
 {
 public:
-    UNITY_DEFINES_PTRS(UrfkillWifiToggle);
+    LOMIRI_DEFINES_PTRS(UrfkillWifiToggle);
 
     UrfkillWifiToggle(const QDBusConnection& systemConnection);
 

@@ -27,7 +27,7 @@
 #include <QObject>
 #include <QString>
 
-#include <unity/util/DefinesPtrs.h>
+#include <lomiri/util/DefinesPtrs.h>
 
 class SimAdaptor;
 
@@ -42,7 +42,7 @@ class DBusSim: public QObject, protected QDBusContext
     friend SimAdaptor;
 
 public:
-    UNITY_DEFINES_PTRS(DBusSim);
+    LOMIRI_DEFINES_PTRS(DBusSim);
 
     DBusSim(nmofono::wwan::Sim::Ptr sim, const QDBusConnection& connection);
 

@@ -27,7 +27,7 @@
 #include <QObject>
 #include <QString>
 
-#include <unity/util/DefinesPtrs.h>
+#include <lomiri/util/DefinesPtrs.h>
 
 class VpnConnectionAdaptor;
 
@@ -41,7 +41,7 @@ class DBusVpnConnection: public QObject, protected QDBusContext
     friend VpnConnectionAdaptor;
 
 public:
-    UNITY_DEFINES_PTRS(DBusVpnConnection);
+    LOMIRI_DEFINES_PTRS(DBusVpnConnection);
 
     DBusVpnConnection(nmofono::vpn::VpnConnection::SPtr vpnConnection, const QDBusConnection& connection);
 

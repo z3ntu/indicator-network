@@ -26,15 +26,15 @@
 #include <QSignalSpy>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
-#include <unity/gmenuharness/MatchUtils.h>
-#include <unity/gmenuharness/MenuMatcher.h>
+#include <lomiri/gmenuharness/MatchUtils.h>
+#include <lomiri/gmenuharness/MenuMatcher.h>
 
 using namespace std;
 using namespace testing;
 using namespace QtDBusTest;
 using namespace QtDBusMock;
 using namespace agent;
-namespace mh = unity::gmenuharness;
+namespace mh = lomiri::gmenuharness;
 
 namespace {
 

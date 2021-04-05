@@ -23,7 +23,7 @@
 #include <QDBusObjectPath>
 #include <QObject>
 
-#include <unity/util/DefinesPtrs.h>
+#include <lomiri/util/DefinesPtrs.h>
 #include <connectivityqt/sims-list-model.h>
 
 namespace connectivityqt
@@ -34,7 +34,7 @@ class Q_DECL_EXPORT Modem : public QObject
     Q_OBJECT
 
 public:
-    UNITY_DEFINES_PTRS(Modem);
+    LOMIRI_DEFINES_PTRS(Modem);
 
     Modem(const QDBusObjectPath& path,
           const QDBusConnection& connection,

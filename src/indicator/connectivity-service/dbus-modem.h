@@ -27,7 +27,7 @@
 #include <QObject>
 #include <QString>
 
-#include <unity/util/DefinesPtrs.h>
+#include <lomiri/util/DefinesPtrs.h>
 
 class ModemAdaptor;
 
@@ -42,7 +42,7 @@ class DBusModem: public QObject, protected QDBusContext
     friend ModemAdaptor;
 
 public:
-    UNITY_DEFINES_PTRS(DBusModem);
+    LOMIRI_DEFINES_PTRS(DBusModem);
 
     DBusModem(nmofono::wwan::Modem::Ptr modem, const QDBusConnection& connection);
 

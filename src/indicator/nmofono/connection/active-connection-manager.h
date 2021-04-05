@@ -35,7 +35,7 @@ class ActiveConnectionManager: public QObject
     Q_OBJECT
 
 public:
-    UNITY_DEFINES_PTRS(ActiveConnectionManager);
+    LOMIRI_DEFINES_PTRS(ActiveConnectionManager);
 
     ActiveConnectionManager(const QDBusConnection& systemConnection);
 

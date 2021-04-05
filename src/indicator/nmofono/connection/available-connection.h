@@ -22,7 +22,7 @@
 #include <QDBusObjectPath>
 #include <QObject>
 
-#include <unity/util/DefinesPtrs.h>
+#include <lomiri/util/DefinesPtrs.h>
 #include <NetworkManager.h>
 
 namespace nmofono
@@ -40,7 +40,7 @@ class AvailableConnection: public QObject
     Q_OBJECT
 
 public:
-    UNITY_DEFINES_PTRS(AvailableConnection);
+    LOMIRI_DEFINES_PTRS(AvailableConnection);
 
     AvailableConnection(const QDBusObjectPath& path, const QDBusConnection& systemConnection);
 

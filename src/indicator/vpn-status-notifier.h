@@ -22,12 +22,12 @@
 #include <nmofono/connection/active-connection-manager.h>
 #include <notify-cpp/notification-manager.h>
 
-#include <unity/util/DefinesPtrs.h>
+#include <lomiri/util/DefinesPtrs.h>
 
 class VpnStatusNotifier
 {
 public:
-    UNITY_DEFINES_PTRS(VpnStatusNotifier);
+    LOMIRI_DEFINES_PTRS(VpnStatusNotifier);
 
     VpnStatusNotifier(nmofono::connection::ActiveConnectionManager::SPtr activeConnectionManager,
             notify::NotificationManager::SPtr notificationManager);

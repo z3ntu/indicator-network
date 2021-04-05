@@ -22,7 +22,7 @@
 #include <QObject>
 
 #include <exception>
-#include <unity/util/DefinesPtrs.h>
+#include <lomiri/util/DefinesPtrs.h>
 
 namespace nmofono
 {
@@ -33,7 +33,7 @@ class WifiToggle : public QObject
 {
 Q_OBJECT
 public:
-    UNITY_DEFINES_PTRS(WifiToggle);
+    LOMIRI_DEFINES_PTRS(WifiToggle);
 
     enum class State
     {

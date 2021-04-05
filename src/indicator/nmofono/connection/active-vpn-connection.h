@@ -24,7 +24,7 @@
 
 #include <NetworkManager.h>
 
-#include <unity/util/DefinesPtrs.h>
+#include <lomiri/util/DefinesPtrs.h>
 
 namespace nmofono
 {
@@ -38,7 +38,7 @@ class ActiveVpnConnection: public QObject
     Q_OBJECT
 
 public:
-    UNITY_DEFINES_PTRS(ActiveVpnConnection);
+    LOMIRI_DEFINES_PTRS(ActiveVpnConnection);
 
     enum class State
     {

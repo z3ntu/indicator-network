@@ -24,7 +24,7 @@
 #include <QDBusObjectPath>
 #include <connectivityqt/sim.h>
 
-#include <unity/util/DefinesPtrs.h>
+#include <lomiri/util/DefinesPtrs.h>
 
 #include <memory>
 
@@ -43,7 +43,7 @@ class Q_DECL_EXPORT SimsListModel : public QAbstractListModel
 
 public:
 
-    UNITY_DEFINES_PTRS(SimsListModel);
+    LOMIRI_DEFINES_PTRS(SimsListModel);
 
     enum Roles
     {

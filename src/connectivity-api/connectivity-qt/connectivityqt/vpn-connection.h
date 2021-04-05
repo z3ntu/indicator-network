@@ -23,7 +23,7 @@
 #include <QDBusObjectPath>
 #include <QObject>
 
-#include <unity/util/DefinesPtrs.h>
+#include <lomiri/util/DefinesPtrs.h>
 
 namespace connectivityqt
 {
@@ -33,7 +33,7 @@ class Q_DECL_EXPORT VpnConnection : public QObject
     Q_OBJECT
 
 public:
-    UNITY_DEFINES_PTRS(VpnConnection);
+    LOMIRI_DEFINES_PTRS(VpnConnection);
 
     Q_ENUMS(Type)
 

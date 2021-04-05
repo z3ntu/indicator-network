@@ -29,7 +29,7 @@ class WwanSection : public Section
     std::shared_ptr<Private> d;
 
 public:
-    UNITY_DEFINES_PTRS(WwanSection);
+    LOMIRI_DEFINES_PTRS(WwanSection);
 
     explicit WwanSection(nmofono::Manager::Ptr modemManager, SwitchItem::Ptr mobileDataSwitch, SwitchItem::Ptr hotspotSwitch);
     virtual ~WwanSection();

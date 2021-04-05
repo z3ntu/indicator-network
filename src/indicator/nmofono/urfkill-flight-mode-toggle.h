@@ -28,7 +28,7 @@ namespace nmofono {
 class UrfkillFlightModeToggle : public FlightModeToggle
 {
 public:
-    UNITY_DEFINES_PTRS(UrfkillFlightModeToggle);
+    LOMIRI_DEFINES_PTRS(UrfkillFlightModeToggle);
 
     UrfkillFlightModeToggle(const QDBusConnection& systemBus);
 

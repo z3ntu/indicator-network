@@ -22,7 +22,7 @@
 #include <QDBusObjectPath>
 #include <QObject>
 
-#include <unity/util/DefinesPtrs.h>
+#include <lomiri/util/DefinesPtrs.h>
 #include <NetworkManager.h>
 
 #include <nmofono/connection/active-vpn-connection.h>
@@ -37,7 +37,7 @@ class ActiveConnection: public QObject
     Q_OBJECT
 
 public:
-    UNITY_DEFINES_PTRS(ActiveConnection);
+    LOMIRI_DEFINES_PTRS(ActiveConnection);
 
     enum class State
     {

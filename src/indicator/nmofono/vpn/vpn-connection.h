@@ -29,7 +29,7 @@
 #include <nmofono/vpn/openvpn-connection.h>
 #include <nmofono/vpn/pptp-connection.h>
 
-#include <unity/util/DefinesPtrs.h>
+#include <lomiri/util/DefinesPtrs.h>
 
 namespace nmofono
 {
@@ -41,7 +41,7 @@ class VpnConnection: public QObject
     Q_OBJECT
 
 public:
-    UNITY_DEFINES_PTRS(VpnConnection);
+    LOMIRI_DEFINES_PTRS(VpnConnection);
 
     enum class Type
     {

@@ -29,7 +29,7 @@ class Q_DECL_EXPORT OpenvpnConnection : public VpnConnection
     Q_OBJECT
 
 public:
-    UNITY_DEFINES_PTRS(OpenvpnConnection);
+    LOMIRI_DEFINES_PTRS(OpenvpnConnection);
 
     Q_ENUMS(ConnectionType)
     enum ConnectionType

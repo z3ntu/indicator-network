@@ -21,7 +21,7 @@
 #include <menuitems/item.h>
 #include <nmofono/vpn/vpn-connection.h>
 
-#include <unity/util/DefinesPtrs.h>
+#include <lomiri/util/DefinesPtrs.h>
 
 class VpnItem : public Item
 {
@@ -29,7 +29,7 @@ class VpnItem : public Item
     std::shared_ptr<Private> d;
 
 public:
-    UNITY_DEFINES_PTRS(VpnItem);
+    LOMIRI_DEFINES_PTRS(VpnItem);
 
     VpnItem(nmofono::vpn::VpnConnection::SPtr connection);
     ~VpnItem() = default;

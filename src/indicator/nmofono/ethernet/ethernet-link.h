@@ -26,7 +26,7 @@
 #include <NetworkManagerSettingsInterface.h>
 #include <NetworkManagerDeviceInterface.h>
 
-#include <unity/util/DefinesPtrs.h>
+#include <lomiri/util/DefinesPtrs.h>
 
 #include <QSet>
 
@@ -43,7 +43,7 @@ EthernetLink : public Link
     Q_OBJECT
 
 public:
-    UNITY_DEFINES_PTRS(EthernetLink);
+    LOMIRI_DEFINES_PTRS(EthernetLink);
 
     EthernetLink(std::shared_ptr<OrgFreedesktopNetworkManagerDeviceInterface> dev,
                  std::shared_ptr<OrgFreedesktopNetworkManagerSettingsInterface> settings,

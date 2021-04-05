@@ -22,7 +22,7 @@
 #include <menuitems/section.h>
 #include <nmofono/vpn/vpn-manager.h>
 
-#include <unity/util/DefinesPtrs.h>
+#include <lomiri/util/DefinesPtrs.h>
 
 class VpnSection : public Section
 {
@@ -30,7 +30,7 @@ class VpnSection : public Section
     std::shared_ptr<Private> d;
 
 public:
-    UNITY_DEFINES_PTRS(VpnSection);
+    LOMIRI_DEFINES_PTRS(VpnSection);
 
     explicit VpnSection(nmofono::vpn::VpnManager::SPtr vpnManager);
     virtual ~VpnSection() = default;

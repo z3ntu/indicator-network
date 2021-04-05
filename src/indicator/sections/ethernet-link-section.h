@@ -27,7 +27,7 @@
 class EthernetLinkSection : public Section
 {
 public:
-    UNITY_DEFINES_PTRS(EthernetLinkSection);
+    LOMIRI_DEFINES_PTRS(EthernetLinkSection);
 
     explicit EthernetLinkSection(nmofono::Manager::Ptr manager, nmofono::ethernet::EthernetLink::SPtr link, bool isSettingsMenu);
 

@@ -23,14 +23,14 @@
 #include <menumodel-cpp/menu-item.h>
 #include <menumodel-cpp/action.h>
 
-#include <unity/util/DefinesPtrs.h>
+#include <lomiri/util/DefinesPtrs.h>
 
 class SettingsItem : public Item
 {
     Q_OBJECT
 
 public:
-    UNITY_DEFINES_PTRS(SettingsItem);
+    LOMIRI_DEFINES_PTRS(SettingsItem);
 
     SettingsItem() = delete;
 

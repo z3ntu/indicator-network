@@ -22,7 +22,7 @@
 #include <connectivityqt/vpn-connection.h>
 
 #include <QAbstractItemModel>
-#include <unity/util/DefinesPtrs.h>
+#include <lomiri/util/DefinesPtrs.h>
 
 namespace connectivityqt
 {
@@ -38,7 +38,7 @@ class Q_DECL_EXPORT VpnConnectionsListModel : public QAbstractListModel
     Q_ENUMS(Roles)
 
 public:
-    UNITY_DEFINES_PTRS(VpnConnectionsListModel);
+    LOMIRI_DEFINES_PTRS(VpnConnectionsListModel);
 
     enum Roles
     {

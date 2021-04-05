@@ -23,7 +23,7 @@
 #include <menumodel-cpp/menu-item.h>
 #include <nmofono/connection/available-connection.h>
 
-#include <unity/util/DefinesPtrs.h>
+#include <lomiri/util/DefinesPtrs.h>
 
 #include <QObject>
 #include <QString>
@@ -32,7 +32,7 @@ class EthernetConnectionItem : public Item
 {
 
 public:
-    UNITY_DEFINES_PTRS(EthernetConnectionItem);
+    LOMIRI_DEFINES_PTRS(EthernetConnectionItem);
 
     EthernetConnectionItem() = delete;
     ~EthernetConnectionItem() = default;

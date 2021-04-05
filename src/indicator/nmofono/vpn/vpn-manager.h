@@ -33,7 +33,7 @@ class VpnManager: public QObject
     Q_OBJECT
 
 public:
-    UNITY_DEFINES_PTRS(VpnManager);
+    LOMIRI_DEFINES_PTRS(VpnManager);
 
     VpnManager(connection::ActiveConnectionManager::SPtr activeConnectionManager, const QDBusConnection& systemConnection);
 

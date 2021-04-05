@@ -31,7 +31,7 @@ namespace wifi
 class NetworkManagerWifiToggle : public WifiToggle
 {
 public:
-    UNITY_DEFINES_PTRS(NetworkManagerWifiToggle);
+    LOMIRI_DEFINES_PTRS(NetworkManagerWifiToggle);
 
     NetworkManagerWifiToggle(const QDBusConnection& systemConnection);
 

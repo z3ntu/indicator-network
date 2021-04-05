@@ -22,7 +22,7 @@
 #include <memory>
 #include <QObject>
 
-#include <unity/util/DefinesPtrs.h>
+#include <lomiri/util/DefinesPtrs.h>
 
 namespace nmofono {
 
@@ -36,7 +36,7 @@ Link: public QObject
     Q_OBJECT
 
 public:
-    UNITY_DEFINES_PTRS(Link);
+    LOMIRI_DEFINES_PTRS(Link);
 
     Link(const Link&) = delete;
     virtual ~Link() = default;

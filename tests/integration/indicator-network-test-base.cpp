@@ -34,7 +34,7 @@ using namespace QtDBusMock;
 using namespace std;
 using namespace testing;
 using namespace connectivityqt;
-namespace mh = unity::gmenuharness;
+namespace mh = lomiri::gmenuharness;
 
 IndicatorNetworkTestBase::IndicatorNetworkTestBase() :
     dbusMock(dbusTestRunner)

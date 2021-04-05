@@ -24,7 +24,7 @@
 #include <QString>
 #include <memory>
 
-#include <unity/util/DefinesPtrs.h>
+#include <lomiri/util/DefinesPtrs.h>
 
 namespace util
 {
@@ -34,7 +34,7 @@ class DBusPropertyCache: public QObject
     Q_OBJECT
 
 public:
-    UNITY_DEFINES_PTRS(DBusPropertyCache);
+    LOMIRI_DEFINES_PTRS(DBusPropertyCache);
 
     DBusPropertyCache(const QString &service, const QString& interface,
                       const QString &path, const QDBusConnection &connection);

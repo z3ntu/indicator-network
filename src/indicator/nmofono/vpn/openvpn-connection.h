@@ -22,7 +22,7 @@
 #include <QObject>
 #include <QVariantMap>
 
-#include <unity/util/DefinesPtrs.h>
+#include <lomiri/util/DefinesPtrs.h>
 
 class OrgFreedesktopNetworkManagerSettingsConnectionInterface;
 
@@ -36,7 +36,7 @@ class OpenvpnConnection : public QObject
     Q_OBJECT
 
 public:
-    UNITY_DEFINES_PTRS(OpenvpnConnection);
+    LOMIRI_DEFINES_PTRS(OpenvpnConnection);
 
     enum class ConnectionType
     {

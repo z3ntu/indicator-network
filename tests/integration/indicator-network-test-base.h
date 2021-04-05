@@ -28,8 +28,8 @@
 #include <libqtdbustest/QProcessDBusService.h>
 #include <libqtdbusmock/DBusMock.h>
 
-#include <unity/gmenuharness/MatchUtils.h>
-#include <unity/gmenuharness/MenuMatcher.h>
+#include <lomiri/gmenuharness/MatchUtils.h>
+#include <lomiri/gmenuharness/MenuMatcher.h>
 
 #include <NetworkManager.h>
 #include <gmock/gmock.h>
@@ -162,13 +162,13 @@ protected:
 
     void setDataUsageIndicationSetting(bool value);
 
-    static unity::gmenuharness::MenuMatcher::Parameters phoneParameters();
+    static lomiri::gmenuharness::MenuMatcher::Parameters phoneParameters();
 
-    static unity::gmenuharness::MenuMatcher::Parameters phoneEthernetSettingsParameters();
+    static lomiri::gmenuharness::MenuMatcher::Parameters phoneEthernetSettingsParameters();
 
-    static unity::gmenuharness::MenuMatcher::Parameters phoneWifiSettingsParameters();
+    static lomiri::gmenuharness::MenuMatcher::Parameters phoneWifiSettingsParameters();
 
-    static unity::gmenuharness::MenuMatcher::Parameters unlockSimParameters(std::string const& busName, int exportId);
+    static lomiri::gmenuharness::MenuMatcher::Parameters unlockSimParameters(std::string const& busName, int exportId);
 
     void startIndicator();
 
@@ -256,36 +256,36 @@ protected:
 
     static QString firstModem();
 
-    static unity::gmenuharness::MenuItemMatcher flightModeSwitch(bool toggled = false);
-    static unity::gmenuharness::MenuItemMatcher mobileDataSwitch(bool toggled = false);
+    static lomiri::gmenuharness::MenuItemMatcher flightModeSwitch(bool toggled = false);
+    static lomiri::gmenuharness::MenuItemMatcher mobileDataSwitch(bool toggled = false);
 
-    static unity::gmenuharness::MenuItemMatcher accessPoint(const std::string& ssid, Secure secure,
+    static lomiri::gmenuharness::MenuItemMatcher accessPoint(const std::string& ssid, Secure secure,
                 ApMode apMode, ConnectionStatus connectionStatus, uchar strength = 100);
 
-    static unity::gmenuharness::MenuItemMatcher wifiEnableSwitch(bool toggled = true);
+    static lomiri::gmenuharness::MenuItemMatcher wifiEnableSwitch(bool toggled = true);
 
-    static unity::gmenuharness::MenuItemMatcher wifiSettings();
+    static lomiri::gmenuharness::MenuItemMatcher wifiSettings();
 
-    static unity::gmenuharness::MenuItemMatcher modemInfo(const std::string& simIdentifier,
+    static lomiri::gmenuharness::MenuItemMatcher modemInfo(const std::string& simIdentifier,
                 const std::string& label,
                 const std::string& statusIcon,
                 bool locked = false,
                 const std::string& connectivityIcon = "");
 
-    static unity::gmenuharness::MenuItemMatcher ethernetInfo(const std::string& label,
+    static lomiri::gmenuharness::MenuItemMatcher ethernetInfo(const std::string& label,
                                                              const std::string& status,
                                                              Toggle autoConnect = Toggle::enabled);
 
-    static unity::gmenuharness::MenuItemMatcher radio(const std::string& label,
+    static lomiri::gmenuharness::MenuItemMatcher radio(const std::string& label,
                                                       Toggle toggled);
 
-    static unity::gmenuharness::MenuItemMatcher cellularSettings();
+    static lomiri::gmenuharness::MenuItemMatcher cellularSettings();
 
-    static unity::gmenuharness::MenuItemMatcher ethernetSettings();
+    static lomiri::gmenuharness::MenuItemMatcher ethernetSettings();
 
-    static unity::gmenuharness::MenuItemMatcher vpnSettings();
+    static lomiri::gmenuharness::MenuItemMatcher vpnSettings();
 
-    static unity::gmenuharness::MenuItemMatcher vpnConnection(const std::string& name, ConnectionStatus connected = ConnectionStatus::disconnected);
+    static lomiri::gmenuharness::MenuItemMatcher vpnConnection(const std::string& name, ConnectionStatus connected = ConnectionStatus::disconnected);
 
     static connectivityqt::Sim* getModemSim(const QAbstractItemModel& model, int idx)
     {

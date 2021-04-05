@@ -19,11 +19,11 @@
 
 #include "action-group-exporter.h"
 
-#include <unity/util/ResourcePtr.h>
+#include <lomiri/util/ResourcePtr.h>
 #include <QDebug>
 
 using namespace std;
-namespace util = unity::util;
+namespace util = lomiri::util;
 
 ActionGroupExporter::ActionGroupExporter(SessionBus::Ptr sessionBus,
                                          ActionGroup::Ptr actionGroup,

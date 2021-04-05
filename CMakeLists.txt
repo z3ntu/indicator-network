@@ -47,10 +47,10 @@ pkg_check_modules(
 include_directories(${GLIB_INCLUDE_DIRS})
 
 pkg_check_modules(
-  UNITY_API REQUIRED
-  libunity-api
+  LOMIRI_API REQUIRED
+  liblomiri-api
 )
-include_directories(${UNITY_API_INCLUDE_DIRS})
+include_directories(${LOMIRI_API_INCLUDE_DIRS})
 
 set(OFONO_REQUIRED_VERSION 1.12)
 pkg_check_modules(
@@ -74,7 +74,7 @@ include_directories(${Qt5DBus_INCLUDE_DIRS})
 pkg_check_modules(NM REQUIRED libnm REQUIRED)
 include_directories(${NM_INCLUDE_DIRS})
 
-pkg_check_modules(URL_DISPATCHER REQUIRED url-dispatcher-1)
+pkg_check_modules(URL_DISPATCHER REQUIRED lomiri-url-dispatcher)
 include_directories(${URL_DISPATCHER_INCLUDE_DIRS})
 
 find_package(Threads REQUIRED)

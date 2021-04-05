@@ -26,7 +26,7 @@
 #include <functional>
 #include <memory>
 
-#include <unity/util/DefinesPtrs.h>
+#include <lomiri/util/DefinesPtrs.h>
 
 #include <connectivityqt/vpn-connections-list-model.h>
 
@@ -42,7 +42,7 @@ class Q_DECL_EXPORT Connectivity: public QObject
     Q_OBJECT
 
 public:
-    UNITY_DEFINES_PTRS(Connectivity);
+    LOMIRI_DEFINES_PTRS(Connectivity);
 
     Q_DISABLE_COPY(Connectivity)
 

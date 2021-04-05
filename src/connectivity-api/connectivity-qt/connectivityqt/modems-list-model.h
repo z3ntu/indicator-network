@@ -25,7 +25,7 @@
 
 #include "sims-list-model.h"
 
-#include <unity/util/DefinesPtrs.h>
+#include <lomiri/util/DefinesPtrs.h>
 
 #include <memory>
 
@@ -43,7 +43,7 @@ class Q_DECL_EXPORT ModemsListModel : public QAbstractListModel
     Q_ENUMS(Roles)
 
 public:
-    UNITY_DEFINES_PTRS(ModemsListModel);
+    LOMIRI_DEFINES_PTRS(ModemsListModel);
 
     enum Roles
     {

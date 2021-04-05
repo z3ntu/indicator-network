@@ -22,7 +22,7 @@
 #include <QObject>
 #include <QVariantMap>
 
-#include <unity/util/DefinesPtrs.h>
+#include <lomiri/util/DefinesPtrs.h>
 
 class OrgFreedesktopNetworkManagerSettingsConnectionInterface;
 
@@ -36,7 +36,7 @@ class PptpConnection : public QObject
     Q_OBJECT
 
 public:
-    UNITY_DEFINES_PTRS(PptpConnection);
+    LOMIRI_DEFINES_PTRS(PptpConnection);
 
     enum class MppeType
     {

@@ -20,7 +20,7 @@
 #pragma once
 
 #include <exception>
-#include <unity/util/DefinesPtrs.h>
+#include <lomiri/util/DefinesPtrs.h>
 
 #include <QDBusConnection>
 
@@ -31,7 +31,7 @@ class FlightModeToggle : public QObject
 {
 Q_OBJECT
 public:
-    UNITY_DEFINES_PTRS(FlightModeToggle);
+    LOMIRI_DEFINES_PTRS(FlightModeToggle);
 
     FlightModeToggle() = default;
 

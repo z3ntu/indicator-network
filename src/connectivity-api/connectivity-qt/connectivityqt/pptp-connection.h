@@ -29,7 +29,7 @@ class Q_DECL_EXPORT PptpConnection : public VpnConnection
     Q_OBJECT
 
 public:
-    UNITY_DEFINES_PTRS(PptpConnection);
+    LOMIRI_DEFINES_PTRS(PptpConnection);
 
     Q_ENUMS(MppeType)
     enum class MppeType
